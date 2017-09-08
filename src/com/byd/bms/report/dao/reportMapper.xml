@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.report.dao.IReportDao">
+
+	<select id="queryFactoryOutputYear" parameterType="Map" resultType="Map">
+		select tmp.workshop,group_concat(tmp.month,':',tmp.quantity separator ',') output_info
+		from(
+		select '自制件下线' workshop,ifnull(sum(s.quantity),0) quantity,substring(s.supply_date,6,2) month
+		from BMS_PD_WORKSHOP_SUPPLY s 
+		where s.supply_workshop='自制件' and s.receive_workshop='部件' 		
+		<if test="factory_id !=null and factory_id !=''">
+			and s.factory_id=#{factory_id}
+		</if> 
+		and s.supply_date like concat(#{year},'%')
+		group by substring(s.supply_date,1,7)
+		union all
+		select '部件下线' workshop,ifnull(sum(f.offline_real_qty),0) quantity,substring(f.prod_date,6,2) month
+		from BMS_PD_PARTS_PLAN_FINISH f
+		left join BMS_BASE_KEY p1 on p1.value=f.parts_id AND p1.key_code ='BASE_PARTS'
+		where p1.key_name='喷砂' and f.prod_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and f.factory_id=#{factory_id} 
+		</if> 
+		group by substring(f.prod_date,1,7)
+		union all
+		select '焊装上线' workshop,count(b.bus_number) quanity,substring(b.welding_online_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.welding_online_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.welding_online_date,1,7) 
+		union all
+		select '焊装下线' workshop,count(b.bus_number) quanity,substring(b.welding_offline_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.welding_offline_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.welding_offline_date,1,7) 
+		union all
+		select '涂装上线' workshop,count(b.bus_number) quanity,substring(b.painting_online_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.painting_online_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.painting_online_date,1,7) 
+		union all
+		select '涂装下线' workshop,count(b.bus_number) quanity,substring(b.painting_offline_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.painting_offline_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.painting_offline_date,1,7) 
+		union all
+		select '底盘上线' workshop,count(b.bus_number) quanity,substring(b.chassis_online_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.chassis_online_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.chassis_online_date,1,7) 
+		union all
+		select '底盘下线' workshop,count(b.bus_number) quanity,substring(b.chassis_offline_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.chassis_offline_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.chassis_offline_date,1,7) 
+		union all
+		select '总装上线' workshop,count(b.bus_number) quanity,substring(b.assembly_online_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.assembly_online_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.assembly_online_date,1,7) 
+		union all
+		select '总装下线' workshop,count(b.bus_number) quanity,substring(b.assembly_offline_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.assembly_offline_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.assembly_offline_date,1,7) 
+		union all
+		select '入库' workshop,count(b.bus_number) quanity,substring(b.warehousing_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.warehousing_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.warehousing_date,1,7) 
+		union all
+		select '发车' workshop,count(b.bus_number) quanity,substring(b.dispatch_date,6,2) month
+		from BMS_PLAN_BUS b
+		where b.dispatch_date like concat(#{year},'%')
+		<if test="factory_id !=null and factory_id !=''">
+			and b.factory_id=#{factory_id} 
+		</if> 
+		group by substring(b.dispatch_date,1,7) 
+		) tmp
+		group by tmp.workshop;
+	</select>
+	<select id="queryOnlineAndOfflineData" parameterType="Map" resultType="Map">  
+		select id,factory_name,
+         sum(case key_name when '焊装上线' then plan_qty else 0 end) welding_online,
+         (
+           select count(id) from BMS_PLAN_BUS b1 where 
+           b1.factory_id=c.id and b1.welding_online_date>CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00') AND 
+          b1.welding_online_date&lt;=CONCAT(#{end_date},' 17:30:00')) welding_offline,
+         sum(case key_name when '底盘上线' then plan_qty else 0 end) chassis_online,
+         (select count(id) from BMS_PLAN_BUS b2 where 
+         b2.factory_id=c.id and b2.chassis_online_date>CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00') AND 
+          b2.chassis_online_date&lt;=CONCAT(#{end_date},' 17:30:00')) chassis_offline
+		from (
+			select a.id,a.factory_name,a.key_name,sum(plan_qty) plan_qty,p.plan_date
+			  from (
+				 (
+					 select f.id,f.factory_name,k.key_name,k.value from BMS_BASE_FACTORY f,BMS_BASE_KEY k 
+						 where key_code = 'PLAN_CODE' and k.value in (4,8) and capacity>0
+					 ) a
+					 LEFT JOIN BMS_PLAN_PRODUCTION_PLAN p on a.`value`=p.plan_code_value and a.id=p.factory_id and 
+					  plan_date&gt;=#{start_date} and plan_date&lt;=#{end_date}
+         )
+			  GROUP BY id,factory_name,key_name 
+		) c where 1=1 
+		<if test="factory!=null and factory!='全部'">
+		   and factory_name=#{factory}
+		</if>
+		 GROUP BY factory_name order by id
+		
+	</select>
+	
+	<select id="queryFactoryOutputReportData" parameterType="List" resultType="Map">
+			select * from 
+			(SELECT #{list[0].factory_id} AS 'FACTORY',#{list[0].workshop_name} AS 'WORKSHOP') t 
+			JOIN
+			(SELECT COUNT(B.id) AS 'SUM' FROM BMS_PLAN_BUS B WHERE  
+			date_add(B.${list[0].workshop}, interval +410 MINUTE) >= CONCAT(#{list[0].startDate},' 00:00:00') AND
+			date_add(B.${list[0].workshop}, interval +410 MINUTE) &lt;= CONCAT(#{list[0].endDate},' 23:59:59') 
+			AND B.factory_id=#{list[0].factory_id}) ttt
+			JOIN 
+			(SELECT factory_name FROM BMS_BASE_FACTORY WHERE id = #{list[0].factory_id}) f JOIN
+			(SELECT GROUP_CONCAT(S.memo) AS MEMO FROM BMS_PLAN_STOPLINE S WHERE S.factory_id = #{list[0].factory_id} AND
+			S.start_time >=CONCAT(#{list[0].startDate},' 00:00:00') AND S.start_time &lt;=CONCAT(#{list[0].endDate},' 23:59:59') 
+			AND S.workshop_id = #{list[0].workshop_id}) tt
+			JOIN 
+			<foreach collection="list" index="index" item="item" separator="JOIN" >
+					(SELECT COUNT(B.id) AS #{item.data} FROM BMS_PLAN_BUS B WHERE  
+					date_add(B.${item.workshop}, interval +410 MINUTE)  LIKE CONCAT('%',#{item.data},'%')
+					AND B.factory_id=#{item.factory_id}) t${index}
+			</foreach>
+	</select>
+	<select id="queryFactoryZzjOutputReportData" parameterType="List" resultType="Map">
+			select * from 
+			(SELECT #{list[0].factory_id} AS 'FACTORY',#{list[0].workshop} AS 'WORKSHOP') t 
+			JOIN
+			(SELECT IFNULL(SUM(quantity),'0') + '' AS 'SUM' FROM BMS_PD_WORKSHOP_SUPPLY WHERE
+			factory_id = #{list[0].factory_id} AND supply_workshop = '自制件' AND receive_workshop = '部件' AND supply_date >= #{list[0].startDate} AND supply_date &lt;= #{list[0].endDate} ) ttt
+			JOIN 
+			(SELECT factory_name FROM BMS_BASE_FACTORY WHERE id = #{list[0].factory_id}) f JOIN
+			(SELECT GROUP_CONCAT(S.memo) AS MEMO FROM BMS_PLAN_STOPLINE S WHERE S.factory_id = #{list[0].factory_id} AND
+			S.start_time >=CONCAT(#{list[0].startDate},' 00:00:00') AND S.start_time &lt;=CONCAT(#{list[0].endDate},' 23:59:59') 
+			AND S.workshop_id = #{list[0].workshop_id}) tt
+			JOIN 
+			<foreach collection="list" index="index" item="item" separator="JOIN" >
+			(SELECT IFNULL(SUM(quantity),'0') + '' AS #{item.data} FROM BMS_PD_WORKSHOP_SUPPLY WHERE
+			factory_id = #{item.factory_id} AND supply_workshop = '自制件' AND receive_workshop = '部件' AND supply_date = #{item.data}) t${index}
+			</foreach>
+	</select>
+	<select id="queryFactoryBjOutputReportData" parameterType="List" resultType="Map">
+			select * from 
+			(SELECT #{list[0].factory_id} AS 'FACTORY',#{list[0].workshop} AS 'WORKSHOP') t 
+			JOIN
+			(SELECT IFNULL(SUM(online_real_qty),'0') + '' AS 'SUM' FROM BMS_PD_PARTS_PLAN_FINISH WHERE 
+			factory_id = #{list[0].factory_id} AND prod_date  >= #{list[0].startDate} AND prod_date &lt;= #{list[0].endDate} AND parts_id = '0') ttt
+			JOIN
+			(SELECT factory_name FROM BMS_BASE_FACTORY WHERE id = #{list[0].factory_id}) f JOIN
+			(SELECT GROUP_CONCAT(S.memo) AS MEMO FROM BMS_PLAN_STOPLINE S WHERE S.factory_id = #{list[0].factory_id} AND
+			S.start_time >=CONCAT(#{list[0].startDate},' 00:00:00') AND S.start_time &lt;=CONCAT(#{list[0].endDate},' 23:59:59') 
+			AND S.workshop_id = #{list[0].workshop_id}) tt
+			JOIN 
+			<foreach collection="list" index="index" item="item" separator="JOIN" >
+			(SELECT IFNULL(SUM(online_real_qty),'0') + '' AS #{item.data} FROM BMS_PD_PARTS_PLAN_FINISH WHERE 
+			factory_id = #{item.factory_id} AND prod_date = #{item.data} AND parts_id = '0') t${index}
+			</foreach>
+	</select>
+
+	<select id="queryFactoryPlanRateList" parameterType="Map" resultType="Map">
+		select a.plan_qty,a.key_name as workshop,ifnull(b.quantity,0) as quantity,concat(round(ifnull(b.quantity,0)/a.plan_qty*100,1) ,'%') as rate
+		from
+		(select sum(p.plan_qty) plan_qty,
+		case k.key_name when '自制下线' then '自制件下线'  when '车辆入库' then '入库' else k.key_name
+		end as key_name
+		from BMS_PLAN_PRODUCTION_PLAN p
+		left join BMS_BASE_KEY k on k.value=p.plan_code_value and k.key_code='PLAN_CODE'
+		where p.factory_id=#{factory_id} and p.plan_date like concat(#{month},'%')
+		group by k.key_name) a
+		left join(
+		select '自制件下线' workshop,ifnull(sum(s.quantity),0) quantity
+		from BMS_PD_WORKSHOP_SUPPLY s 
+		where s.supply_workshop='自制件' and s.receive_workshop='部件' 
+		and s.factory_id=#{factory_id} and s.supply_date like concat(#{month},'%')
+		union all
+		select '部件下线' workshop,ifnull(sum(f.offline_real_qty),0) quantity
+		from BMS_PD_PARTS_PLAN_FINISH f
+		left join BMS_BASE_KEY p1 on p1.value=f.parts_id AND p1.key_code ='BASE_PARTS'
+		where f.factory_id=#{factory_id} and p1.key_name='喷砂' and f.prod_date like concat(#{month},'%')
+		union all
+		select '焊装上线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.welding_online_date like concat(#{month},'%')
+		union all
+		select '焊装下线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.welding_offline_date like concat(#{month},'%')
+		union all
+		select '涂装上线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.painting_online_date like concat(#{month},'%')
+		union all
+		select '涂装下线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.painting_offline_date like concat(#{month},'%')
+		union all
+		select '底盘上线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.chassis_online_date like concat(#{month},'%')
+		union all
+		select '底盘下线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.chassis_offline_date like concat(#{month},'%')
+		union all
+		select '总装上线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.assembly_online_date like concat(#{month},'%')
+		union all
+		select '总装下线' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.assembly_offline_date like concat(#{month},'%')
+		union all
+		select '入库' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.warehousing_date like concat(#{month},'%')
+		union all
+		select '发车' workshop,count(b.bus_number) quanity
+		from BMS_PLAN_BUS b
+		where b.factory_id=#{factory_id} and b.dispatch_date like concat(#{month},'%')) b
+		on a.key_name=b.workshop
+	</select>
+	
+	<select id="queryPlanNodeOrderList" parameterType="Map" resultType="Map">
+		select '自制件下线' workshop,ifnull(sum(s.quantity),0) quantity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,s.order_id
+		from BMS_PD_WORKSHOP_SUPPLY s 
+		left join BMS_OR_ORDER o on s.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where s.supply_workshop='自制件' and s.receive_workshop='部件' and s.factory_id=#{factory_id} 
+		and s.supply_date like concat(#{month},'%')
+		group by s.order_id
+		union all
+		select '部件下线' workshop,ifnull(sum(f.offline_real_qty),0) quantity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,f.order_id
+		from BMS_PD_PARTS_PLAN_FINISH f
+		left join BMS_OR_ORDER o on f.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		left join BMS_BASE_KEY p1 on p1.value=f.parts_id AND p1.key_code ='BASE_PARTS'
+		where f.factory_id=#{factory_id} and p1.key_name='喷砂' and f.prod_date like concat(#{month},'%')
+		group by f.order_id
+		union all
+		select '焊装上线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.welding_online_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '焊装下线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.welding_offline_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '涂装上线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.painting_online_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '涂装下线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.painting_offline_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '底盘上线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.chassis_online_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '底盘下线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.chassis_offline_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '总装上线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.assembly_online_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '总装下线' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.assembly_offline_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '入库' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.warehousing_date like concat(#{month},'%')
+		group by b.order_id
+		union all
+		select '发车' workshop,count(b.bus_number) quanity,concat(o.order_code,' ',t.bus_type_code,' ',o.order_qty,'台') order_desc,b.order_id
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on t.id=o.bus_type_id
+		where b.factory_id=#{factory_id} and b.dispatch_date like concat(#{month},'%')
+		group by b.order_id
+		order by workshop,order_desc
+	</select>
+	
+	<select id="queryExceptionList" parameterType="Map" resultType="Map">
+		select tmp.workshop,group_concat(distinct tmp.mark separator '||') as mark
+		from(
+		SELECT e.workshop, e.detailed_reasons as mark
+		FROM BMS_PD_PRODUCTION_EXCEPTION e
+		WHERE  e.factory=#{factory_name} and e.start_time like concat(#{month},'%')
+		union all
+		select w.workshop_name workshop, s.detailed_reason as mark
+		from BMS_PLAN_STOPLINE s
+		left join BMS_BASE_WORKSHOP w on s.workshop_id=w.id
+		where s.factory_id=#{factory_id} and s.start_time like concat(#{month},'%')
+		) tmp
+		group by tmp.workshop
+	</select>
+	<!-- 获取计划数量 -->
+	<select id="queryPlanQty" parameterType="Map" resultType="Map">
+		<![CDATA[
+			SELECT k.key_name,sum(p.plan_qty) plan_qty FROM BMS_PLAN_PRODUCTION_PLAN p 
+				LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+				LEFT JOIN BMS_BASE_KEY k ON p.plan_code_value = k.value and k.key_code ='PLAN_CODE'
+				 WHERE p.plan_code_value IN (
+				SELECT k.value FROM BMS_BASE_KEY k
+					WHERE k.key_code = 'PLAN_CODE' AND k.key_name IN('自制下线','部件下线','焊装下线','涂装下线','底盘下线','总装下线','成品库上线','车辆入库')
+				)
+				AND p.factory_id in (
+				  		select case when LOCATE(p.factory_id,#{factory_id})>0 then p.factory_id else 0 end as factory_id
+							from BMS_BASE_FACTORY f )
+				AND p.plan_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00') AND p.plan_date <= CONCAT(#{end_date},' 17:30:00')
+			GROUP BY p.plan_code_value ORDER BY p.plan_code_value
+		]]>
+	</select>
+	<!-- 获取部件车间实际完成数量 -->
+	<select id="getPlanPartsRealCount" parameterType="Map"
+		resultType="int">
+		SELECT IFNULL(SUM(${workshop}),0) AS count FROM
+		BMS_PD_PARTS_PLAN_FINISH b
+		WHERE b.factory_id in (
+		select case when
+		LOCATE(b.factory_id,#{factory_id})>0 then b.factory_id else
+		0 end as
+		factory_id
+		from BMS_BASE_FACTORY f )
+		AND b.parts_id = '0'
+		<if test="start_date !=null and start_date!=''">
+			<![CDATA[ AND b.prod_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')  ]]>
+		</if>
+		<if test="end_date !=null and end_date!=''">
+			<![CDATA[ AND b.prod_date <= CONCAT(#{end_date},' 17:30:00') ]]>
+		</if>
+	</select>
+	<select id="getPlanZzjRealCount" parameterType="Map" resultType="int">
+		SELECT IFNULL(SUM(quantity),0) AS count FROM BMS_PD_WORKSHOP_SUPPLY 
+		WHERE factory_id = #{factory_id} 
+		AND supply_workshop = '自制件'
+		AND receive_workshop = '部件' 
+		AND supply_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00') 
+		<![CDATA[ AND supply_date <= CONCAT(#{end_date},' 17:30:00') ]]>
+	</select>
+	<!-- 获取四大车间实际完成数量 -->
+	<select id="getPlanSearchRealCount" parameterType="List"
+		resultType="map">
+		<foreach collection="list" index="index" item="item"
+			separator="UNION ALL">
+			SELECT IFNULL(COUNT(id),0) AS count FROM BMS_PLAN_BUS b
+			WHERE
+			b.factory_id in (
+			select case when
+			LOCATE(b.factory_id,#{item.factory_id})>0 then
+			b.factory_id else 0 end
+			as factory_id
+			from BMS_BASE_FACTORY f )
+			<if test="item.start_date !=null and item.start_date!=''">
+				<![CDATA[ AND ${item.workshop} >CONCAT(date_add(#{item.start_date},interval '-1' DAY),' 17:30:00') ]]>
+			</if>
+			<if test="item.end_date !=null and item.end_date!=''">
+				<![CDATA[ AND ${item.workshop} <= CONCAT(#{item.end_date},' 17:30:00') ]]>
+			</if>
+		</foreach>
+	</select>
+</mapper>

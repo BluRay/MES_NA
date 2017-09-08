@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.util.dao.ILoginDao">
+
+	<resultMap type="com.byd.bms.util.model.BmsBaseUser" id="userMap">
+		<id property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="role_id" column="role_id" />
+		<result property="staff_number" column="staff_number" />
+		<result property="email" column="email" />
+		<result property="telephone" column="telephone" />
+		<result property="cellphone" column="cellphone" />
+		<result property="display_name" column="display_name" />
+		<result property="admin" column="admin" />
+		<result property="factory" column="factory_name" />
+		<result property="factory_id" column="factory_id" />
+		<result property="department" column="department" />
+		<result property="department_id" column="department_id" />
+		<result property="workshop_org" column="workshop_org" />
+		<result property="workgroup_org" column="workgroup_org" />
+		<result property="team_org" column="team_org" />
+		<result property="pwd_modified" column="pwd_modified" />
+	</resultMap>
+
+	<select id="getUser" parameterType="String" resultMap="userMap">
+		select u.*,f.factory_name
+		from BMS_NA_BASE_USER u 
+		left join BMS_NA_BASE_FACTORY f on u.factory_id=f.id 
+		where u.staff_number=#{userName} and u.isdelete='0'
+	</select>
+	
+	<insert id="insertUser" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_BASE_USER
+		(card_number,card_8H10D,username,email,telephone,cellphone,password,display_name,factory_id,department_id,admin)
+		values(#{user.card_number},#{user.card_8H10D},#{user.username},#{user.email},#{user.telephone},#{user.cellphone},#{user.password},#{user.username},#{user.factory_id},#{user.department_id},#{user.admin})
+	</insert>
+	
+	<update id="saveUserLoginInfo" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET login_count=login_count + 1 ,last_login_time=#{user.last_login_time} WHERE staff_number=#{user.staff_number}
+		]]>
+	</update>
+	
+</mapper>

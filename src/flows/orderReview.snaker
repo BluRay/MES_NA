@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process name="orderReview" displayName="十九部订单评审流程" instanceUrl="/snaker/flow/all" >
+<start layout="-164,0,50,50" name="start" displayName="开始" >
+<transition offset="0,-10" to="apply" name="path12" />
+</start>
+<task layout="-93,8,96,40" name="apply" displayName="计划部发起评审" form="/order/review/apply" assignee="apply.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="technical" name="path14" />
+</task>
+<task layout="25,9,78,39" name="technical" displayName="技术部评审" form="/order/review/technical" assignee="technical.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="technology" name="path15" />
+</task>
+<task layout="126,10,80,38" name="technology" displayName="工艺部评审" form="/order/review/technology" assignee="technology.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="quality" name="path16" />
+</task>
+<task layout="231,10,79,37" name="quality" displayName="品质部评审" form="/order/review/quality" assignee="quality.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="factory" name="path17" />
+</task>
+<task layout="333,10,93,36" name="factory" displayName="工厂内部评审" form="/order/review/factory" assignee="factory.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="planning" name="path18" />
+</task>
+<task layout="448,8,115,39" name="planning" displayName="综合计划部物控评审" form="/order/review/planning" assignee="planning.operator" taskType="Major" performType="ANY" >
+<transition offset="0,0" to="plandep" name="transition1" />
+</task>
+<task layout="729,8,105,37" name="result" displayName="评审结果修正" form="/order/review/result" assignee="result.operator" taskType="Major" performType="ANY" >
+<transition offset="0,-10" to="end" name="path20" />
+</task>
+<end layout="854,3,36,44" name="end" displayName="结束" >
+</end>
+<task layout="587,8,117,39" name="plandep" displayName="综合计划部计划评审" form="/order/review/plandep" assignee="plandep.operator" taskType="Major" performType="ANY" >
+<transition offset="0,0" to="result" name="transition2" />
+</task>
+</process> 

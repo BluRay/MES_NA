@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.setting.dao.ISettingDao">
+
+	<select id="getRoleList" resultType="com.byd.bms.setting.model.BmsBaseRole">
+		SELECT id, CONCAT(role_name,'(', role_description,')') as role_name, role_description, type, edit_user, edit_time FROM BMS_NA_BASE_ROLE
+	</select>
+	
+	<select id="getFunctionList" resultType="com.byd.bms.setting.model.BmsBaseFunction">
+		SELECT f1.*,
+		(SELECT COUNT(f2.id) FROM BMS_NA_BASE_FUNCTION f2 WHERE f2.parent_function_id = f1.id) AS sub_count
+		FROM BMS_NA_BASE_FUNCTION f1  order by f1.parent_function_id,f1.priority;
+	</select>
+	
+	<select id="getRolePermission" parameterType="String" resultType="com.byd.bms.setting.model.BmsBaseRolePermission">
+		SELECT id, role_id, function_id FROM BMS_NA_BASE_ROLE_PERMISSION where role_id = #{role_id};
+	</select>
+	
+	<select id="getBaseFunctionPermission" parameterType="String" resultType="com.byd.bms.setting.model.BmsBaseFunctionPermission">
+		SELECT id, role_id, permission_id FROM BMS_NA_BASE_FUNCTION_PERMISSION where role_id = #{role_id};
+	</select>
+	
+	<insert id="addRole" useGeneratedKeys="true" keyProperty="id" parameterType="com.byd.bms.setting.model.BmsBaseRole">
+		INSERT INTO BMS_NA_BASE_ROLE( role_name, role_description, type, edit_user, edit_time)
+		VALUES( #{role_name}, #{role_description}, #{type}, #{edit_user}, #{edit_time});
+	</insert>
+	
+	<update id="delRoleFunction" parameterType="String">
+		<![CDATA[
+		DELETE FROM BMS_NA_BASE_ROLE_PERMISSION
+		WHERE role_id = #{role_id} AND function_id  NOT IN (${function_ids});
+		]]>
+	</update>
+	
+	<insert id="addRoleFunction" parameterType="String">
+		<![CDATA[
+		INSERT INTO BMS_NA_BASE_ROLE_PERMISSION (role_id, function_id)
+		SELECT #{role_id},#{function_id} FROM DUAL WHERE NOT EXISTS
+		(SELECT id FROM BMS_NA_BASE_ROLE_PERMISSION WHERE role_id = #{role_id} AND function_id = #{function_id})
+		]]>
+	</insert>
+	
+	<update id="delFunctionPermission" parameterType="String">
+		<![CDATA[
+		DELETE FROM BMS_NA_BASE_FUNCTION_PERMISSION
+		WHERE role_id = #{role_id} AND permission_id  NOT IN (${permission_ids});
+		]]>
+	</update>
+	
+	<insert id="addFunctionPermission" parameterType="String">
+		<![CDATA[
+		INSERT INTO BMS_NA_BASE_FUNCTION_PERMISSION (role_id, permission_id)
+		SELECT #{role_id},#{permission_id} FROM DUAL WHERE NOT EXISTS
+		(SELECT id FROM BMS_NA_BASE_FUNCTION_PERMISSION WHERE role_id = #{role_id} AND permission_id = #{permission_id})
+		]]>
+	</insert>
+	
+	<insert id="addUser" useGeneratedKeys="true" keyProperty="id" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<![CDATA[
+		INSERT INTO BMS_NA_BASE_USER(staff_number, card_8H10D, username, email, telephone, cellphone, password, display_name, factory_id, admin, isdelete, create_user, create_time, login_count)
+		VALUES( #{staff_number}, '0', #{username}, #{email}, #{telephone}, #{cellphone}, #{password}, #{display_name}, #{factory_id}, #{admin},'0', #{create_user}, #{create_time},'0')
+		]]>
+	</insert>
+	
+	<update id="editUser" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET username=#{username}, email=#{email}, telephone=#{telephone}, cellphone=#{cellphone}, display_name=#{display_name}, 
+		factory_id=#{factory_id}, admin=#{admin}, modify_time=#{create_time}
+		WHERE staff_number=#{staff_number};
+		]]>
+	</update>
+	
+	<update id="delUser" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET isdelete='1' WHERE staff_number=#{staff_number};
+		]]>
+	</update>
+	<select id="getUserById" parameterType="String" resultType="com.byd.bms.util.model.BmsBaseUser">
+		SELECT staff_number, username, email, telephone, cellphone, display_name, factory_id FROM BMS_NA_BASE_USER 
+		where isdelete = 0 
+		<if test="id !=null">
+			and id=#{id}
+		</if>	
+	</select>
+	
+	<update id="resetUserPass" parameterType="com.byd.bms.util.model.BmsBaseUser">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET password=#{password} WHERE staff_number=#{staff_number};
+		]]>
+	</update>
+	
+	<select id="getUserList" parameterType="Map" resultType="com.byd.bms.util.model.BmsBaseUser">
+		SELECT U.*,F.factory_name FROM BMS_NA_BASE_USER U
+		LEFT JOIN BMS_NA_BASE_FACTORY F ON U.factory_id = F.id
+		where isdelete = 0 
+		<if test="search_key!=''">
+		<![CDATA[
+		AND (U.staff_number LIKE '%${search_key}%' OR U.username LIKE '%${search_key}%' OR U.display_name LIKE '%${search_key}%' OR U.email LIKE '%${search_key}%' 
+		 OR U.telephone LIKE '%${search_key}%' OR U.cellphone LIKE '%${search_key}%')		 
+		]]>
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>	
+	</select>
+	
+	<select id="getTotalUserCount" parameterType="Map" resultType="int">
+		SELECT COUNT(id) FROM BMS_NA_BASE_USER WHERE isdelete = 0 
+		<if test="search_key !=null and search_key !=''">
+		<![CDATA[
+			AND (staff_number LIKE '%${search_key}%' OR username LIKE '%${search_key}%' OR display_name LIKE '%${search_key}%' OR email LIKE '%${search_key}%' 
+			OR telephone LIKE '%${search_key}%' OR cellphone LIKE '%${search_key}%')		 
+		]]>
+		</if>
+	</select>
+	
+	<select id="getUserRole" parameterType="String" resultType="com.byd.bms.setting.model.BmsUserRole">
+		SELECT U.*,R.role_name,P.permission_name FROM BMS_NA_BASE_USER_ROLE U
+		LEFT JOIN BMS_NA_BASE_ROLE R ON U.role_id = R.id
+		LEFT JOIN BMS_NA_BASE_PERMISSION P ON U.permission_key = P.id 
+		<if test="staff_number!=''">
+		<![CDATA[
+			WHERE U.staff_number = #{staff_number}
+		]]>
+		</if>
+	</select>
+	
+	<select id="getOneUserRole" parameterType="String" resultType="com.byd.bms.setting.model.BmsUserRole">
+		SELECT U.* FROM BMS_NA_BASE_USER_ROLE U WHERE 1=1 
+		<if test="staff_number!=''">
+		<![CDATA[
+			AND U.staff_number = #{staff_number}
+		]]>
+		</if>
+		<if test="role_id!=''">
+		<![CDATA[
+			AND U.role_id = #{role_id}
+		]]>
+		</if>
+	</select>
+	
+	<insert id="addUserRole" parameterType="String">
+		<![CDATA[
+		INSERT INTO BMS_NA_BASE_USER_ROLE
+		(staff_number, role_id, permission_key, permission_value, edit_user, edit_time)
+		SELECT #{staff_number},#{role_id},#{permission_key},#{permission_value},#{edit_user},#{edit_time} FROM DUAL WHERE NOT EXISTS
+		(SELECT id FROM BMS_NA_BASE_USER_ROLE WHERE staff_number = #{staff_number} AND role_id = #{role_id})
+		]]>
+	</insert>
+	<insert id="addOneUserRole" parameterType="String">
+		<![CDATA[
+		INSERT INTO BMS_NA_BASE_USER_ROLE
+		(staff_number, role_id, permission_key, permission_value, edit_user, edit_time)
+		SELECT #{staff_number},#{role_id},#{permission_key},#{permission_value},#{edit_user},#{edit_time} FROM DUAL WHERE NOT EXISTS
+		(SELECT id FROM BMS_NA_BASE_USER_ROLE WHERE staff_number = #{staff_number} AND role_id = #{role_id} AND permission_key = #{permission_key})
+		]]>
+	</insert>
+	
+	<update id="updateUserRole" parameterType="String">
+		<![CDATA[
+		DELETE FROM BMS_NA_BASE_FUNCTION_PERMISSION
+		WHERE role_id = #{role_id} AND permission_id  NOT IN (${permission_ids});
+		]]>
+	</update>
+	
+	<update id="delUserRole" parameterType="String">
+		<![CDATA[
+		DELETE FROM BMS_NA_BASE_USER_ROLE
+		WHERE staff_number = #{staff_number} AND role_id NOT IN (${roles});
+		]]>
+	</update>
+	<update id="delOneUserRole" parameterType="String">
+		<![CDATA[
+		DELETE FROM BMS_NA_BASE_USER_ROLE
+		WHERE staff_number = #{staff_number} AND role_id = #{role};
+		]]>
+	</update>
+	<select id='getPermissionByMap' parameterType="Map" resultType="Map">
+		select u.id,u.staff_number,ur.role_id,ur.permission_value,r.role_name 
+		        from BMS_NA_BASE_USER u 
+		   LEFT JOIN BMS_NA_BASE_USER_ROLE ur on u.staff_number=ur.staff_number
+		   LEFT JOIN BMS_NA_BASE_ROLE r  on r.id=ur.role_id
+		where 1=1 
+		<if test="userId !=null and userId !=''"> 
+			and u.id=#{userId}
+        </if>
+        <if test="roleName !=null and roleName !=''"> 
+			and r.role_name like '%${roleName}%'
+        </if>
+	</select>
+	
+	<select id="getOrgDataTreeList" parameterType="Map" resultType="Map">
+		SELECT
+         id,CONCAT(parent_id,'') parent_id,name as display_name,
+         manager,org_type,org_kind,responsibilities,
+         (SELECT COUNT(1) FROM BMS_NA_BASE_ORG f2 WHERE f2.parent_id = t.id) AS sub_count,
+         (SELECT name FROM BMS_NA_BASE_ORG f2 WHERE f2.id = t.parent_id) AS parent_name
+        FROM BMS_NA_BASE_ORG t  <!--    t left join BMS_NA_BASE_KEY k on t.org_type=k.org_type -->
+           WHERE t.deleted = 0
+         <if test="id!=null">
+             AND t.id=#{id} 
+         </if>
+         <if test="parent_id!=null and parent_id!=''">
+             AND t.parent_id=#{parent_id} 
+         </if>
+         <if test="name!=null and name!=''">
+             AND t.name=#{name} 
+         </if>
+         ORDER BY org_type ASC	
+	</select>
+	<select id="getOrgDataByParentId" parameterType="Map" resultType="Map">
+		SELECT t.id,CONCAT(t.parent_id,'') parent_id,t.name as display_name,t.manager,t.org_type,t.org_kind,t.responsibilities,t.foreign_id,
+		   (SELECT name FROM BMS_NA_BASE_ORG f2 WHERE f2.id = t.parent_id) AS parent_name
+          from BMS_NA_BASE_ORG t
+          where 1=1 and t.deleted='0'
+		<if test="id!=null and id!=''">
+			and t.id=#{id}
+		</if>
+		<if test="parent_id!=null and parent_id!=''">
+			and t.parent_id=#{parent_id}
+		</if>
+		order by org_kind DESC, sort_number ASC
+	</select>
+	<!-- 添加组织结构 -->
+	<insert id="addOrgData" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<![CDATA[
+			insert into BMS_NA_BASE_ORG(parent_id,org_type,org_kind,name,foreign_id,sort_number,manager,responsibilities,deleted,editor_id,edit_date) 
+			values(#{parent_id},#{org_type},#{org_kind},#{name},#{foreign_id},#{sort_number},#{manager},#{responsibilities},#{deleted},#{editor_id},#{edit_date})
+		]]>
+	</insert>
+	<!-- 编辑组织结构 -->
+	<update id="editOrgData">
+			update BMS_NA_BASE_ORG set 
+			<if test="parent_id!=''">
+			parent_id=#{parent_id},
+			</if>
+			org_type=#{org_type},org_kind=#{org_kind},name=#{name}<!-- ,sort_number=#{sort_number} -->,manager=#{manager},responsibilities=#{responsibilities},deleted=#{deleted},editor_id=#{editor_id},edit_date=#{edit_date}  
+			where id=#{id}
+	</update>
+	<!--删除组织结构 -->
+	<update id="deleteOrgData">
+		<![CDATA[
+			update BMS_NA_BASE_ORG set deleted='1',editor_id=#{editor_id},edit_date=#{edit_date}  
+			where id=#{id}
+		]]>
+	</update>
+
+	<!-- 工厂 -->
+	<resultMap type="com.byd.bms.setting.model.BmsBaseFactory" id="factoryMap">
+		<id property="id" column="id" />
+		<result property="factoryCode" column="factory_code" />
+		<result property="factoryName" column="factory_name" />
+		<result property="shortName" column="short_name" />
+		<result property="area" column="area" />
+		<result property="deleteFlag" column="delete_flag" />
+		<result property="memo" column="memo" />
+		<result property="editorId" column="editor_id" />
+		<result property="editor" column="editor" />
+		<result property="editDate" column="edit_date" />
+		<result property="capacity" column="capacity" />
+	</resultMap>
+	<select id="getFactoryList" parameterType="Map" resultMap="factoryMap">
+		select f.*,u.display_name editor from BMS_NA_BASE_FACTORY f left join
+		BMS_NA_BASE_USER u on u.staff_number=f.editor_id where 1=1 and f.delete_flag='0'
+		<if test="factory!=null and factory!=''">
+			and (f.factory_name like CONCAT('%',#{factory},'%') or
+			f.factory_code like CONCAT('%',#{factory},'%') )
+		</if>
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+
+	</select>
+	<select id="getFactoryTotalCount" parameterType="Map"
+		resultType="int">
+		select count(f.id) from BMS_NA_BASE_FACTORY f left join BMS_NA_BASE_USER u
+		on u.staff_number=f.editor_id where 1=1 and f.delete_flag='0'
+		<if test="factory!=null and factory!=''">
+			and (f.factory_name like CONCAT('%',#{factory},'%') or
+			f.factory_code like CONCAT('%',#{factory},'%') )
+		</if>
+	</select>
+	<select id="getFactoryById" parameterType="String" resultMap="factoryMap">
+		select f.* from BMS_NA_BASE_FACTORY f where 1=1 and f.delete_flag='0'
+		<if test="id!=null and id!=''">
+			and id=#{id}
+		</if>
+	</select>
+	<insert id="addFactory" parameterType="com.byd.bms.setting.model.BmsBaseFactory">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_FACTORY
+		(factory_code,factory_name,area,memo,editor_id,edit_date,capacity,short_name)
+		values(#{factoryCode},#{factoryName},#{area},#{memo},#{editorId},#{editDate},#{capacity},#{shortName})
+	</insert>
+	<update id="updateFactory" parameterType="com.byd.bms.setting.model.BmsBaseFactory">
+		update
+		BMS_NA_BASE_FACTORY set
+		factory_code=#{factoryCode},factory_name=#{factoryName},
+		area=#{area},memo=#{memo},editor_id=#{editorId},edit_date=#{editDate},capacity=#{capacity},short_name=#{shortName}
+		where id=#{id}
+	</update>
+	<update id="deleteFactory" parameterType="java.util.List">
+
+		update BMS_NA_BASE_FACTORY set delete_flag='1' where id in
+		<foreach collection="list" item="ids" index="index" open="("
+			close=")" separator=",">
+			#{ids}
+		</foreach>
+
+	</update>
+	
+	<!-- 车间 -->
+	<resultMap type="com.byd.bms.setting.model.BmsBaseWorkshop" id="workshopMap">
+		<id property="id" column="id" />
+		<result property="workshopName" column="workshop_name" />
+		<result property="workshopCode" column="workshop_code" />
+		<result property="deleteFlag" column="delete_flag" />
+		<result property="memo" column="memo" />
+		<result property="editorId" column="editor_id" />
+		<result property="editDate" column="edit_date" />
+		<result property="editor" column="editor" />
+	</resultMap>
+	<select id="getWorkshopList" parameterType="Map" resultMap="workshopMap">
+		SELECT w.id,w.workshop_name,w.workshop_code,w.delete_flag,w.edit_date,w.memo,u.display_name editor from BMS_NA_BASE_WORKSHOP as w left join
+		BMS_NA_BASE_USER u on u.staff_number=w.editor_id where 1=1 and w.delete_flag='0'
+		<if test="workshopName!=null">
+			and (w.workshop_name like CONCAT('%',#{workshopName},'%') or
+			w.workshop_code like CONCAT('%',#{workshopName},'%') )
+		</if>
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+
+	<select id="getAllWorkshopList" parameterType="Map" resultMap="workshopMap">
+		SELECT w.id,w.workshop_name,w.workshop_code,w.delete_flag,w.edit_date,w.memo,u.display_name editor from BMS_NA_BASE_WORKSHOP as w left join
+		BMS_NA_BASE_USER u on u.staff_number=w.editor_id where 1=1 and w.delete_flag='0'
+	</select>
+	<select id="getWorkshopTotalCount" parameterType="Map"
+		resultType="int">
+		select count(w.id) from BMS_NA_BASE_WORKSHOP as w left join
+		BMS_NA_BASE_USER u on u.staff_number=w.editor_id where 1=1 and w.delete_flag='0'
+		<if test="workshopName!=null">
+			and (w.workshop_name like CONCAT('%',#{workshopName},'%') or
+			w.workshop_code like CONCAT('%',#{workshopName},'%') )
+		</if>
+	</select>
+	<insert id="addWorkshop" parameterType="com.byd.bms.setting.model.BmsBaseWorkshop">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_WORKSHOP
+		(workshop_name,workshop_code,memo,editor_id,edit_date)
+		values(#{workshopName},#{workshopCode},#{memo},#{editorId},#{editDate})
+	</insert>
+	<update id="updateWorkshop" parameterType="com.byd.bms.setting.model.BmsBaseWorkshop">
+		update
+		BMS_NA_BASE_WORKSHOP set
+		workshop_name=#{workshopName},workshop_code=#{workshopCode},
+		memo=#{memo},editor_id=#{editorId},edit_date=#{editDate}
+		where id=#{id}
+	</update>
+	<update id="deleteWorkshop" parameterType="java.util.List">
+
+		update BMS_NA_BASE_WORKSHOP set delete_flag='1' where id in
+		<foreach collection="list" item="ids" index="index" open="("
+			close=")" separator=",">
+			#{ids}
+		</foreach>
+	</update>
+	
+	<!-- 线别表映射 -->
+	<resultMap type="com.byd.bms.setting.model.BmsBaseLine" id="lineMap">
+		<id property="id" column="id" />
+		<result property="lineName" column="line" />
+		<result property="deleteFlag" column="delete_flag" />
+		<result property="memo" column="memo" />
+		<result property="editorId" column="editor_id" />
+		<result property="editDate" column="edit_date" />
+		<result property="editor" column="editor" />
+	</resultMap>
+	<select id="getLineList" parameterType="Map" resultMap="lineMap">
+		SELECT l.*,u.display_name editor,u.id editorId FROM BMS_NA_BASE_LINE as l 
+			LEFT JOIN BMS_NA_BASE_USER u on l.editor_id = u.staff_number 
+				where 1=1 and l.delete_flag='0'
+		<if test="lineName!=null and lineName!=''">
+			and l.line like CONCAT('%',#{lineName},'%')
+		</if>
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getLineTotalCount" parameterType="Map"
+		resultType="int">
+		SELECT count(l.id) FROM BMS_NA_BASE_LINE as l 
+			LEFT JOIN BMS_NA_BASE_USER u on l.editor_id = u.staff_number 
+				where 1=1 and l.delete_flag='0'
+		
+		<if test="lineName!=null and lineName!=''">
+			and l.line like CONCAT('%',#{lineName},'%')
+		</if>
+		
+	</select>
+	<insert id="addLine" parameterType="com.byd.bms.setting.model.BmsBaseLine">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_LINE
+		(line,memo,editor_id,edit_date)
+		values(#{lineName},#{memo},#{editorId},#{editDate})
+	</insert>
+	<update id="updateLine" parameterType="com.byd.bms.setting.model.BmsBaseLine">
+		update
+		BMS_NA_BASE_LINE set
+		line=#{lineName},memo=#{memo},editor_id=#{editorId},edit_date=#{editDate}
+		where id=#{id}
+	</update>
+	<update id="deleteLine" parameterType="java.util.List">
+
+		update BMS_NA_BASE_LINE set delete_flag='1' where id in
+		<foreach collection="list" item="ids" index="index" open="("
+			close=")" separator=",">
+			#{ids}
+		</foreach>
+	</update>
+	
+	<!-- 工序 -->
+	<select id="getProcessList" parameterType="Map" resultType="Map">
+		select p.*,k.key_name plan_node_name,u.username editor
+		from BMS_NA_BASE_PROCESS p
+		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
+		left join BMS_NA_BASE_USER u on p.editor_id=u.id
+		where 1=1 and p.delete_flag !='1'
+		<if test="factory !=null and factory !='全部'">
+			and p.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='全部'">
+			and p.workshop=#{workshop}
+		</if>
+		<if test="line !=null and line !='全部'">
+			and p.line=#{line}
+		</if>	
+		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
+			and p.monitory_point_flag=#{monitoryPoint_flag}
+		</if>
+		<if test="keyProcess_flag !=null and keyProcess_flag !=''">
+			and p.key_process_flag=#{keyProcess_flag}
+		</if>
+		<if test="planNode_flag ==1">
+			and p.plan_node_id !=0
+		</if>
+		order by p.factory,p.workshop,p.line,cast(substring(p.process_code,3) as signed)
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	
+	<select id="getProcessTotalCount" parameterType="Map" resultType="int">
+		select count(p.id)
+		from BMS_NA_BASE_PROCESS p
+		where 1=1 and p.delete_flag !='1'
+		<if test="factory !=null and factory !='全部'">
+			and p.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='全部'">
+			and p.workshop=#{workshop}
+		</if>
+		<if test="line !=null and line !='全部'">
+			and p.line=#{line}
+		</if>	
+		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
+			and p.monitory_point_flag=#{monitoryPoint_flag}
+		</if>
+		<if test="keyProcess_flag !=null and keyProcess_flag !=''">
+			and p.key_process_flag=#{keyProcess_flag}
+		</if>
+		<if test="planNode_flag ==1">
+			and p.plan_node_id !=0
+		</if>
+	</select>
+	
+	<update id="updateProcess" parameterType="com.byd.bms.setting.model.BmsBaseProcess">
+		update BMS_NA_BASE_PROCESS set factory=#{factory},workshop=#{workshop},line=#{line},plan_node_id=#{plan_node_id},
+		process_code=#{process_code},process_name=#{process_name},monitory_point_flag=#{monitory_point_flag},
+		key_process_flag=#{key_process_flag},memo=#{memo}
+		where id=#{id}
+	</update>
+	
+	<insert id="addProcess" parameterType="com.byd.bms.setting.model.BmsBaseProcess" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_PROCESS (factory,workshop,line,plan_node_id,process_code,process_name,key_process_flag,monitory_point_flag,memo,editor_id,edit_date)
+		values 
+		(#{factory},#{workshop},#{line},#{plan_node_id},#{process_code},#{process_name},#{key_process_flag},#{monitory_point_flag},#{memo},#{editor_id},#{edit_date})
+	</insert>
+	
+	<update id="deleteProcess" parameterType="List">
+		update BMS_NA_BASE_PROCESS set delete_flag='1'
+		where id in
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</update>
+	
+	<select id="queryProcessConfigList" parameterType="Map" resultType="Map">
+		select distinct r.factory,r.order_type,u.username editor,r.edit_date
+		from BMS_NA_PD_SCAN_RULE r
+		left join BMS_NA_BASE_USER u on r.editor_id=u.id
+		where 1=1
+		<if test="factory !=null and factory !='全部'">
+			and r.factory=#{factory}
+		</if>
+		<if test="order_type !=null and order_type !='全部'">
+			and r.order_type=#{order_type}
+		</if>
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	
+	<select id="queryProcessConfigCount" parameterType="Map" resultType="int">
+		select count(distinct r.factory,r.order_type)
+		from BMS_NA_PD_SCAN_RULE r
+		left join BMS_NA_BASE_USER u on r.editor_id=u.id
+		where 1=1
+		<if test="factory !=null and factory !='全部'">
+			and r.factory=#{factory}
+		</if>
+		<if test="order_type !=null and order_type !='全部'">
+			and r.order_type=#{order_type}
+		</if>
+	</select>
+	
+	<select id="queryProcessListNoLine" parameterType="Map" resultType="Map">
+		select distinct p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+		case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node
+		from BMS_NA_BASE_PROCESS p 
+		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
+		left join BMS_NA_BASE_WORKSHOP w on w.workshop_name=p.workshop and w.delete_flag='0'
+		where p.delete_flag !='1'
+		<if test="factory !=null and factory !=''">
+			and p.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and p.workshop=#{workshop}
+		</if>
+		order by w.sort_flag,cast(substring(p.process_code,3) as signed)
+	</select>
+	
+	<select id="queryProcessConfigDetailList"  parameterType="Map" resultType="Map">
+		select r.*,p.monitory_point_flag,p.key_process_flag,p.plan_node
+		from BMS_NA_PD_SCAN_RULE r
+		left join (
+		select distinct p.factory,p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+				case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node
+				from BMS_NA_BASE_PROCESS p 
+				left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
+				where p.delete_flag !='1' and p.factory=#{factory}
+		) p on r.factory=p.factory and p.workshop=r.workshop and r.process_name=p.process_name
+		where r.factory=#{factory} and r.order_type=#{order_type}
+		order by r.sequence
+	</select>
+	
+	<select id="queryProcessListByFactory" parameterType="Map" resultType="Map">
+		select concat('{"process_list":[',group_concat('{"process_name":"',p.process_name,'","monitory_point_flag":"',p.monitory_point_flag,'","key_process_flag":"',p.key_process_flag,'","plan_node":"',p.plan_node,'"}' order by p.seq),']}') as process_list,
+		p.workshop
+		from(
+		select distinct p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+		case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node,cast(substring(p.process_code,3) as signed) seq
+		from BMS_NA_BASE_PROCESS p 
+		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
+		where p.delete_flag !='1' and p.factory=#{factory}) p
+		group by p.workshop
+	</select>
+	
+	<insert id="insertProcessConfig" parameterType="List">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_PD_SCAN_RULE (sequence,factory,workshop,order_type,process_name,editor_id,edit_date)
+		values
+		<foreach collection="list" item="detail" index="index" separator=",">
+			(#{detail.sequence},#{detail.factory},#{detail.workshop},#{detail.order_type},#{detail.process_name},
+			#{detail.editor_id},#{detail.edit_date})
+		</foreach>		
+	</insert>
+	
+	<update id="deleteProcessConfig" parameterType="Map">
+		delete from BMS_NA_PD_SCAN_RULE where factory=#{factory} and order_type=#{order_type}
+	</update>
+	<!-- VIN生成规则 
+	<resultMap type="com.byd.bms.setting.model.BmsBaseVinRule" id="vinRuleMap">
+		<id property="id" column="id" />
+		<result property="busTypeId" column="bustype_id" />
+		<result property="area" column="area" />
+		<result property="vinPrefix" column="VIN_prefix" />
+		<result property="wmiExtension" column="WMI_extension" />
+		<result property="numberSize" column="number_size" />
+		<result property="editorId" column="editor_id" />
+		<result property="editDate" column="edit_date" />
+	</resultMap>-->
+	<select id="getVinRuleList" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseVinRule">
+		select id as id,bustype_id as busTypeId,area as area,
+		  VIN_prefix as vinPrefix,WMI_extension as wmiExtension,
+		  number_size as numberSize,editor_id as editorId,edit_date as editDate
+		  from BMS_NA_BASE_VIN_RULE where 1=1 
+		<if test="busTypeId !=null and busTypeId !=''">
+			and bustype_id=#{busTypeId}
+		</if>
+		<if test="area !=null and area !=''">
+			and area=#{area}
+		</if>
+	</select>
+	<select id="getVinRuleTotalCount" parameterType="Map" resultType="int">
+		select count(id) from BMS_NA_BASE_VIN_RULE where 1=1 
+		<if test="busTypeId !=null and busTypeId !=''">
+			and bustype_id=#{busTypeId}
+		</if>
+		<if test="area !=null and area !=''">
+			and area=#{area}
+		</if>
+	</select>
+	<insert id="addVinRule" parameterType="com.byd.bms.setting.model.BmsBaseVinRule">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_VIN_RULE (bustype_id,area,VIN_prefix,WMI_extension,number_size,editor_id,edit_date)
+		values
+			(#{busTypeId},#{area},#{vinPrefix},#{wmiExtension},
+			#{numberSize},#{editorId},#{editDate})
+	</insert>
+	<delete id="deleteVinRule" parameterType="List">
+		delete from BMS_NA_BASE_VIN_RULE 
+		where id in
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	<update id="updateVinRule" parameterType="com.byd.bms.setting.model.BmsBaseVinRule">
+		update BMS_NA_BASE_VIN_RULE set 
+		bustype_id=#{busTypeId},area=#{area},VIN_prefix=#{vinPrefix},WMI_extension=#{wmiExtension},
+		number_size=#{numberSize},editor_id=#{editorId},edit_date=#{editDate}
+		where id=#{id}
+	</update>
+	
+	<!-- 车型 -->
+	<!-- resultMap type="com.byd.bms.setting.model.BmsBaseBusType" id="busTypeMap">
+		<id property="id" column="id" />
+		<result property="busTypeCode" column="bus_type_code" />
+		<result property="internalName" column="internal_name" />
+		<result property="brand" column="brand" />
+		<result property="wmi" column="wmi" />
+		<result property="manufacturer" column="manufacturer" />
+		<result property="busVehicleTypeId" column="bus_vehicle_type" />
+		<result property="busBodyTypeId" column="bus_body_type" />
+		<result property="vehicleModel" column="vehicle_model" />
+		<result property="chassisModel" column="chassis_model" />
+		<result property="vehicleLength" column="vehicle_length" />
+		<result property="wheelbase" column="wheelbase" />
+		<result property="maxWeight" column="max_weight" />
+		<result property="passengers" column="passengers" />
+		<result property="fuelType" column="fuel_type" />
+		<result property="driveMotorTypeId" column="drive_motor_type" />
+		<result property="driveMotor" column="drive_motor" />
+		<result property="motorModel" column="motor_model" />
+		<result property="motorPower" column="motor_power" />
+		<result property="batteryModel" column="battery_model" />
+		<result property="batteryCapacity" column="battery_capacity" />
+		<result property="ratedVoltage" column="rated_voltage" />
+		<result property="passengerNum" column="passenger_num" />
+		<result property="lightDowndip" column="light_downdip" />
+		<result property="maxSpeed" column="max_speed" />
+		<result property="memo" column="memo" />
+		<result property="editorId" column="editor_id" />
+		<result property="editDate" column="edit_date" />
+	</resultMap-->
+	<insert id="addBusType" parameterType="com.byd.bms.setting.model.BmsBaseBusType">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_BUS_TYPE (bus_type_code,internal_name,brand,manufacturer,
+		  bus_vehicle_type,fuel_type,bus_body_type,drive_motor_type,vehicle_model,drive_motor,
+		  chassis_model,motor_model,vehicle_length,motor_power,wheelbase,battery_model,
+		  battery_capacity,rated_voltage,max_weight,
+		  passenger_num,max_speed,light_downdip,editor_id,edit_date)
+		values
+			(#{busTypeCode},#{internalName},#{brand},#{manufacturer},#{busVehicleTypeId},#{fuelType},
+			#{busBodyTypeId},#{driveMotorTypeId},#{vehicleModel},#{driveMotor},#{chassisModel},
+			#{motorModel},#{vehicleLength},#{motorPower},#{wheelbase},#{batteryModel},#{batteryCapacity},
+			#{ratedVoltage},#{maxWeight},
+			#{passengerNum},#{maxSpeed},#{lightDowndip},#{editorId},#{editDate})
+	</insert>
+	<select id="getBusTypeList" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseBusType">
+		select t.id id,
+		  bus_type_code busTypeCode,internal_name internalName,brand brand,manufacturer manufacturer,
+		  bus_vehicle_type busVehicleTypeId,fuel_type fuelType,bus_body_type busBodyTypeId,
+		  drive_motor_type driveMotorTypeId,vehicle_model vehicleModel,drive_motor driveMotor,
+		  chassis_model chassisModel,motor_model motorModel,vehicle_length vehicleLength,
+		  motor_power motorPower,wheelbase wheelbase,battery_model batteryModel,
+		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,max_weight maxWeight,
+		  passenger_num passengerNum,max_speed maxSpeed,light_downdip lightDowndip,u.username editor,edit_date editDate
+		  from BMS_NA_BASE_BUS_TYPE t
+		  left join BMS_NA_BASE_USER u ON t.editor_id=u.id
+		   where 1=1 
+		<if test="busTypeCode !=null and busTypeCode !=''">
+			and bus_type_code=#{busTypeCode}
+		</if>
+		
+	</select>
+	<select id="getBusTypeById" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseBusType">
+		select id id,
+		  bus_type_code busTypeCode,internal_name internalName,brand brand,manufacturer manufacturer,
+		  bus_vehicle_type busVehicleTypeId,fuel_type fuelType,bus_body_type busBodyTypeId,
+		  drive_motor_type driveMotorTypeId,vehicle_model vehicleModel,drive_motor driveMotor,
+		  chassis_model chassisModel,motor_model motorModel,vehicle_length vehicleLength,
+		  motor_power motorPower,wheelbase wheelbase,battery_model batteryModel,
+		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,max_weight maxWeight,
+		  passenger_num passengerNum,max_speed maxSpeed,light_downdip lightDowndip
+		  from BMS_NA_BASE_BUS_TYPE where 1=1 
+		<if test="busTypeCode !=null and busTypeCode !=''">
+			and bus_type_code=#{busTypeCode}
+		</if>
+		<if test="id !=null and id !=''">
+			and id=#{id}
+		</if>
+		
+	</select>
+	<select id="getBusTypeTotalCount" parameterType="Map" resultType="int">
+		select count(id) from BMS_NA_BASE_BUS_TYPE where 1=1 
+		<if test="busTypeCode !=null and busTypeCode !=''">
+			and bus_type_code=#{busTypeCode}
+		</if>
+		
+	</select>
+	<update id="updateBusType" parameterType="com.byd.bms.setting.model.BmsBaseBusType">
+		update BMS_NA_BASE_BUS_TYPE set 
+		bus_type_code=#{busTypeCode},internal_name=#{internalName},brand=#{brand},manufacturer=#{manufacturer},
+		vehicle_model=#{vehicleModel},drive_motor=#{driveMotor},chassis_model=#{chassisModel},
+		motor_model=#{motorModel},vehicle_length=#{vehicleLength},motor_power=#{motorPower},
+		wheelbase=#{wheelbase},battery_model=#{batteryModel},battery_capacity=#{batteryCapacity},
+		rated_voltage=#{ratedVoltage},max_weight=#{maxWeight},passenger_num=#{passengerNum},
+		max_speed=#{maxSpeed},light_downdip=#{lightDowndip},editor_id=#{editorId},edit_date=#{editDate}
+		where id=#{id}
+	</update>
+	
+	
+	
+	<select id="getWorkshopTreeList" parameterType="Map" resultType="Map">
+		select * from (
+		SELECT CONCAT('t',id) id,workshop_name,0 parent_id,id workshop_id,
+		(SELECT COUNT(f2.id) FROM BMS_NA_BASE_STANDARD_WORKGROUP f2 WHERE f2.workshop_id = t.id) AS sub_count
+		FROM BMS_NA_BASE_WORKSHOP t where t.delete_flag='0'
+		union all 
+		select id id,workgroup_name,parent_id,workshop_id,
+		(SELECT COUNT(f2.id) FROM BMS_NA_BASE_STANDARD_WORKGROUP f2 WHERE f2.parent_id = t1.id) AS sub_count 
+		from BMS_NA_BASE_STANDARD_WORKGROUP t1
+		) t2 where 1=1 
+		<if test="id!=null and id!=''">
+			and t2.id=#{id}
+		</if>
+	</select>
+	<select id="getWorkgroupList" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseStandardWorkgroup">
+		SELECT id,workgroup_no workgroupId,workgroup_name groupName,responsibility,memo from BMS_NA_BASE_STANDARD_WORKGROUP t where 1=1
+		<if test="parentId!=null and parentId!=''">
+			and t.parent_id=#{parentId}
+		</if>
+		order by workgroup_no
+	</select>
+	<insert id="addWorkgroup" parameterType="com.byd.bms.setting.model.BmsBaseStandardWorkgroup">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_STANDARD_WORKGROUP (workshop_id,parent_id,workgroup_no,workgroup_name,
+		  responsibility,memo,editor_id,edit_date)
+		values
+			(#{workshopId},#{parentId},#{workgroupId},#{groupName},#{responsibility},#{memo},
+			#{editorId},#{editDate})
+	</insert>
+	<update id="updateWorkgroup" parameterType="com.byd.bms.setting.model.BmsBaseStandardWorkgroup">
+		update BMS_NA_BASE_STANDARD_WORKGROUP set 
+		workgroup_no=#{workgroupId},workgroup_name=#{groupName},responsibility=#{responsibility},
+		memo=#{memo},editor_id=#{editorId},edit_date=#{editDate}
+		where id=#{id}
+	</update>
+	<!--删除标准班组 -->
+	<update id="deleteWorkgroup" parameterType="String">
+		<![CDATA[
+			delete from BMS_NA_BASE_STANDARD_WORKGROUP where id= #{id}
+		]]>
+	</update>
+	
+</mapper>

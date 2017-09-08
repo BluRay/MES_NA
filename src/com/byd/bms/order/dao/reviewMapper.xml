@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.order.dao.IReviewDao">
+	<select id="getOrderReviewList" parameterType="Map" resultType="Map">
+		SELECT f.production_qty,a.area,a.id AS 'factory_id',a.factory_code AS 'factory_code',
+		a.factory_name,f.edit_date,u.display_name as 'user_name',
+		t.bus_type_code,o.*,CONCAT(o.order_name,t.bus_type_code,o.order_qty,'台') AS 'order_name_str',f.status,
+		IFNULL(r.review_status,'0') as review_status,IFNULL(r.id,'') as reviewId
+		FROM BMS_OR_ORDER o			
+		LEFT JOIN BMS_OR_FACTORY_ORDER f ON f.order_id = o.id
+		LEFT JOIN BMS_BASE_FACTORY a ON f.factory_id = a.id 
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id 
+		left join BMS_BASE_USER u on f.editor_id = u.id
+		left join BMS_OR_ORDER_REVIEW_RESULTS r on r.order_id = o.id and r.factory_id=f.factory_id 
+		where 1=1
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no like CONCAT('%',#{orderNo},'%')   
+		</if>
+		<if test="orderId !=null and orderId !=''">
+			and o.id=#{orderId}   
+		</if>
+		<if test="reviewStatus !=null and reviewStatus !=''">
+			and IFNULL(r.review_status,'0')=#{reviewStatus}   
+		</if>
+		<if test="actYear !=null and actYear !=''">
+			and o.productive_year = #{actYear} 
+		</if>
+		<if test="factory !=null and factory !=''">
+			and find_in_set(f.factory_id ,#{factory} )
+		</if>
+		ORDER BY o.order_no DESC
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>			
+	</select>
+	<select id="getOrderReviewTotalCount" parameterType="Map" resultType="int">
+		SELECT count(o.id) FROM BMS_OR_ORDER o
+		LEFT JOIN BMS_OR_FACTORY_ORDER f on o.id=f.order_id
+		left join BMS_OR_ORDER_REVIEW_RESULTS r on r.order_id = o.id and r.factory_id=f.factory_id 
+		where 1=1
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no like CONCAT('%',#{orderNo},'%')   
+		</if>
+		<if test="reviewStatus !=null and reviewStatus !=''">
+			and r.review_Status=#{reviewStatus}   
+		</if>
+		<if test="actYear !=null and actYear !=''">
+			and o.productive_year = #{actYear} 
+		</if>
+		<if test="factory !=null and factory !=''">
+			and find_in_set(f.factory_id ,#{factory} )
+		</if>
+	</select>
+	<insert id="saveBmsOrderReviewResults" parameterType="com.byd.bms.order.model.BmsOrderReviewResults"  useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_OR_ORDER_REVIEW_RESULTS
+		(order_id,factory_id,partsonline_date,weldingonline_date,paintonline_date,chassisonline_date,
+		assemblyonline_date,warehousing_date,modelexport_date,drawingexport_date,detaildemand_node,
+		sopdemand_node,bomdemand_node,sipdemand_node,review_Status,wf_order_id,wf_process_id,editor_Id,edit_Date)
+		values
+		(#{orderId},#{factoryId},#{partsonlineDate},#{weldingonlineDate},#{paintonlineDate},
+		#{chassisonlineDate},#{assemblyonlineDate},#{warehousingDate},#{modelexportDate},#{drawingexportDate},
+		#{detaildemandNode},#{sopdemandNode},#{bomdemandNode},#{sipdemandNode},
+		'1',#{wfOrderId},#{wfProcessId},#{editorId},#{editDate})
+	</insert>
+	<update id='updateBmsOrderReviewResults' parameterType="Map">
+		update BMS_OR_ORDER_REVIEW_RESULTS set 
+		<if test="type !=null and type =='technical'"> <!-- 技术部 -->
+			config_table=#{configTable},proximatematter=#{proximatematter},
+			modeljudging=#{modeljudging},purchasedetail=#{purchasedetail},
+			drawingearlierjudging=#{drawingearlierjudging},technicaldatanode=#{technicaldatanode},
+			mintech_info=#{mintechInfo}  
+		</if>
+		<if test="type !=null and type =='technology'"> <!-- 工艺部 -->
+			technics_node=#{technicsNode},technics_info=#{technicsInfo}
+		</if>
+		<if test="type !=null and type =='quality'"> <!-- 品质部 -->
+			quality_node=#{qualityNode},quality_info=#{qualityInfo}
+		</if>
+		<if test="type !=null and type =='factory'"> <!-- 工厂内部 -->
+			factory_node=#{factoryNode},factory_info=#{factoryInfo}
+		</if>
+		<if test="type !=null and type =='planning'"> <!-- 计划部物控 -->
+			materialcontrol_node=#{materialcontrolNode},materialcontrol_info=#{materialcontrolInfo}
+		</if>
+		<if test="type !=null and type =='plandep'"> <!-- 综合计划部 -->
+			plandep_node=#{plandepNode},plandep_info=#{plandepInfo}
+		</if>
+		<if test="type !=null and type =='result'"> <!-- 结果修正 -->
+			revisiondetail_node=#{revisiondetailNode},revisionsop_node=#{revisionsopNode},
+			revisionbom_node=#{revisionbomNode},revisionsip_node=#{revisionsipNode},
+			revisionpartsonline_date=#{revisionpartsonlineDate},revisionweldingonline_date=#{revisionweldingonlineDate},
+			revisionpaintonline_date=#{revisionpaintonlineDate},revisionchassisonline_date=#{revisionchassisonlineDate},
+			revisionassemblyonline_date=#{revisionassemblyonlineDate},revisionwarehousing_date=#{revisionwarehousingDate},
+			delivery_date=#{deliveryDate},review_status='2'
+		</if>
+		where id=#{id}
+	</update>
+	<select id='getOrderReview' parameterType="Map" resultType="com.byd.bms.order.model.BmsOrderReviewResults">
+		select r.id,order_id orderId,factory_id factoryId,partsonline_date partsonlineDate,
+		weldingonline_date weldingonlineDate,paintonline_date paintonlineDate,
+		chassisonline_date chassisonlineDate,assemblyonline_date assemblyonlineDate,
+		warehousing_date warehousingDate,modelexport_date modelexportDate,
+		drawingexport_date drawingexportDate,detaildemand_node detaildemandNode,
+		sopdemand_node sopdemandNode,bomdemand_node bomdemandNode,sipdemand_node sipdemandNode,
+		wf_order_id wfOrderId,wf_process_id wfProcessId,o.order_no as orderNo,
+		f.factory_name factoryName,f.factory_code factoryCode
+		from BMS_OR_ORDER_REVIEW_RESULTS r
+		left join BMS_OR_ORDER o on r.order_id=o.id
+		left join BMS_BASE_FACTORY f on r.factory_id=f.id
+		where 1=1
+		<if test="orderId !=null and orderId !=''"> 
+			and order_id=#{orderId}
+		</if>
+		<if test="factoryId !=null and factoryId !=''"> 
+			and factory_id=#{factoryId}
+		</if>
+		<if test="wfOrderId !=null and wfOrderId !=''"> 
+			and wf_order_id=#{wfOrderId}
+		</if>
+		<if test="id !=null and id !=''"> 
+			and id=#{id}
+		</if>
+	</select>
+	<select id='getOrderReviewById' parameterType="String" resultType="Map">
+		select partsonline_date,weldingonline_date,paintonline_date,
+		chassisonline_date,assemblyonline_date,warehousing_date,modelexport_date ,
+		drawingexport_date,detaildemand_node,sopdemand_node,bomdemand_node,sipdemand_node,
+		config_table,proximatematter,modeljudging,purchasedetail,drawingearlierjudging,technicaldatanode,
+		mintech_info,technics_node,technics_info,quality_node,quality_info,factory_node,factory_info,
+		materialcontrol_node,materialcontrol_info,plandep_node,plandep_info,revisiondetail_node,
+		revisionsop_node,revisionbom_node,revisionsip_node,revisionpartsonline_date,revisionweldingonline_date,
+		revisionpaintonline_date,revisionchassisonline_date,revisionassemblyonline_date,revisionwarehousing_date,
+		f.production_qty production_qty,o.order_type order_type,o.delivery_date delivery_date,
+		a.factory_name factory_name,a.capacity,o.customer,t.bus_type_code,
+		(select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='apply') apply_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='apply') apply_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='technical') technical_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='technical') technical_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='technology') technology_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='technology') technology_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='quality') quality_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='quality') quality_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='factory') factory_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='factory') factory_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='planning') planning_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='planning') planning_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='plandep') plandep_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='plandep') plandep_create_time,
+	    (select u.username from wf_hist_task t1,BMS_BASE_USER u where t1.operator=u.id and t1.order_id=r.wf_order_id and t1.task_name='result') result_operator,
+	    (select create_time from wf_hist_task t1 where t1.order_id=r.wf_order_id and t1.task_name='result') result_create_time
+		from BMS_OR_ORDER_REVIEW_RESULTS r
+		LEFT JOIN BMS_OR_ORDER o on o.id=r.order_id			
+		LEFT JOIN BMS_OR_FACTORY_ORDER f ON f.order_id = o.id and f.order_id=r.order_id and f.factory_id=r.factory_id
+		LEFT JOIN BMS_BASE_FACTORY a ON f.factory_id = a.id and r.factory_id=a.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+		where 1=1
+		
+		<if test="_parameter !=null and _parameter !=''"> 
+			and r.id=#{_parameter}
+
+		</if>
+	</select>
+	<select id="getOrderDetailList" parameterType="Map" resultType="Map">
+		select  d.production_qty,d.factory_id factory_id,o.order_no order_no,o.order_name order_name,
+	    o.order_type order_type,o.order_qty order_qty,t.bus_type_code bus_type_code,o.customer,
+		d.order_id order_id,o.delivery_date delivery_date,f.factory_name,f.capacity
+		from BMS_OR_FACTORY_ORDER d
+		left join BMS_BASE_FACTORY f on f.id=d.factory_id
+		left join BMS_OR_ORDER o on o.id=d.order_id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id = t.id
+		where 1=1
+		<if test="search_order_no!=null">
+			and o.order_no like CONCAT('%',#{search_order_no},'%')   
+		</if>
+		
+		<if test="search_factory!=null">
+			and find_in_set(d.factory_id ,#{search_factory} )
+		</if>	
+	</select>
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd    
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd    
+                        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+                        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">  
+    <!-- 自动扫描 -->  
+    <context:component-scan base-package="com.byd.bms" />  
+    <context:component-scan base-package="com.byd.bms.snaker.engine,com.byd.bms.snaker.controller">
+        <context:exclude-filter type="annotation" expression="com.byd.bms.snaker.engine.SnakerEngineFacets"/>
+    </context:component-scan> 
+    <!-- 引入配置文件 -->  
+    <bean id="propertyConfigurer"  
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" >
+        	<list> 
+        		<value>/WEB-INF/configs/mysql.properties</value> 
+        	</list>
+        </property>  
+        <property name="fileEncoding">
+        	<value>UTF-8</value>
+        </property> 
+    </bean>  
+    
+    <!-- 配置数据源Master 读写-->
+    <bean id="dataSourceMaster" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.pwd}" />	
+		<!-- 初始化连接大小  -->
+		<property name="initialSize" value="20" />
+		<!-- 连接池最大使用连接数量 -->
+		<property name="maxActive" value="1000" />
+		<!-- 连接池最大空闲 -->
+		<property name="maxIdle" value="20" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="1" />
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="60000" />
+		
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="25200000" />
+    </bean>    
+    <!-- 配置数据源Slave 读-->
+    <bean id="dataSourceSlave" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url_1}" />
+		<property name="username" value="${jdbc.user_1}" />
+		<property name="password" value="${jdbc.pwd_1}" />	
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="0" />
+        <!-- 连接池最大使用连接数量 -->
+        <property name="maxActive" value="20" />
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="20" />
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="0" />
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="60000" />
+    </bean>    
+    <bean id="dataSource" class="com.byd.bms.util.DynamicDataSource">
+    	<!-- 这里可以指定默认的数据源 -->
+        <property name="defaultTargetDataSource" ref="dataSourceMaster" />
+        <property name="targetDataSources">
+            <map >
+                <entry key="dataSourceMaster" value-ref="dataSourceMaster"/>
+                <entry key="dataSourceSlave" value-ref="dataSourceSlave"/>
+                <!-- 这里还可以加多个dataSource -->
+            </map>
+        </property>
+    </bean> 
+    
+	<bean id="dataSourceAspect" class="com.byd.bms.util.DataSourceAspect" />
+    <aop:config>
+        <aop:aspect ref="dataSourceAspect">
+            <!-- 拦截所有service方法 -->
+            <aop:pointcut id="dataSourcePointcut" expression="execution(* com.byd.bms..*.service.*.*(..))"/>
+            <aop:before pointcut-ref="dataSourcePointcut" method="intercept" />
+        </aop:aspect>
+    </aop:config>
+  
+  	<bean id="messageSource"  
+        class="org.springframework.context.support.ResourceBundleMessageSource">  
+        <property name="basename" value="messages" /> 
+    </bean>
+    <!-- 支持上传文件 -->  
+   <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+        <property name="defaultEncoding" value="utf-8"></property>   
+        <property name="maxUploadSize" value="10485760000"></property>  
+        <property name="maxInMemorySize" value="40960"></property>  
+   </bean>
+    
+       <!-- 国际化配置 -->  
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="locale"/>
+    </bean>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" >
+    </bean> 
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource" />
+        <!-- 自动扫描mapping.xml文件 -->
+        <property name="mapperLocations" value="classpath:com/byd/bms/*/dao/*Mapper.xml"></property>  
+    </bean>  
+      
+  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.byd.bms.*.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+    <!-- (事务管理)-->  
+    <bean id="transactionManager"  
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="dataSource" />  
+    </bean>  
+  	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="start*" propagation="REQUIRED"/>
+			<tx:method name="execute*" propagation="REQUIRED"/>
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="assign*" propagation="REQUIRED" /> 
+			<tx:method name="create*" propagation="REQUIRED" />
+			<tx:method name="complete*" propagation="REQUIRED" />
+			<tx:method name="finish*" propagation="REQUIRED" />
+			<tx:method name="terminate*" propagation="REQUIRED" /> 
+			<tx:method name="take*" propagation="REQUIRED" />
+			<tx:method name="deploy*" propagation="REQUIRED" />
+			<tx:method name="undeploy*" propagation="REQUIRED" />
+			<tx:method name="redeploy*" propagation="REQUIRED" />
+			
+ 			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="query*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="search*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="is*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- or execution(* org.snaker.framework.flow.service..*.*(..)) -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.snaker.engine.core..*.*(..))"/>
+	</aop:config>
+	
+	
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+</beans>  

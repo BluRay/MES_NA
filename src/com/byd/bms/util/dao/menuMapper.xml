@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.util.dao.IMenuDao">
+
+	<resultMap type="com.byd.bms.util.model.BmsBaseMenu" id="menuMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="icon" column="icon" />
+		<result property="path" column="path" />
+		<result property="parent" column="parent" />
+		<result property="priority" column="priority" />
+		<result property="isPermission" column="isPermission" />
+		<result property="isDeleted" column="isDeleted" />
+	</resultMap>
+
+	<select id="getMenu" parameterType="String" resultMap="menuMap">
+		SELECT m.id,m.name,m.icon,m.parent,m.priority,m.isDeleted,f.function_url AS path
+		FROM BMS_NA_BASE_MODEL m
+		LEFT OUTER JOIN BMS_NA_BASE_FUNCTION f ON m.id = f.model_id
+		WHERE isDeleted='0'
+		ORDER BY m.priority
+	</select>
+	
+</mapper>

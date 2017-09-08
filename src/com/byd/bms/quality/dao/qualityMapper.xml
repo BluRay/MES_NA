@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.quality.dao.IQualityDao">
+<!-- ======================== xjw start=================================-->
+	<resultMap type="com.byd.bms.quality.model.StdFaultLibBean" id="faultLibMap">
+		<id property="id" column="id" />
+		<result property="partsId" column="parts_id" />
+		<result property="parts" column="parts" />
+		<result property="bugType" column="bug_type" />
+		<result property="bug" column="bug" />
+		<result property="faultLevel" column="serious_level" />
+		<result property="faultType" column="fault_type" />
+		<result property="workshop" column="workshop_name" />
+		<result property="workgroup" column="workgroup_name" />
+		<result property="editorId" column="editor_id" />
+		<result property="editor" column="username" />
+		<result property="editDate" column="edit_date" />
+	</resultMap>
+	<select id="getOrderConfigList" parameterType="Map" resultType="Map">
+		select o.id,c.id config_id,o.order_no,CONCAT(o.order_no,' ',o.order_name,t.bus_type_code,'  ',o.order_qty,' ','台') AS order_desc,
+		o.memo,t.bus_type_code bus_type,c.order_config_name,u.username editor,h.edit_date,o.bus_type_id
+		from BMS_OR_ORDER_CONFIG c 
+		left join BMS_OR_ORDER o on o.id=c.order_id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join BMS_QM_KEY_PARTS_TEMPLATE_HEADER h on h.bus_type_id=t.id and h.order_id=c.order_id and h.order_config_id=c.id
+		left join BMS_BASE_USER u on u.id=h.editor_id
+		where 1=1
+		<if test="order_id !=null and order_id !=''">
+			and o.id=#{order_id}
+		</if>
+		<if test="bus_type_id !=null and bus_type_id !=''">
+			and o.bus_type_id=#{bus_type_id}
+		</if>
+		<if test="order_config_id !=null and order_config_id !='' ">
+			and c.id=#{order_config_id}
+		</if>
+			order by o.order_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+		
+	</select>
+	
+	<select id="getConfigTotalCount" parameterType="Map" resultType="int">
+		select count(c.id)
+		from BMS_OR_ORDER_CONFIG c 
+		left join BMS_OR_ORDER o on o.id=c.order_id
+		where 1=1
+		<if test="order_id !=null and order_id !=''">
+			and o.id=#{order_id}
+		</if>
+		<if test="bus_type_id !=null and bus_type_id !=''">
+			and o.bus_type_id=#{bus_type_id}
+		</if>
+		<if test="order_config_id !=null and order_config_id !='' ">
+			and c.id=#{order_config_id}
+		</if>
+	</select>
+	
+	<select id="queryKeyPartsHeader" parameterType="Map" resultType="Map">
+		select id,bus_type_id,order_id,order_config_id from BMS_QM_KEY_PARTS_TEMPLATE_HEADER 
+		where bus_type_id=#{bus_type_id} and order_id=#{order_id} and order_config_id=#{order_config_id}
+	</select>
+	
+	<insert id="saveKeyPartsHeader" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_KEY_PARTS_TEMPLATE_HEADER (bus_type_id,order_id,order_config_id,editor_id,edit_date)
+		values (#{bus_type_id},#{order_id},#{order_config_id},#{editor_id},#{edit_date})
+	</insert>
+	
+	<update id='updateKeyPartsHeader' parameterType="Map">
+		update BMS_QM_KEY_PARTS_TEMPLATE_HEADER set editor_id=#{editor_id} ,edit_date=#{edit_date}
+		where bus_type_id=#{bus_type_id} and order_id=#{order_id} and order_config_id=#{order_config_id}
+	</update>
+	
+	<insert id="saveKeyPartsDetails" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_KEY_PARTS_TEMPLATE_DETAILS 
+		(key_components_template_id,sap_mat,parts_no,parts_name,size,vendor,workshop,process,3C_components,3C_no)
+		values
+		<foreach collection="detail_list" item="detail" index="index" separator=",">
+			(#{header_id},#{detail.sap_mat},#{detail.parts_no},#{detail.parts_name},#{detail.size},#{detail.vendor},#{detail.workshop},#{detail.process},#{detail.ccc},#{detail.cccNo})
+		</foreach>		
+	</insert>
+	
+	<delete id="deleteKeyPartsByHeader" parameterType="int">
+		delete from BMS_QM_KEY_PARTS_TEMPLATE_DETAILS where key_components_template_id=#{header_id}
+	</delete>
+	
+	<select id="queryKeyPartsList" parameterType="Map" resultType="Map">
+		select d.sap_mat,d.parts_no,d.parts_name,d.size,d.vendor,d.workshop,d.process,d.3C_components ccc,d.3C_no cccNo
+		from BMS_QM_KEY_PARTS_TEMPLATE_DETAILS d
+		left join BMS_QM_KEY_PARTS_TEMPLATE_HEADER h on d.key_components_template_id=h.id
+		where h.bus_type_id=#{bus_type_id} and h.order_id=#{order_id} and h.order_config_id=#{order_config_id}
+	</select>
+	
+	<select id="queryWorkshopProcessList" resultType="Map">
+     	select workshop,process_name process from BMS_BASE_PROCESS
+     	where
+     	<foreach collection='addList' item='detail' index="index" separator="or" >
+     		(workshop=#{detail.workshop} and process_name=#{detail.process})
+     	</foreach>
+     </select>
+     
+     <select id="queryPrdRcdBusTypeTplList" parameterType="Map" resultType="Map">
+     	select h.*,t.bus_type_code,u.username editor
+     	from BMS_QM_TEST_CARD_TEMPLATE_HEADER h
+     	left join BMS_BASE_BUS_TYPE t on t.id=h.bus_type_id
+     	left join BMS_BASE_USER u on u.id=h.editor_id
+     	where 1=1
+     	<if test="bus_type_id !=null and bus_type_id !=0 ">
+			and h.bus_type_id=#{bus_type_id}
+		</if>
+		<if test="test_node_id !=null and test_node_id !=0 ">
+			and h.test_node_id=#{test_node_id}
+		</if>
+			order by h.bus_type_id,h.version desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+     </select>
+     
+     <select id="queryPrdRcdBusTypeTplCount" parameterType="Map" resultType="int">
+     	select count(h.id) 
+     	from BMS_QM_TEST_CARD_TEMPLATE_HEADER h
+     	left join BMS_BASE_BUS_TYPE t on t.id=h.bus_type_id
+     	where 1=1
+     	<if test="bus_type_id !=null and bus_type_id !=0 ">
+			and h.bus_type_id=#{bus_type_id}
+		</if>
+		<if test="test_node_id !=null and test_node_id !=0 ">
+			and h.test_node_id=#{test_node_id}
+		</if>
+     </select>
+     
+     <insert id='insertPrdRcdBusTypeTplHeader' parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+     	<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_TEST_CARD_TEMPLATE_HEADER (bus_type_id,test_node_id,test_node,tplType,version,memo,editor_id,edit_date)
+		values (#{bus_type_id},#{test_node_id},#{test_node},'0',#{version},#{memo},#{editor_id},#{edit_date})
+     </insert>
+     
+     <update id='updatePrdRcdBusTypeTplHeader' parameterType="Map">
+     	update BMS_QM_TEST_CARD_TEMPLATE_HEADER set memo=#{memo},editor_id=#{editor_id},edit_date=#{edit_date}
+     	where id=#{tpl_header_id}
+     </update>
+     
+     <insert id="insertPrdRcdTplDetail" parameterType="Map"  useGeneratedKeys="true" keyProperty="id" >
+     	<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_TEST_CARD_TEMPLATE_DETAILS (test_card_template_id,test_item,test_standard_no,test_standard,test_request,is_null)
+		values
+		<foreach collection="detail_list" item="detail" index="index" separator=",">
+			(#{tpl_header_id},#{detail.test_item},#{index},#{detail.test_standard},#{detail.test_request},#{detail.is_null})
+		</foreach>	
+     </insert>
+     
+     <delete id="deletePrdRcdTplByHeader" parameterType="int">
+     	delete from BMS_QM_TEST_CARD_TEMPLATE_DETAILS where test_card_template_id=#{tpl_header_id}
+     </delete>
+     
+     <select id="queryPrdRcdTplDetail" parameterType="String" resultType="Map">
+     	select * from BMS_QM_TEST_CARD_TEMPLATE_DETAILS where test_card_template_id=#{tpl_header_id} 
+     	order by cast(test_standard_no as signed)
+     </select>
+     
+     <select id="queryPrdRcdOrderTplList" parameterType="Map" resultType="Map">
+     	select h.id,t.bus_type_code bus_type,o.order_no,h.order_id,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',o.order_qty,'台') order_desc,h.bus_type_id,
+     	h.order_config_id,c.order_config_name order_config,h.test_node_id,h.test_node,h.version,h.version_cp,u.username editor,h.edit_date
+     	from BMS_QM_TEST_CARD_TEMPLATE_HEADER h
+     	left join BMS_BASE_BUS_TYPE t on h.bus_type_id=t.id
+     	left join BMS_OR_ORDER o on o.id=h.order_id
+     	left join BMS_OR_ORDER_CONFIG c on c.id=h.order_config_id
+     	left join BMS_BASE_USER u on u.id=h.editor_id
+     	where h.tplType='1'
+     	<if test="order_id !=null and order_id !=''">
+     		and h.order_id=#{order_id}
+     	</if>
+     	<if test="order_config_id !=null and order_config_id !=''">
+     		and h.order_config_id=#{order_config_id}
+     	</if>
+     	<if test="bus_type_id !=null and bus_type_id !=''">
+     		and h.bus_type_id=#{bus_type_id}
+     	</if>
+     	<if test="test_node_id !=null and test_node_id !=''">
+     		and h.test_node_id=#{test_node_id}
+     	</if>
+     	order by h.order_id,h.order_config_id,h.version desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+     </select>
+     
+     <select id="queryPrdRcdOrderTplCount" parameterType="Map" resultType="int">
+     	select count(id)  from BMS_QM_TEST_CARD_TEMPLATE_HEADER h
+     	where h.tplType='1'
+     	<if test="order_id !=null and order_id !=''">
+     		and h.order_id=#{order_id}
+     	</if>
+     	<if test="order_config_id !=null and order_config_id !=''">
+     		and h.order_config_id=#{order_config_id}
+     	</if>
+     	<if test="bus_type_id !=null and bus_type_id !=''">
+     		and h.bus_type_id=#{bus_type_id}
+     	</if>
+     	<if test="test_node_id !=null and test_node_id !=''">
+     		and h.test_node_id=#{test_node_id}
+     	</if>
+     </select>
+     
+     <select id="queryPrdRcdBusTypeTplHeader" parameterType="Map" resultType="Map">
+     	select id,version from BMS_QM_TEST_CARD_TEMPLATE_HEADER
+     	where tplType='0' and bus_type_id=#{bus_type_id} and test_node_id=#{test_node_id}
+     	order by version desc
+     	limit 1
+     </select>
+     
+     <select id="queryPrdRcdOrderTplHeader" parameterType="Map" resultType="Map">
+     	select h.id,h.version,b.factory_id,h.order_id,h.order_config_id,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',o.order_qty,'台') order_desc 
+     	from BMS_QM_TEST_CARD_TEMPLATE_HEADER h
+     	left join BMS_PLAN_BUS b on h.order_id=b.order_id and h.order_config_id=b.order_config_id 
+     	left join BMS_BASE_BUS_TYPE t on t.id=h.bus_type_id
+     	left join BMS_OR_ORDER o on o.id=h.order_id
+     	where h.tplType='1' and b.bus_number=#{bus_number} and h.test_node=#{test_node}
+     	order by version desc
+     	limit 1
+     </select>
+<!--      <select id="queryPrdRcdBusTypeTplDetailLatest" parameterType="Map" resultType="Map">
+     	select * from BMS_QM_TEST_CARD_TEMPLATE_DETAILS 
+     	where  
+     	order by cast(test_standard_no as signed)
+     </select> -->
+     
+     <insert id='insertPrdRcdOrderTplHeader' parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+     	<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_TEST_CARD_TEMPLATE_HEADER 
+		(bus_type_id,order_id,order_config_id,test_node_id,test_node,tplType,version,editor_id,edit_date,version_cp)
+		values (#{bus_type_id},#{order_id},#{order_config_id},#{test_node_id},#{test_node},'1',#{version},#{editor_id},#{edit_date},#{version_cp})		
+     </insert>
+     
+     <update id="updatePrdRcdOrderTplHeader" parameterType="Map">
+     	update BMS_QM_TEST_CARD_TEMPLATE_HEADER set editor_id=#{editor_id},edit_date=#{edit_date}
+     	where id=#{tpl_header_id}
+     </update>
+     
+     <select id="getFaultLibFuzzyList" parameterType="Map" resultMap="faultLibMap">
+		select f.id,<!-- f.parts_id,p.parts_name parts, -->f.bug_type,f.bug,f.serious_level,f.fault_type,
+		f.workshop_name,f.workgroup_name,f.editor_id,u.username,f.edit_date
+		from BMS_QM_STANDARD_FAULT_LIBRARY f 
+		left join BMS_BASE_USER u on f.editor_id=u.id
+		<!-- left join BMS_BASE_PARTS p on f.parts_id=p.id -->
+		where 1=1
+		<if test="bugType !=null and  bugType !=''">
+			and f.bug_type like CONCAT('%',#{bugType},'%')
+		</if>
+		<if test="bug!=null and  bug!=''">
+			and f.bug like CONCAT('%',#{bug},'%')
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and f.workshop_name = #{workshop}
+		</if>
+		<if test="seriousLevel !=null and seriousLevel !=''">
+			and f.serious_level = #{seriousLevel}
+		</if>
+		<if test="faultType !=null and  faultType !=''">
+			and f.fault_type like CONCAT('%',#{faultType},'%')
+		</if>
+
+	</select>
+     
+     <update id="deleteProductRecord" parameterType="Map">
+     	delete from BMS_QM_TEST_CARD
+     	where bus_number=#{bus_number} and test_node=#{test_node}
+     	<if test="test_card_template_detail_id !=null and test_card_template_detail_id !=''">
+     		and test_card_template_detail_id=#{test_card_template_detail_id}
+     	</if>
+     	<if test="test_card_template_head_id !=null and test_card_template_head_id !=''">
+     		and test_card_template_head_id=#{test_card_template_head_id}
+     	</if>
+     </update>
+     
+     <insert id="insertProductRecord" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+     	<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_TEST_CARD 
+		(bus_number,factory_id,test_node_id,test_node,order_id,order_config_id,result,test_card_template_head_id,test_card_template_detail_id,fault_id,
+		test_result,result_judge,rework,tester,workshop_id,workgroup_id,editor_id,edit_date,test_date,memo)
+		values
+		<foreach collection="detail_list" item="detail" index="index" separator=",">
+			(#{detail.bus_number},#{detail.factory_id},#{detail.test_node_id},#{detail.test_node},#{detail.order_id},#{detail.order_config_id},#{detail.result},#{detail.test_card_template_head_id},
+			#{detail.test_card_template_detail_id},#{detail.fault_id},#{detail.test_result},#{detail.result_judge},#{detail.rework},#{detail.tester},
+			#{detail.workshop_id},#{detail.workgroup_id},#{editor_id},#{edit_date},#{detail.test_date},#{detail.memo})
+		</foreach>	
+     </insert>
+     
+     <insert id="insertProductRecordNoFault" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+     	<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_TEST_CARD 
+		(bus_number,factory_id,test_node_id,test_node,order_id,order_config_id,result,test_card_template_head_id,editor_id,edit_date,test_date)
+		values
+		(#{bus_number},#{detail.factory_id},#{detail.test_node_id},#{detail.test_node},#{detail.order_id},#{detail.order_config_id},#{detail.result},#{detail.test_card_template_head_id},
+		#{editor_id},#{edit_date},#{detail.test_date})
+
+     </insert>
+     
+     <select id="queryProductRecordList" parameterType="Map"  resultType="Map">
+     	select c.bus_number,c.test_node,f.factory_name,c.factory_id,concat(o.order_no,o.order_name,t.bus_type_code,' ',o.order_qty,'台') order_desc,
+     	c.test_date,c.test_node_id, c.order_id,c.order_config_id, c.tester,c.test_card_template_head_id,
+     	case c.result when '0' then '一次交检合格' when '1' then '返工/返修合格' else '让步放行' end as result,u.username editor,c.edit_date
+		from BMS_QM_TEST_CARD c
+		left join BMS_BASE_FACTORY f on c.factory_id=f.id
+		left join BMS_OR_ORDER o on c.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_BASE_USER u on u.id=c.editor_id
+		where 1=1
+		<if test="factory_id !=null and factory_id !=''">
+			and c.factory_id=#{factory_id}
+		</if>
+		<if test="test_node_id !=null and test_node_id !=''">
+			and c.test_node_id=#{test_node_id}
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no=#{order_no}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and c.bus_number like concat('%',#{bus_number},'%')
+		</if>
+		<if test="result !=null and result !=''">
+			and FIND_IN_SET(c.result,#{result}) 
+		</if>
+			group by c.bus_number,c.test_node
+			order by c.edit_date desc
+    	<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+     </select>
+     
+     <select id="queryProductRecordCount" parameterType="Map" resultType="int">
+     	select count(*) from (
+     	select c.bus_number,c.test_node
+		from BMS_QM_TEST_CARD c
+		left join BMS_OR_ORDER o on c.order_id=o.id
+		where 1=1
+		<if test="factory_id !=null and factory_id !=''">
+			and c.factory_id=#{factory_id}
+		</if>
+		<if test="test_node_id !=null and test_node_id !=''">
+			and c.test_node_id=#{test_node_id}
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no=#{order_no}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and c.bus_number like concat('%',#{bus_number},'%')
+		</if>
+		<if test="result !=null and result !=''">
+			and FIND_IN_SET(c.result,#{result}) 
+		</if>
+		group by c.bus_number,c.test_node) tmp
+     </select>
+     
+     <select id="queryProductRecordDetail" parameterType="Map" resultType="Map">
+     	select d.test_item,d.test_standard,d.test_standard_no,d.test_request,d.is_null, c.bus_number,c.factory_id,c.test_node_id,c.test_node,c.order_id,c.order_config_id,
+		c.result,c.test_card_template_head_id,c.test_card_template_detail_id,c.fault_id,c.test_result,c.result_judge,c.rework,c.tester,c.workshop_id,c.workgroup_id,c.memo,
+		d.id,d.test_card_template_id, w.workshop_name workshop,g.workgroup_name workgroup
+		from BMS_QM_TEST_CARD_TEMPLATE_HEADER h 
+		left join BMS_QM_TEST_CARD_TEMPLATE_DETAILS d on d.test_card_template_id=h.id
+		left join BMS_QM_TEST_CARD c  on d.id=c.test_card_template_detail_id
+		and c.bus_number= #{bus_number} and c.test_node=#{test_node} and c.factory_id=#{factory_id}
+		left join BMS_BASE_WORKSHOP w on w.id=c.workshop_id
+		left join BMS_BASE_STANDARD_WORKGROUP g on g.id=c.workgroup_id
+		where h.id=#{test_card_template_head_id}
+		order by cast(test_standard_no as signed)
+     </select>
+<!-- ======================== xjw end=================================-->
+
+<!-- ======================== yk start=================================-->
+	<insert id="insertFaultLib" parameterType="com.byd.bms.quality.model.StdFaultLibBean" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_STANDARD_FAULT_LIBRARY
+		(bug_type,bug,serious_level,fault_type,workshop_name,workgroup_name,editor_id,edit_date)
+		values(#{bugType},#{bug},#{faultLevel},#{faultType},#{workshop},#{workgroup},#{editorId},#{editDate})
+	</insert>
+	<update id="updateFaultLib" parameterType="com.byd.bms.quality.model.StdFaultLibBean">
+		update BMS_QM_STANDARD_FAULT_LIBRARY
+		<set>
+			bug_type=#{bugType},bug=#{bug},serious_level=#{faultLevel},fault_type=#{faultType},workshop_name=#{workshop},
+			workgroup_name=#{workgroup},editor_id=#{editorId},edit_date=#{editDate}
+		</set>
+		where id=#{id}
+	</update>
+	
+	<update id="updateProblemImprove" parameterType="com.byd.bms.quality.model.ProblemImproveBean">
+		update BMS_QM_IMPROVE_PROBLEM
+		<set>
+			fault_description = #{fault_description},factory_id = #{factory_id},
+			vin = #{vin},license_number = #{license_number},fault_phenomenon = #{fault_phenomenon},fault_components = #{fault_components},
+			fault_date = #{fault_date},bus_type = #{bus_type},fault_mils = #{fault_mils},fault_level_id = #{fault_level_id},
+			response_workshop = #{response_workshop},fault_reason = #{fault_reason},resolve_method = #{resolve_method},
+			resolve_date = #{resolve_date},risk_evaluate = #{risk_evaluate},keystone_attention = #{keystone_attention},
+			fault_pic_path = #{fault_pic_path},8D_REPORT_PATH = #{eightD_report_path},close_evidenc_path = #{close_evidenc_path},
+			is_closed = #{is_closed},memo = #{memo},editor_id = #{editor_id},edit_date = #{edit_date}
+		</set>
+		where id=#{id}
+	</update>
+	
+	<select id="getQualityTargetList" parameterType="Map" resultType="Map">
+		select
+		p.id,p.factory_id,f.factory_name,p.workshop_id,w.workshop_name,p.target_type
+		target_type_id,k.key_name target_type,p.target_value,
+		p.estart_date,p.eend_date,p.editor_id,u.display_name AS username,p.edit_date,p.status
+		from BMS_QM_QUALITY_TARGET_PARAMETER p 
+		left join BMS_BASE_USER u on p.editor_id=u.id
+		left join BMS_BASE_FACTORY f on p.factory_id=f.id
+		left join BMS_BASE_WORKSHOP w on p.workshop_id=w.id
+		left join BMS_BASE_KEY k on p.target_type=k.id
+		where p.status='0'
+		<if test="factoryId!=null and factoryId!=0">
+			and p.factory_id=#{factoryId}
+		</if>
+		<if test="workshopId!=null and  workshopId!=0">
+			and p.workshop_id=#{workshopId}
+		</if>
+		<if test="targetTypeId!=null and  targetTypeId!=0">
+			and p.target_type=#{targetTypeId}
+		</if>
+		<if test="effecDateStart!=null and  effecDateStart!=''">
+			<![CDATA[and p.estart_date>=#{effecDateStart}]]>
+		</if>
+		<if test="effecDateEnd!=null and  effecDateEnd!=''">
+			<![CDATA[and p.eend_date <= #{effecDateEnd}]]>
+		</if>
+		order by p.edit_date desc
+		<if test="start !=null">
+			LIMIT ${start} ,${length} 
+		</if>
+	</select>
+	<select id="getQualityTargetCount" parameterType="Map" resultType="int">
+		select count(p.id)
+		from BMS_QM_QUALITY_TARGET_PARAMETER p left join
+		BMS_BASE_USER u on p.editor_id=u.id
+		left join BMS_BASE_FACTORY f on p.factory_id=f.id
+		left join BMS_BASE_WORKSHOP w on p.workshop_id=w.id
+		left join BMS_BASE_KEY k on p.target_type=k.id
+		where p.status='0'
+		<if test="factoryId!=null and factoryId!=0">
+			and p.factory_id=#{factoryId}
+		</if>
+		<if test="workshopId!=null and  workshopId!=0">
+			and p.workshop_id=#{workshopId}
+		</if>
+		<if test="targetTypeId!=null and  targetTypeId!=0">
+			and p.target_type=#{targetTypeId}
+		</if>
+		<if test="effecDateStart!=null and  effecDateStart!=''">
+			<![CDATA[and p.estart_date>=#{effecDateStart}]]>
+		</if>
+		<if test="effecDateEnd!=null and  effecDateEnd!=''">
+			<![CDATA[and p.eend_date <= #{effecDateEnd}]]>
+		</if>
+	</select>
+	<insert id="insertQualityTarget" parameterType="com.byd.bms.quality.model.QualityTargetBean" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_QUALITY_TARGET_PARAMETER
+		(factory_id,workshop_id,target_type,target_value,estart_date,eend_date,status,editor_id,edit_date)
+		values(#{factoryId},#{workshopId},#{targetTypeId},#{targetVal},#{effecDateStart},#{effecDateEnd},'0',#{editorId},#{editDate})
+	</insert>
+	<update id="updateQualityTarget" parameterType="com.byd.bms.quality.model.QualityTargetBean">
+		update BMS_QM_QUALITY_TARGET_PARAMETER
+		<set>
+			factory_id=#{factoryId},workshop_id=#{workshopId},target_type=#{targetTypeId},target_value=#{targetVal},estart_date=#{effecDateStart},
+			eend_date=#{effecDateEnd},status=#{status},editor_id=#{editorId},edit_date=#{editDate}
+		</set>
+		where id=#{id}
+	</update>
+	
+	<select id="getProcessFaultList" parameterType="Map" resultType="Map">
+	SELECT p.*,f.factory_name,u.display_name AS editor_name FROM BMS_QM_PROCESS_PROBLEM p
+	LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+	LEFT JOIN BMS_BASE_USER u on p.editor_id=u.id
+	WHERE 1=1 
+		<if test="factory_id != null and factory_id != 0">
+			AND p.factory_id = #{factory_id}
+		</if>
+		<if test="customer_name != null and customer_name != ''">
+			AND p.customer_name LIKE CONCAT('%',#{customer_name},'%')
+		</if>
+		<if test="status != null and status != ''">
+			AND p.resolve_result = #{status}
+		</if>
+		<if test="fault_phenomenon != null and fault_phenomenon != ''">
+			AND p.fault_phenomenon LIKE CONCAT('%',#{fault_phenomenon},'%')
+		</if>
+		<if test="fault_date_start != null and fault_date_start != ''">
+			AND p.fault_date >= #{fault_date_start}
+		</if>
+		<if test="fault_date_end != null and fault_date_end != ''">
+			<![CDATA[ AND p.fault_date <= #{fault_date_end} ]]>
+		</if>
+		ORDER BY edit_date DESC
+	</select>
+	<select id="getProcessFaultCount" parameterType="Map" resultType="int">
+	SELECT COUNT(p.id) FROM BMS_QM_PROCESS_PROBLEM p
+	LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+	WHERE 1=1  
+		<if test="factory_id != null and factory_id != 0">
+			AND p.factory_id = #{factory_id}
+		</if>
+		<if test="customer_name != null and customer_name != ''">
+			AND p.customer_name LIKE CONCAT('%',#{customer_name},'%')
+		</if>
+		<if test="status != null and status != 0">
+			AND p.status = #{status}
+		</if>
+		<if test="fault_phenomenon != null and fault_phenomenon != ''">
+			AND p.fault_phenomenon LIKE CONCAT('%',#{fault_phenomenon},'%')
+		</if>
+		<if test="fault_date_start != null and fault_date_start != ''">
+			AND p.fault_date >= #{fault_date_start}
+		</if>
+		<if test="fault_date_end != null and fault_date_end != ''">
+			<![CDATA[ AND p.fault_date <= #{fault_date_end} ]]>
+		</if>
+	</select>
+	
+	<insert id="addProcessFault" parameterType="com.byd.bms.quality.model.ProcessFaultBean" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO BMS_QM_PROCESS_PROBLEM 
+		(factory_id, customer_name, vin, order_id, order_describe, customer_bus_number, license_number, 
+		fault_phenomenon, fault_components, fault_date, bus_type, fault_mils, fault_level_id, 
+		response_workshop, is_batch, fault_reason, resolve_method, resolve_date, resolve_result, 
+		memo, report_file_path, punish, compensation, status, editor_id, edit_date)	
+		VALUES(#{factory_id},#{customer_name},#{vin},#{order_id},#{order_describe},#{customer_bus_number},#{license_number},
+		#{fault_phenomenon},#{fault_components},#{fault_date},#{bus_type},#{fault_mils},#{fault_level_id},
+		#{response_workshop},#{is_batch},#{fault_reason},#{resolve_method},#{resolve_date},#{resolve_result},
+		#{memo},#{report_file_path},#{punish},#{compensation},#{status},#{editor_id},#{edit_date})
+	</insert>
+	<update id="editProcessFault" parameterType="com.byd.bms.quality.model.ProcessFaultBean">
+		UPDATE BMS_QM_PROCESS_PROBLEM
+		SET factory_id=#{factory_id}, customer_name=#{customer_name}, vin=#{vin}, license_number=#{license_number},
+		fault_date=#{fault_date}, bus_type=#{bus_type}, fault_mils=#{fault_mils},
+		<if test="customer_bus_number != null and customer_bus_number != ''">
+		customer_bus_number = #{customer_bus_number},  
+		</if>
+		<if test="fault_phenomenon != null and fault_phenomenon != ''">
+		fault_phenomenon = #{fault_phenomenon},  
+		</if>
+		<if test="fault_components != null and fault_components != ''">
+		fault_components = #{fault_components},  
+		</if>
+		<if test="fault_level_id != null and fault_level_id != ''">
+		fault_level_id = #{fault_level_id},  
+		</if>
+		<if test="response_workshop != null and response_workshop != ''">
+		response_workshop = #{response_workshop},  
+		</if>
+		<if test="is_batch != null and is_batch != ''">
+		is_batch = #{is_batch},  
+		</if>
+		<if test="fault_reason != null and fault_reason != ''">
+		fault_reason = #{fault_reason},  
+		</if>
+		<if test="resolve_method != null and resolve_method != ''">
+		resolve_method = #{resolve_method},  
+		</if>
+		<if test="resolve_date != null and resolve_date != ''">
+		resolve_date = #{resolve_date},  
+		</if>
+		<if test="resolve_result != null and resolve_result != ''">
+		resolve_result = #{resolve_result},  
+		</if>
+		<if test="memo != null and memo != ''">
+		memo = #{memo},  
+		</if>
+		<if test="report_file_path != null and report_file_path != ''">
+		report_file_path = #{report_file_path},  
+		</if>
+		<if test="punish != null and punish != ''">
+		punish = #{punish},  
+		</if>
+		<if test="compensation != null and compensation != ''">
+		compensation = #{compensation},  
+		</if>
+		<if test="status != null and status != ''">
+		status = #{status},  
+		</if>
+		editor_id=#{editor_id}, 
+		edit_date=#{edit_date}
+		WHERE id = #{id};
+	</update>
+	<select id="showProcessFaultInfo" parameterType="int" resultType="com.byd.bms.quality.model.ProcessFaultBean">
+		SELECT * FROM BMS_QM_PROCESS_PROBLEM WHERE id = #{id}
+	</select>
+	<select id="showProblemImproveInfo" parameterType="int" resultType="com.byd.bms.quality.model.ProblemImproveBean">
+		SELECT id,fault_description,factory_id,customer_name,report_status,vin,order_id,order_describe,license_number,fault_phenomenon,
+		fault_components,fault_date,bus_type,fault_mils,fault_level_id,response_workshop,fault_reason,resolve_method,resolve_date,
+		risk_evaluate,keystone_attention,fault_pic_path,8D_REPORT_PATH AS eightD_report_path,close_evidenc_path,is_closed,
+		memo,editor_id,edit_date FROM BMS_QM_IMPROVE_PROBLEM WHERE id = #{id}
+	</select>
+	
+	
+<!-- ======================== yk end=================================-->
+
+<!-- ======================== tj start=================================-->
+    <select id="getKeyPartsTraceList" parameterType="Map" resultType="Map">
+	select f.id factory_id,f.factory_name,t.workshop,t.bus_number,o.order_no,
+		o.order_name,c.order_config_name,u.username,t.edit_date,td.key_components_template_id 
+		    from BMS_QM_KEY_PARTS t
+				LEFT JOIN BMS_QM_KEY_PARTS_TEMPLATE_DETAILS td on td.id = t.key_parts_template_details_id
+				LEFT JOIN BMS_QM_KEY_PARTS_TEMPLATE_HEADER th on th.id = td.key_components_template_id 
+				LEFT JOIN BMS_OR_ORDER_CONFIG c on c.id=th.order_config_id and c.order_id = th.order_id
+				LEFT JOIN BMS_OR_ORDER o ON o.id = c.order_id
+		    LEFT JOIN BMS_BASE_FACTORY f on f.id=t.factory_id
+		    LEFT JOIN BMS_BASE_USER u on u.id=t.editor_id 
+        	where 1=1
+		<if test="busNumber!=null and busNumber!=''">
+			and t.bus_number=#{busNumber}
+		</if>
+		<if test="factoryId!=null and factoryId!=''">
+			and t.factory_id=#{factoryId}
+		</if>
+		<if test="workshop!=null and workshop!=''">
+			and t.workshop=#{workshop}
+		</if>
+		<if test="orderNo!=null and orderNo!=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="bustypeId!=null and bustypeId!=''">
+			and o.bus_type_id=#{bustypeId}
+		</if>
+		<if test="orderconfigId!=null and orderconfigId!=''">
+			and c.id=#{orderconfigId}
+		</if>
+			group by t.bus_number,t.factory_id,t.workshop order by edit_date desc
+		<if test="start!=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<select id="getKeyPartsTraceCount" parameterType="Map" resultType="int">
+		select count(DISTINCT t.bus_number,t.factory_id,t.workshop )   from BMS_QM_KEY_PARTS t
+				LEFT JOIN BMS_QM_KEY_PARTS_TEMPLATE_DETAILS td on td.id = t.key_parts_template_details_id
+				LEFT JOIN BMS_QM_KEY_PARTS_TEMPLATE_HEADER th on th.id = td.key_components_template_id 
+				LEFT JOIN BMS_OR_ORDER_CONFIG c on c.id=th.order_config_id and c.order_id = th.order_id
+				LEFT JOIN BMS_OR_ORDER o ON o.id = c.order_id
+		    LEFT JOIN BMS_BASE_FACTORY f on f.id=t.factory_id
+		    LEFT JOIN BMS_BASE_USER u on u.id=t.editor_id 
+        	where 1=1
+		<if test="busNumber!=null and busNumber!=''">
+			and t.bus_number=#{busNumber}
+		</if>
+		<if test="factoryId!=null and factoryId!=''">
+			and t.factory_id=#{factoryId}
+		</if>
+		<if test="workshop!=null and workshop!=''">
+			and t.workshop=#{workshop}
+		</if>
+		<if test="orderNo!=null and orderNo!=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="bustypeId!=null and bustypeId!=''">
+			and o.bus_type_id=#{bustypeId}
+		</if>
+		<if test="orderconfigId!=null and orderconfigId!=''">
+			and c.id=#{orderconfigId}
+		</if>
+     </select>
+     <update id="updateKeyParts" parameterType="Map">
+		UPDATE BMS_QM_KEY_PARTS SET 
+		<if test="batch != null and batch != ''">
+		   batch = #{batch},  
+		</if>
+		editor_id=#{editor_id}, 
+		edit_date=#{edit_date}
+		WHERE id = #{keypartsId}
+	</update>
+     <select id="getBusNumberDetailList" parameterType="Map" resultType="Map">
+		select t.*,t.3C_components as CCC_components,b.id as keypartsId,
+		   case 3C_components WHEN '是' THEN t.3C_no WHEN '否' THEN b.batch end  as batch
+		    from BMS_QM_KEY_PARTS_TEMPLATE_DETAILS  t 
+		    LEFT JOIN BMS_QM_KEY_PARTS_TEMPLATE_HEADER h on h.id=t.key_components_template_id
+		    LEFT JOIN BMS_QM_KEY_PARTS b on b.key_parts_template_details_id=t.id AND b.bus_number = #{bus_number}
+			 where 1=1  
+		<if test="key_components_template_id!=null and key_components_template_id!=''">
+			and t.key_components_template_id=#{key_components_template_id}
+		</if>
+		<if test="workshop!=null and workshop!=''">
+			and t.workshop=#{workshop}
+		</if>
+	</select>
+	
+	<select id="getMaterialExceptionLogsList" parameterType="Map" resultType="Map">
+		select t.*,f.factory_name, s.workshop_name,CONCAT(o.order_no,' ',o.order_name,ty.bus_type_code,'  ',o.order_qty,' ','台') as order_name,
+		o.order_no,ty.bus_type_code from BMS_QM_MATERIAL_EXCEPTION_LOGS t
+		LEFT JOIN BMS_BASE_FACTORY f on f.id=t.factory_id
+	    LEFT JOIN BMS_BASE_BUS_TYPE ty on ty.id=t.bus_type_id
+	    LEFT JOIN BMS_BASE_WORKSHOP s on s.id=t.workshop_id
+	    LEFT JOIN BMS_OR_ORDER o on o.id=t.order_id where 1=1 
+		<if test="factoryId!=null and factoryId!=''">
+			and t.factory_id=#{factoryId}
+		</if>
+		<if test="workshopId!=null and  workshopId!=''">
+			and t.workshop_id=#{workshopId}
+		</if>
+		<if test="bustypeId!=null and bustypeId!=''">
+			and t.bus_type_id=#{bustypeId}
+		</if> 
+		<if test="material!=null and material!=''">
+			and t.material=#{material}
+		</if>
+		<if test="orderNo!=null and  orderNo!=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="bugLevel!=null and bugLevel!=''">
+			and FIND_IN_SET(t.bug_level,#{bugLevel}) 
+		</if>
+		<if test="occurDateStart!=null and  occurDateStart!=''">
+			<![CDATA[and t.occur_date>=#{occurDateStart}]]>
+		</if>
+		<if test="occurDateEnd!=null and  occurDateEnd!=''">
+			<![CDATA[and t.occur_date < #{occurDateEnd}]]>
+		</if>
+		order by creat_date desc
+		<if test="start!=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<select id="getMaterialExceptionLogsCount" parameterType="Map" resultType="int">
+		select COUNT(1) from BMS_QM_MATERIAL_EXCEPTION_LOGS t 
+           LEFT JOIN BMS_OR_ORDER o on o.id=t.order_id where 1=1 
+		<if test="factoryId!=null and factoryId!=''">
+			and t.factory_id=#{factoryId}
+		</if>
+		<if test="workshopId!=null and  workshopId!=''">
+			and t.workshop_id=#{workshopId}
+		</if>
+		<if test="bustypeId!=null and bustypeId!=''">
+			and t.bus_type_id=#{bustypeId}
+		</if> 
+		<if test="material!=null and material!=''">
+			and t.material=#{material}
+		</if>
+		<if test="orderNo!=null and  orderNo!=''">
+			and o.order_no=#{orderNo} 
+		</if>
+		<if test="bugLevel!=null and bugLevel!=''">
+			and FIND_IN_SET(t.bug_level,#{bugLevel}) 
+		</if>
+		<if test="occurDateStart!=null and  occurDateStart!=''">
+			<![CDATA[and t.occur_date>=#{occurDateStart}]]>
+		</if>
+		<if test="occurDateEnd!=null and  occurDateEnd!=''">
+			<![CDATA[and t.occur_date < #{occurDateEnd}]]>
+		</if>
+     </select>
+     <insert id="saveMaterialExceptionLogs" parameterType="com.byd.bms.quality.model.MaterialExceptionLogs"
+		useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_MATERIAL_EXCEPTION_LOGS 
+		(occur_date,factory_id,workshop_id,bus_type_id,order_id,material,bug_level,
+		description,bphoto,tmp_measures,fault_reason,imp_measure,resp_unit,resp_person,
+		expc_finish_date,verifier,verify_result,fphoto,memo,creater_id,creat_date)
+		values(
+		#{occur_date},#{factory_id},#{workshop_id},#{bus_type_id},#{order_id},#{material},
+		#{bug_level},#{description},#{bphoto},#{tmp_measures},#{fault_reason},#{imp_measure},
+		#{resp_unit},#{resp_person},#{expc_finish_date},#{verifier},#{verify_result},#{fphoto},
+		#{memo},#{creator_id},#{creat_date}
+		)
+	</insert>
+	<update id="updateMaterialExceptionLogs" parameterType="com.byd.bms.quality.model.MaterialExceptionLogs">
+		update BMS_QM_MATERIAL_EXCEPTION_LOGS set
+		occur_date=#{occur_date},factory_id=#{factory_id},workshop_id=#{workshop_id},
+		bus_type_id=#{bus_type_id},order_id=#{order_id},material=#{material},bug_level=#{bug_level},
+		
+		<if test="description!=null and description!=''">
+			description=#{description},
+		</if>
+		<if test="bphoto!=null and bphoto!=''">
+			bphoto=#{bphoto},
+		</if>
+		<if test="tmp_measures!=null and tmp_measures!=''">
+			tmp_measures=#{tmp_measures},
+		</if>
+		<if test="fault_reason!=null and fault_reason!=''">
+			fault_reason=#{fault_reason},
+		</if>
+		<if test="fphoto!=null and fphoto!=''">
+			fphoto=#{fphoto},
+		</if>
+		fault_reason=#{fault_reason},imp_measure=#{imp_measure},resp_unit=#{resp_unit},
+		resp_person=#{resp_person},expc_finish_date=#{expc_finish_date},verifier=#{verifier},
+		verify_result=#{verify_result},
+		memo=#{memo},creater_id=#{creator_id},creat_date=#{creat_date}
+		where id=#{id}
+	</update>
+	<select id="selectLogsById" parameterType="String" resultType="com.byd.bms.quality.model.MaterialExceptionLogs">
+		select * from BMS_QM_MATERIAL_EXCEPTION_LOGS t where 1=1 
+		<if test="id!=null and id!=0">
+			and t.id=#{id}
+		</if>
+	</select>
+	<insert id="saveParts" parameterType="Map"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_KEY_PARTS
+		(bus_number,factory_id,key_parts_template_details_id,workshop,process_number,process_name,parts_no,parts_name,vendor,batch,editor_id,edit_date)
+		values
+		(#{bus_number},#{factory_id},#{key_parts_template_detail_id},#{workshop},#{process_number},#{process_name},
+		#{parts_no} ,#{parts_name},#{vendor},#{batch},#{editor_id},#{edit_date}
+		)
+
+	</insert>
+	
+<!-- ======================== tj end=================================-->
+
+	
+	
+	<!-- 品质标准更新记录 start add by tangjin -->
+	
+	<resultMap type="com.byd.bms.quality.model.BmsBaseQCStdRecord" id="stdRecordMap">
+		<id property="id" column="id" />
+		<result property="recordNo" column="record_num" />
+		<result property="usynopsis" column="usynopsis" />
+		<result property="standardfile" column="standardfile" />
+		<result property="bfilePath" column="bfile_path" />
+		<result property="afilePath" column="afile_path" />
+		<result property="memo" column="memo" />
+		<result property="mailAddrs" column="email_addrs" />
+		<result property="editorId" column="creator_id" />
+		<result property="editDate" column="creat_date" />
+		<result property="editor" column="editor" />
+	</resultMap>
+	<insert id="insertStdRecord" parameterType="com.byd.bms.quality.model.BmsBaseQCStdRecord"
+		useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_QUALITY_STANDARDS_CHANGE_LOGS 
+		(record_num,usynopsis,standardfile,bfile_path,afile_path,memo,email_addrs,creator_id,creat_date)
+		values(
+		#{recordNo},#{usynopsis},#{standardfile},#{bfilePath},#{afilePath},#{memo},#{mailAddrs},#{editorId},#{editDate}
+		)
+	</insert>
+	<select id="selectStdRecord" parameterType="int" resultMap="stdRecordMap">
+		select * from BMS_QM_QUALITY_STANDARDS_CHANGE_LOGS where
+		id=#{recordId}
+	</select>
+	<select id="getStdRecordList" parameterType="Map" resultMap="stdRecordMap">
+		select t.*,u.username editor from BMS_QM_QUALITY_STANDARDS_CHANGE_LOGS
+		t
+		left join BMS_BASE_USER u on t.creator_id=u.id where 1=1
+		<if test="recordNo!=null and recordNo!=0">
+			and t.record_num=#{recordNo}
+		</if>
+		<if test="stdFileName!=null and  stdFileName!=''">
+			and t.standardfile=#{stdFileName}
+		</if>
+		<if test="updateStart!=null and  updateStart!=''">
+			<![CDATA[and t.creat_date>=#{updateStart}]]>
+		</if>
+		<if test="updateEnd!=null and  updateEnd!=''">
+			<![CDATA[and t.creat_date < #{updateEnd}]]>
+		</if>
+		order by t.creat_date desc
+		<if test="offset!=null">
+			LIMIT #{offset} ,#{pageSize}
+		</if>
+	</select>
+	<select id="getStdRecordCount" parameterType="Map" resultType="int">
+		select count(t.id) from BMS_QM_QUALITY_STANDARDS_CHANGE_LOGS t left
+		join BMS_BASE_USER u on t.creator_id=u.id where 1=1
+		<if test="recordNo!=null and recordNo!=0">
+			and record_num=#{recordNo}
+		</if>
+		<if test="stdFileName!=null and  stdFileName!=''">
+			and standardfile=#{stdFileName}
+		</if>
+		<if test="updateStart!=null and  updateStart!=''">
+			<![CDATA[and t.creat_date>=#{updateStart}]]>
+		</if>
+		<if test="updateEnd!=null and  updateEnd!=''">
+			<![CDATA[and t.creat_date < #{updateEnd}]]>
+		</if>
+     </select>
+     
+     <select id="getFaultLibList" parameterType="Map" resultType="Map">
+     	select f.id,f.parts_id,f.bug_type,f.bug,f.serious_level,f.fault_type,
+		f.workshop_name,f.workgroup_name,f.editor_id,u.display_name,f.edit_date
+		from BMS_QM_STANDARD_FAULT_LIBRARY f 
+		left join BMS_BASE_USER u on f.editor_id=u.id
+		where 1=1
+		<if test="bugType !=null and  bugType !=''">
+			and f.bug_type like CONCAT('%',#{bugType},'%')
+		</if>
+		<if test="bug!=null and  bug!=''">
+			and f.bug like CONCAT('%',#{bug},'%')
+		</if>
+		<if test="workshop!=null and  workshop!=''">
+			and f.workshop_name=#{workshop}
+		</if>
+		<if test="workgroup!=null and  workgroup!=''">
+			and f.workgroup_name=#{workgroup}
+		</if>
+		<if test="faultType!=null and faultType.length!=0">
+			and f.fault_type in
+			<foreach collection="faultType" index="index" item="item"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="faultLevel!=null  and faultLevel.length!=0">
+			and f.serious_level in
+			<foreach collection="faultLevel" index="index" item="item"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		order by f.edit_date desc
+		<if test="start !=null">
+			LIMIT ${start} ,${length} 
+		</if>
+     </select>
+     <select id="getFaultLibCount" parameterType="Map" resultType="int">
+		select count(f.id)
+		from BMS_QM_STANDARD_FAULT_LIBRARY f left join
+		BMS_BASE_USER u on f.editor_id=u.id
+		where 1=1
+		<if test="bugType !=null and  bugType !=''">
+			and f.bug_type like CONCAT('%',#{bugType},'%')
+		</if>
+		<if test="bug!=null and  bug!=''">
+			and f.bug like CONCAT('%',#{bug},'%')
+		</if>
+		<if test="workshop!=null and  workshop!=''">
+			and f.workshop_name=#{workshop}
+		</if>
+		<if test="workgroup!=null and  workgroup!=''">
+			and f.workgroup_name=#{workgroup}
+		</if>
+		<if test="faultType!=null and faultType.length!=0">
+			and f.fault_type in
+			<foreach collection="faultType" index="index" item="item"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="faultLevel!=null and faultLevel.length!=0">
+			and f.serious_level in
+			<foreach collection="faultLevel" index="index" item="item"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+     
+     <insert id="insertProblemImprove" parameterType="com.byd.bms.quality.model.ProblemImproveBean" useGeneratedKeys="true">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO BMS_QM_IMPROVE_PROBLEM
+		(fault_description, factory_id, customer_name, report_status, vin, order_id, 
+		order_describe, license_number, fault_phenomenon, fault_components, fault_date, 
+		bus_type, fault_mils, fault_level_id, response_workshop, fault_reason, 
+		resolve_method, resolve_date, risk_evaluate, keystone_attention,fault_pic_path, 8D_REPORT_PATH, 
+		close_evidenc_path, is_closed, memo, editor_id, edit_date)
+		VALUES(#{fault_description}, #{factory_id}, #{customer_name}, #{report_status}, #{vin}, #{order_id}, 
+		#{order_describe}, #{license_number}, #{fault_phenomenon}, #{fault_components}, #{fault_date}, 
+		#{bus_type}, #{fault_mils}, #{fault_level}, #{response_workshop}, #{fault_reason}, 
+		#{resolve_method}, #{resolve_date}, #{risk_evaluate}, #{keystone_attention}, #{fault_pic_path},  #{eightD_report_path}, 
+		#{close_evidenc_path}, #{is_closed}, #{memo}, #{editor_id}, #{edit_date});
+	</insert>
+	<select id="getProblemImproveList" parameterType="Map" resultType="Map">
+		SELECT p.*,u.display_name,f.factory_name,w.workshop_name FROM BMS_QM_IMPROVE_PROBLEM p
+		LEFT JOIN BMS_BASE_USER u on p.editor_id=u.id
+		LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+		LEFT JOIN BMS_BASE_WORKSHOP w on p.response_workshop=w.id
+		WHERE 1=1 
+		<if test="factory_id!=null and factory_id!=''">
+			and p.factory_id = #{factory_id}
+		</if>
+		<if test="bus_type!=null and bus_type!=''">
+			and p.bus_type = #{bus_type}
+		</if>
+		<if test="vin!=null and vin!=''">
+			and p.vin = #{vin}
+		</if>
+		<if test="fault_description!=null and fault_description!=''">
+			and p.fault_description like CONCAT('%',#{fault_description},'%')
+		</if>
+		<if test="is_closed!=null and is_closed!=''">
+			and p.is_closed = #{is_closed}
+		</if>
+		order by f.edit_date desc
+		<if test="start !=null">
+			LIMIT ${start} ,${length} 
+		</if>
+	</select>
+	<select id="getProblemImproveCount" parameterType="Map" resultType="int">
+		SELECT COUNT(p.id) FROM BMS_QM_IMPROVE_PROBLEM p
+		LEFT JOIN BMS_BASE_USER u on p.editor_id=u.id
+		LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+		WHERE 1=1 
+		<if test="factory_id!=null and factory_id!=''">
+			and p.factory_id = #{factory_id}
+		</if>
+		<if test="bus_type!=null and bus_type!=''">
+			and p.bus_type = #{bus_type}
+		</if>
+		<if test="vin!=null and vin!=''">
+			and p.vin = #{vin}
+		</if>
+		<if test="fault_description!=null and fault_description!=''">
+			and p.fault_description like CONCAT('%',#{fault_description},'%')
+		</if>
+		<if test="is_closed!=null and is_closed!=''">
+			and p.is_closed = #{is_closed}
+		</if>
+	</select>
+     
+</mapper>

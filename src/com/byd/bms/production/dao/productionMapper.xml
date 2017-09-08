@@ -1,0 +1,3044 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.byd.bms.production.dao.IProductionDao">
+
+<!-- ########################### xiong jianwu start#############################-->
+	<select id="queryLineProcessList" parameterType="Map" resultType="Map">
+		SELECT p.line line_name,p.workshop workshop_name,p.factory factory_name,
+		concat('[',group_concat('{"id":',p.id,',"code":"',TRIM(p.process_code),'","monitor_flag":"',p.monitory_point_flag,'","name":"',TRIM(p.process_name),'","plan_node":"',ifnull(k.key_name,''),'"}' order by p.id),']') process_list
+		FROM BMS_BASE_PROCESS p
+		left join BMS_BASE_KEY k on k.value=p.plan_node_id and k.key_code='PLAN_CODE'
+		where p.factory=#{factory} and p.workshop=#{workshop} and p.delete_flag='0'
+		group by p.line
+	</select>
+	
+	<select id="queryProcessMonitorList" parameterType="Map" resultType="Map">
+		select p.id,p.process_code,r.process_name,k.key_name plan_node_name,k.key_name_en field_name
+		from BMS_PD_SCAN_RULE r
+		left join BMS_BASE_PROCESS p on r.factory=p.factory and r.workshop=p.workshop 
+		and p.line=#{line} and p.process_name=r.process_name 
+		left join BMS_BASE_KEY k on k.value=p.plan_node_id and k.key_code='PLAN_CODE'
+		where p.monitory_point_flag='1' and p.delete_flag='0' 
+		and r.factory=#{factory} and r.workshop=#{workshop} and p.line=#{line} 
+		and r.order_type=#{order_type}
+		order by r.sequence asc
+	</select>
+	
+	<select id="queryBusInfo" parameterType="String" resultType="Map">
+		select b.*,f.factory_name,CONCAT(o.order_name,t.bus_type_code,' ',o.order_qty,'台') AS order_desc,o.order_area,
+		case b.status when '0' then '正常' else '冻结' end as status,p.factory,p.workshop,p.line,p.process_name,o.order_type,o.bus_type_id
+		from BMS_PLAN_BUS b
+		left join BMS_BASE_FACTORY f on b.factory_id=f.id
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_BASE_PROCESS p on p.id=b.latest_process_id
+		where b.bus_number=#{bus_number}
+	</select>
+	
+	<select id="queryKeyParts" parameterType="Map" resultType="Map">
+		select ptd.*,p.batch,p.id parts_id,p.bus_number
+		from BMS_QM_KEY_PARTS_TEMPLATE_DETAILS ptd
+		left join BMS_QM_KEY_PARTS_TEMPLATE_HEADER pth on pth.id=ptd.key_components_template_id
+		left join BMS_QM_KEY_PARTS p on p.key_parts_template_details_id=ptd.id 
+		and p.bus_number=#{bus_number} and p.factory_id=#{factory_id} and p.workshop=#{workshop}
+		where pth.bus_type_id=#{bus_type_id} and pth.order_id=#{order_id} and pth.order_config_id=#{order_config_id} 
+		and ptd.workshop=#{workshop} and ptd.process=#{process_name}
+	</select>
+	
+	<select id="queryOrderConfigList" parameterType="String" resultType="Map">
+		select *
+		from BMS_OR_ORDER_CONFIG_DETAIL cd
+		where cd.order_config_id=#{order_config_id}
+	</select>
+	
+	<select id="queryScanLastPlanNode" parameterType="Map" resultType="Map">		
+		<!-- SELECT s.id,s.process_name,s.scan_time
+		FROM BMS_PD_SCAN s where s.process_id=(
+		SELECT p.id process_id,p.process_name
+		FROM BMS_PD_SCAN_RULE r
+		LEFT JOIN BMS_BASE_PROCESS p on r.factory=p.factory and r.workshop=p.workshop 
+		and p.process_name=r.process_name and p.line=#{line}
+		where p.plan_node_id !=0 and r.factory=#{factory} and r.workshop=#{workshop} and r.sequence=(
+			select r1.sequence-1 from BMS_PD_SCAN_RULE r1 where r1.factory=#{factory} and r1.workshop=#{workshop}
+			and r1.process_name=#{process_name} and r1.order_type=#{order_type}
+		) and r.order_type=#{order_type} ) and s.bus_number=#{bus_number} -->
+		SELECT s.id,s.process_name,s.scan_time
+		FROM BMS_PD_SCAN s where s.process_name=#{last_process_name} and s.bus_number=#{bus_number} order by s.scan_time desc limit 1
+	</select>
+	
+	<select id="queryLastPlanNode" parameterType="Map" resultType="Map">
+		SELECT p.id process_id,p.process_name,r.sequence,k.key_name plan_node
+		FROM BMS_PD_SCAN_RULE r
+		LEFT JOIN BMS_BASE_PROCESS p on r.factory=p.factory and r.workshop=p.workshop 
+		and p.process_name=r.process_name and p.line=#{line_name}
+		LEFT JOIN BMS_BASE_KEY k on k.value=p.plan_node_id and k.key_code='PLAN_CODE'
+		where p.plan_node_id !=0 and r.factory=#{factory_name} <!-- and r.workshop=#{workshop_name} --> and r.sequence&lt;=(
+			select r1.sequence-1 from BMS_PD_SCAN_RULE r1 where r1.factory=#{factory_name} <!-- and r1.workshop=#{workshop_name} -->
+			and r1.process_name=#{process_name} and r1.order_type=#{order_type})
+		and r.order_type=#{order_type} 
+		order by r.sequence desc
+		limit 1
+	</select>
+	
+	<select id="queryNextProcess" parameterType="Map" resultType="Map">
+		SELECT p.id process_id,p.process_name,r.sequence,r.workshop
+		FROM BMS_PD_SCAN_RULE r
+		LEFT JOIN BMS_BASE_PROCESS p on r.factory=p.factory and r.workshop=p.workshop 
+		and p.process_name=r.process_name 
+		where r.factory=#{factory_name} and r.sequence>=(
+			select r1.sequence+1 from BMS_PD_SCAN_RULE r1 where r1.factory=#{factory_name}
+			and r1.process_name=#{process_name} and r1.order_type=#{order_type})
+		and r.order_type=#{order_type}  and p.monitory_point_flag='1'
+		order by r.sequence 
+		limit 1
+	</select>
+	
+	<select id="queryScanRecord" parameterType="Map" resultType="int">
+		select count(id)
+		from BMS_PD_SCAN
+		where bus_number=#{bus_number} and process_id=#{process_id}
+	</select>
+	
+	<insert id="saveParts" parameterType="List"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_QM_KEY_PARTS
+		(bus_number,factory_id,key_parts_template_details_id,workshop,process_number,process_name,parts_no,parts_name,vendor,batch,editor_id,edit_date)
+		values
+		<foreach  collection="parts_list" item="detail" index="index" separator=",">
+		(#{detail.bus_number},#{detail.factory_id},#{detail.id},#{detail.workshop},#{detail.process_number},#{detail.process_name},
+		#{detail.parts_no} ,#{detail.parts_name},#{detail.vendor},#{detail.batch},#{detail.editor_id},#{detail.edit_date}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="updateParts" parameterType="List" >
+		update BMS_QM_KEY_PARTS set
+		batch=
+		<foreach collection="parts_list" item="detail" index="index" separator="" open=" case id" close="end">
+			when #{detail.parts_id} then #{detail.batch}
+		</foreach>
+		where id in
+		<foreach collection="parts_list" item="detail" index="index" separator="," open=" (" close=")">
+			#{detail.parts_id}
+		</foreach>
+	
+	</update>
+	
+	<insert id="saveScanRecord" parameterType="Map"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_PD_SCAN (bus_number,process_id,factory_name,workshop_name,line_name,process_name,scanner_id,scan_time)
+		values
+		(#{bus_number},#{process_id},#{factory_name},#{workshop_name},#{line_name},#{process_name},#{editor_id},#{edit_date})
+	</insert>
+	
+	<update id="updateBusProcess" parameterType="Map">
+		update BMS_PLAN_BUS set latest_process_id=#{process_id}
+		<if test="field_name !=null and field_name !=''">
+			,${field_name}=#{edit_date}
+		</if>
+		where bus_number=#{bus_number}
+	</update>
+	
+	<insert id="insertProductionException"   parameterType="List"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_PD_PRODUCTION_EXCEPTION
+		(factory,workshop,line,process,bus_number,reason_type_id,lack_reason_id,detailed_reasons,editor_id,edit_date,start_time,severity_level_id)
+		values
+		<foreach  collection="list" item="detail" index="index" separator=",">
+		(#{detail.factory},#{detail.workshop},#{detail.line},#{detail.process},#{detail.bus_number},#{detail.reason_type_id},#{detail.lack_reason_id},#{detail.detailed_reasons},#{detail.editor_id},#{detail.edit_date},#{detail.start_time},#{detail.severity_level_id})
+		</foreach>
+	</insert>
+	
+	<select id="queryBusInfoList" parameterType="Map" resultType="Map">
+		SELECT b.*,CONCAT(o.order_no,' ',o.order_name,t.bus_type_code,o.order_qty,' ','台') AS order_desc,f.factory_name,o.order_no
+		FROM BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o on b.order_id=o.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		LEFT JOIN BMS_BASE_FACTORY f on b.factory_id=f.id
+		WHERE 1=1
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no=#{order_no}
+		</if>
+		<if test="factory_id !=null and factory_id !=''">
+			and find_in_set(b.factory_id,#{factory_id})>0
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and b.bus_number like concat('%',#{bus_number},'%')
+		</if>
+		<if test="bus_type !=null and bus_type !='全部'">
+			and t.bus_type_code =#{bus_type}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>		
+	</select>
+	
+	<select id="queryBusInfoCount" parameterType="Map" resultType="int">
+		SELECT count(b.id)
+		FROM BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o on b.order_id=o.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		LEFT JOIN BMS_BASE_FACTORY f on b.factory_id=f.id
+		WHERE 1=1
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no=#{order_no}
+		</if>
+		<if test="factory_id !=null and factory_id !=''">
+			and find_in_set(b.factory_id,#{factory_id})>0
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and b.bus_number like concat('%',#{bus_number},'%')
+		</if>
+		<if test="bus_type !=null and bus_type !='全部'">
+			and t.bus_type_code =#{bus_type}
+		</if>
+	</select>
+	
+	<update id='updateBusInfo' parameterType="Map">
+		update BMS_PLAN_BUS 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="bus_color !=null and bus_color !=''">
+				bus_color=#{bus_color},
+			</if>
+			<if test="bus_seats !=null and bus_seats !=''">
+				bus_seats=#{bus_seats},
+			</if>
+			<if test="spring_num !=null and spring_num !=''">
+				spring_num=#{spring_num},
+			</if>
+			<if test="passenger_num !=null and passenger_num !=''">
+				passenger_num=#{passenger_num},
+			</if>
+			<if test="tire_type !=null and tire_type !=''">
+				tire_type=#{tire_type},
+			</if>
+			<if test="battery_capacity !=null and battery_capacity !=''">
+				battery_capacity=#{battery_capacity},
+			</if>
+			<if test="rated_voltage !=null and rated_voltage !=''">
+				rated_voltage=#{rated_voltage},
+			</if>
+			<if test="dp_production_date !=null and dp_production_date !=''">
+				dp_production_date=#{dp_production_date},
+			</if>
+			<if test="dp_zzd !=null and dp_zzd !=''">
+				dp_zzd=#{dp_zzd},
+			</if>
+			<if test="zc_production_date !=null and zc_production_date !=''">
+				zc_production_date=#{zc_production_date},
+			</if>
+			<if test="zc_zzd !=null and zc_zzd !=''">
+				zc_zzd=#{zc_zzd},
+			</if>
+			<if test="hgz_note !=null and hgz_note !=''">
+				hgz_note=#{hgz_note},
+			</if>
+			<if test="ccczs_date !=null and ccczs_date !=''">
+				ccczs_date=#{ccczs_date},
+			</if>
+			<if test="dpgg_date !=null and dpgg_date !=''">
+				dpgg_date=#{dpgg_date},
+			</if>
+			<if test="zcgg_date !=null and zcgg_date !=''">
+				zcgg_date=#{zcgg_date}
+			</if>
+		</trim>
+			where 1=1
+		<if test="factory_id !=null and factory_id !=''">
+			and factory_id=#{factory_id}
+		</if>
+		<if test="order_id !=null and order_id !=''">
+			and order_id=#{order_id}
+		</if>
+		<if test="bus_list !=null and bus_list !=''">
+			and find_in_set(bus_number ,#{bus_list})>0
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and bus_number=#{bus_number}
+		</if>
+	</update>
+	
+	<select id="querySupplyTotalCount" parameterType="Map" resultType="Map">
+		select a.supply_total,(b.order_qty-a.supply_total)left_qty 
+		from
+		(select ifnull(sum(quantity),0) supply_total 
+		from BMS_PD_WORKSHOP_SUPPLY s
+		left join BMS_OR_ORDER o on o.id=s.order_id
+		where s.factory_id=#{factory_id} and o.order_no=#{order_no} and
+		s.supply_workshop=#{supply_workshop} and s.receive_workshop=#{receive_workshop}) a,
+		(select ifnull(sum(fo.production_qty),0) order_qty 
+		from BMS_OR_FACTORY_ORDER fo
+		left join BMS_OR_ORDER o on fo.order_id=o.id
+		where fo.factory_id=#{factory_id} and o.order_no=#{order_no}) b
+	</select>
+	
+	<insert id="saveWorkshopSupply" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_PD_WORKSHOP_SUPPLY (factory_id,order_id,supply_workshop,receive_workshop,quantity,supply_date,editor_id,edit_date)
+		values
+		(#{factory_id},#{order_id},#{supply_workshop},#{receive_workshop},#{quantity},#{supply_date},#{editor_id},#{edit_date})	
+	</insert>
+	
+	<update id="updateWorkshopSupply" parameterType="Map">
+		update BMS_PD_WORKSHOP_SUPPLY set factory_id=#{factory_id},order_id=#{order_id},supply_workshop=#{supply_workshop},
+		receive_workshop=#{receive_workshop},quantity=#{quantity},supply_date=#{supply_date},editor_id=#{editor_id},edit_date=#{edit_date}
+		where id=#{id}
+	</update>
+	
+	<select id="queryWorkshopSupplyList" parameterType="Map" resultType="Map">
+		SELECT s.*,f.factory_name,s.supply_workshop workshop_name,s.receive_workshop,o.order_no,
+		CONCAT(o.order_no,' ',o.order_name,t.bus_type_code,' ',ifnull(fo.production_qty,0),' ', '台') as order_desc,u.display_name editor,
+		(select sum(quantity) from
+		BMS_PD_WORKSHOP_SUPPLY s1
+		where s1.factory_id=s.factory_id and s1.order_id=s.order_id
+		and s1.supply_workshop=s.supply_workshop
+		and s1.receive_workshop=s.receive_workshop) supply_total
+		FROM BMS_PD_WORKSHOP_SUPPLY s
+		LEFT JOIN BMS_BASE_FACTORY f ON s.factory_id = f.id
+		LEFT JOIN BMS_OR_ORDER o ON s.order_id=o.id
+		LEFT JOIN BMS_OR_FACTORY_ORDER fo on fo.order_id=o.id and fo.factory_id=s.factory_id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON t.id = o.bus_type_id
+		LEFT JOIN BMS_BASE_USER u on u.id=s.editor_id
+		where 1=1
+		<if test="factory_id!=''">
+			and s.factory_id = #{factory_id}
+		</if>
+		<if test="order_no!=''">
+			and o.order_no = #{order_no}
+		</if>
+		<if test="supply_workshop !='' and supply_workshop !=null and supply_workshop !='全部'">
+			and find_in_set(s.supply_workshop, #{supply_workshop})>0
+		</if>
+		<if test="receive_workshop !='' and receive_workshop !='全部'">
+			and s.receive_workshop = #{receive_workshop}
+		</if>
+		<if test="search_date_start !=''">
+			and s.supply_date >= #{search_date_start}
+		</if>
+		<if test="search_date_end !=''">
+			and s.supply_date &lt;= #{search_date_end}
+		</if>
+		<if test="orderColumn !=null">
+			order by ${orderColumn}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	
+	<select id="queryWorkshopSupplyCount" parameterType="Map" resultType="int">
+		SELECT count(s.id)
+		FROM BMS_PD_WORKSHOP_SUPPLY s
+		LEFT JOIN BMS_OR_ORDER o on s.order_id=o.id
+		where 1=1
+		<if test="factory_id!=''">
+			and s.factory_id = #{factory_id}
+		</if>
+		<if test="order_no!=''">
+			and o.order_no = #{order_no}
+		</if>
+		<if test="supply_workshop !='' and supply_workshop !=null and supply_workshop !='全部'">
+			and find_in_set(s.supply_workshop, #{supply_workshop})>0
+		</if>
+		<if test="receive_workshop !='' and receive_workshop !='全部'">
+			and s.receive_workshop = #{receive_workshop}
+		</if>
+		<if test="search_date_start !=''">
+			and s.supply_date >= #{search_date_start}
+		</if>
+		<if test="search_date_end !=''">
+			and s.supply_date &lt;= #{search_date_end}
+		</if>
+	</select>
+	
+	<select id="queryPartsFinishCount" parameterType="Map" resultType="Map">
+		select ifnull(sum(f.online_real_qty),0) online_total,ifnull(sum(f.offline_real_qty),0) offline_total,fo.production_qty
+		from BMS_OR_FACTORY_ORDER fo
+		left join BMS_PD_PARTS_PLAN_FINISH f on f.order_id=fo.order_id and
+		f.factory_id=fo.factory_id and f.parts_id=#{parts_id}
+		left join BMS_OR_ORDER o on fo.order_id=o.id
+		where o.order_no=#{order_no} and fo.factory_id=#{factory_id}
+		group by fo.order_id,fo.factory_id
+	</select>
+	
+		<insert id="savePartsOnOffRecord" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_PD_PARTS_PLAN_FINISH (factory_id,order_id,parts_id,prod_date,online_plan_qty,offline_plan_qty,online_real_qty,offline_real_qty,editor_id,edit_date)
+		values (#{factory_id},#{order_id},#{parts_id},#{prod_date},(SELECT sum(IFNULL(p.plan_qty,0)) as plan_qty FROM BMS_PLAN_PRODUCTION_PLAN p 
+		LEFT JOIN BMS_BASE_KEY k on k.value=p.plan_code_value and k.key_code='PLAN_CODE'
+		WHERE p.plan_date = #{prod_date} AND p.order_id=#{order_id}
+		AND p.factory_id = #{factory_id} AND k.key_name='部件上线'),(SELECT sum(IFNULL(p.plan_qty,0)) as plan_qty FROM BMS_PLAN_PRODUCTION_PLAN p 
+		LEFT JOIN BMS_BASE_KEY k on k.value=p.plan_code_value and k.key_code='PLAN_CODE'
+		WHERE p.plan_date = #{prod_date} AND p.order_id=#{order_id}
+		AND p.factory_id = #{factory_id} AND k.key_name='部件下线'),
+		#{online_num},#{offline_num},#{editor_id},#{edit_date}	
+		)
+	</insert>
+	
+	<update id="updatePartsOnOffRecord" parameterType="Map">
+		update BMS_PD_PARTS_PLAN_FINISH 
+		SET  factory_id=#{factory_id},order_id=#{order_id},parts_id=#{parts_id}, prod_date=#{prod_date},
+		online_real_qty=#{online_num},offline_real_qty=#{offline_num}, editor_id=#{editor_id},edit_date=#{edit_date},
+		online_plan_qty=(SELECT sum(IFNULL(p.plan_qty,0)) as plan_qty FROM BMS_PLAN_PRODUCTION_PLAN p 
+		LEFT JOIN BMS_BASE_KEY k on k.value=p.plan_code_value and k.key_code='PLAN_CODE'
+		WHERE p.plan_date = #{prod_date} AND p.order_id=#{order_id}
+		AND p.factory_id = #{factory_id} AND k.key_name='部件上线'),
+		offline_plan_qty=(SELECT sum(IFNULL(p.plan_qty,0)) as plan_qty FROM BMS_PLAN_PRODUCTION_PLAN p 
+		LEFT JOIN BMS_BASE_KEY k on k.value=p.plan_code_value and k.key_code='PLAN_CODE'
+		WHERE p.plan_date = #{prod_date} AND p.order_id=#{order_id}
+		AND p.factory_id = #{factory_id} AND k.key_name='部件下线')
+		where id=#{id}
+	</update>
+	
+	<select id="queryPartsOnOffList" parameterType="Map" resultType="Map">
+		SELECT p.*,f.factory_name,CONCAT(o.order_no,' ',o.order_name,x.bus_type_code,' ',fo.production_qty,' ' ,'台') as order_desc,k.key_name parts_name,u.username editor,o.order_no,
+		(select sum(p1.online_real_qty) from BMS_PD_PARTS_PLAN_FINISH p1 where p1.factory_id=p.factory_id and p1.order_id=p.order_id and p1.parts_id=p.parts_id ) online_total,
+		(select sum(p1.offline_real_qty) from BMS_PD_PARTS_PLAN_FINISH p1 where p1.factory_id=p.factory_id and p1.order_id=p.order_id and p1.parts_id=p.parts_id ) offline_total
+		FROM BMS_PD_PARTS_PLAN_FINISH p
+		LEFT JOIN BMS_BASE_FACTORY f ON p.factory_id = f.id
+		LEFT JOIN BMS_OR_ORDER o ON p.order_id = o.id
+		LEFT JOIN BMS_OR_FACTORY_ORDER fo on fo.order_id=p.order_id and fo.factory_id=p.factory_id
+		LEFT JOIN BMS_BASE_KEY k ON p.parts_id = k.value and k.key_code='BASE_PARTS'
+		LEFT JOIN BMS_BASE_BUS_TYPE x ON x.id = o.bus_type_id
+		LEFT JOIN BMS_BASE_USER u on u.id=p.editor_id
+		where 1=1
+		<if test="factory_id !=''">
+			and p.factory_id = #{factory_id}
+		</if>
+		<if test="order_no !=''">
+			and o.order_no = #{order_no}
+		</if>
+		<if test="parts_id !='' and parts_id !=null">
+			and p.parts_id=#{parts_id}
+		</if>
+		<if test="search_date_start !=''">
+			and p.prod_date >= #{search_date_start}
+		</if>
+		<if test="search_date_end!=''">
+			and p.prod_date &lt;= #{search_date_end}
+		</if>
+		<if test="orderColumn !=null">
+			order by ${orderColumn}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	
+	<select id="queryPartsOnOffCount" parameterType="Map" resultType="int">
+		SELECT count(p.id)
+		FROM BMS_PD_PARTS_PLAN_FINISH p
+		LEFT JOIN BMS_OR_ORDER o ON p.order_id = o.id
+		where 1=1
+		<if test="factory_id !=''">
+			and p.factory_id = #{factory_id}
+		</if>
+		<if test="order_no !=''">
+			and o.order_no = #{order_no}
+		</if>
+		<if test="parts_id !='' and parts_id !=null">
+			and p.parts_id=#{parts_id}
+		</if>
+		<if test="search_date_start !=''">
+			and p.prod_date >= #{search_date_start}
+		</if>
+		<if test="search_date_end!=''">
+			and p.prod_date &lt;= #{search_date_end}
+		</if>
+	</select>
+	
+	<select id="getProductionSearchBusinfo" parameterType="String" resultType="Map">
+		SELECT
+		b.id,o.order_no,o.order_name,t.bus_type_code,o.order_qty,f.factory_name,b.bus_number,b.vin,c.order_config_name,c.customer,
+		b.productive_date,b.left_motor_number,b.right_motor_number,
+		b.bus_color,b.bus_seats,b.production_status,c.config_file,b.dispatch_date,b.customer_number,
+		b.welding_online_date,b.welding_offline_date,b.fiberglass_offline_date,b.painting_online_date,
+		b.painting_offline_date,b.chassis_online_date,b.chassis_offline_date,b.assembly_online_date,
+		b.assembly_offline_date,b.debugarea_online_date,b.debugarea_offline_date,b.testline_online_date,
+		b.testline_offline_date,b.warehousing_date
+		FROM BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+		LEFT JOIN BMS_BASE_FACTORY f ON b.factory_id = f.id
+		LEFT JOIN BMS_OR_ORDER_CONFIG c ON b.order_config_id = c.id
+		WHERE b.bus_number = #{bus_number} OR b.vin = #{bus_number}
+	</select>
+	<select id="getProductionSearchScan" parameterType="String" resultType="Map">
+		SELECT s.id,s.bus_number,s.factory_name,s.workshop_name,s.line_name,s.process_name,s.scan_time,
+		s.repair,s.ecn,s.onlineflag,s.offlineflag,u.display_name 
+		FROM BMS_PD_SCAN s
+		LEFT JOIN BMS_BASE_USER u ON s.scanner_id = u.id
+		WHERE
+		bus_number =
+		(SELECT b.bus_number FROM BMS_PLAN_BUS b WHERE
+		b.bus_number = #{bus_number}
+		OR b.vin = #{bus_number})
+	</select>
+	<select id="getNamePlateInfo" parameterType="String" resultType="Map">
+		select t.bus_type_code,t.brand,t.vehicle_model,t.motor_model,t.chassis_model,t.motor_power,t.max_weight,t.battery_model,
+		t.passenger_num,t.max_speed,t.light_downdip,b.sequence,t.battery_capacity,b.dp_production_date AS productive_date,
+		b.zc_production_date,t.rated_voltage,b.bus_number,b.vin
+		FROM BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+		WHERE b.bus_number = #{bus_number} OR b.vin = #{bus_number}
+	</select>	
+	<select id="getProductionSearchException" parameterType="String" resultType="Map">
+		SELECT
+		e.id,e.factory,e.workshop,e.line,e.process,e.bus_number,e.severity_level_id,
+		k.key_name AS reason_type,y.key_name AS duty_department,e.measures_id,e.status FROM BMS_PD_PRODUCTION_EXCEPTION e
+		LEFT JOIN BMS_BASE_KEY k ON e.reason_type_id = k.value AND k.key_code = 'ABNORMAL_REASON'
+		LEFT JOIN BMS_BASE_KEY y ON e.duty_department_id = y.value AND y.key_code =  'EXCEPTION_RESPONSIBILITY_DEPARTMENT'
+		WHERE e.bus_number =
+		(SELECT b.bus_number FROM BMS_PLAN_BUS b WHERE b.bus_number =
+		#{bus_number} OR b.vin = #{bus_number})
+	</select>
+	<select id="getCertificationInfo" parameterType="String" resultType="Map">
+		select t.bus_type_code,t.brand,t.vehicle_model,oc.tire_type,t.motor_model,t.chassis_model,t.motor_power,
+		t.max_weight,t.battery_model,b.sequence,t.battery_capacity,b.passenger_num AS passengers,b.spring_num,
+		b.nameplate_print_date AS productive_date,t.rated_voltage,b.bus_number,b.vin,b.ccczs_date,b.dpgg_date,b.zcgg_date,
+		b.dp_production_date,b.zc_production_date,
+		case when b.right_motor_number is not null then CONCAT(b.left_motor_number,'/',b.right_motor_number)
+		else b.left_motor_number end as motor_number,
+		b.bus_color,b.bus_seats
+		from BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+		LEFT JOIN BMS_OR_ORDER_CONFIG oc ON b.order_config_id = oc.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON t.id=o.bus_type_id and
+		t.bus_type_code=substr(b.bus_number,1,LOCATE('-',b.bus_number)-1)
+		WHERE b.bus_number = #{bus_number} OR b.vin = #{bus_number}
+	</select>
+	<select id="getEcnTasksByBusNumber" parameterType="String" resultType="Map">
+		SELECT F.bus_number,T.task_content,T.tech_order_no,F.factory,F.workshop,U.display_name,F.confirmor_date FROM BMS_TECH_TASK_FOLLOW F
+		LEFT OUTER JOIN BMS_BASE_USER U ON F.confirmor_id = U.staff_number
+		LEFT OUTER JOIN BMS_TECH_TASK T ON F.tech_task_id = T.id
+		WHERE (F.bus_number = #{bus_number} OR 
+		F.bus_number = (SELECT B.bus_number FROM BMS_PLAN_BUS B WHERE B.VIN = #{bus_number}))
+	</select>
+	<select id="getQmTestCardList" parameterType="String" resultType="Map">
+		SELECT T.bus_number,T.test_node,T.test_result,T.result_judge,T.rework,T.tester,T.test_date FROM BMS_QM_TEST_CARD T
+		WHERE (T.bus_number = #{bus_number} OR T.bus_number = (SELECT B.bus_number FROM BMS_PLAN_BUS B WHERE B.VIN = #{bus_number}))
+		ORDER BY T.test_node DESC
+	</select>	
+	<select id="getKeyPartsList" parameterType="String" resultType="Map">
+		SELECT P.process_number,P.process_name,P.parts_no,P.parts_name,P.batch,U.display_name,P.edit_date FROM BMS_QM_KEY_PARTS P 
+		LEFT OUTER JOIN BMS_BASE_USER U ON P.editor_id = U.id
+		WHERE (P.bus_number = #{bus_number} OR P.bus_number = (SELECT B.bus_number FROM BMS_PLAN_BUS B WHERE B.VIN = #{bus_number}))
+	</select>	
+	
+	
+	<!-- VIN码打印 -->
+	<select id="getVinPrintList" parameterType="Map" resultType="Map">
+		select b.bus_number,b.vin,CONCAT(o.order_no,' ',o.order_name,'
+		',t.bus_type_code,' ',o.order_qty+'','台') order_desc,
+		CONCAT(t.bus_type_code,'-',o.order_code,'-',o.order_qty)
+		order_code_desc,
+		case v.print_sign
+		when
+		'1' then '已打印' else '未打印' end as print_sign ,
+		b.left_motor_number,b.right_motor_number,u.username
+		printer,v.print_date,v.print_times
+		from BMS_PLAN_BUS b left join
+		BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on
+		o.bus_type_id=t.id
+		left join BMS_PD_VIN v on v.vin = b.vin
+		left join
+		BMS_BASE_USER u on v.printer_id=u.id
+		where 1=1 and
+		 (b.chassis_online_date is not null and b.chassis_online_date!='' )
+		and (b.chassis_offline_date is null or b.chassis_offline_date='')
+		and b.factory_id=#{factoryId}
+<!-- 		and b.factory_id=#{factoryId} -->
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="busNo !=null and busNo !=''">
+			and b.bus_number=#{busNo}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getVinPrintCount" parameterType="Map" resultType="int">
+		select count(b.bus_number)
+		from BMS_PLAN_BUS b left join BMS_OR_ORDER o on
+		b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_PD_VIN v on v.vin = b.vin
+		left join BMS_BASE_USER u on
+		v.printer_id=u.id
+		where 1=1 and
+		(b.chassis_online_date is not null and b.chassis_online_date!='' )
+		and (b.chassis_offline_date is null or b.chassis_offline_date='')
+		and b.factory_id=#{factoryId}
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="busNo !=null and busNo !=''">
+			and b.bus_number=#{busNo}
+		</if>
+	</select>
+	<update id="updateVinPrint" parameterType="Map">
+		update BMS_PD_VIN
+		<set>
+			print_sign='1',printer_id=#{printer},print_date=#{printDate},print_times=ifnull(print_times,0)+1
+		</set>
+		where vin in
+		<foreach collection="vinList" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="getNameplatePrintList" parameterType="Map" resultType="Map">
+		select b.bus_number,b.vin,b.zc_production_date productive_date,u.username printer,
+		case when b.nameplate_print_date is null then '未打印' else '已打印' end as print_flag,
+		t.battery_model,t.max_weight,t.chassis_model,
+		substring(b.nameplate_print_date,1,10) print_date,t.brand,t.motor_model,t.motor_power,
+		case when b.rated_voltage>0 then b.rated_voltage else(case when c.rated_voltage>0 then c.rated_voltage else t.rated_voltage end)  end as rated_voltage,
+		case when b.battery_capacity>0 then b.battery_capacity else(case when c.battery_capacity>0 then c.battery_capacity  else t.battery_capacity end) end as battery_capacity
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_OR_ORDER_CONFIG c on b.order_config_id=c.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_BASE_USER u on b.nameplate_printer_id=u.id
+		where 1=1 and b.factory_id=#{factoryId}
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="busNoStart !=null and busNoStart !=''">
+			<![CDATA[and substring_index(b.bus_number,'-',-1)>=cast(#{busNoStart} as signed)]]>
+		</if>
+		<if test="busNoEnd !=null and busNoEnd !=''">
+			<![CDATA[and substring_index(b.bus_number,'-',-1)<=cast(#{busNoEnd} as signed)]]>
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+
+	</select>
+	<select id="getNameplatePrintCount" parameterType="Map" resultType="int">
+		select count(b.bus_number)
+		from BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		where 1=1 and b.factory_id=#{factoryId}
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="busNoStart !=null and busNoStart !=''">
+			<![CDATA[and substring_index(b.bus_number,'-',-1)>=cast(#{busNoStart} as signed)]]>
+		</if>
+		<if test="busNoEnd !=null and busNoEnd !=''">
+			<![CDATA[and substring_index(b.bus_number,'-',-1)<=cast(#{busNoEnd} as signed)]]>
+		</if>
+	</select>
+	
+	<update id="updateNameplatePrint" parameterType="Map">
+		update BMS_PLAN_BUS
+		<set>
+			nameplate_printer_id=#{printer},nameplate_print_date=#{printDate}
+		</set>
+		where bus_number in
+		<foreach collection="busNoList" index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="getCertificationList" parameterType="Map" resultType="Map">
+		SELECT b.id,b.bus_number,b.vin,b.bus_color,concat(b.left_motor_number,'/',b.right_motor_number) motor_number,
+		f.factory_name, t.vehicle_model,t.chassis_model,t.motor_model,b.zc_production_date as productive_date,b.dp_production_date,
+		case when b.bus_seats>0 then b.bus_seats else(case when c.bus_seats>0 then c.bus_seats else t.passenger_num end) end as bus_seats ,
+		case when b.tire_type>0 then b.tire_type else c.tire_type end as tire_type,o.order_no,
+		case when b.spring_num>0 then b.spring_num else c.spring_num end as spring_num,b.dp_zzd,b.zc_zzd,b.hgz_note, 
+		case when b.passenger_num>0 then concat(b.passenger_num,'/',b.bus_seats) else( case when c.passenger_num>0 then concat(c.passenger_num,'/',c.bus_seats) else concat(t.passengers,'/',t.passenger_num) end) end as passengers 
+		FROM BMS_PLAN_BUS b LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id 
+		LEFT JOIN BMS_OR_ORDER_CONFIG c on c.id=b.order_config_id 
+		LEFT JOIN BMS_BASE_FACTORY f ON b.factory_id = f.id 
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id 
+		WHERE b.factory_id =#{factory_id} and b.vin IS NOT NULL and b.left_motor_number IS NOT NULL 
+		and b.right_motor_number IS NOT NULL
+		<if test="order_no!=''">
+			and o.order_no= #{order_no}
+		</if>
+		<if test="bus_number_size!=0">
+			and b.bus_number in
+			<foreach item="item" index="index" collection="bus_number"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getCertificationCount" parameterType="Map" resultType="int">
+		SELECT count(b.id) FROM BMS_PLAN_BUS b
+		LEFT OUTER JOIN BMS_OR_ORDER o ON b.order_id = o.id
+		LEFT OUTER JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+		WHERE b.factory_id = #{factory_id} and b.vin IS NOT NULL and
+		b.left_motor_number IS NOT NULL and b.right_motor_number IS NOT NULL
+		<if test="order_no!=''">
+			and o.order_no= #{order_no}
+		</if>
+		<if test="bus_number_size!=0">
+			and b.bus_number in
+			<foreach item="item" index="index" collection="bus_number"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	
+		<select id="queryBusWorkshopOnline" parameterType="Map" resultType="int">
+		select count(id)
+		from BMS_PLAN_BUS
+		where bus_number=#{bus_number}
+		<if test="workshop=='焊装' ">
+			and welding_online_date is not null and
+			welding_online_date !=''
+		</if>
+		<if test="workshop=='玻璃钢' ">
+			and welding_offline_date is not null and
+			welding_offline_date !=''
+		</if>
+		<if test="workshop=='涂装' ">
+			and painting_online_date is not null and
+			painting_online_date !=''
+		</if>
+		<if test="workshop=='底盘' ">
+			and chassis_online_date is not null and
+			chassis_online_date !=''
+		</if>
+		<if test="workshop=='总装' ">
+			and assembly_online_date is not null and
+			assembly_online_date !=''
+		</if>
+		<if test="workshop=='调试区' ">
+			and debugarea_online_date is not null and
+			debugarea_online_date !=''
+		</if>
+		<if test="workshop=='检测线' ">
+			and testline_online_date is not null and
+			testline_online_date !=''
+		</if>
+		<if test="workshop=='成品库' ">
+			and warehousing_date is not null and warehousing_date !=''
+		</if>
+	</select>
+	
+	<select id="queryStaffWorkhourList" parameterType="Map" resultType="Map">
+		select h.*,s.name staff_name,s.job
+		from BMS_HR_STAFF_PIECE_HOURS h
+		left join BMS_HR_STAFF s on h.staff_number=s.staff_number
+		where 1=1
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+		<if test="work_date !=null and work_date !=''">
+			and h.work_date=#{work_date}
+		</if>
+		<if test="salary_model !=null and salary_model !=''">
+			and h.salary_model=#{salary_model}
+		</if>
+		<if test="factory !=null and factory !=''">
+			and h.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and h.workshop=#{workshop}
+		</if>
+		<if test="workgroup !=null and workgroup !=''">
+			and h.workgroup=#{workgroup}
+		</if>
+		<if test="team !=null and team !=''">
+			and h.team=#{team}
+		</if>
+	</select>
+	
+	<insert id="insertStaffHours" parameterType="List"  useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_HR_STAFF_PIECE_HOURS
+		(org_id,factory,workshop,workgroup,team,standard_price,salary_model,order_id,bus_number,bus_count,bonus,work_date,
+		staff_number,skill_parameter,distribution,work_hour,status,editor_id,edit_date)
+		values
+		<foreach  collection="staff_hour_list" item="detail" index="index" separator=",">
+		(#{detail.org_id},#{detail.factory},#{detail.workshop},#{detail.workgroup},#{detail.team},#{detail.standard_price},
+		#{detail.salary_model},#{detail.order_id},#{detail.bus_number},#{detail.bus_count},#{detail.bonus},#{detail.work_date},
+		#{detail.staff_number},#{detail.skill_parameter},#{detail.distribution},#{detail.work_hour},#{detail.status},#{detail.editor_id},#{detail.edit_date})
+		</foreach>
+	</insert>
+	
+	<update id="deleteStaffHours" parameterType="Map" >
+		<choose>
+			<when test="swh_id !=null and swh_id !=''">
+			delete from BMS_HR_STAFF_PIECE_HOURS
+			where id=#{swh_id}
+			</when>
+			
+			<when test="bus_number !=null and bus_number !='' and (swh_id==null or swh_id=='')">
+			delete from BMS_HR_STAFF_PIECE_HOURS
+			where factory=#{factory} and workshop=#{workshop} and workgroup=#{workgroup} and team=#{team} 
+			and work_date=#{work_date} and salary_model=#{salary_model}
+			and bus_number=#{bus_number}
+			</when>
+			
+			<when test="work_date !=null and work_date !='' and (bus_number==null or bus_number=='') and (swh_id==null or swh_id=='')">
+			delete from BMS_HR_STAFF_PIECE_HOURS
+			where factory=#{factory} and workshop=#{workshop} and workgroup=#{workgroup} and team=#{team} 
+			and work_date=#{work_date} and salary_model=#{salary_model}	
+			</when>
+		</choose>
+			
+	</update>
+	
+	<!-- 计件工资计算（技能系数模式） -->
+	<select id="caculatePieceSalary_0" statementType="CALLABLE" parameterType="Map" resultType="String">
+		call P_CACULATE_PIECE_SALLARY_0(#{factory},#{workshop},#{workgroup},#{team},#{bus_number},#{start_date},#{end_date});
+	</select>
+	
+	<!-- 计件工资计算（承包制模式） -->
+	<select id="caculatePieceSalary_1" statementType="CALLABLE" parameterType="Map" resultType="String">
+		call P_CACULATE_PIECE_SALLARY_1(#{factory},#{workshop},#{workgroup},#{team},#{bus_number},#{start_date},#{end_date});
+	</select>
+	
+	<!-- 计件工资计算（辅助人力模式） -->
+	<select id="caculatePieceSalary_2" statementType="CALLABLE" parameterType="Map" resultType="String">
+		call P_CACULATE_PIECE_SALLARY_2(#{factory},#{workshop},#{workgroup},#{team},#{work_month});
+	</select>
+	
+	<!-- 计件工资计算（底薪模式） -->
+	<select id="caculatePieceSalary_3" statementType="CALLABLE" parameterType="Map" resultType="String">
+		call P_CACULATE_PIECE_SALLARY_3(#{factory},#{workshop},#{workgroup},#{team},#{work_month});
+	</select>
+	
+	<update id="updateStaffHours" parameterType="List">
+		<foreach item="detail" index="index" collection="staff_hour_list" open="" separator=";" close="">
+			update BMS_HR_STAFF_PIECE_HOURS
+			set status=#{detail.status},work_hour=#{detail.work_hour},distribution=#{detail.distribution},
+			bonus=#{detail.bonus},editor_id=#{detail.editor_id},edit_date=#{detail.edit_date}
+			where id=#{detail.id}
+		</foreach>
+	</update>
+	
+	<update id="updateStaffHoursStatus" parameterType="Map">
+		update BMS_HR_STAFF_PIECE_HOURS set status=#{status}
+		where factory=#{factory} and workshop=#{workshop} and workgroup=#{workgroup} and team=#{team}
+		<if test="bus_number_list !=null and bus_number_list !=''">
+			and find_in_set(bus_number,#{bus_number_list})>0 and salary_model=#{salary_model}
+		</if>
+		<if test="work_date_list !=null and work_date_list !=''">
+			and find_in_set(work_date,#{work_date_list})>0 and salary_model=#{salary_model}
+		</if>
+	</update>
+	
+	<select id="queryWeldingOnlineCount" parameterType="Map" resultType="int">
+		select count(id) from BMS_PLAN_BUS where factory_id=#{factory_id} and order_id=#{order_id}
+		and welding_online_date>0
+	</select>
+	
+	<select id="queryWarehouseInfo" parameterType="Map" resultType="Map">
+		select count(b.id) warehouse_count, 
+		(select fo.production_qty from BMS_OR_FACTORY_ORDER fo 
+		where fo.order_id=#{order_id} and fo.factory_id=#{factory_id}) production_qty
+		from BMS_PLAN_BUS b 
+		where b.factory_id=#{factory_id} and b.order_id=#{order_id} and b.warehousing_date>0
+	</select>
+	
+	<update id="updateFactoryOrder" parameterType="Map">
+		update BMS_OR_FACTORY_ORDER set status=#{status} where factory_id=#{factory_id} and order_id=#{order_id}
+	</update>
+<!-- ########################### xiong jianwu end#############################-->
+
+	<update id="updateBusMotorNumber" parameterType="map">
+		<foreach collection="buslist" item="detail" index="index"
+			separator=";">
+			update BMS_PLAN_BUS
+			<set>
+				left_motor_number=#{detail.left_motor_number},right_motor_number=#{detail.right_motor_number},vin=#{detail.vin}
+			</set>
+			where bus_number=#{detail.bus_number}
+		</foreach>
+	</update>
+	<update id="updateVinMotorNumber" parameterType="map">
+		<foreach collection="buslist" item="detail" index="index"
+			separator="">
+			<if test="detail.vin !=null and detail.vin !=''">
+				update BMS_PD_VIN
+				<set>
+					left_motor_number=#{detail.left_motor_number},right_motor_number=#{detail.right_motor_number}
+				</set>
+				where vin=#{detail.vin};
+			</if>
+		</foreach>
+	</update>
+	<select id="getVinList" parameterType="Map" resultType="Map">
+		select
+		vin from BMS_PD_VIN where vin=#{vin}
+	</select>
+	<select id="getBusNumberByVin" parameterType="Map" resultType="Map">
+		select bus_number from BMS_PLAN_BUS where vin=#{vin}
+	</select>
+
+	<!-- 车身号打印 -->
+	<select id="getBusNoPrintList" parameterType="Map" resultType="Map">
+		select
+		n.bus_number,o.id order_id,o.order_no,o.order_name,o.order_qty,p.plan_date,o.order_code,
+		case n.print_sign when '0' then '未打印' when '1' then '已打印' end as
+		print_sign ,
+		n.print_times,u.username,c.product_qty allot_qty,g.id order_config_id,
+		n.printer_id,n.print_date,t.bus_type_code,g.order_config_name,g.customer,b.factory_id,b.order_id
+		from BMS_PLAN_BUS_NUMBER n 
+		left join BMS_PLAN_BUS b on n.bus_number =b.bus_number
+		left join BMS_PLAN_PRODUCTION_PLAN p on b.production_plan_id=p.id
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_OR_ORDER_CONFIG g on b.order_config_id=g.id
+		left join BMS_BASE_USER u on n.printer_id=u.id
+		left join BMS_OR_FACTORY_ORDER_CONFIG c ON c.order_config_id=g.id and c.order_id=o.id and c.factory_id=b.factory_id
+		where 1=1 and b.factory_id=#{factoryId}
+		<if test="busNo !=null and busNo !=''">
+			and n.bus_number=#{busNo}
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="planStart !=null and planStart !=''">
+		 <![CDATA[  
+		 	and p.plan_date>=#{planStart}
+		 ]]>
+		</if>
+		<if test="planEnd !=null and planEnd !=''">
+		 <![CDATA[  
+		 	and p.plan_date<=#{planEnd}
+		 ]]>
+		</if>
+		order by o.order_no,right(n.bus_number,4)
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getOrderConfigDoneQty" parameterType="Map"
+		resultType="int">
+		select count(bus_number) from BMS_PLAN_BUS where
+		factory_id=#{factoryId} and order_id=#{orderId} and
+		order_config_id=#{configId} and (welding_online_date is not null or welding_online_date!='')
+	</select>
+	<select id="getBusNoPrintCount" parameterType="Map" resultType="int">
+		select count(n.bus_number) from BMS_PLAN_BUS_NUMBER n 
+		left join BMS_PLAN_BUS b on n.bus_number =b.bus_number
+		left join BMS_PLAN_PRODUCTION_PLAN p on b.production_plan_id=p.id
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id
+		left join BMS_OR_ORDER_CONFIG g on b.order_config_id=g.id
+		left join BMS_BASE_USER u on n.printer_id=u.id
+		left join BMS_OR_FACTORY_ORDER_CONFIG c ON c.order_config_id=g.id and c.order_id=o.id and c.factory_id=b.factory_id
+		where 1=1 and b.factory_id=#{factoryId}
+		<if test="busNo !=null and busNo !=''">
+			and n.bus_number=#{busNo}
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.order_no=#{orderNo}
+		</if>
+		<if test="planStart !=null and planStart !=''">
+		 <![CDATA[  
+		 	and p.plan_date>=#{planStart}
+		 ]]>
+		</if>
+		<if test="planEnd !=null and planEnd !=''">
+		 <![CDATA[  
+		 	and p.plan_date<=#{planEnd}
+		 ]]>
+		</if>
+	</select>
+	<update id="updateBusPrint" parameterType="Map">
+		update BMS_PLAN_BUS_NUMBER
+		<set>
+			print_sign='1',printer_id=#{printer},print_date=#{printDate},print_times=print_times+1
+		</set>
+		where bus_number in
+		<foreach collection="busNoList" index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<update id="updateBusConfig" parameterType="Map">
+		update BMS_PLAN_BUS set order_config_id=#{changedConfigId} where
+		bus_number in
+		<foreach collection="busNoList" index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<select id="getOrderConfigList" parameterType="Map" resultType="Map">
+		select g.id,c.product_qty
+		allot_qty,o.order_qty,o.order_name,o.order_no,g.order_config_name
+		from
+		BMS_OR_FACTORY_ORDER_CONFIG c left join BMS_OR_ORDER o on
+		c.order_id=o.id
+		left join BMS_OR_ORDER_CONFIG g ON c.order_config_id=g.id
+		where 1=1 and c.factory_id = #{factory_id}
+		<if test="search_order_no!=null">
+			and o.order_no like CONCAT('%',#{search_order_no},'%')
+		</if>
+		<if test="order_id!=null">
+			and o.id = #{order_id}
+		</if>
+		ORDER BY o.id DESC
+	</select>
+	
+	<select id="getProductionSearch" parameterType="Map" resultType="Map">
+		select * from
+		(SELECT count(b.bus_number) welding_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id} 
+		<if test="onoff=='上线'">
+			and b.welding_online_date is not null
+			<if test="start_date !=null and start_date !=''">
+				and b.welding_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.welding_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.welding_offline_date is not null
+			<if test="start_date !=null and start_date !=''">
+				and b.welding_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.welding_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff==''">
+			and b.welding_online_date !='' and b.welding_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})  
+		</if>
+		) a,
+		(SELECT count(b.bus_number) fiberglass_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id where
+		b.factory_id=#{factory_id}
+		<if test="onoff=='下线'">
+			and b.fiberglass_offline_date is not null
+			<if test="start_date !=null and start_date !=''">
+				and b.fiberglass_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.fiberglass_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff==''">
+			and b.welding_offline_date !='' and b.fiberglass_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''"> 
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) b,
+		(SELECT count(b.bus_number) painting_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id where b.factory_id=#{factory_id}
+		<if test="onoff=='上线'">
+			and b.painting_online_date is not null
+			<if test="start_date !=null and start_date !=''">
+				and b.painting_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.painting_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.painting_offline_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.painting_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.painting_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='' or onoff ==null">
+			and b.painting_online_date !='' and b.painting_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) c,
+		(SELECT count(b.bus_number) chassis_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id where b.factory_id=#{factory_id}
+		<if test="onoff=='上线'">
+			and b.chassis_online_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.chassis_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.chassis_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.chassis_offline_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.chassis_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.chassis_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='' or onoff ==null">
+			and b.chassis_online_date !='' and b.chassis_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) d,
+		(SELECT count(b.bus_number) assembly_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id where b.factory_id=#{factory_id}
+		<if test="onoff=='上线'">
+			and b.assembly_online_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.assembly_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.assembly_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.assembly_offline_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.assembly_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.assembly_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='' or onoff ==null">
+			and b.assembly_online_date !='' and b.assembly_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) e,
+		(SELECT count(b.bus_number) debugarea_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id}
+		<if test="onoff=='上线'">
+			and b.debugarea_online_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.debugarea_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.debugarea_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.debugarea_offline_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.debugarea_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.debugarea_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='' or onoff ==null">
+			and b.debugarea_online_date !='' and b.debugarea_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) f,
+		(SELECT count(b.bus_number) testline_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id}
+		<if test="onoff=='上线'">
+			and b.testline_online_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.testline_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.testline_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='下线'">
+			and b.testline_offline_date !=''
+			<if test="start_date !=null and start_date !=''">
+				and b.testline_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b.testline_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+			</if>
+		</if>
+		<if test="onoff=='' or onoff ==null">
+			and b.testline_online_date !='' and
+			b.testline_offline_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) g,
+		(SELECT count(b.bus_number) warehousing_count
+		FROM BMS_PLAN_BUS b left join BMS_OR_ORDER o on b.order_id=o.id
+		where
+		b.factory_id=#{factory_id} and b.warehousing_date !='' and b.dispatch_date =''
+		<if test="order_no !=null and order_no !=''">
+			and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})
+		</if>
+		) h,
+		(SELECT count(b.bus_number) wp_wpi_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id} and b.welding_offline_date !='' and b.painting_online_date =''
+		<if test="order_no !=null and order_no !=''">and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})</if>
+		) a_w,
+		(SELECT count(b.bus_number) pc_wpi_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id} and b.painting_offline_date !='' and b.chassis_online_date =''
+		<if test="order_no !=null and order_no !=''">and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})</if>
+		) b_w,
+		(SELECT count(b.bus_number) ca_wpi_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id
+		where b.factory_id=#{factory_id} and b.chassis_offline_date !='' and b.assembly_online_date =''
+		<if test="order_no !=null and order_no !=''">and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})</if>
+		) c_w,
+		(SELECT count(b.bus_number) ad_wpi_count FROM BMS_PLAN_BUS b
+		left join BMS_OR_ORDER o on b.order_id=o.id 
+		where b.factory_id=#{factory_id} and b.assembly_offline_date !='' and b.debugarea_online_date =''
+		<if test="order_no !=null and order_no !=''">and b.order_id=(SELECT id from BMS_OR_ORDER WHERE order_no = #{order_no})</if>
+		) d_w
+	</select>
+	<select id="getProductionWIPBusInfo" parameterType="Map" resultType="Map">
+		SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,
+		<if test="wip_flg=='wp'">
+			b.welding_offline_date
+		</if>
+		<if test="wip_flg=='pc'">
+			b.painting_offline_date
+		</if>
+		<if test="wip_flg=='ca'">
+			b.chassis_offline_date
+		</if>
+		AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS process,s.line_name line,s.workshop_name AS workshop,b.production_status 
+		FROM BMS_PLAN_BUS b
+		LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+		LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+		LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+		LEFT JOIN BMS_PD_SCAN s on b.latest_process_id=s.process_id and s.bus_number=b.bus_number and s.repair='0' and s.ecn='0'
+		WHERE b.factory_id =#{factory_id}
+		<if test="wip_flg=='wp'">
+			AND welding_offline_date !='' AND painting_online_date =''
+		</if>
+		<if test="wip_flg=='pc'">
+			AND painting_offline_date !='' AND chassis_online_date =''
+		</if>
+		<if test="wip_flg=='ca'">
+			AND chassis_offline_date !='' AND assembly_online_date =''
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			AND o.order_no = #{order_no}
+		</if>
+	</select>
+	<select id="getProductionSearchCarinfo" parameterType="Map" resultType="Map">
+		<if test="workshop =='welding'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.welding_online_date AS enterdate, 
+			CASE WHEN ISNULL(k.key_name) THEN CONCAT(p.process_code ,' ', p.process_name) ELSE CONCAT(p.process_code ,' ',p.process_name,'(',k.key_name,')') END as process,
+			p.line,'welding' AS workshop,b.production_status
+			FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			LEFT OUTER JOIN BMS_BASE_KEY k ON k.value = p.plan_node_id and k.key_code = 'PLAN_CODE' 
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and welding_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.welding_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.welding_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and welding_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.welding_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.welding_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND welding_online_date !='' AND welding_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+
+		</if>
+		<if test="workshop =='fiberglass'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.welding_offline_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'fiberglass' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND welding_offline_date !='' AND fiberglass_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='painting'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.painting_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'painting' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and painting_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.painting_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.painting_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and painting_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.painting_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.painting_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND painting_online_date !='' AND painting_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='chassis'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.chassis_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'chassis' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and chassis_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.chassis_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.chassis_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and chassis_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.chassis_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.chassis_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND chassis_online_date !='' AND chassis_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='assembly'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.assembly_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'assembly' AS workshop,b.production_status FROM
+			BMS_PLAN_BUS b LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and assembly_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.assembly_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.assembly_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and assembly_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.assembly_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.assembly_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND assembly_online_date !='' AND assembly_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='debugarea'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.debugarea_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'debugarea' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and debugarea_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.debugarea_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.debugarea_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and debugarea_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.debugarea_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.debugarea_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND debugarea_online_date !='' AND debugarea_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='testline'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.testline_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'testline' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			<if test="onoff =='上线'">
+				and testline_online_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.testline_online_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.testline_online_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='下线'">
+				and testline_offline_date !=''
+				<if test="start_date !=null and start_date !=''">
+					and b.testline_offline_date >CONCAT(date_add(#{start_date},interval '-1' DAY),' 17:30:00')
+				</if>
+				<if test="end_date !=null and end_date !=''">
+					and b.testline_offline_date &lt;=CONCAT(#{end_date},' 17:30:00')
+				</if>
+			</if>
+			<if test="onoff=='' or onoff ==null">
+				AND testline_online_date !='' AND testline_offline_date =''
+			</if>
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop =='warehousing'">
+			SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.warehousing_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'warehousing' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND warehousing_date !='' AND dispatch_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+		</if>
+		<if test="workshop ==''">
+			(SELECT o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.welding_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'welding' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND welding_online_date !='' AND welding_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.painting_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'painting' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND painting_online_date !='' AND painting_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.chassis_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS process,p.line,'chassis' AS workshop,b.production_status FROM
+			BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND chassis_online_date !='' AND chassis_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.assembly_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'assembly' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND assembly_online_date !='' AND assembly_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.debugarea_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'debugarea' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND debugarea_online_date !='' AND debugarea_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.testline_online_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'testline' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND testline_online_date !='' AND testline_offline_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+			UNION ALL (SELECT
+			o.order_no,o.order_name,t.bus_type_code,o.order_qty,b.bus_number,b.warehousing_date
+			AS enterdate,CONCAT(p.process_code ,' ', p.process_name) AS
+			process,p.line,'warehousing' AS workshop,b.production_status FROM BMS_PLAN_BUS b
+			LEFT JOIN BMS_OR_ORDER o ON b.order_id = o.id
+			LEFT JOIN BMS_BASE_BUS_TYPE t ON o.bus_type_id = t.id
+			LEFT JOIN BMS_BASE_PROCESS p ON b.latest_process_id = p.id
+			WHERE factory_id = #{factory_id}
+			<if test="order_no !=''">
+				AND order_id = (SELECT id FROM BMS_OR_ORDER WHERE 	order_no=#{order_no})
+			</if>
+			<if test="line !=null and line !=''">
+				AND p.line like CONCAT('%',#{line},'%')
+			</if>
+			AND b.warehousing_date !='' AND b.dispatch_date =''
+			<if test="bus_number !=null and bus_number !=''">
+				AND b.bus_number LIKE CONCAT('%',#{bus_number},'%')
+			</if>
+			)
+		</if>
+	</select>
+	
+	<select id="querySalaryModel" parameterType="Map" resultType="Map">
+		select o.customer_no_flag,k.key_name salary_model
+		from BMS_BASE_ORG o 
+		left join BMS_BASE_KEY k on k.value=o.salary_model and k.key_code='SALARY_MODEL'
+		where o.org_type='4' and o.id=#{org_id} and o.deleted='0'
+	</select>
+	
+	<select id="queryTeamStaffList" parameterType="Map" resultType="Map">		
+		select s.id,s.staff_number,s.name,s.job,s.basic_salary,s.plant_org,s.workshop_org,s.workgroup_org,s.team_org,
+		ifnull((select r.new_value from BMS_HR_STAFF_UPDATE_RECORD r where r.staff_number=s.staff_number and r.type='skill_parameter'
+		<if test="work_date !=null and work_date !=''">
+			and substring(r.edit_date,1,10)&lt;=#{work_date}
+		</if>	
+		order by r.edit_date desc limit 1),0) skill_parameter,
+		ifnull((select d.distribution from BMS_HR_STAFF_DISTRIBUTION d where d.staff_number=s.staff_number 
+		<if test="work_date !=null and work_date !=''">
+			and d.effective_date&lt;=#{work_date}
+		</if>	
+		<if test="order_id !=null and order_id !=''">
+			and d.order_id=#{order_id}
+		</if>	
+		 order by d.effective_date desc limit 1),0) distribution,
+		ifnull((select p.standard_price from BMS_HR_WORKGROUP_PRICE p where p.factory=#{factory} and p.workshop=#{workshop}
+		and p.workgroup=#{workgroup}  and p.team=#{team} 
+		<if test="work_date !=null and work_date !=''">
+			and p.effective_date&lt;=#{work_date}
+		</if>	
+		<if test="order_id !=null and order_id !=''">
+			and p.order_id=#{order_id}
+		</if>	
+		order by p.effective_date desc limit 1),0) standard_price
+		from BMS_HR_STAFF s
+		where s.salary_type='计件' and s.status='在职'
+		<if test="staff_number !=null and staff_number !=''">
+			and  s.staff_number=#{staff_number}
+		</if>
+		<if test="staff_number ==null or staff_number ==''">
+			and s.plant_org=#{factory}  and s.workshop_org=#{workshop} and s.workgroup_org=#{workgroup}and s.team_org=#{team} 
+		</if>
+		order by s.staff_number
+	</select>
+	<select id="getWaitWorkTimeList" parameterType="Map" resultType="Map">
+		SELECT s.* FROM BMS_HR_WAIT_SALARY s WHERE 1=1
+		<if test="status !=null and status !=''">
+			and s.status=#{status}
+		</if>
+		<if test="factory !=null and factory !='' and factory !='请选择'">
+			and s.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='' and workshop !='请选择'">
+			and find_in_set(s.workshop,#{workshop})>0
+		</if>
+		<if test="workgroup !=null and workgroup !='' and workgroup !='请选择'">
+			and s.workgroup=#{workgroup}
+		</if>
+		<if test="team !=null and team !='' and team !='请选择'">
+			and s.team=#{team}
+		</if>
+		<if test="wait_reason !=null and wait_reason !=''">
+			and s.wait_reason=#{wait_reason}
+		</if>		
+		<if test="workDate !=null and workDate !=''">
+			and s.work_date=#{workDate}
+		</if>
+		<if test="staff_number !=null and staff_number!=''">
+			and find_in_set(s.staff_number,#{staff_number})>0
+		</if>
+		<if test="ids !=null and ids!=''">
+			and find_in_set(s.id,#{ids})>0
+		</if>	
+		<if test="date_start !=null and date_start !=''">
+		<![CDATA[ 
+			and s.work_date>=#{date_start}
+		]]>
+			</if>
+			<if test="date_end !=null and date_end !=''">
+		<![CDATA[ 
+			and s.work_date<=#{date_end}
+		]]>
+		</if>
+		
+		order by s.factory,s.workshop,s.workgroup,s.team,s.work_date,s.wait_reason,s.detail_reason desc
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>		
+	</select>
+	
+	<select id="getWaitWorkTimeCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_HR_WAIT_SALARY s WHERE 1=1
+		<if test="status !=null and status !=''">
+			and s.status=#{status}
+		</if>
+		<if test="factory !=null and factory !='' and factory !='请选择'">
+			and s.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='' and workshop !='请选择'">
+			and find_in_set(s.workshop,#{workshop})>0
+		</if>
+		<if test="workgroup !=null and workgroup !='' and workgroup !='请选择'">
+			and s.workgroup=#{workgroup}
+		</if>
+		<if test="team !=null and team !='' and team !='请选择'">
+			and s.team=#{team}
+		</if>
+		<if test="waitReason !=null and waitReason !=''">
+			and s.wait_reason=#{waitReason}
+		</if>		
+		<if test="workDate !=null and workDate !=''">
+			and s.work_date=#{workDate}
+		</if>
+		<if test="staffNum !=null and staffNum!=''">
+			and find_in_set(s.staff_number,#{staffNum})>0
+		</if>	
+		<if test="wdateStart !=null and wdateStart !=''">
+		<![CDATA[ 
+			and s.work_date>=#{wdateStart}
+		]]>
+			</if>
+			<if test="wdateEnd !=null and wdateEnd !=''">
+		<![CDATA[ 
+			and s.work_date<=#{wdateEnd}
+		]]>
+		</if>
+		
+	</select>
+	
+	<insert id="addRewards" parameterType="List">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<foreach collection="list" index="index" item="item"
+			separator=";">
+			INSERT INTO BMS_HR_REWARDS(staff_number,rewards_date
+			<if test="item.rewards_factory!=null and item.rewards_factory!=''">,rewards_factory</if>
+			<if test="item.rewards_workshop!=null and item.rewards_workshop!=''">,rewards_workshop</if>
+			<if test="item.reasons!=null and item.reasons!=''">,reasons</if>
+			<if test="item.add!=null and item.add!=''">,`add`</if>
+			<if test="item.deduct!=null and item.deduct!=''">,deduct</if>
+			<if test="item.group_leader!=null and item.group_leader!=''">,group_leader</if>
+			<if test="item.gaffer!=null and item.gaffer!=''">,gaffer</if>
+			<if test="item.proposer!=null and item.proposer!=''">,proposer</if>
+			<if test="item.editor_id!=null and item.editor_id!=''">,editor_id</if>
+			<if test="item.edit_date!=null and item.edit_date!=''">,edit_date</if>
+			)
+			VALUES(#{item.staff_number},#{item.rewards_date}
+			<if test="item.rewards_factory!=null and item.rewards_factory!=''">,#{item.rewards_factory}</if>
+			<if test="item.rewards_workshop!=null and item.rewards_workshop!=''">,#{item.rewards_workshop}</if>
+			<if test="item.reasons!=null and item.reasons!=''">,#{item.reasons}</if>
+			<if test="item.add!=null and item.add!=''">,#{item.add}</if>
+			<if test="item.deduct!=null and item.deduct!=''">,#{item.deduct}</if>
+			<if test="item.group_leader!=null and item.group_leader!=''">,#{item.group_leader}</if>
+			<if test="item.gaffer!=null and item.gaffer!=''">,#{item.gaffer}</if>
+			<if test="item.proposer!=null and item.proposer!=''">,#{item.proposer}</if>
+			<if test="item.editor_id!=null and item.editor_id!=''">,#{item.editor_id}</if>
+			<if test="item.edit_date!=null and item.edit_date!=''">,#{item.edit_date}</if>
+			)
+		</foreach>
+	</insert>
+
+	<!-- 查询奖惩信息 -->
+	<select id="getRewardsList" resultType="Map" parameterType='Map'>
+		SELECT r.*,s.name FROM BMS_HR_REWARDS r
+		LEFT JOIN BMS_HR_STAFF s ON r.staff_number = s.staff_number and s.status = '在职'  
+		WHERE 1=1
+		<if test="rewards_date!=null and rewards_date!=''">
+			AND r.rewards_date LIKE CONCAT('%',#{rewards_date},'%')
+		</if>
+		<if test="staff_number!=null">
+			AND r.staff_number LIKE CONCAT('%',#{staff_number},'%') 
+			AND (s.staff_number LIKE CONCAT('%',#{staff_number},'%') OR s.name LIKE CONCAT('%',#{staff_number},'%'))
+		</if>
+		<if test="rewards_factory!=null and rewards_factory!=''">
+			AND r.rewards_factory = #{rewards_factory}
+		</if>
+		<if test="rewards_workshop!=null and rewards_workshop!=''">
+			AND r.rewards_workshop = #{rewards_workshop}
+		</if>
+		order by staff_number,rewards_date
+        <if test="start !=null  and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getRewardsListCount" resultType="int"
+		parameterType='Map'>
+		SELECT count(r.id) FROM BMS_HR_REWARDS r
+		LEFT JOIN BMS_HR_STAFF s ON r.staff_number = s.staff_number   and s.status = '在职'  
+		WHERE 1=1
+		<if test="rewards_date!=null and rewards_date!=''">
+			AND r.rewards_date LIKE CONCAT('%',#{rewards_date},'%')
+		</if>
+		<if test="staff_number!=null">
+			AND r.staff_number LIKE CONCAT('%',#{staff_number},'%') 
+			AND (s.staff_number LIKE CONCAT('%',#{staff_number},'%') OR s.name LIKE CONCAT('%',#{staff_number},'%'))
+		</if>
+		<if test="rewards_factory!=null and rewards_factory!=''">
+			AND r.rewards_factory = #{rewards_factory}
+		</if>
+		<if test="rewards_workshop!=null and rewards_workshop!=''">
+			AND r.rewards_workshop = #{rewards_workshop}
+		</if>
+	</select>
+	
+	<update id="deleteRewards" parameterType='Map'>
+		DELETE FROM
+		BMS_HR_REWARDS
+		WHERE FIND_IN_SET(id,#{ids})>0
+	</update>
+	<select id="getOrg" parameterType="List" resultType="Map">
+			<foreach collection="list" index="index" item="item"
+				 separator="UNION ALL" >
+					SELECT o1.name plant
+						<if test="item.workshop!=null">
+							,o2.name workshop
+						</if>
+						FROM BMS_BASE_ORG o1
+						<if test="item.workshop!=null">
+							LEFT JOIN BMS_BASE_ORG o2 on o1.id = o2.parent_id and o2.deleted = '0' and o2.name = #{item.workshop}
+						</if>
+						WHERE o1.name = #{item.plant} AND o1.deleted = '0'
+			</foreach>
+	</select>
+	<insert id="insertRewards" parameterType="List">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<foreach collection="list" index="index" item="item"
+			separator=";">
+			INSERT INTO BMS_HR_REWARDS(staff_number,rewards_date
+			<if test="item.rewards_factory!=null and item.rewards_factory!=''">,rewards_factory</if>
+			<if test="item.rewards_workshop!=null and item.rewards_workshop!=''">,rewards_workshop</if>
+			<if test="item.reasons!=null and item.reasons!=''">,reasons</if>
+			<if test="item.add!=null and item.add!=''">,`add`</if>
+			<if test="item.deduct!=null and item.deduct!=''">,deduct</if>
+			<if test="item.group_leader!=null and item.group_leader!=''">,group_leader</if>
+			<if test="item.gaffer!=null and item.gaffer!=''">,gaffer</if>
+			<if test="item.proposer!=null and item.proposer!=''">,proposer</if>
+			<if test="item.editor_id!=null and item.editor_id!=''">,editor_id</if>
+			<if test="item.edit_date!=null and item.edit_date!=''">,edit_date</if>
+			)
+			VALUES(#{item.staff_number},#{item.rewards_date}
+			<if test="item.rewards_factory!=null and item.rewards_factory!=''">,#{item.rewards_factory}</if>
+			<if test="item.rewards_workshop!=null and item.rewards_workshop!=''">,#{item.rewards_workshop}</if>
+			<if test="item.reasons!=null and item.reasons!=''">,#{item.reasons}</if>
+			<if test="item.add!=null and item.add!=''">,#{item.add}</if>
+			<if test="item.deduct!=null and item.deduct!=''">,#{item.deduct}</if>
+			<if test="item.group_leader!=null and item.group_leader!=''">,#{item.group_leader}</if>
+			<if test="item.gaffer!=null and item.gaffer!=''">,#{item.gaffer}</if>
+			<if test="item.proposer!=null and item.proposer!=''">,#{item.proposer}</if>
+			<if test="item.editor_id!=null and item.editor_id!=''">,#{item.editor_id}</if>
+			<if test="item.edit_date!=null and item.edit_date!=''">,#{item.edit_date}</if>
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="saveWaitWorkHourInfo" parameterType="list">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<foreach collection="list" item="detail" index="index"
+			separator=";">
+			insert into BMS_HR_WAIT_SALARY
+			(staff_number,staff_name,job,plant_org,workshop_org,workgroup_org,team_org,skill_parameter,wait_type,hour_price,work_hour,work_date,
+             wait_reason,stopline_id,detail_reason,whereabouts,duty_unit,status,factory,workshop,workgroup,team,editor,edit_date)
+			values
+			(#{detail.staff_number},#{detail.staff_name},#{detail.job},#{detail.plant_org},#{detail.workshop_org},#{detail.workgroup_org},#{detail.team_org},#{detail.skill_parameter},
+			#{detail.wait_type},#{detail.price},#{detail.work_hour},#{detail.work_date},#{detail.wait_reason},
+            #{detail.stopline_id}, #{detail.detail_reason},#{detail.whereabouts},#{detail.duty_unit},'0',
+            #{detail.factory},#{detail.workshop},#{detail.workgroup},#{detail.team},#{detail.editor},#{detail.edit_date})
+		</foreach>
+	</insert>
+	
+	<!-- added by xiong.jianwu 查询员工计件工时信息 -->
+	<select id="queryStaffHoursDetail" parameterType="Map" resultType="Map">
+		select h.*,s.name staff_name,s.job,s.plant_org,s.workshop_org,sa.ppay
+		from BMS_HR_STAFF_PIECE_HOURS h
+		left join BMS_HR_PIECE_SALARY sa on
+		<if test="salary_model=='技能系数' or salary_model=='承包制' ">
+			h.staff_number=sa.staff_number and h.factory=sa.factory
+			and h.workshop=sa.workshop and h.work_date=sa.work_date and h.bus_number=sa.bus_number
+		</if>
+		<if test="salary_model=='辅助人力' or salary_model=='底薪模式' ">
+			h.staff_number=sa.staff_number and h.factory=sa.factory
+			and h.workshop=sa.workshop and substring(h.work_date,1,7)=sa.work_date
+		</if>
+		left join BMS_HR_STAFF s on h.staff_number=s.staff_number
+		where find_in_set(h.status,#{status})>0 
+		<if test="org_id !=null and org_id !=''">
+			and h.org_id=#{org_id}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number} 
+		</if>
+		<if test="wdate_start !=null and wdate_start !=''">
+			and h.work_date>=#{wdate_start}
+		</if>
+		<if test="wdate_end !=null and wdate_end !=''">
+			and h.work_date&lt;=#{wdate_end}
+		</if>	 
+		order by h.bus_number,h.work_date,h.staff_number
+	</select>
+	
+	<update id="deleteWaitHourInfo" parameterType="Map">
+		delete from BMS_HR_WAIT_SALARY where 1=1 
+		<if test="swhid !=null and swhid !=''">
+			and id=#{swhid} and status ='2'
+		</if>
+		<if test="ids !=null and ids !=''">
+			and find_in_set(id,#{ids})>0 and status ='2'
+		</if>
+
+	</update>
+	<update id="batchUpdateWaitPay" parameterType="List">
+		<foreach collection="list" item="detail" index="index"
+			separator=";">
+			update BMS_HR_WAIT_SALARY
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="detail.status!=null">
+					status=#{detail.status},
+				</if>
+				<if test="detail.work_hour!=null">
+					work_hour=#{detail.work_hour},
+				</if>
+				<if test="detail.wpay!=null">
+					wpay=#{detail.wpay},
+				</if>
+				<if test="detail.whereabouts !=null and detail.whereabouts !=''">
+					whereabouts=#{detail.whereabouts},
+				</if>
+				<if test="detail.editor !=null">
+					editor=#{detail.editor},
+				</if>
+				<if test="detail.edit_date !=null">
+					edit_date=#{detail.edit_date},
+				</if>
+				<if test="detail.approver !=null">
+					approver=#{detail.approver},
+				</if>
+				<if test="detail.approve_date !=null">
+					approve_date=#{detail.approve_date},
+				</if>
+			</trim>
+			where id=#{detail.id}
+			<if test="detail.actionType!=null">
+				and status !='3'
+			</if>
+		</foreach>
+	</update>
+	
+	<select id="getAttendanceList" resultType="Map" parameterType='Map'>
+		SELECT s.staff_number,a.month,a.attendance_days,a.attendance_hours,
+		IF(a.D1='0','',a.D1) AS D1,IF(a.D2='0','',a.D2) AS
+		D2,IF(a.D3='0','',a.D3) AS D3,IF(a.D4='0','',a.D4) AS D4,
+		IF(a.D5='0','',a.D5) AS D5,IF(a.D6='0','',a.D6) AS
+		D6,IF(a.D7='0','',a.D7) AS D7,IF(a.D8='0','',a.D8) AS D8,
+		IF(a.D9='0','',a.D9) AS D9,IF(a.D10='0','',a.D10) AS
+		D10,IF(a.D11='0','',a.D11) AS D11,IF(a.D12='0','',a.D12) AS D12,
+		IF(a.D13='0','',a.D13) AS D13,IF(a.D14='0','',a.D14) AS
+		D14,IF(a.D15='0','',a.D15) AS D15,IF(a.D16='0','',a.D16) AS D16,
+		IF(a.D17='0','',a.D17) AS D17,IF(a.D18='0','',a.D18) AS
+		D18,IF(a.D19='0','',a.D19) AS D19,IF(a.D20='0','',a.D20) AS D20,
+		IF(a.D21='0','',a.D21) AS D21,IF(a.D22='0','',a.D22) AS
+		D22,IF(a.D23='0','',a.D23) AS D23,IF(a.D24='0','',a.D24) AS D24,
+		IF(a.D25='0','',a.D25) AS D25,IF(a.D26='0','',a.D26) AS
+		D26,IF(a.D27='0','',a.D27) AS D27,IF(a.D28='0','',a.D28) AS D28,
+		IF(a.D29='0','',a.D29) AS D29,IF(a.D30='0','',a.D30) AS
+		D30,IF(a.D31='0','',a.D31) AS D31,s.name 
+		FROM  BMS_HR_STAFF s 
+		LEFT JOIN BMS_HR_STAFF_ATTENDANCE a ON a.staff_number = s.staff_number and a.month = #{month}
+		where 1=1
+		and s.salary_type='计件' and s.status = '在职' 
+		<if test="factory!=null and factory!=''"> AND s.plant_org = #{factory} </if>
+		<if test="workshop!=null and workshop!=''"> AND s.workshop_org = #{workshop} </if>
+		<if test="workgroup!=null and workgroup!=''"> AND s.workgroup_org = #{workgroup} </if>
+		<if test="team!=null and team!=''"> AND s.team_org = #{team}</if>
+		<if test="staff_number!=null and staff_number !=''">
+			AND (s.staff_number LIKE CONCAT('%',#{staff_number},'%')
+			OR s.name LIKE CONCAT('%',#{staff_number},'%'))
+		</if>
+		<if test="start !=null  and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getAttendanceListCount" resultType="int"
+		parameterType='Map'>
+		select count(distinct t1.staff_id) from (
+		select s.id staff_id from
+		BMS_HR_STAFF s where 1=1 and s.salary_type='计件' and s.status = '在职' 
+		<if test="factory!=null and factory!=''"> AND s.plant_org = #{factory} </if>
+		<if test="workshop!=null and workshop!=''"> AND s.workshop_org = #{workshop} </if>
+		<if test="workgroup!=null and workgroup!=''"> AND s.workgroup_org = #{workgroup} </if>
+		<if test="team!=null and team!=''"> AND s.team_org = #{team}</if>
+		<if test="staff_number!=null and staff_number !=''">
+			AND (s.staff_number LIKE CONCAT('%',#{staff_number},'%')
+			OR s.name LIKE CONCAT('%',#{staff_number},'%'))
+		</if>
+		) t1
+	</select>
+	
+	<select id="getStaffAttendanceInfo" resultType="Map" parameterType='Map'>
+		SELECT * FROM BMS_HR_STAFF_ATTENDANCE 
+		WHERE `month` = #{month} AND staff_number = #{staff_number}
+	</select>
+	<update id="delAttendance" parameterType='Map'>
+		DELETE FROM
+		BMS_HR_STAFF_ATTENDANCE
+		WHERE FIND_IN_SET(staff_number,#{staff_numbers})>0 AND month = #{month}
+	</update>
+	<insert id="insertAttendance" parameterType="List">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<foreach collection="list" index="index" item="item"
+			separator=";">
+			INSERT INTO
+			BMS_HR_STAFF_ATTENDANCE(staff_number,month,attendance_days,attendance_hours,edit_date,editor_id
+			<if test="item.D1!=null and item.D1!=''">,D1</if>
+			<if test="item.D2!=null and item.D2!=''">,D2</if>
+			<if test="item.D3!=null and item.D3!=''">,D3</if>
+			<if test="item.D4!=null and item.D4!=''">,D4</if>
+			<if test="item.D5!=null and item.D5!=''">,D5</if>
+			<if test="item.D6!=null and item.D6!=''">,D6</if>
+			<if test="item.D7!=null and item.D7!=''">,D7</if>
+			<if test="item.D8!=null and item.D8!=''">,D8</if>
+			<if test="item.D9!=null and item.D9!=''">,D9</if>
+			<if test="item.D10!=null and item.D10!=''">,D10</if>
+			<if test="item.D11!=null and item.D11!=''">,D11</if>
+			<if test="item.D12!=null and item.D12!=''">,D12</if>
+			<if test="item.D13!=null and item.D13!=''">,D13</if>
+			<if test="item.D14!=null and item.D14!=''">,D14</if>
+			<if test="item.D15!=null and item.D15!=''">,D15</if>
+			<if test="item.D16!=null and item.D16!=''">,D16</if>
+			<if test="item.D17!=null and item.D17!=''">,D17</if>
+			<if test="item.D18!=null and item.D18!=''">,D18</if>
+			<if test="item.D19!=null and item.D19!=''">,D19</if>
+			<if test="item.D20!=null and item.D20!=''">,D20</if>
+			<if test="item.D21!=null and item.D21!=''">,D21</if>
+			<if test="item.D22!=null and item.D22!=''">,D22</if>
+			<if test="item.D23!=null and item.D23!=''">,D23</if>
+			<if test="item.D24!=null and item.D24!=''">,D24</if>
+			<if test="item.D25!=null and item.D25!=''">,D25</if>
+			<if test="item.D26!=null and item.D26!=''">,D26</if>
+			<if test="item.D27!=null and item.D27!=''">,D27</if>
+			<if test="item.D28!=null and item.D28!=''">,D28</if>
+			<if test="item.D29!=null and item.D29!=''">,D29</if>
+			<if test="item.D30!=null and item.D30!=''">,D30</if>
+			<if test="item.D31!=null and item.D31!=''">,D31</if>
+			)
+			VALUES(#{item.staff_number},#{item.month},#{item.attendance_days},#{item.attendance_hours},#{item.edit_date},#{item.editor_id}
+			<if test="item.D1!=null and item.D1!=''">,#{item.D1}</if>
+			<if test="item.D2!=null and item.D2!=''">,#{item.D2}</if>
+			<if test="item.D3!=null and item.D3!=''">,#{item.D3}</if>
+			<if test="item.D4!=null and item.D4!=''">,#{item.D4}</if>
+			<if test="item.D5!=null and item.D5!=''">,#{item.D5}</if>
+			<if test="item.D6!=null and item.D6!=''">,#{item.D6}</if>
+			<if test="item.D7!=null and item.D7!=''">,#{item.D7}</if>
+			<if test="item.D8!=null and item.D8!=''">,#{item.D8}</if>
+			<if test="item.D9!=null and item.D9!=''">,#{item.D9}</if>
+			<if test="item.D10!=null and item.D10!=''">,#{item.D10}</if>
+			<if test="item.D11!=null and item.D11!=''">,#{item.D11}</if>
+			<if test="item.D12!=null and item.D12!=''">,#{item.D12}</if>
+			<if test="item.D13!=null and item.D13!=''">,#{item.D13}</if>
+			<if test="item.D14!=null and item.D14!=''">,#{item.D14}</if>
+			<if test="item.D15!=null and item.D15!=''">,#{item.D15}</if>
+			<if test="item.D16!=null and item.D16!=''">,#{item.D16}</if>
+			<if test="item.D17!=null and item.D17!=''">,#{item.D17}</if>
+			<if test="item.D18!=null and item.D18!=''">,#{item.D18}</if>
+			<if test="item.D19!=null and item.D19!=''">,#{item.D19}</if>
+			<if test="item.D20!=null and item.D20!=''">,#{item.D20}</if>
+			<if test="item.D21!=null and item.D21!=''">,#{item.D21}</if>
+			<if test="item.D22!=null and item.D22!=''">,#{item.D22}</if>
+			<if test="item.D23!=null and item.D23!=''">,#{item.D23}</if>
+			<if test="item.D24!=null and item.D24!=''">,#{item.D24}</if>
+			<if test="item.D25!=null and item.D25!=''">,#{item.D25}</if>
+			<if test="item.D26!=null and item.D26!=''">,#{item.D26}</if>
+			<if test="item.D27!=null and item.D27!=''">,#{item.D27}</if>
+			<if test="item.D28!=null and item.D28!=''">,#{item.D28}</if>
+			<if test="item.D29!=null and item.D29!=''">,#{item.D29}</if>
+			<if test="item.D30!=null and item.D30!=''">,#{item.D30}</if>
+			<if test="item.D31!=null and item.D31!=''">,#{item.D31}</if>
+			)
+		</foreach>
+	</insert>
+	<update id="editTmpOrderType" parameterType='Map'>
+		update 
+		BMS_PD_TMP_ORDER_TYPE set 
+		<if test="name!=null and name !=''">
+			name=#{name},
+		</if>
+		<if test="cost_transfer!=null and cost_transfer !=''">
+			cost_transfer=#{cost_transfer}
+		</if>
+		WHERE id= #{id}
+	</update>
+	<insert id="insertTmpOrderType" parameterType="Map">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+			INSERT INTO
+			BMS_PD_TMP_ORDER_TYPE(name,cost_transfer,editor,edit_date)
+			VALUES(#{name},#{cost_transfer},#{editor},#{edit_date})
+	</insert>
+	<update id="delTmpOrderType" parameterType='String'>
+		delete from
+		BMS_PD_TMP_ORDER_TYPE WHERE id= #{id}
+	</update>
+	<select id="getTmpOrderTypeList" parameterType="Map" resultType="Map">
+		SELECT s.*,u.username as username FROM BMS_PD_TMP_ORDER_TYPE s 
+		left join BMS_BASE_USER u on s.editor=u.id
+		WHERE 1=1
+		<if test="name !=null and name !=''">
+			and s.name=#{name}
+		</if>
+		<if test="cost_transfer !=null and cost_transfer !=''">
+			and s.cost_transfer=#{cost_transfer}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>		
+	</select>
+	<select id="getTmpOrderTypeCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_PD_TMP_ORDER_TYPE s WHERE 1=1
+		<if test="name !=null and name !=''">
+			and s.name=#{name}
+		</if>
+		<if test="cost_transfer !=null and cost_transfer !=''">
+			and s.cost_transfer=#{cost_transfer}
+		</if>
+	</select>
+	<select id="getExtraWorkHourManagerList" parameterType="Map" resultType="Map">
+		SELECT s.* FROM BMS_PD_TMP_HOURS s WHERE 1=1
+		<if test="tmp_order_type !=null and tmp_order_type !=''">
+			and s.tmp_order_type=#{tmp_order_type}
+		</if>
+		<if test="no !=null and no !=''">
+			and s.no=#{no}
+		</if>
+		<if test="bus_type !=null and bus_type !=''">
+			and s.bus_type=#{bus_type}
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and s.order_no=#{order_no}
+		</if>
+		<if test="order_type !=null and order_type !=''">
+			and s.order_type LIKE CONCAT('%',#{order_type},'%')
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and s.reason_content LIKE CONCAT('%',#{reason_content},'%')
+		</if>
+		order by id desc
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>		
+	</select>
+	<select id="getExtraWorkHourManagerCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_PD_TMP_HOURS s WHERE 1=1
+		<if test="tmp_order_type !=null and tmp_order_type !=''">
+			and s.tmp_order_type=#{tmp_order_type}
+		</if>
+		<if test="no !=null and no !=''">
+			and s.no=#{no}
+		</if>
+		<if test="bus_type !=null and bus_type !=''">
+			and s.bus_type=#{bus_type}
+		</if>
+		<if test="order_no !=null and order_no !=''">
+			and s.order_no=#{order_no}
+		</if>
+		<if test="order_type !=null and order_type !=''">
+			and s.order_type LIKE CONCAT('%',#{order_type},'%')
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and s.reason_content LIKE CONCAT('%',#{reason_content},'%')
+		</if>
+	</select>
+	
+	<select id="getTmpOrderListForVerify" parameterType="Map" resultType="Map">
+	SELECT T.*,U.display_name AS applier_name FROM
+	(SELECT O.id,O.tmp_order_no,O.factory,O.workshop,O.reason_content,O.total_qty,O.labors,O.status,O.sap_order,
+	O.finished_qty,O.single_hour,O.applier,O.apply_date,SUM(H.work_hour) AS workhour_total,
+	GROUP_CONCAT(H.status),
+	IF((LOCATE('2', GROUP_CONCAT(H.status))>0),'已驳回','未驳回') AS '驳回状态',
+	IF((REPLACE(REPLACE(GROUP_CONCAT(H.status),',',''),'1','')=''),'已审批','未审批') AS '审批状态'
+	FROM BMS_PD_TMP_ORDER O
+	LEFT OUTER JOIN BMS_HR_STAFF_TMP_HOURS H ON H.temp_order_id = O.id 
+	GROUP BY O.id) T 
+	LEFT OUTER JOIN BMS_BASE_USER U ON T.applier = U.id
+	WHERE 1=1 
+	<if test="factory !=null">
+		and T.factory = #{factory}
+	</if>
+	<if test="workshop !=null">
+		and find_in_set(T.workshop,#{workshop})>0
+	</if>
+	<if test="orderNo !=null and orderNo !=''">
+		and T.tmp_order_no like concat('%',#{orderNo},'%')
+	</if>
+	<if test="hourstatus=='未审批'">
+		and T.审批状态 = '未审批'
+	</if>
+	<if test="hourstatus=='已审批'">
+		and T.审批状态 = '已审批'
+	</if>
+	<if test="hourstatus=='已驳回'">
+		and T.驳回状态 = '已驳回'
+	</if>
+	</select>
+	<select id="getTmpOrderForVerifyCount" parameterType="Map" resultType="int">
+	SELECT COUNT(T.id) FROM
+	(SELECT O.id,O.tmp_order_no,O.factory,O.workshop,O.reason_content,O.total_qty,
+	O.finished_qty,O.single_hour,O.applier,O.apply_date,SUM(H.work_hour) AS workhour_total,
+	GROUP_CONCAT(H.status),
+	IF((LOCATE('2', GROUP_CONCAT(H.status))>0),'已驳回','未驳回') AS '驳回状态',
+	IF((REPLACE(REPLACE(GROUP_CONCAT(H.status),',',''),'1','')=''),'已审批','未审批') AS '审批状态'
+	FROM BMS_PD_TMP_ORDER O
+	LEFT OUTER JOIN BMS_HR_STAFF_TMP_HOURS H ON H.temp_order_id = O.id 
+	GROUP BY O.id) T WHERE 1=1 
+	<if test="factory !=null">
+		and T.factory = #{factory}
+	</if>
+	<if test="workshop !=null">
+		and find_in_set(T.workshop,#{workshop})>0
+	</if>
+	<if test="orderNo !=null and orderNo !=''">
+		and T.tmp_order_no like concat('%',#{orderNo},'%')
+	</if>
+	<if test="hourstatus=='未审批'">
+		and T.审批状态 = '未审批'
+	</if>
+	<if test="hourstatus=='已审批'">
+		and T.审批状态 = '已审批'
+	</if>
+	<if test="hourstatus=='已驳回'">
+		and T.驳回状态 = '已驳回'
+	</if>
+	</select>
+	
+	<select id="getTmpOrderList" parameterType="Map" resultType="Map">
+		SELECT (select sum(ifnull(output,0)) from BMS_PD_TMP_ORDER_SCHEDULE s
+		where o.id=s.temp_order_id group by s.temp_order_id) finished_qty,
+		o.*,h.hour_total,h1.hour_total workhour_total,U.display_name applier_name
+		FROM BMS_PD_TMP_ORDER o
+		LEFT OUTER JOIN BMS_BASE_USER U ON o.applier = U.id
+		left join (
+		select
+		sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on h.temp_order_id=o.id
+		where h.status in ('0','2')
+		<if test="factory !=null">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		group by o.id,h.factory,h.workshop
+		)h on h.temp_order_id=o.id and h.factory=o.factory and h.workshop=o.workshop
+		left join (
+		select sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on h.temp_order_id=o.id
+		where 1=1
+		<if test="factory !=null">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		group by o.id,h.factory,h.workshop )h1 on h1.temp_order_id=o.id and
+		h1.factory=o.factory and h1.workshop=o.workshop where 1=1
+		 <if test="actionType =='create'">
+			and o.applier=#{applier}
+		</if>
+		<if test="actionType =='assessVerify'">
+			and o.single_hour is not null
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		<if test="status !=null and status !='all'">
+			and o.status = #{status}
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and o.reason_content like concat('%',#{reason_content},'%')
+		</if>
+		<if test="applyDateStart !=null and applyDateStart !=''">
+			<![CDATA[and substr(o.apply_date,1,10)>=#{applyDateStart}]]>
+		</if>
+		<if test="applyDateEnd !=null and applyDateEnd !=''">
+			<![CDATA[and substr(o.apply_date,1,10)<=#{applyDateEnd}]]>
+		</if>
+		<if test="factory !=null">
+			and o.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(o.workshop,#{workshop})>0
+		</if>
+		<if test="actionType=='hourVerify'">
+			<if test="hourstatus=='未审批'">
+				and h.hour_total>0
+			</if>
+			<if test="hourstatus=='已审批'">
+				and (h.hour_total is null or h.hour_total=0)
+			</if>
+		</if>
+		order by o.apply_date desc
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getTmpOrderCount" parameterType="Map" resultType="int">
+		SELECT count(o.id) FROM BMS_PD_TMP_ORDER o
+		left join (
+		select
+		sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on h.temp_order_id=o.id
+		where h.status in ('0','2') 
+		<if test="factory !=null">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		group by o.id,h.factory,h.workshop
+		)h on h.temp_order_id=o.id and h.factory=o.factory and h.workshop=o.workshop
+		left join (
+		select sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on h.temp_order_id=o.id
+		where 1=1 
+		<if test="factory !=null">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		group by o.id,h.factory,h.workshop )h1 on h1.temp_order_id=o.id and
+		h1.factory=o.factory and h1.workshop=o.workshop where 1=1
+		 <if test="actionType =='create'">
+			and o.applier=#{applier}
+		</if>
+		<if test="actionType =='assessVerify'">
+			and o.single_hour is not null
+		</if>
+		<if test="orderNo !=null and orderNo !=''">
+			and o.tmp_order_no like concat('%',#{orderNo},'%')
+		</if>
+		<if test="status !=null and status !='all'">
+			and o.status = #{status}
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and o.reason_content like concat('%',#{reason_content},'%')
+		</if>
+		<if test="applyDateStart !=null and applyDateStart !=''">
+			<![CDATA[and substr(o.apply_date,1,10)>=#{applyDateStart}]]>
+		</if>
+		<if test="applyDateEnd !=null and applyDateEnd !=''">
+			<![CDATA[and substr(o.apply_date,1,10)<=#{applyDateEnd}]]>
+		</if>
+		<if test="factory !=null">
+			and o.factory = #{factory}
+		</if>
+		<if test="workshop !=null">
+			and find_in_set(o.workshop,#{workshop})>0
+		</if>
+		<if test="actionType=='hourVerify'">
+			<if test="hourstatus=='未审批'">
+				and h.hour_total>0
+			</if>
+			<if test="hourstatus=='已审批'">
+				and (h.hour_total is null or h.hour_total=0)
+			</if>
+		</if>
+	</select>
+	
+	<update id="editExtraWorkHourManager" parameterType='Map'>
+		update 
+		BMS_PD_TMP_HOURS set 
+		<if test="tmp_order_type!=null and tmp_order_type !=''">
+			tmp_order_type=#{tmp_order_type},
+		</if>
+		<if test="no!=null and no !=''">
+			no=#{no},
+		</if>
+		<if test="bus_type!=null and bus_type !=''">
+			bus_type=#{bus_type},
+		</if>
+		<if test="order_no!=null and order_no !=''">
+			order_no=#{order_no},
+		</if>
+		<if test="time!=null and time !=''">
+			time=#{time},
+		</if>
+		<if test="tmp_name!=null and tmp_name !=''">
+			tmp_name=#{tmp_name},
+		</if>
+		<if test="reason_content!=null and reason_content !=''">
+			reason_content=#{reason_content},
+		</if>
+		<if test="description!=null and description !=''">
+			description=#{description},
+		</if>
+		<if test="single_hour!=null and single_hour !=''">
+			single_hour=#{single_hour},
+		</if>
+		<if test="order_type!=null and order_type !=''">
+			order_type=#{order_type},
+		</if>
+		<if test="assesor!=null and assesor !=''">
+			assesor=#{assesor},
+		</if>
+		<if test="assess_verifier!=null and assess_verifier !=''">
+			assess_verifier=#{assess_verifier},
+		</if>
+		<if test="duty_unit!=null and duty_unit !=''">
+			duty_unit=#{duty_unit},
+		</if>
+		memo=#{memo} WHERE id= #{id}
+	</update>
+	<insert id="insertExtraWorkHourManager" parameterType="Map">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+			INSERT INTO
+			BMS_PD_TMP_HOURS(tmp_order_type,no,bus_type,order_no,time,tmp_name,
+			reason_content,description,single_hour,order_type,assesor,assess_verifier,
+			duty_unit,deleted,memo)
+			VALUES(#{tmp_order_type},#{no},#{bus_type},#{order_no},#{time},#{tmp_name},
+			#{reason_content},#{description},#{single_hour},#{order_type},#{assesor},
+			#{assess_verifier},#{duty_unit},'0',#{memo})
+	</insert>
+	<update id="delExtraWorkHourManager" parameterType='String'>
+		delete from
+		BMS_PD_TMP_HOURS WHERE id= #{id}
+	</update>
+	
+	<insert id="saveWorkHourInfo" parameterType="list">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		<foreach collection="list" item="detail" index="index"
+			separator=";">
+			insert into BMS_HR_STAFF_TMP_HOURS
+			(org_id,temp_order_id,work_date,staff_number,work_hour,editor_id,edit_date,skill_parameter,factory,workshop,workgroup,team)
+			values
+			(#{detail.subgroupId},#{detail.temp_order_id},#{detail.workDate},#{detail.staff_number},#{detail.workHour},#{detail.editorId},#{detail.editDate},
+			#{detail.skillParameter},#{detail.factory},#{detail.workshop},#{detail.workgroup},#{detail.team})
+		</foreach>
+	</insert>
+	
+	<select id="queryStaffTmpHours" parameterType="Map" resultType="Map">
+		select h.id,h.work_hour,o.name work_org,s.staff_number,s.name
+		staff_name,s.plant_org,s.workshop_org,s.workgroup_org,s.team_org,s.job,h.work_date,
+		case h.status when '0' then '已维护' when '1' then '已审批' when '2' then
+		'已驳回' else '已锁定' end as status,u.username
+		editor,h.edit_date,u1.username approver,h.approve_date,u.email
+		from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_BASE_ORG o on h.org_id=o.id
+		left join
+		BMS_HR_STAFF s on h.staff_number=s.staff_number
+		left join BMS_BASE_USER u on
+		u.staff_number=h.editor_id
+		left join BMS_BASE_USER u1 on u1.staff_number=h.approver_id
+		where 1=1 
+		<if test="orgId !=null and orgId !=''">
+			and h.org_id=#{orgId}
+		</if>
+		<if test="staffNum !=null and staffNum !=''">
+			and find_in_set(s.staff_number,#{staffNum})>0
+		</if>
+		<if test="workDate !=null and workDate !=''">
+			and h.work_date=#{workDate}
+		</if>
+		<if test="workMonth!=null and workMonth !=''">
+			and h.work_date like concat(#{workMonth},'%')
+		</if>
+		<if test="ecnTaskId !=null and ecnTaskId !=''">
+			and h.ecn_task_id=#{ecnTaskId}
+		</if>
+		<if test="factory !=null and factory !=''">
+			and h.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and h.workshop=#{workshop}
+		</if>
+		<if test="temp_order_id !=null and temp_order_id !=''">
+			and h.temp_order_id=#{temp_order_id}
+		</if>
+		order by h.status
+		<if test="offset!=null">
+			LIMIT #{offset} ,#{pageSize}
+		</if>
+	</select>
+	
+	<update id="deleteStaffTmpHourInfo" parameterType="Map">
+		delete from BMS_HR_STAFF_TMP_HOURS where 1=1 
+		<if test="swhid !=null and swhid !=''">
+			and id=#{swhid} and status ='2'
+		</if>
+		<if test="busNumber !=null and busNumber !=''">
+			and bus_number=#{busNumber}  and status ='2'
+		</if>
+		<if test="orgId !=null and orgId !=''">
+			and org_id=#{orgId} and status ='2'
+		</if>
+		<if test="workDate !=null and workDate !=''">
+			and work_date=#{workDate} and status ='2'
+		</if>
+		<if test="startDate !=null and startDate !=''">
+			and work_date>=#{startDate} and status ='2'
+		</if>
+		<if test="endDate !=null and endDate !=''">
+			and work_date&lt;=#{endDate} and status ='2'
+		</if>
+		<if test="ids !=null and ids !=''">
+			and find_in_set(id,#{ids})>0 and status ='2'
+		</if>
+		<if test="factory !=null and factory !=''">
+			and factory=#{factory} and status ='2'
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and workshop=#{workshop} and status ='2'
+		</if>
+		<if test="workgroup !=null and workgroup !=''">
+			and workgroup=#{workgroup} and status ='2'
+		</if>
+		<if test="team !=null and team !=''">
+			and team=#{team} and status ='2'
+		</if>
+
+	</update>
+	
+	<update id="verifyOrder" parameterType="Map">
+		update BMS_PD_TMP_ORDER
+		set status=
+		(case when total_qty=finished_qty then '1' else '0' end),
+		workhour_auditor=#{auditorId},workhour_auditor_date=#{auditDate}
+		where id =#{tempOrderId}
+	</update>
+	<update id="rejectOrder" parameterType="Map">
+		update BMS_PD_TMP_ORDER
+		set
+		status='2',workhour_auditor=#{auditor},workhour_auditor_date=#{auditDate}
+		where id =#{tempOrderId}
+	</update>
+	<update id="batchUpdateWorkHour" parameterType="List">
+		<foreach collection="list" item="detail" index="index" separator=";">
+			update BMS_HR_STAFF_TMP_HOURS
+			<trim prefix="SET" suffixOverrides=",">
+				<if test="detail.status!=null">
+					status=#{detail.status},
+				</if>
+				<if test="detail.participation!=null">
+					participation=#{detail.participation},
+				</if>
+				<if test="detail.distribution!=null">
+					distribution=#{detail.distribution},
+				</if>
+				<if test="detail.workHour !=null">
+					work_hour=#{detail.workHour},
+				</if>
+				<if test="detail.editor_id !=null">
+					editor_id=#{detail.editor_id},
+				</if>
+				<if test="detail.edit_date !=null">
+					edit_date=#{detail.edit_date},
+				</if>
+				<if test="detail.approver_id !=null">
+					approver_id=#{detail.approver_id},
+				</if>
+				<if test="detail.approve_date !=null">
+					approve_date=#{detail.approve_date},
+				</if>
+				<if test="detail.whereabouts !=null">
+					whereabouts=#{detail.whereabouts},
+				</if>
+				<if test="detail.bonus !=null and detail.bonus !=''">
+					bonus=#{detail.bonus},
+				</if>
+			</trim>
+			where id=#{detail.id}
+			<if test="detail.actionType!=null">
+				and status !='3'
+			</if>
+		</foreach>
+	</update>
+	<select id="getCreateTmpOrderList" parameterType="Map" resultType="Map">
+		SELECT s.* FROM BMS_PD_TMP_ORDER s WHERE 1=1 and deleted='0'
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and s.tmp_order_no=#{tmp_order_no}
+		</if>
+		<if test="status !=null and status !=''">
+			and s.status=#{status}
+		</if>
+		<if test="factory !=null and factory !=''">
+			and s.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(s.workshop,#{workshop})>0
+		</if>
+		<if test="apply_date_start !=null and apply_date_start !=''">
+			and s.apply_date  <![CDATA[ >=#{apply_date_start} ]]>
+		</if>
+		<if test="apply_date_end !=null and apply_date_end !=''">
+			and s.apply_date <![CDATA[<= #{apply_date_end}  ]]>
+		</if>
+		order by s.apply_date desc
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>		
+	</select>
+	<select id="getCreateTmpOrderCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_PD_TMP_ORDER s WHERE 1=1 and deleted='0'
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and s.tmp_order_no=#{tmp_order_no}
+		</if>
+		<if test="status !=null and status !=''">
+			and s.status=#{status}
+		</if>
+		<if test="factory !=null and factory !=''">
+			and s.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(s.workshop,#{workshop})>0
+		</if>
+		<if test="apply_date_start !=null and apply_date_start !=''">
+		<![CDATA[	and s.apply_date>= #{apply_date_start} ]]>
+		</if>
+		<if test="apply_date_end !=null and apply_date_end !=''">
+		<![CDATA[	and s.apply_date<= #{apply_date_end} ]]>
+		</if>
+	</select>
+	<update id="editCreateTmpOrder" parameterType='Map'>
+		update 
+		BMS_PD_TMP_ORDER set 
+		<if test="tmp_order_type!=null and tmp_order_type !=''">
+			tmp_order_type=#{tmp_order_type},
+		</if>
+		<if test="factory!=null and factory !=''">
+			factory=#{factory},
+		</if>
+		<if test="bus_type!=null and bus_type !=''">
+			bus_type=#{bus_type},
+		</if>
+		<if test="workshop!=null and workshop !=''">
+			workshop=#{workshop},
+		</if>
+		<if test="head_launch_unit!=null and head_launch_unit !=''">
+			head_launch_unit=#{head_launch_unit},
+		</if>
+		<if test="acceptor!=null and acceptor !=''">
+			acceptor=#{acceptor},
+		</if>
+		<if test="reason_content!=null and reason_content !=''">
+			reason_content=#{reason_content},
+		</if>
+		<if test="total_qty!=null and total_qty !=''">
+			total_qty=#{total_qty},
+		</if>
+		<if test="single_hour!=null and single_hour !=''">
+			single_hour=#{single_hour},
+		</if>
+		<if test="total_hours!=null and total_hours !=''">
+			total_hours=#{total_hours},
+		</if>
+		<if test="order_type!=null and order_type !=''">
+			order_type=#{order_type},
+		</if>
+		<if test="assesor!=null and assesor !=''">
+			assesor=#{assesor},
+		</if>
+		<if test="assess_verifier!=null and assess_verifier !=''">
+			assess_verifier=#{assess_verifier},
+		</if>
+		<if test="duty_unit!=null and duty_unit !=''">
+			duty_unit=#{duty_unit},
+		</if>
+		<if test="labors!=null and labors !=''">
+			labors=#{labors},
+		</if>
+		<if test="is_cost_transfer!=null and is_cost_transfer !=''">
+			is_cost_transfer=#{is_cost_transfer},
+		</if>
+		<if test="cost_unit_signer!=null and cost_unit_signer !=''">
+			cost_unit_signer=#{cost_unit_signer},
+		</if>
+		<if test="sap_order!=null and sap_order !=''">
+			sap_order=#{sap_order},
+		</if>
+		<if test="sap_order!=null and sap_order !=''">
+			order_serial_no=#{order_serial_no},
+		</if>
+		tmp_order_no=#{tmp_order_no} WHERE id= #{id}
+	</update>
+	<insert id="insertCreateTmpOrder" parameterType="Map">
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+			INSERT INTO
+			BMS_PD_TMP_ORDER(tmp_order_no,order_serial_no,factory,workshop,sap_order,
+			order_launcher,reason_content,total_qty,single_hour,order_type,head_launch_unit,
+			acceptor,labors,total_hours,assesor,assess_verifier,is_cost_transfer,
+			cost_unit_signer,duty_unit,status,deleted,applier,apply_date)
+			VALUES(#{tmp_order_no},#{order_serial_no},#{factory},#{workshop},
+			#{sap_order},#{order_launcher},#{reason_content},#{total_qty},#{single_hour},#{order_type},
+			#{head_launch_unit},#{acceptor},#{labors},#{total_hours},#{assesor},
+			#{assess_verifier},#{is_cost_transfer},#{cost_unit_signer},
+			#{duty_unit},'0','0',#{applier},#{apply_date})
+	</insert>
+	<update id="delCreateTmpOrder" parameterType='String'>
+		update BMS_PD_TMP_ORDER set deleted='1' WHERE id= #{id}
+	</update>
+	<select id="queryTmpOrderProcedureList" parameterType="Map"
+		resultType="Map">
+		select s.temp_order_id,s.output,u.username recorder,s.record_date from BMS_PD_TMP_ORDER_SCHEDULE s
+		left join BMS_BASE_USER u on s.recorder=u.staff_number where
+		temp_order_id=#{temp_order_id} order by record_date
+	</select>
+	<select id="queryAssignList" parameterType="Map" resultType="Map">
+	<![CDATA[
+		select ROUND(sum(h.real_work_hour),-2) total_hour,ROUND(sum(h.work_hour),-2) total_real_hour,
+		h.team work_org,h.staff_number,s.name staff_name,h.factory,h.workshop,h.workgroup,s.job
+		from BMS_HR_TMP_SALARY h
+		left join
+		BMS_HR_STAFF s on h.staff_number=s.staff_number
+		where h.order_id=#{temp_order_id}
+		group by h.staff_number
+	]]>
+	</select>
+	<select id="queryTmpOrderList" parameterType="Map" resultType="Map">
+		SELECT (select sum(ifnull(output,0)) from BMS_PD_TMP_ORDER_SCHEDULE s
+		where o.id=s.temp_order_id group by s.temp_order_id) finished_qty,
+		o.*,h.hour_total,h1.hour_total workhour_total
+		FROM
+		BMS_PD_TMP_ORDER o
+		left join (
+		select
+		sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on
+		h.temp_order_id=o.id where 1=1
+<!-- 		where h.status in ('0','2') -->
+		<if test="factory !=null and factory !=''">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and o.tmp_order_no like concat('%',#{tmp_order_no},'%')
+		</if>
+		group by o.id,h.factory,h.workshop
+		)h on h.temp_order_id=o.id and
+		h.factory=o.factory and h.workshop=o.workshop
+		left join (
+		select
+		sum(h.work_hour) hour_total,h.factory,h.workshop,h.temp_order_id from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on
+		h.temp_order_id=o.id
+		where 1=1
+		<if test="factory !=null and factory !=''">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and o.tmp_order_no like concat('%',#{tmp_order_no},'%')
+		</if>
+		group by o.id,h.factory,h.workshop
+		)h1 on h1.temp_order_id=o.id and
+		h1.factory=o.factory and h1.workshop=o.workshop
+		where 1=1
+		<!--<if test="actionType =='assign'">
+			and u2.id=#{userId}
+		</if>
+		<if test="actionType =='accept'">
+			and u1.id=#{userId}
+		</if> -->
+		<if test="actionType =='assessVerify'">
+			and o.single_hour is not null
+		</if>
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and o.tmp_order_no like concat('%',#{tmp_order_no},'%')
+		</if>
+		<if test="status !=null and status !=''">
+			and o.status = #{status}
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and o.reason_content like concat('%',#{reason_content},'%')
+		</if>
+			<if test="apply_date_start !=null and apply_date_start !=''">
+				<![CDATA[and substr(o.apply_date,1,10)>=#{apply_date_start}]]>
+			</if>
+			<if test="apply_date_end !=null and apply_date_end !=''">
+				<![CDATA[and substr(o.apply_date,1,10)<=#{apply_date_end}]]>
+			</if>
+		<if test="factory !=null and factory !=''">
+			and o.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(o.workshop,#{workshop})>0
+		</if>
+		<if test="actionType=='hourVerify'">
+			<if test="hourstatus=='未审批'">
+				and h.hour_total>0
+			</if>
+			<if test="hourstatus=='已审批'">
+				and (h.hour_total is null or h.hour_total=0)
+			</if>
+
+		</if>
+		order by o.apply_date desc
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+
+	</select>
+
+	<select id="queryTmpOrderCount" parameterType="Map" resultType="int">
+		SELECT count(o.id)
+		FROM BMS_PD_TMP_ORDER o
+		left join (
+		select count(h.id)
+		hour_total,h.factory,h.workshop,h.temp_order_id from
+		BMS_HR_STAFF_TMP_HOURS h
+		left join BMS_PD_TMP_ORDER o on
+		h.temp_order_id=o.id where 1=1
+<!-- 		where h.status in ('0','2') -->
+		<if test="factory !=null and factory !=''">
+			and h.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(h.workshop,#{workshop})>0
+		</if>
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and o.tmp_order_no like concat('%',#{tmp_order_no},'%')
+		</if>
+		group by o.id,h.factory,h.workshop
+		)h on h.temp_order_id=o.id and
+		h.factory=o.factory and h.workshop=o.workshop
+		where 1=1
+		<if test="tmp_order_no !=null and tmp_order_no !=''">
+			and o.tmp_order_no like concat('%',#{tmp_order_no},'%')
+		</if>
+		<if test="status !=null and status !=''">
+			and o.status = #{status}
+		</if>
+		<if test="reason_content !=null and reason_content !=''">
+			and o.reason_content like concat('%',#{reason_content},'%')
+		</if>
+		<if test="apply_date_start !=null and apply_date_start !=''">
+			<![CDATA[and substr(o.apply_date,1,10)>=#{apply_date_start}]]>
+		</if>
+		<if test="apply_date_end !=null and apply_date_end !=''">
+			<![CDATA[and substr(o.apply_date,1,10)<=#{apply_date_end}]]>
+		</if>
+		<if test="factory !=null and factory !=''">
+			and o.factory = #{factory}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and find_in_set(o.workshop,#{workshop})>0
+		</if>
+		<if test="actionType=='hourVerify'">
+			<if test="hourstatus=='未审批'">
+				and h.hour_total>0
+			</if>
+			<if test="hourstatus=='已审批'">
+				and (h.hour_total is null or h.hour_total=0)
+			</if>
+		</if>
+	</select>
+	
+	<update id="saveTmpOrderProcedure" parameterType="Map">
+		insert into
+		BMS_PD_TMP_ORDER_SCHEDULE (temp_order_id,output,recorder,record_date)
+		values(#{orderId},#{productQty},#{recorder},#{workDate})
+	</update>
+	<update id="updateTmpOrder" parameterType="Map">
+		update BMS_PD_TMP_ORDER
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="reason_content !=null">
+				reason_content=#{reason_content},
+			</if>
+			<if test="order_serial_no !=null">
+				order_serial_no=#{order_serial_no},
+			</if>
+			<if test="factory !=null">
+				factory=#{factory},
+			</if>
+			<if test="workshop !=null">
+				workshop=#{workshop},
+			</if>
+			<if test="sap_order !=null">
+				sap_order=#{sap_order},
+			</if>
+			<if test="order_launcher !=null">
+				order_launcher=#{order_launcher},
+			</if>
+			<if test="total_qty !=null">
+				total_qty=#{total_qty},
+			</if>
+			<if test="single_hour !=null">
+				single_hour=#{single_hour},
+			</if>
+			<if test="order_type !=null">
+				order_type=#{order_type},
+			</if>
+			<if test="head_launch_unit !=null">
+				head_launch_unit=#{head_launch_unit},
+			</if>
+			<if test="acceptor !=null">
+				acceptor=#{acceptor},
+			</if>
+			<if test="labors !=null">
+				labors=#{labors},
+			</if>
+			<if test="applier !=null">
+				applier=#{applier},
+			</if>
+			<if test="apply_date !=null">
+				apply_date=#{apply_date},
+			</if>
+			<if test="assesor !=null">
+				assesor=#{assesor},
+			</if>
+			<if test="assess_verifier !=null">
+				assess_verifier=#{assess_verifier},
+			</if>
+			<if test="is_cost_transfer !=null">
+				is_cost_transfer=#{is_cost_transfer},
+			</if>
+			<if test="cost_unit_signer !=null">
+				cost_unit_signer=#{cost_unit_signer},
+			</if>
+			<if test="factory_manager !=null">
+				factory_manager=#{factory_manager},
+			</if>
+			<if test="status !=null">
+				status=#{status},
+			</if>
+			<if test="duty_unit !=null">
+				duty_unit=#{duty_unit},
+			</if>
+			<if test="finished_qty !=null">
+				finished_qty=#{finished_qty}
+			</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<select id="caculateTmpSalary" statementType="CALLABLE" parameterType="Map" resultType="String">
+		call P_CACULATE_TMP_SALLARY(#{factory},#{workshop},'','',#{workMonth});
+	</select>
+	
+</mapper>
