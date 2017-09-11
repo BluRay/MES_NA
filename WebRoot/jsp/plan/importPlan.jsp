@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<html lang="zh-CN">
+<html lang="en">
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>订单总计划导入</title>
+		<title>Import plan</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 	</head>
@@ -20,9 +20,9 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">首页</a></li>
-						<li><a href="#">生产计划</a></li>
-						<li class="active">订单总计划导入</li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
+						<li><a href="#">Plan</a></li>
+						<li class="active">Import plan</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
@@ -42,12 +42,12 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>生产工厂：</td>
+								<td>Production Factory:</td>
 								<td><select id="search_factory" class="input-small" style="height: 30px;width:120px"></select></td>
-								<td>&nbsp;订单编号：</td>
-								<td><input id="search_order_name" style="height: 30px;" placeholder="请输入订单编号..." class="col-sm-10" type="text"></td>
-								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="查询" style="margin-left: 2px;"></input>&nbsp;</td>
-								<td>&nbsp;<input id="btnBulkAdd" class="btn btn-sm btn-info" value="批量导入" type="button">&nbsp;</td>
+								<td>&nbsp;Project Name:</td>
+								<td><input id="search_project_name" style="height: 30px;" placeholder="Project Name..." class="col-sm-10" type="text"></td>
+								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
+								<td>&nbsp;<input id="btnBulkAdd" class="btn btn-sm btn-info" value="Import" type="button">&nbsp;</td>
 							</tr>
 						</table>
 					</div>
@@ -82,5 +82,5 @@
 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/jquery.form.js"></script>
-	<script type="text/javascript" src="../js/plan/importMaster.js"></script>
+	<script type="text/javascript" src="../js/plan/importPlan.js"></script>
 </html>

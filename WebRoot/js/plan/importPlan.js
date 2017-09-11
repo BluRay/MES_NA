@@ -7,9 +7,9 @@ $(document).ready(function () {
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
 		$("#file").val("");
-		getOrderNoSelect("#search_order_name","#orderId");
+		getOrderNoSelect("#search_project_name","#orderId");
 		getFactorySelect("plan/planRevision",'',"#search_factory",null,'id');
-		ajaxQuery();
+		//ajaxQuery();
 	}
 
 	$('#nav-search-input').bind('keydown', function(event) {

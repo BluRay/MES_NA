@@ -124,7 +124,7 @@ function getOrderNoSelect(elementId, submitId, fn_backcall, bustype,factoryEleme
 					"factory":factory
 			};		
 			return $.ajax({
-				url:"/MES/common/getOrderFuzzySelect",
+				url:"/MES_NA/common/getOrderFuzzySelect",
 				dataType : "json",
 				type : "post",
 				data : data,
@@ -213,7 +213,7 @@ function select_selectOption(elementId,value){
  */
 function getKeysSelect(keyCode, selectval, element,selectType,valueItem) {
 	$.ajax({
-		url : "/MES/common/getKeysSelect",
+		url : "/MES_NA/common/getKeysSelect",
 		dataType : "json",
 		data : {
 			keyCode : keyCode
@@ -254,7 +254,7 @@ function getKeysSelect(keyCode, selectval, element,selectType,valueItem) {
 
 function generatekeys(keyCode, list) {
 	$.ajax({
-		url : "/MES/common/getKeysSelect",
+		url : "/MES_NA/common/getKeysSelect",
 		dataType : "json",
 		data : {
 			keyCode : keyCode
@@ -290,7 +290,7 @@ function generatekeys(keyCode, list) {
 function getFactorySelect(url,selectval,selectId,selectType,valName,orgKind){
 	orgKind=orgKind||'1';
 	$.ajax({
-		url : "/MES/common/getFactorySelectAuth",
+		url : "/MES_NA/common/getFactorySelectAuth",
 		dataType : "json",
 		data : {"function_url":url,"org_kind":orgKind},
 		async : false,
@@ -315,7 +315,7 @@ function getFactorySelect(url,selectval,selectId,selectType,valName,orgKind){
 function getWorkshopSelect(url,factory,selectval,selectId,selectType,valName,orgKind){
 	orgKind=orgKind==undefined?'1':orgKind;
 	$.ajax({
-		url : "/MES/common/getWorkshopSelectAuth",
+		url : "/MES_NA/common/getWorkshopSelectAuth",
 		dataType : "json",
 		data : {"function_url":url,"factory":factory,"org_kind":orgKind},
 		async : false,
@@ -337,7 +337,7 @@ function getWorkshopSelect(url,factory,selectval,selectId,selectType,valName,org
 
 function getWorkgroupSelect(factory,workshop,selectval,selectId,selectType,valName){
 	$.ajax({
-		url : "/MES/common/getWorkgroupSelect",
+		url : "/MES_NA/common/getWorkgroupSelect",
 		dataType : "json",
 		data : {"factory":factory,"workshop":workshop},
 		async : false,
@@ -359,7 +359,7 @@ function getWorkgroupSelect(factory,workshop,selectval,selectId,selectType,valNa
 
 function getTeamSelect(factory,workshop,workgroup,selectval,selectId,selectType,valName){
 	$.ajax({
-		url : "/MES/common/getTeamSelect",
+		url : "/MES_NA/common/getTeamSelect",
 		dataType : "json",
 		data : {"factory":factory,"workshop":workshop,"workgroup":workgroup},
 		async : false,
@@ -378,7 +378,7 @@ function getTeamSelect(factory,workshop,workgroup,selectval,selectId,selectType,
  */
 function getLineSelect(factory,workshop,selectval,selectId,selectType,valName) {
 	$.ajax({
-		url : "/MES/common/getLineSelectAuth",
+		url : "/MES_NA/common/getLineSelectAuth",
 		dataType : "json",
 		data : {
 				factory:factory,
@@ -401,7 +401,7 @@ function getLineSelect(factory,workshop,selectval,selectId,selectType,valName) {
  */
 function getLineSelectStandard(selectval,selectId,selectType,valName){
 	$.ajax({
-		url : "/MES/common/getLineSelect",
+		url : "/MES_NA/common/getLineSelect",
 		dataType : "json",
 		data : {
 			},
@@ -501,7 +501,7 @@ function check_All_unAll(tableId, checkall) {
  */
 function getBusTypeSelect(selectval,selectId,selectType,valName){
 	$.ajax({
-		url : "/MES/common/getBusType",
+		url : "/MES_NA/common/getBusType",
 		dataType : "json",
 		data : {},
 		async : false,
@@ -524,7 +524,7 @@ function getPartsSelect(elementId, submitId, fn_backcall) {
 	var partslist;
 	$(elementId).typeahead({
 		source : function(input, process) {
-			$.get("/MES/common/getPartsSelect", {
+			$.get("/MES_NA/common/getPartsSelect", {
 				"parts" : input
 			}, function(response) {
 				partslist = response.data;
@@ -578,7 +578,7 @@ function getPartsSelect(elementId, submitId, fn_backcall) {
 function getPartsId(parts) {
 	var partsId = "0";
 	$.ajax({
-		url : "/MES/common/getPartsSelect",
+		url : "/MES_NA/common/getPartsSelect",
 		dataType : "json",
 		data : {
 			"parts" : parts
@@ -602,7 +602,7 @@ function getPartsId(parts) {
  */
 function getOrderConfigSelect(order_id,selectval,selectId,selectType,valName) {
 	$.ajax({
-		url : "/MES/common/getOrderConfigSelect",
+		url : "/MES_NA/common/getOrderConfigSelect",
 		dataType : "json",
 		data : {
 				order_id:order_id
@@ -624,7 +624,7 @@ function getBusNumberSelect(elementId, submitId, fn_backcall) {
 	var busNumberlist;
 	$(elementId).typeahead({
 		source : function(input, process) {
-			$.get("/MES/common/getBusNumberFuzzySelect", {
+			$.get("/MES_NA/common/getBusNumberFuzzySelect", {
 				"bus_input" : input
 			}, function(response) {
 				var data=response.data;
@@ -664,7 +664,7 @@ function getUserInfoByCard(cardId){
 		type : "get",// 使用get方法访问后台
 		dataType : "json",// 返回json格式的数据
 		async : false,
-		url : "/MES/common/getUserInfoByCard",
+		url : "/MES_NA/common/getUserInfoByCard",
 		data : {
 			"card_no" : cardId
 		},
@@ -763,7 +763,7 @@ function getOrgAuthTree(treeId,url,orgType,orgKind,level,nodeName_default){
 	zNodes=[];
 	zTreeObj=null;
 	$.ajax({
-		url: "/MES/common/getOrgAuthTree",
+		url: "/MES_NA/common/getOrgAuthTree",
 	    dataType: "json",
 	    async: false,
 	    type: "get",
@@ -873,7 +873,7 @@ function numAdd(num1, num2) {
 	function checkSalarySubmit(factory,workshop,month){
 		var submit_flg="";
 		$.ajax({
-			url : "/MES/common/getSubmitSalary",
+			url : "/MES_NA/common/getSubmitSalary",
 			dataType : "json",
 			data : {
 				"factory":factory,
@@ -898,7 +898,7 @@ function numAdd(num1, num2) {
 	
 	function getChildOrgSelect(elementId,parentId,selectVal,selectType){
 		$.ajax({
-			url : "/MES/common/getChildOrgList",
+			url : "/MES_NA/common/getChildOrgList",
 			dataType : "json",
 			data : {
 				"parentId" : parentId
@@ -925,7 +925,7 @@ function getStaffInfo(staffNum){
 		type : "get",// 使用get方法访问后台
 		dataType : "json",// 返回json格式的数据
 		async : false,
-		url : "/MES/common/getStaffInfo",
+		url : "/MES_NA/common/getStaffInfo",
 		data : {
 			"staffNum" : staffNum
 		},
@@ -951,7 +951,7 @@ function check_All_unAll(tableId, checkall) {
 //使用公用邮箱发送邮件	
 function sendEmail(mailTo,cc,title,thead,tbdatalist,content){
 		$.ajax({
-			url : "/MES/common/sendEmail",
+			url : "/MES_NA/common/sendEmail",
 			dataType : "json",
 			data : {
 				"mailTo":mailTo,
@@ -974,7 +974,7 @@ function sendEmail(mailTo,cc,title,thead,tbdatalist,content){
 function getRoleList(){
 	var role_list=[];
 	$.ajax({
-		url : "/MES/common/getRoleListAuth",
+		url : "/MES_NA/common/getRoleListAuth",
 		dataType : "json",
 		async:false,
 		data : {
