@@ -23,6 +23,7 @@ import com.byd.bms.setting.model.BmsBaseProcess;
 import com.byd.bms.setting.model.BmsBaseRole;
 import com.byd.bms.setting.model.BmsBaseRolePermission;
 import com.byd.bms.setting.model.BmsBaseStandardWorkgroup;
+import com.byd.bms.setting.model.BmsBaseStation;
 import com.byd.bms.setting.model.BmsBaseVinRule;
 import com.byd.bms.setting.model.BmsBaseWorkshop;
 import com.byd.bms.setting.model.BmsUserRole;
@@ -291,6 +292,40 @@ public class SettingServiceImpl implements ISettingService {
 	public int checkDeleteLine(List ids) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	//工位
+	@Override
+	public Map<String, Object> getStationList(Map<String, Object> queryMap) {
+		Map<String,Object> result=new HashMap<String,Object>();
+		int totalCount=0;
+		List<BmsBaseStation> datalist=settingDao.getStationList(queryMap);
+		totalCount=settingDao.getStationTotalCount(queryMap);
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("draw", queryMap.get("draw"));
+		result.put("data", datalist);
+		
+		return result;
+	}
+	@Override
+	public int addStation(BmsBaseStation station) {
+		if(station!=null){
+			settingDao.addStation(station);
+		}	
+		return station.getId();
+	}
+	@Override
+	public void updateStation(BmsBaseStation station) {
+		if(station.getId()!=0){
+			settingDao.updateStation(station);
+		}	
+	}
+	@Override
+	public void deleteStation(List ids) {
+		if(ids.size()>0){
+			settingDao.deleteStation(ids);
+		}		
 	}
 	
 	//工序

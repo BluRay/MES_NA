@@ -430,6 +430,85 @@
 		</foreach>
 	</update>
 	
+	<!-- 工位 -->
+	<select id="getStationList" parameterType="Map" resultType="Map">
+		select p.*,k.key_name plan_node_name,u.username editor
+		from BMS_NA_BASE_STATION p
+		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
+		left join BMS_NA_BASE_USER u on p.editor_id=u.id
+		where 1=1 and p.delete_flag !='1'
+		<if test="factory !=null and factory !='All'">
+			and p.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='All'">
+			and p.workshop=#{workshop}
+		</if>
+		<if test="line !=null and line !='All'">
+			and p.line=#{line}
+		</if>	
+		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
+			and p.monitory_point_flag=#{monitoryPoint_flag}
+		</if>
+		<if test="keyStation_flag !=null and keyStation_flag !=''">
+			and p.key_station_flag=#{keyStation_flag}
+		</if>
+		<if test="planNode_flag ==1">
+			and p.plan_node_id !=0
+		</if>
+		order by p.factory,p.workshop,p.line,cast(substring(p.station_code,3) as signed)
+		<if test="start !=null and length!=-1">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	
+	<select id="getStationTotalCount" parameterType="Map" resultType="int">
+		select count(p.id)
+		from BMS_NA_BASE_STATION p
+		where 1=1 and p.delete_flag !='1'
+		<if test="factory !=null and factory !='All'">
+			and p.factory=#{factory}
+		</if>
+		<if test="workshop !=null and workshop !='All'">
+			and p.workshop=#{workshop}
+		</if>
+		<if test="line !=null and line !='All'">
+			and p.line=#{line}
+		</if>	
+		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
+			and p.monitory_point_flag=#{monitoryPoint_flag}
+		</if>
+		<if test="keyStation_flag !=null and keyStation_flag !=''">
+			and p.key_station_flag=#{keyStation_flag}
+		</if>
+		<if test="planNode_flag ==1">
+			and p.plan_node_id !=0
+		</if>
+	</select>
+	
+	<update id="updateStation" parameterType="com.byd.bms.setting.model.BmsBaseStation">
+		update BMS_NA_BASE_STATION set factory=#{factory},workshop=#{workshop},line=#{line},plan_node_id=#{plan_node_id},
+		station_code=#{station_code},station_name=#{station_name},monitory_point_flag=#{monitory_point_flag},
+		key_station_flag=#{key_station_flag},memo=#{memo}
+		where id=#{id}
+	</update>
+	
+	<insert id="addStation" parameterType="com.byd.bms.setting.model.BmsBaseStation" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into BMS_NA_BASE_STATION (factory,workshop,line,plan_node_id,station_code,station_name,key_station_flag,monitory_point_flag,memo,editor_id,edit_date)
+		values 
+		(#{factory},#{workshop},#{line},#{plan_node_id},#{station_code},#{station_name},#{key_station_flag},#{monitory_point_flag},#{memo},#{editor_id},#{edit_date})
+	</insert>
+	
+	<update id="deleteStation" parameterType="List">
+		update BMS_NA_BASE_STATION set delete_flag='1'
+		where id in
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</update>
+	
 	<!-- 工序 -->
 	<select id="getProcessList" parameterType="Map" resultType="Map">
 		select p.*,k.key_name plan_node_name,u.username editor
@@ -437,13 +516,13 @@
 		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
 		left join BMS_NA_BASE_USER u on p.editor_id=u.id
 		where 1=1 and p.delete_flag !='1'
-		<if test="factory !=null and factory !='全部'">
+		<if test="factory !=null and factory !='All'">
 			and p.factory=#{factory}
 		</if>
-		<if test="workshop !=null and workshop !='全部'">
+		<if test="workshop !=null and workshop !='All'">
 			and p.workshop=#{workshop}
 		</if>
-		<if test="line !=null and line !='全部'">
+		<if test="line !=null and line !='All'">
 			and p.line=#{line}
 		</if>	
 		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
@@ -465,13 +544,13 @@
 		select count(p.id)
 		from BMS_NA_BASE_PROCESS p
 		where 1=1 and p.delete_flag !='1'
-		<if test="factory !=null and factory !='全部'">
+		<if test="factory !=null and factory !='All'">
 			and p.factory=#{factory}
 		</if>
-		<if test="workshop !=null and workshop !='全部'">
+		<if test="workshop !=null and workshop !='All'">
 			and p.workshop=#{workshop}
 		</if>
-		<if test="line !=null and line !='全部'">
+		<if test="line !=null and line !='All'">
 			and p.line=#{line}
 		</if>	
 		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
@@ -514,10 +593,10 @@
 		from BMS_NA_PD_SCAN_RULE r
 		left join BMS_NA_BASE_USER u on r.editor_id=u.id
 		where 1=1
-		<if test="factory !=null and factory !='全部'">
+		<if test="factory !=null and factory !='All'">
 			and r.factory=#{factory}
 		</if>
-		<if test="order_type !=null and order_type !='全部'">
+		<if test="order_type !=null and order_type !='All'">
 			and r.order_type=#{order_type}
 		</if>
 		<if test="start !=null and length!=-1">
@@ -530,10 +609,10 @@
 		from BMS_NA_PD_SCAN_RULE r
 		left join BMS_NA_BASE_USER u on r.editor_id=u.id
 		where 1=1
-		<if test="factory !=null and factory !='全部'">
+		<if test="factory !=null and factory !='All'">
 			and r.factory=#{factory}
 		</if>
-		<if test="order_type !=null and order_type !='全部'">
+		<if test="order_type !=null and order_type !='All'">
 			and r.order_type=#{order_type}
 		</if>
 	</select>

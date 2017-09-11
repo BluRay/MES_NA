@@ -15,6 +15,7 @@ import com.byd.bms.setting.model.BmsBaseProcess;
 import com.byd.bms.setting.model.BmsBaseRole;
 import com.byd.bms.setting.model.BmsBaseRolePermission;
 import com.byd.bms.setting.model.BmsBaseStandardWorkgroup;
+import com.byd.bms.setting.model.BmsBaseStation;
 import com.byd.bms.setting.model.BmsBaseVinRule;
 import com.byd.bms.setting.model.BmsBaseWorkshop;
 import com.byd.bms.setting.model.BmsUserRole;
@@ -78,6 +79,13 @@ public interface ISettingDao {
 	public void updateLine(BmsBaseLine line);
 	public void deleteLine(List ids);
 	public int checkDeleteLine(List ids);
+	
+	//工位
+	public List<BmsBaseStation> getStationList(Map<String,Object> queryMap);
+	public int getStationTotalCount(Map<String,Object> queryMap);
+	public int addStation(BmsBaseStation station);
+	public void updateStation(BmsBaseStation station);
+	public void deleteStation(List ids);
 	
 	//工序
 	public List<BmsBaseProcess> getProcessList(Map<String,Object> queryMap);

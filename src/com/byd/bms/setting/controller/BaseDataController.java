@@ -31,6 +31,7 @@ import com.byd.bms.setting.model.BmsBaseProcess;
 import com.byd.bms.setting.model.BmsBaseRole;
 import com.byd.bms.setting.model.BmsBaseRolePermission;
 import com.byd.bms.setting.model.BmsBaseStandardWorkgroup;
+import com.byd.bms.setting.model.BmsBaseStation;
 import com.byd.bms.setting.model.BmsBaseVinRule;
 import com.byd.bms.setting.model.BmsBaseWorkshop;
 import com.byd.bms.setting.model.BmsUserRole;
@@ -326,6 +327,13 @@ public class BaseDataController extends BaseController {
 	@RequestMapping("/line")
 	public ModelAndView linePage() {
 		mv.setViewName("setting/line");
+		return mv;
+	}
+	
+	// 工位
+	@RequestMapping("/station")
+	public ModelAndView stationPage() {
+		mv.setViewName("setting/station");
 		return mv;
 	}
 
@@ -690,6 +698,87 @@ public class BaseDataController extends BaseController {
 			initModel(false, e.getMessage(), e.toString());
 		}
 		model = mv.getModelMap();
+		return model;
+	}
+	
+	/**
+	 * 编辑标准工位
+	 * @return
+	 */
+	@RequestMapping("/editStation")
+	@ResponseBody
+	public ModelMap editStation(@ModelAttribute("station")  BmsBaseStation station){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		int userid=(int)session.getAttribute("user_id");
+		station.setEditor_id(userid);
+		station.setEdit_date(curTime);
+		settingService.updateStation(station);
+		initModel(true, "Save Success！", null);
+		return mv.getModelMap();
+	}
+	
+	/**
+	 * 新增标准工位
+	 */
+	@RequestMapping("/addStation")
+	@ResponseBody
+	public ModelMap addStation(@ModelAttribute("station")  BmsBaseStation station){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		int userid=(int)session.getAttribute("user_id");
+		station.setEditor_id(userid);
+		station.setEdit_date(curTime);
+		settingService.addStation(station);
+		initModel(true, "Save Success！", null);
+		return mv.getModelMap();
+	}
+	
+	/**
+	 * 软删除标准工位
+	 */
+	@RequestMapping("/deleteStation")
+	@ResponseBody
+	public ModelMap deleteStation( ){
+		String ids=request.getParameter("ids");
+		List idlist=Arrays.asList(ids.split(","));
+		settingService.deleteStation(idlist);
+		initModel(true, "Delete success！", null);
+		return mv.getModelMap();
+	}
+	
+	/**
+	 * 获取标准工位列表
+	 * @return
+	 */
+	@RequestMapping("/getStationList")
+	@ResponseBody
+	public ModelMap getStationList(){
+		model.clear();
+		String draw=request.getParameter("draw");
+		int start=Integer.parseInt(request.getParameter("start"));//分页数据起始数
+		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
+		String factory=request.getParameter("factory");
+		String workshop=request.getParameter("workshop");
+		String line=request.getParameter("line");
+		String monitoryPoint_flag=request.getParameter("monitoryPoint_flag");
+		String keyStation_flag=request.getParameter("keyStation_flag");
+		String planNode_flag=request.getParameter("planNode_flag");
+		
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", factory);
+		condMap.put("workshop", workshop);
+		condMap.put("line", line);
+		condMap.put("monitoryPoint_flag", monitoryPoint_flag);
+		condMap.put("keyStation_flag", keyStation_flag);
+		condMap.put("planNode_flag", planNode_flag);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("draw", draw);
+		
+		model.addAllAttributes(settingService.getStationList(condMap));
+		
 		return model;
 	}
 	

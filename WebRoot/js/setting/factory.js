@@ -149,12 +149,12 @@ $(document).ready(function(){
 							return false;
 						}
 						if($("#editCapacity").val()===""){
-							alert("Capacity name can't be blank！");
+							alert("Capacity can't be blank！");
 							$("#editCapacity").focus();
 							return false;
 						}
 						if($("#editArea").val()===""){
-							alert("Area name can't be blank！");
+							alert("Area can't be blank！");
 							$("#editArea").focus();
 							return false;
 						}
