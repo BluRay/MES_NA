@@ -3,28 +3,67 @@
 <mapper namespace="com.byd.bms.plan.dao.IPlanDao">
 
 	<select id="checkImportPlanFactory" parameterType="Map" resultType="String">
-		SELECT id FROM BMS_OR_FACTORY_ORDER WHERE order_id = (SELECT
-		id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
-		AND factory_id = (SELECT id FROM BMS_BASE_FACTORY WHERE factory_name = #{factory_name})
-		limit 1
+		SELECT p.id FROM BMS_NA_PROJECT p WHERE 
+		p.production_plant = #{factory_name} AND p.project_no = #{project_no} LIMIT 1
 	</select>
 	
 	<insert id="insertPlanMaster" useGeneratedKeys="true" keyProperty="id" parameterType="com.byd.bms.plan.model.PlanMasterPlan">
-		INSERT INTO BMS_PLAN_MASTER_PLAN
-		(version, order_id, factory_id, plan_code_value, plan_month, flag, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13, D14, D15, D16, D17, D18, D19, D20, D21, D22, D23, D24, D25, D26, D27, D28, D29, D30, D31, creator_id, create_date)
-		VALUES(#{version}, (SELECT id FROM BMS_OR_ORDER WHERE order_no = #{order_no}), (SELECT id FROM BMS_BASE_FACTORY WHERE factory_name = #{factory_name}),
-		(SELECT value FROM BMS_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name = #{plan_code_keyname}),
-		#{plan_month}, #{flag}, #{D1}, #{D2}, #{D3}, #{D4}, #{D5}, #{D6}, #{D7}, #{D8}, #{D9}, #{D10}, 
+		INSERT INTO BMS_NA_PROJECT_MASTER_PLAN
+		(version, project_id, plan_node_value, plan_node, month, flag, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13, D14, D15, D16, D17, D18, D19, D20, D21, D22, D23, D24, D25, D26, D27, D28, D29, D30, D31, editor_id, edit_date)
+		VALUES(#{version}, (SELECT PR.id FROM BMS_NA_PROJECT PR WHERE PR.project_no = #{project_no}),
+		(SELECT value FROM BMS_NA_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name_en = #{plan_node}),#{plan_node},
+		#{month}, #{flag}, #{D1}, #{D2}, #{D3}, #{D4}, #{D5}, #{D6}, #{D7}, #{D8}, #{D9}, #{D10}, 
 		#{D11}, #{D12}, #{D13}, #{D14}, #{D15}, #{D16}, #{D17}, #{D18}, #{D19}, #{D20}, 
 		#{D21}, #{D22}, #{D23}, #{D24}, #{D25}, #{D26}, #{D27}, #{D28}, #{D29}, #{D30}, #{D31}, 
 		#{creator_id}, #{create_date})
 	</insert>
-	
-	<select id="checkProductionPlan" parameterType="Map" resultType="Map">
-		SELECT * FROM BMS_PLAN_PRODUCTION_PLAN WHERE order_id = 
-		(SELECT id FROM BMS_OR_ORDER WHERE order_no=#{order_no})
-		AND factory_id = (SELECT id FROM BMS_BASE_FACTORY WHERE factory_name = #{factory_name})
-		AND REPLACE(plan_date,'-','') LIKE CONCAT('%',#{plan_date},'%')
+	<select id="getPlanMasterIndex" parameterType="Map" resultType="Map">
+		SELECT DISTINCT
+		m.version,p.project_no,m.month,p.production_plant AS factory_name,u.display_name,m.edit_date AS create_date FROM
+		BMS_NA_PROJECT_MASTER_PLAN m
+		LEFT JOIN BMS_NA_PROJECT p ON m.project_id = p.id
+		LEFT JOIN BMS_NA_BASE_USER u ON m.editor_id = u.staff_number
+		<if test="production_plant != ''">
+			and p.production_plant = #{production_plant}
+		</if>
+		<if test="project_no != ''">
+			and p.project_no like CONCAT('%',#{project_no},'%')
+		</if>
+		AND flag = '0'
+		ORDER BY m.version DESC
+		<if test="offset!=null">
+			LIMIT #{start} ,#{length} 
+		</if>
 	</select>
+	<select id="getPlanMasterCount" parameterType="Map" resultType="int">
+		SELECT COUNT(DISTINCT m.version) FROM
+		BMS_NA_PROJECT_MASTER_PLAN m
+		LEFT JOIN BMS_NA_PROJECT p ON m.project_id = p.id
+		LEFT JOIN BMS_NA_BASE_USER u ON m.editor_id = u.staff_number
+		<if test="production_plant != ''">
+			and p.production_plant = #{production_plant}
+		</if>
+		<if test="project_no != ''">
+			and p.project_no like CONCAT('%',#{project_no},'%')
+		</if>
+		AND flag = '0'
+	</select>
+	<update id="deleteProductionPlan" parameterType="int">
+		DELETE FROM BMS_NA_PROJECT_PRODUCTION_PLAN WHERE 
+		project_id = (SELECT PR.id FROM BMS_NA_PROJECT PR WHERE PR.project_no = #{project_no})
+		AND plan_code_value = (SELECT value FROM BMS_NA_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name_en = #{plan_node})
+		AND plan_date LIKE CONCAT('%',#{plan_month},'%')
+		<if test="cur_day != ''">
+		AND plan_date > #{cur_day}
+		</if>
+	</update>
+	<insert id="insertProductionPlan" parameterType="Map">
+	INSERT INTO BMS_NA_PROJECT_PRODUCTION_PLAN
+	(project_id, plant_id, plan_code_value, plan_date, plan_qty,creator_id, creat_date, releaser_id, release_date)
+	VALUES((SELECT PR.id FROM BMS_NA_PROJECT PR WHERE PR.project_no = #{project_no}),
+	(SELECT id FROM BMS_NA_BASE_FACTORY WHERE factory_name = #{factory_name}),
+	(SELECT value FROM BMS_NA_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name_en = #{plan_node}),
+	#{plan_date}, #{plan_qty},#{userid}, #{curTime},#{userid}, #{curTime})
+	</insert>
 	
 </mapper>

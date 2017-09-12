@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Resource;
-
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.byd.bms.order.model.BmsOrder;
 import com.byd.bms.plan.dao.IPlanDao;
 import com.byd.bms.plan.model.PlanMasterPlan;
@@ -28,7 +24,6 @@ import com.byd.bms.plan.model.PlanConfigIssedQty;
 import com.byd.bms.plan.model.PlanIssuance;
 import com.byd.bms.plan.model.PlanIssuanceCount;
 import com.byd.bms.plan.model.PlanIssuanceTotal;
-import com.byd.bms.plan.model.PlanMasterIndex;
 import com.byd.bms.plan.service.IPlanService;
 import com.byd.bms.production.model.ProductionException;
 import com.byd.bms.util.DataSource;
@@ -82,21 +77,25 @@ public class PlanServiceImpl implements IPlanService {
 		String curTime = df.format(dd);
 		int lineCount = excelModel.getData().size();
 		int result = 0;
-		String order_no = "";		//订单编号 同一个文件只能导入一个订单
+		String project_no = "";			//订单编号 同一个文件只能导入一个订单
 		String factory_name = "";
 		String plan_month = "";
+		int curMonth = Integer.valueOf(new SimpleDateFormat("yyyyMM").format(dd));
+		int cur_day = Integer.valueOf(new SimpleDateFormat("dd").format(dd));
+		
 		for(int i=0;i<lineCount;i++){
 			if (i==0){
-				order_no = excelModel.getData().get(i)[0].toString().trim();
+				project_no = excelModel.getData().get(i)[0].toString().trim();
 				factory_name = excelModel.getData().get(i)[1].toString().trim();
-				plan_month = excelModel.getData().get(i)[3].toString().trim();
+				plan_month = excelModel.getData().get(i)[3].toString().trim();				
+				plan_month = plan_month.substring(0, 4) + "-" +  plan_month.substring(4, 6);
 			}
 			PlanMasterPlan newMasterPlan = new PlanMasterPlan();
 			newMasterPlan.setVersion(new SimpleDateFormat("yyyyMMddHHmmss").format(dd));
-			newMasterPlan.setOrder_no(order_no);
+			newMasterPlan.setProject_no(project_no);
 			newMasterPlan.setFactory_name(factory_name);
-			newMasterPlan.setPlan_code_keyname(excelModel.getData().get(i)[2].toString().trim());
-			newMasterPlan.setPlan_month(plan_month);
+			newMasterPlan.setPlan_node(excelModel.getData().get(i)[2].toString().trim());
+			newMasterPlan.setMonth(plan_month);
 			newMasterPlan.setFlag("0");
 			if (!excelModel.getData().get(i)[4].toString().trim().equals("")) newMasterPlan.setD1(Integer.parseInt(excelModel.getData().get(i)[4].toString().trim()));
 			if (!excelModel.getData().get(i)[5].toString().trim().equals("")) newMasterPlan.setD2(Integer.parseInt(excelModel.getData().get(i)[5].toString().trim()));
@@ -135,14 +134,72 @@ public class PlanServiceImpl implements IPlanService {
 			newMasterPlan.setCreator_id(Integer.parseInt(userid));
 			newMasterPlan.setCreate_date(curTime);
 			
-			result += planDao.insertPlanMaster(newMasterPlan);
+			////result += planDao.insertPlanMaster(newMasterPlan);
+			
+			
+			
+			
+			//计划导入后自动发布，只发布当前日期之后的计划
+			//删除原发布数据
+			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) == curMonth ){
+				System.out.println("本月计划,cur_day = " + plan_month + "-" + ((cur_day<10)?"0":"") + cur_day);
+				//删除当天以后的原发布数据
+				Map<String, Object> conditionMap = new HashMap<String, Object>();
+				conditionMap.put("project_no", project_no);
+				conditionMap.put("plan_node", excelModel.getData().get(i)[2].toString().trim());
+				conditionMap.put("plan_month", plan_month);
+				conditionMap.put("cur_day", plan_month + "-" + ((cur_day<10)?"0":"") + cur_day);
+				planDao.deleteProductionPlan(conditionMap);
+			}
+			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) > curMonth ){
+				System.out.println("未来月份计划");
+				//删除计划月份原发布数据
+			}
+			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) < curMonth ){
+				System.out.println("历史计划");
+			}
+			for (int j=1;j<=31;j++){
+				
+				if(!excelModel.getData().get(i)[3+j].toString().trim().equals("") && !excelModel.getData().get(i)[3+j].toString().trim().equals("0")){
+					System.out.println("Plan node = " + excelModel.getData().get(i)[2].toString().trim());
+					System.out.println("plan_date = " + plan_month + "-" + j);
+					System.out.println("plan num = " + excelModel.getData().get(i)[3+j].toString().trim());
+					Map<String, Object> conditionMap = new HashMap<String, Object>();
+					conditionMap.put("project_no", project_no);
+					conditionMap.put("factory_name", factory_name);
+					conditionMap.put("plan_node", excelModel.getData().get(i)[2].toString().trim());
+					conditionMap.put("plan_date", plan_month + "-" + ((j<10)?"0":"") + j);
+					conditionMap.put("plan_qty", excelModel.getData().get(i)[3+j].toString().trim());
+					conditionMap.put("curTime", curTime);
+					conditionMap.put("userid", userid);
+					
+					if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) == curMonth ){
+						if (j > cur_day){
+							planDao.insertProductionPlan(conditionMap);
+						}
+					}
+					if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) > curMonth ){
+						planDao.insertProductionPlan(conditionMap);
+					}
+					
+				}
+				
+			}
+			
 		}		
 		return result;
 	}
 	
 	@Override
-	public List<Map<String, String>> checkProductionPlan(Map<String, Object> queryMap) {
-		return planDao.checkProductionPlan(queryMap);
+	public Map<String, Object> getPlanMasterIndex(Map<String, Object> queryMap) {
+		int totalCount=0;
+		List<Map<String,Object>> datalist = planDao.getPlanMasterIndex(queryMap);
+		totalCount = planDao.getPlanMasterCount(queryMap);
+		Map<String, Object> result = new HashMap<String,Object>();
+		result.put("draw", queryMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
 	}
-
 }

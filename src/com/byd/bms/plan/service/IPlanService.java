@@ -17,6 +17,6 @@ import com.byd.bms.production.model.ProductionException;
 public interface IPlanService {
 	public String checkImportPlanFactory(Map<String,Object> queryMap);
 	public int savePlanMaster(ExcelModel excelModel,String userid);
-	public List<Map<String,String>> checkProductionPlan(Map<String,Object> queryMap);
+	public Map<String,Object> getPlanMasterIndex(Map<String,Object> queryMap);
 	
 }

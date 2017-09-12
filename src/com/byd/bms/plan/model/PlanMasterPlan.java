@@ -3,10 +3,10 @@ package com.byd.bms.plan.model;
 public class PlanMasterPlan {
 	private int id;
 	private String version;
-	private int order_id;
-	private int factory_id;
-	private int plan_code_value;
-	private String plan_month;
+	private int project_id;
+	private int plan_node_value;
+	private String plan_node;
+	private String month;
 	private String flag;
 	private int D1;
 	private int D2;
@@ -41,9 +41,8 @@ public class PlanMasterPlan {
 	private int D31;
 	private int creator_id;
 	private String create_date;	
-	private String order_no;
+	private String project_no;
 	private String factory_name;
-	private String plan_code_keyname;
 	private int sumQty;
 	
 	public int getId() {
@@ -58,29 +57,29 @@ public class PlanMasterPlan {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	public int getOrder_id() {
-		return order_id;
+	public int getProject_id() {
+		return project_id;
 	}
-	public void setOrder_id(int order_id) {
-		this.order_id = order_id;
+	public void setProject_id(int project_id) {
+		this.project_id = project_id;
 	}
-	public int getFactory_id() {
-		return factory_id;
+	public int getPlan_node_value() {
+		return plan_node_value;
 	}
-	public void setFactory_id(int factory_id) {
-		this.factory_id = factory_id;
+	public void setPlan_node_value(int plan_node_value) {
+		this.plan_node_value = plan_node_value;
 	}
-	public int getPlan_code_value() {
-		return plan_code_value;
+	public String getPlan_node() {
+		return plan_node;
 	}
-	public void setPlan_code_value(int plan_code_value) {
-		this.plan_code_value = plan_code_value;
+	public void setPlan_node(String plan_node) {
+		this.plan_node = plan_node;
 	}
-	public String getPlan_month() {
-		return plan_month;
+	public String getMonth() {
+		return month;
 	}
-	public void setPlan_month(String plan_month) {
-		this.plan_month = plan_month;
+	public void setMonth(String month) {
+		this.month = month;
 	}
 	public String getFlag() {
 		return flag;
@@ -286,23 +285,17 @@ public class PlanMasterPlan {
 	public void setCreate_date(String create_date) {
 		this.create_date = create_date;
 	}
-	public String getOrder_no() {
-		return order_no;
-	}
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
-	}
 	public String getFactory_name() {
 		return factory_name;
 	}
 	public void setFactory_name(String factory_name) {
 		this.factory_name = factory_name;
 	}
-	public String getPlan_code_keyname() {
-		return plan_code_keyname;
+	public String getProject_no() {
+		return project_no;
 	}
-	public void setPlan_code_keyname(String plan_code_keyname) {
-		this.plan_code_keyname = plan_code_keyname;
+	public void setProject_no(String project_no) {
+		this.project_no = project_no;
 	}
 	public int getSumQty() {
 		return sumQty;

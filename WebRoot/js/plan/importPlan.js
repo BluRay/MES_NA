@@ -55,16 +55,16 @@ function ajaxQuery(){
 		destroy: true,sScrollY: table_height,scrollX: "100%",orderMulti:false,
 		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
 		language: {
-			emptyTable:"抱歉，未查询到数据！",
-			info:"共计 _TOTAL_ 条，当前第 _PAGE_ 页 共 _PAGES_ 页",
+			emptyTable:"Nothing found",
+			info:"Total _TOTAL_，Showing page _PAGE_ of _PAGES_",
 			infoEmpty:"",
-			paginate: { first:"首页",previous: "上一页",next:"下一页",last:"尾页",loadingRecords: "请稍等,加载中..."}
+			paginate: { first:"First",previous: "Previous",next:"Next",last:"Last",loadingRecords: "Loading..."}
 		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
-				"factory_id":$("#search_factory").val(),
-				"order_no":$("#search_order_name").val()
+				"production_plant":$("#search_factory :selected").text(),
+				"project_no":$("#search_project_no").val()
 			};
             param.length = data.length;					//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;					//开始的记录序号
@@ -92,13 +92,13 @@ function ajaxQuery(){
             });
 		},
 		columns: [
-		            {"title":"计划版本","class":"center","data":"version","defaultContent": ""},
-		            {"title":"生产工厂","class":"center","data":"factory_name","defaultContent": ""},
-		            {"title":"订单编号","class":"center","data":"order_no","defaultContent": ""},
-		            {"title":"计划月份","class":"center","data":"plan_month","defaultContent": ""},
-		            {"title":"导入人","class":"center","data":"display_name","defaultContent": ""},
-		            {"title":"导入时间","class":"center","data":"create_date","defaultContent": ""},
-		            {"title":"操作","class":"center","data": null,"id":"staff_number",
+		            {"title":"Plan Version","class":"center","data":"version","defaultContent": ""},
+		            {"title":"Production Plant","class":"center","data":"factory_name","defaultContent": ""},
+		            {"title":"Project no","class":"center","data":"project_no","defaultContent": ""},
+		            {"title":"Plan Month","class":"center","data":"month","defaultContent": ""},
+		            {"title":"Edit User","class":"center","data":"display_name","defaultContent": ""},
+		            {"title":"Edit Time","class":"center","data":"create_date","defaultContent": ""},
+		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
 		                    return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title=\"查看详情\" onclick=\"javascript:window.location = ('planPreview?version="+row['version'] + "&plan_month="+row['plan_month'] + "&factory_id=" +$("#search_factory").val()+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
 		                },

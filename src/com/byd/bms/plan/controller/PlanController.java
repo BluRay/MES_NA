@@ -46,6 +46,26 @@ public class PlanController extends BaseController{
         return mv;  
     }
 	
+	@RequestMapping("/showPlanMasterIndex")
+	@ResponseBody
+	public ModelMap showPlanMasterIndex(){
+		String production_plant=request.getParameter("production_plant");
+		String project_no=request.getParameter("project_no");
+		int draw=(request.getParameter("draw")!=null)?Integer.parseInt(request.getParameter("draw")):1;	
+		int start=(request.getParameter("start")!=null)?Integer.parseInt(request.getParameter("start")):0;		//分页数据起始数
+		int length=(request.getParameter("length")!=null)?Integer.parseInt(request.getParameter("length")):500;	//每一页数据条数
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("production_plant", production_plant);
+		condMap.put("project_no", project_no);
+		
+		Map<String,Object> result = planService.getPlanMasterIndex(condMap);
+		model.addAllAttributes(result);
+		return model;
+	}
+	
 	@RequestMapping(value="/uploadMasterPlan",method=RequestMethod.POST)
 	@ResponseBody
 	public ModelMap uploadMasterPlan(@RequestParam(value="file",required=false) MultipartFile file){
@@ -88,65 +108,47 @@ public class PlanController extends BaseController{
 			int lineCount = excelModel.getData().size();
 			//上传的文件行数验证
 			//if(((lineCount)%12) != 0){
-			if(lineCount!= 12){
+			if(lineCount!= 9){
 				initModel(false,"导入文件的行数有误！一次只能导入一个月的计划！",null);
 				model = mv.getModelMap();
 				return model;
 			}
-			String plan_no = "";		//订单编号 同一个文件只能导入一个订单
+			String project_no = "";		//订单编号 同一个文件只能导入一个订单
 			String factory_name = "";
-			String plan_date = "";
 			for(int i=0;i<lineCount;i++){
 				if (i==0){
-					plan_no = excelModel.getData().get(i)[0].toString().trim();
+					project_no = excelModel.getData().get(i)[0].toString().trim();
 					factory_name = excelModel.getData().get(i)[1].toString().trim();
-					plan_date = excelModel.getData().get(i)[3].toString().trim();
 				}
 				//判断上传计划的工厂是否属于这些订单
 				Map<String,Object> importPlanMap=new HashMap<String,Object>();
-				importPlanMap.put("order_no", plan_no);
+				importPlanMap.put("project_no", project_no);
 				importPlanMap.put("factory_name", factory_name);
 				String factory_order_id = planService.checkImportPlanFactory(importPlanMap);
 				if (factory_order_id == null){
-					//out.print(plan_no + " 订单没有 "+factory_name+"的计划，不能上传！<a href=\"javascript:history.back();\">返回</a>");
-					initModel(false,plan_no + "订单没有 "+factory_name+"的计划，不能上传！",null);
-					model = mv.getModelMap();
-					return model;
-				}
-				//判断plan_no在plan_date月份内是否有发布，发布后不能重复导入
-				Map<String,Object> conditionMap=new HashMap<String,Object>();
-				conditionMap.put("order_no", plan_no);
-				conditionMap.put("factory_name", factory_name);
-				conditionMap.put("plan_date", plan_date);
-				List<Map<String,String>> datalist = planService.checkProductionPlan(conditionMap);
-				
-				if(datalist.size()>0){
-					//out.print(plan_no + " 订单已有发布数据,不能重复导入！<a href=\"javascript:history.back();\">返回</a>");
-					initModel(false,plan_no + "订单已有发布数据,不能重复导入！",null);
+					initModel(false,project_no + "订单没有 "+factory_name+"的计划，不能上传！",null);
 					model = mv.getModelMap();
 					return model;
 				}
 				
 				String node = excelModel.getData().get(i)[2].toString().trim();
-				int lineCountSwitch = i % 12;
+				int lineCountSwitch = i % 9;
 				switch(lineCountSwitch){
-					case 0 : if(!node.equals("自制下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 1 : if(!node.equals("部件上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 2 : if(!node.equals("部件下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 3 : if(!node.equals("焊装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 4 : if(!node.equals("焊装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 5 : if(!node.equals("涂装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 6 : if(!node.equals("涂装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 7 : if(!node.equals("底盘上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 8 : if(!node.equals("底盘下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 9 : if(!node.equals("总装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 10 : if(!node.equals("总装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 11 : if(!node.equals("车辆入库")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 0 : if(!node.equals("焊装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 1 : if(!node.equals("焊装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 2 : if(!node.equals("涂装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 3 : if(!node.equals("涂装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 4 : if(!node.equals("底盘上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 5 : if(!node.equals("底盘下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 6 : if(!node.equals("总装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 7 : if(!node.equals("总装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 8 : if(!node.equals("车辆入库")){throw new RuntimeException("导入文件的格式有误！");}break; 
 				}
 			}
 			//上传的文件验证完成
 			String userid=request.getSession().getAttribute("staff_number") + "";;
 			result = planService.savePlanMaster(excelModel,userid);			
+
 			
 		} catch (Exception e) {
 			e.printStackTrace();
