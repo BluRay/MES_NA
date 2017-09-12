@@ -134,15 +134,12 @@ public class PlanServiceImpl implements IPlanService {
 			newMasterPlan.setCreator_id(Integer.parseInt(userid));
 			newMasterPlan.setCreate_date(curTime);
 			
-			////result += planDao.insertPlanMaster(newMasterPlan);
-			
-			
-			
-			
+			result += planDao.insertPlanMaster(newMasterPlan);
+
 			//计划导入后自动发布，只发布当前日期之后的计划
 			//删除原发布数据
 			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) == curMonth ){
-				System.out.println("本月计划,cur_day = " + plan_month + "-" + ((cur_day<10)?"0":"") + cur_day);
+				//System.out.println("本月计划,cur_day = " + plan_month + "-" + ((cur_day<10)?"0":"") + cur_day);
 				//删除当天以后的原发布数据
 				Map<String, Object> conditionMap = new HashMap<String, Object>();
 				conditionMap.put("project_no", project_no);
@@ -152,11 +149,17 @@ public class PlanServiceImpl implements IPlanService {
 				planDao.deleteProductionPlan(conditionMap);
 			}
 			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) > curMonth ){
-				System.out.println("未来月份计划");
+				//System.out.println("未来月份计划");
 				//删除计划月份原发布数据
+				Map<String, Object> conditionMap = new HashMap<String, Object>();
+				conditionMap.put("project_no", project_no);
+				conditionMap.put("plan_node", excelModel.getData().get(i)[2].toString().trim());
+				conditionMap.put("plan_month", plan_month);
+				conditionMap.put("cur_day", "");
+				planDao.deleteProductionPlan(conditionMap);
 			}
 			if (Integer.valueOf(excelModel.getData().get(i)[3].toString().trim()) < curMonth ){
-				System.out.println("历史计划");
+				//System.out.println("历史计划");
 			}
 			for (int j=1;j<=31;j++){
 				

@@ -57,7 +57,7 @@
 						<form id="uploadMasterPlanForm" action="#" enctype="multipart/form-data" method="post">
 						<table>
 							<tr>
-								<td><input id="file" type="file" name="file" accept="*.xlsx"/></td>
+								<td><input id="file" value="File" type="file" name="file" accept="*.xlsx"/></td>
 								<td><input id="btn_upload" type="button" class="btn btn-sm btn-primary" value="Upload & Import" onclick="javascript:return LimitAttach(this.form, this.form.file.value)"/></td>
 								<td></td><td>&nbsp;&nbsp;<a href="../docs/masterPlan.xls">Dowmload Template</a></td>
 							</tr>
