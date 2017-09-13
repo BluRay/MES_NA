@@ -42,9 +42,9 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>Production Factory: </td>
+								<td>Production Factory : &nbsp;</td>
 								<td>&nbsp;<select id="search_factory" class="input-small" style="height: 30px;width:120px"></select></td>
-								<td>&nbsp;Project Name: </td>
+								<td>&nbsp;Project Name : &nbsp;</td>
 								<td>&nbsp;<input id="search_project_no" style="height: 30px;" placeholder="Project No..." class="col-sm-10" type="text"></td>
 								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
 								<td>&nbsp;<input id="btnBulkAdd" class="btn btn-sm btn-info" value="Import" type="button">&nbsp;</td>
@@ -57,9 +57,11 @@
 						<form id="uploadMasterPlanForm" action="#" enctype="multipart/form-data" method="post">
 						<table>
 							<tr>
-								<td><input id="file" value="File" type="file" name="file" accept="*.xlsx"/></td>
-								<td><input id="btn_upload" type="button" class="btn btn-sm btn-primary" value="Upload & Import" onclick="javascript:return LimitAttach(this.form, this.form.file.value)"/></td>
-								<td></td><td>&nbsp;&nbsp;<a href="../docs/masterPlan.xls">Dowmload Template</a></td>
+								<td width="300px">
+								<input id="file" value="file" type="file" name="file" accept="*.xls"/>
+								</td>
+								<td>&nbsp;&nbsp;<input id="btn_upload" type="button" class="btn btn-sm btn-primary" value="Upload & Import" onclick="javascript:return LimitAttach(this.form, this.form.file.value)"/></td>
+								<td></td><td>&nbsp;&nbsp;<a href="../docs/masterPlan.xls">Download Template</a></td>
 							</tr>
 						</table>
 						</form>

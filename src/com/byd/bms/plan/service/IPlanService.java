@@ -18,5 +18,7 @@ public interface IPlanService {
 	public String checkImportPlanFactory(Map<String,Object> queryMap);
 	public int savePlanMaster(ExcelModel excelModel,String userid);
 	public Map<String,Object> getPlanMasterIndex(Map<String,Object> queryMap);
+
+	public List<PlanMasterPlan> showPlanMasterList(Map<String,Object> queryMap);
 	
 }

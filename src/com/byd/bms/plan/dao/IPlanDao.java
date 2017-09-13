@@ -28,5 +28,7 @@ public interface IPlanDao {
 	public int getPlanMasterCount(Map<String,Object> queryMap);
 	public int deleteProductionPlan(Map<String,Object> queryMap);
 	public int insertProductionPlan(Map<String,Object> queryMap);
+
+	public List<PlanMasterPlan> getPlanMasterList(Map<String,Object> queryMap);
 	
 }

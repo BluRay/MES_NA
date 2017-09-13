@@ -46,6 +46,12 @@ public class PlanController extends BaseController{
         return mv;  
     }
 	
+	@RequestMapping("/adjustPlan")
+	public ModelAndView adjustPlan(){
+		mv.setViewName("plan/adjustPlan");
+        return mv;  
+	}
+	
 	@RequestMapping("/showPlanMasterIndex")
 	@ResponseBody
 	public ModelMap showPlanMasterIndex(){
@@ -157,7 +163,28 @@ public class PlanController extends BaseController{
 			return model;
 		}
 		
-		initModel(true,"导入成功！",result);
+		initModel(true,"Import Success!",result);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/showPlanMasterList")
+	@ResponseBody
+	public ModelMap showPlanMasterList(){
+		String version=request.getParameter("version");
+		String factory_id=request.getParameter("factory_id");
+		String factory_name=request.getParameter("factory_name");
+		String order_no=request.getParameter("order_no");
+		String plan_month = request.getParameter("plan_month");
+		Map<String,Object> conditionMap=new HashMap<String,Object>();
+		if (request.getParameter("version") != null) conditionMap.put("version", version);
+		if (request.getParameter("factory_id") != null) conditionMap.put("factory_id", factory_id);
+		if (request.getParameter("factory_name") != null) conditionMap.put("factory_name", factory_name);
+		if (request.getParameter("order_no") != null) conditionMap.put("order_no", order_no);
+		if (request.getParameter("plan_month") != null) conditionMap.put("plan_month", plan_month);
+		
+		List<PlanMasterPlan> datalist = planService.showPlanMasterList(conditionMap);
+		initModel(true,"success",datalist);
 		model = mv.getModelMap();
 		return model;
 	}

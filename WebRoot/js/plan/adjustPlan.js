@@ -7,7 +7,7 @@ $(document).ready(function () {
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
 		$("#btnSave").attr("disabled","disabled");
-		getOrderNoSelect("#search_order_no","#orderId");
+		getOrderNoSelect("#search_project_no","#orderId");
 		getFactorySelect("plan/planRevision",'',"#search_factory",null,'id');
 		cur_year = new Date().getFullYear();
 		$("#search_year").html('<option value="'+cur_year+'">'+cur_year+'</option><option value="'+(cur_year-1)+'">'+(cur_year-1)+'</option><option value="'+(cur_year+1)+'">'+(cur_year+1)+'</option><option value="'+(cur_year+2)+'">'+(cur_year+2)+'</option>');	
@@ -26,12 +26,10 @@ $(document).ready(function () {
 	})
 	
 	$("#btnQuery").click (function () {
-		if($('#search_order_no').val() == ""){
-			alert("请输入订单号！");
-			$('#search_order_no').focus();
+		if($('#search_project_no').val() == ""){
+			alert("Please input project name !");
+			$('#search_project_no').focus();
 			return false;
-		}else if($('#search_factory').val() == ""){
-			alert("请选择工厂！");
 		}
 		$('#revision_str').val("");
 		$("#th_order_no").html($('#search_order_no').val());
@@ -99,14 +97,15 @@ function ajaxQuery(){
 	    data: {
 	    	"version":"",
 	    	"factory_id": $('#search_factory').val(),
+	    	"factory_name": $("#search_factory :selected").text(),
 	    	"order_no": $('#search_order_no').val(),
-	    	"plan_month": $("#search_year").val() + $("#search_month").val()
+	    	"plan_month": $("#search_year").val() + "-" + $("#search_month").val()
 	    },
 	    success:function(response){
 	    	$("#tableData tbody").html("");
     		$("#btnSave").removeAttr("disabled");
     		var stock = new Array(0,0,0,0,0,0,0,0,0,0,0,0);		//库存
-    		var day = new Array("日", "一", "二", "三", "四", "五", "六"); 
+    		var day = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"); 
     		var input = "<input class=\"cell\" style=\"border:0;width:18px;BACKGROUND: none transparent scroll repeat 0% 0%;\" onclick=\"javascript:$(this).select();\" value=";
     		
     		$.each(response.data,function (index,value) {
@@ -186,22 +185,6 @@ function ajaxQuery(){
     			stock[index]+=value.sumQty;
     			$("#tableData tbody").append(tr);
     		});
-    		$.ajax({
-			    url: "getPlanIssed",
-	    	    dataType: "json",
-				type: "get",
-			    data: {
-			    	"order_no": $('#search_order_no').val(),
-			    	"factory_id": $('#search_factory').val(),   			    	
-			    },
-			    success:function(response){
-			    	// TODO 已发布的计划不能调整
-			    	$.each(response.data,function (index,value) {
-			    		//alert(value.PLAN_CODE_ID + "_" + value.PLAN_DATE)
-			    		$("#"+value.PLAN_CODE_ID + "_" + value.plan_date).attr("disabled","disabled")
-			    	})
-			    }
-			});
 			return false;
 	    }
 	});

@@ -19,6 +19,19 @@ $(document).ready(function () {
 		}
 	})
 	
+	//文件控件初始化
+	$('#file').ace_file_input({
+		no_file:'Please Choose xls File...',
+		btn_choose:'Choose File',
+		btn_change:'Change File',
+		droppable:false,
+		onchange:null,
+		thumbnail:false, //| true | large
+		allowExt: ['xls','XLS'],
+	}).on('file.error.ace', function(event, info) {
+		alert("Please Choose xls File!");
+    });
+	
 	$("#btnBulkAdd").click (function () {
 		$("#divBulkAdd").show();
 	});
@@ -32,6 +45,7 @@ $(document).ready(function () {
 	});
 	
 	$("#btn_upload").click (function () {
+		$("#btn_upload").attr("disabled","disabled");
 		$("#uploadMasterPlanForm").ajaxSubmit({
 			url:"uploadMasterPlan",
 			type: "post",
@@ -39,10 +53,8 @@ $(document).ready(function () {
 			success:function(response){
 				alert(response.message);
 				ajaxQuery();
-				if(response.success){					
-					//window.open("materialAbnormal!index.action","_self");
-				}else{
-					
+				if(response.success){
+					$("#btn_upload").removeAttr("disabled");
 				}
 			}			
 		});

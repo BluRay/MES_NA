@@ -66,4 +66,36 @@
 	#{plan_date}, #{plan_qty},#{userid}, #{curTime},#{userid}, #{curTime})
 	</insert>
 	
+	<select id="getPlanMasterList" parameterType="Map" resultType="com.byd.bms.plan.model.PlanMasterPlan">
+		SELECT
+		m.D1+m.D2+m.D3+m.D4+m.D5+m.D6+m.D7+m.D8+m.D9+m.D10+m.D11+m.D12+m.D13+m.D14+m.D15+m.D16+m.D17+m.D18+m.D19+m.D20+
+		m.D21+m.D22+m.D23+m.D24+m.D25+m.D26+m.D27+m.D28+m.D29+m.D30+m.D31 AS
+		sumQty, k.key_name_en AS plan_node, m.*,o.project_no AS project_no,o.production_plant AS factory_name
+		FROM BMS_NA_PROJECT_MASTER_PLAN m
+		LEFT JOIN BMS_NA_PROJECT o ON m.project_id = o.id
+		LEFT JOIN BMS_NA_BASE_KEY k ON m.plan_node_value=k.value AND key_code = 'PLAN_CODE' 
+		where 1=1 and o.production_plant=#{factory_name}
+		<if test="version!='' and version!=null">
+			AND version = #{version}
+			AND flag = (SELECT MAX(flag+0)
+			FROM
+			BMS_NA_PROJECT_MASTER_PLAN WHERE version = #{version})
+		</if>
+		<if test="plan_month!='' and plan_month!=null">
+			AND m.month = #{plan_month}
+			and m.version=(select m1.version from BMS_NA_PROJECT_MASTER_PLAN m1
+			where m1.month = #{plan_month} and m1.project_id=m.project_id
+			order by cast(m1.version as unsigned) desc,cast(m1.flag as unsigned) desc limit 1) 
+			and m.flag=(select m1.flag from BMS_NA_PROJECT_MASTER_PLAN m1
+			where m1.month = #{plan_month} and m1.project_id=m.project_id
+			order by cast(m1.version as unsigned) desc,cast(m1.flag as unsigned) desc limit 1)			
+		</if>
+		<if test="project_no != '' and project_no != null">
+			and project_id = (SELECT PR.id FROM BMS_NA_PROJECT PR WHERE PR.project_no = #{project_no})
+			AND month=#{plan_month}
+			
+		</if>
+		ORDER BY m.version DESC,m.flag DESC,m.month,m.plan_node_value
+	</select>
+	
 </mapper>
