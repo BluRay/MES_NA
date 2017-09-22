@@ -420,4 +420,83 @@ public class OrderServiceImpl implements IOrderService {
 		}
     	return result;
     }
+
+	@Override
+	public Map<String, Object> getProjectBomList(Map<String, Object> condMap) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist=orderDao.getProjectBomList(condMap);
+		totalCount=orderDao.getProjectBomTotalCount(condMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", condMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
+
+	@Override
+	@Transactional
+	public int saveBomInfo(Map<String, Object> condMap) {
+		int header_id=0;
+		List bomList=(List) condMap.get("bom_list");
+		Map<String,Object> m=orderDao.queryBomHeader(condMap);
+		if(m!=null){
+			header_id=Integer.parseInt(m.get("id").toString());
+		}
+		Map<String,Object> smap=new HashMap<String,Object>();
+		smap.put("bomList", bomList);
+		if(header_id==0){ // 此版本不存在，先保存HEAD表，在保存ITEM表
+			orderDao.saveBomHeader(condMap);
+			header_id=(int) condMap.get("id");	
+			smap.put("bom_head_id", header_id);
+			if(bomList.size()>0){
+				orderDao.saveBomDetails(smap);
+			}	
+		}else{
+			if(bomList.size()>0){
+				orderDao.updateBomHeader(condMap); // 更新header
+				orderDao.deleteBomByHeader(header_id); //根据header_id删除ITEM表记录
+				smap.put("bom_head_id", header_id);
+				orderDao.saveBomDetails(smap); // 保存到ITEM表
+			}		
+		}
+		return 0;
+	}
+
+	@Override
+	public Map<String, Object> getBomItemList(Map<String, Object> condMap) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist=orderDao.getBomItemList(condMap);
+		totalCount=orderDao.getBomItemTotalCount(condMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", condMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
+
+	@Override
+	public Map<String, Object> getBomCompareList(
+			Map<String, Object> condMap) {
+		Map<String, Object> result=new HashMap<String,Object>();
+		List<Map<String, Object>> versionList=orderDao.getMaxVersion(condMap);
+		if(versionList.size()!=2){
+			result.put("error", "没有版本可供比较");
+			return result;
+		}else{
+			String currentVersion=(String)versionList.get(0).get("version");
+			String prevVersion=(String)versionList.get(1).get("version");
+			condMap.put("currentVersion", currentVersion);
+			condMap.put("prevVersion", prevVersion);
+			List<Map<String, Object>> datalist=null;
+			if(condMap.get("compareType")!=null && condMap.get("compareType").toString().equals("difference")){
+				datalist=orderDao.getBomCompareDiffList(condMap);
+			}else{
+			    datalist=orderDao.getBomCompareList(condMap);
+			}
+			result.put("data", datalist);
+		}
+		return result;
+	}
 }

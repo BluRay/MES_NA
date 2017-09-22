@@ -362,11 +362,11 @@ public class SettingServiceImpl implements ISettingService {
 		}		
 	}
 	@Override
-	public Map<String, Object> getProcessConfigList(Map<String, Object> condMap) {
+	public Map<String, Object> getStationConfigList(Map<String, Object> condMap) {
 		Map<String,Object> result=new HashMap<String,Object>();
 		int totalCount=0;
-		List<Map<String,Object>> datalist=settingDao.queryProcessConfigList(condMap);
-		totalCount=settingDao.queryProcessConfigCount(condMap);
+		List<Map<String,Object>> datalist=settingDao.queryStationConfigList(condMap);
+		totalCount=settingDao.queryStationConfigCount(condMap);
 		result.put("recordsTotal", totalCount);
 		result.put("recordsFiltered", totalCount);
 		result.put("draw", condMap.get("draw"));
@@ -374,29 +374,29 @@ public class SettingServiceImpl implements ISettingService {
 		return result;
 	}
 	@Override
-	public List<Map<String, Object>> getProcessListNoLine(
+	public List<Map<String, Object>> getStationListNoLine(
 			Map<String, Object> condMap) {
-		List<Map<String,Object>> datalist=settingDao.queryProcessListNoLine(condMap);
+		List<Map<String,Object>> datalist=settingDao.queryStationListNoLine(condMap);
 		return datalist;
 	}
 	@Override
-	public List<Map<String,Object>> getProcessConfigDetailList(Map<String, Object> condMap) {
-		List<Map<String,Object>> datalist=settingDao.queryProcessConfigDetailList(condMap);
+	public List<Map<String,Object>> getStationConfigDetailList(Map<String, Object> condMap) {
+		List<Map<String,Object>> datalist=settingDao.queryStationConfigDetailList(condMap);
 		return datalist;
 	}
 	/**
 	 * 根据工厂获取该工厂下所有车间的标准工序列表
 	 */
 	@Override
-	public List<Map<String,Object>> getProcessListByFactory(Map<String, Object> condMap) {
-		List<Map<String,Object>> datalist=settingDao.queryProcessListByFactory(condMap);
+	public List<Map<String,Object>> getStationListByFactory(Map<String, Object> condMap) {
+		List<Map<String,Object>> datalist=settingDao.queryStationListByFactory(condMap);
 		return datalist;
 	}
 	/**
 	 * 新增工序配置，同一工厂同一订单类型只允许保存一个工序配置
 	 */
 	@Override
-	public void addProcessConfig(List<Map<String, Object>> process_list,
+	public void addStationConfig(List<Map<String, Object>> process_list,
 			ModelMap model) {
 		String factory=(String) process_list.get(0).get("factory");
 		String order_type=(String) process_list.get(0).get("order_type");
@@ -404,14 +404,14 @@ public class SettingServiceImpl implements ISettingService {
 		condMap.put("factory", factory);
 		condMap.put("order_type", order_type);
 		//根据工厂、订单类型查询是否已经存在工序配置
-		List<Map<String, Object>> list=settingDao.queryProcessConfigList(condMap);
+		List<Map<String, Object>> list=settingDao.queryStationConfigList(condMap);
 		if(list.size()>0){
 			model.put("message", factory+" "+order_type+" 已存在工序配置，不能重复添加！");
 			model.put("success", false);
 			return;
 		}
 		try{
-			int i=settingDao.insertProcessConfig(process_list);
+			int i=settingDao.insertStationConfig(process_list);
 			model.put("message","保存成功！");
 			model.put("success", true);
 		}catch(Exception e){
@@ -425,7 +425,7 @@ public class SettingServiceImpl implements ISettingService {
 	 */
 	@Override
 	@Transactional
-	public void editProcessConfig(List<Map<String, Object>> process_list,
+	public void editStationConfig(List<Map<String, Object>> process_list,
 			ModelMap model) {
 		String factory=(String) process_list.get(0).get("factory");
 		String order_type=(String) process_list.get(0).get("order_type");
@@ -434,8 +434,8 @@ public class SettingServiceImpl implements ISettingService {
 		condMap.put("order_type", order_type);
 		//删除该工厂订单类型下的工序配置
 		try{
-			settingDao.deleteProcessConfig(condMap);
-			settingDao.insertProcessConfig(process_list);
+			settingDao.deleteStationConfig(condMap);
+			settingDao.insertStationConfig(process_list);
 			model.put("message","保存成功！");
 			model.put("success", true);
 		}catch(Exception e){
@@ -447,9 +447,9 @@ public class SettingServiceImpl implements ISettingService {
 	}
 	
 	@Override
-	public void deleteProcessConfig(Map<String, Object> condMap, ModelMap model) {
+	public void deleteStationConfig(Map<String, Object> condMap, ModelMap model) {
 		try{
-			settingDao.deleteProcessConfig(condMap);
+			settingDao.deleteStationConfig(condMap);
 			model.put("message","删除成功！");
 			model.put("success", true);
 		}catch(Exception e){

@@ -474,4 +474,162 @@
 	<select id="queryOrderConfigTotalQty" parameterType="String" resultType="int">
 		select ifnull(sum(oc.config_qty),0) from BMS_OR_ORDER_CONFIG oc where oc.order_id=#{order_id}
 	</select>
+	<!-- 海外 MES系统 start -->
+	<select id="getProjectBomList" parameterType="Map" resultType="Map">
+		SELECT p.*,h.DCN,h.version,u.username,h.edit_date FROM BMS_NA_PROJECT p			
+		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
+		<!-- and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id) -->
+		LEFT JOIN BMS_NA_BASE_USER u ON u.id=h.editor_id
+		where 1=1
+		<if test="projectNo !=null and projectNo !=''">
+			and p.project_no like CONCAT('%',#{projectNo},'%')   
+		</if>
+		<if test="status !=null and status !=''">
+			and p.project_status = #{status} 
+		</if>
+		<if test="actYear !=null and actYear !=''">
+			and p.product_year = #{actYear} 
+		</if>
+		<if test="plant !=null and plant !=''">
+			and find_in_set(p.production_plant ,#{plant} )
+		</if>
+			ORDER BY p.id DESC
+		<if test="start !=null and length !='-1' ">
+			LIMIT #{start} ,#{length} 
+		</if>			
+	</select>
+	
+	<select id="getProjectBomTotalCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_NA_PROJECT p			
+		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
+		<!-- and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)  -->
+		where 1=1
+		<if test="projectNo !=null and projectNo !=''">
+			and p.project_no like CONCAT('%',#{projectNo},'%')   
+		</if>
+		<if test="status !=null and status !=''">
+			and p.project_status = #{status} 
+		</if>
+		<if test="actYear !=null and actYear !=''">
+			and p.product_year = #{actYear} 
+		</if>
+		<if test="plant !=null and plant !=''">
+			and find_in_set(p.production_plant ,#{plant} )
+		</if>
+	</select>
+	<select id="queryBomHeader" parameterType="Map" resultType="Map">
+		select * from BMS_NA_PROJECT_BOM_HEAD where project_id=#{projectId}
+		 and version=#{version} and document_no=#{documentNo} and dcn=#{dcn}
+	</select>
+	
+	<insert id="saveBomHeader" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_PROJECT_BOM_HEAD (project_id,document_no,dcn,version,editor_id,edit_date)
+		values (#{projectId},#{documentNo},#{dcn},#{version},#{editor_id},#{edit_date})
+	</insert>
+	
+	<update id='updateBomHeader' parameterType="Map">
+		update BMS_NA_PROJECT_BOM_HEAD set editor_id=#{editor_id} ,edit_date=#{edit_date}
+		where project_id=#{projectId} and version=#{version}
+		 and document_no=#{documentNo} and dcn=#{dcn}
+	</update>
+	
+	<insert id="saveBomDetails" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_PROJECT_BOM_ITEM 
+		(bom_head_id,item_no,SAP_material,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note)
+		values
+		<foreach collection="bomList" item="detail" index="index" separator=",">
+			(#{bom_head_id},#{detail.item_no},#{detail.SAP_material},#{detail.BYD_PN},#{detail.part_name},
+			#{detail.specification},#{detail.unit},#{detail.quantity},#{detail.en_description},#{detail.vendor},
+			#{detail.station_code},#{detail.note})
+		</foreach>		
+	</insert>
+	
+	<delete id="deleteBomByHeader" parameterType="int">
+		delete from BMS_NA_PROJECT_BOM_ITEM where bom_head_id=#{header_id}
+	</delete>
+	<select id="getBomItemList" parameterType="Map" resultType="Map">
+		SELECT d.* FROM BMS_NA_PROJECT_BOM_ITEM d
+		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
+		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
+		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		where p.project_no=#{projectNo}  
+		<if test="sapNo !=null and sapNo !=''">
+			and d.SAP_material = #{sapNo} 
+		</if>
+		<if test="stationCode !=null and stationCode !=''">
+			and p.station_code = #{stationCode} 
+		</if>
+		ORDER BY d.id 
+		<if test="start !=null and length !='-1' ">
+			LIMIT #{start} ,#{length} 
+		</if>			
+	</select>
+	
+	<select id="getBomItemTotalCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_NA_PROJECT_BOM_ITEM d			
+		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
+		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
+		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		where p.project_no=#{projectNo}  
+		<if test="sapNo !=null and sapNo !=''">
+			and d.SAP_material = #{sapNo} 
+		</if>
+		<if test="stationCode !=null and stationCode !=''">
+			and p.station_code = #{stationCode} 
+		</if>
+		<if test="version !=null and version !=''">
+			and h.version = #{version} 
+		</if>
+	</select>
+	<select id="getMaxVersion" parameterType="Map" resultType="Map">
+		SELECT h.* FROM BMS_NA_PROJECT_BOM_HEAD h
+		 LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
+		where p.project_no=#{projectNo} order by id desc LIMIT 0 ,2 		
+	</select>
+	<select id="getBomCompareList" parameterType="Map" resultType="Map">
+        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
+		  from ( SELECT  (
+		   case h.version when '${currentVersion}' then 'current' when '${prevVersion}' then 'prev' end) version,SAP_material,
+				item_no,BYD_PN,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
+		        FROM BMS_NA_PROJECT_BOM_ITEM d
+				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
+				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
+				where p.project_no=#{projectNo} and h.version in ('${currentVersion}','${prevVersion}')
+		) t where 1=1
+		<if test="sapNo !=null and sapNo !=''">
+			and d.SAP_mateiral = #{sapNo} 
+		</if>
+		<if test="stationCode !=null and stationCode !=''">
+			and d.station_code = #{stationCode} 
+		</if>
+		GROUP BY SAP_material,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
+	</select>
+	<select id="getBomCompareDiffList" parameterType="Map" resultType="Map">
+        select * from (
+        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
+		  from ( SELECT  (
+		   case h.version when '${currentVersion}' then 'current' when '${prevVersion}' then 'prev' end) version,SAP_material,
+				item_no,BYD_PN,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
+		        FROM BMS_NA_PROJECT_BOM_ITEM d
+				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
+				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
+				where p.project_no=#{projectNo} and h.version in ('${currentVersion}','${prevVersion}')
+		) t where 1=1
+		<if test="sapNo !=null and sapNo !=''">
+			and d.SAP_mateiral = #{sapNo} 
+		</if>
+		<if test="stationCode !=null and stationCode !=''">
+			and d.station_code = #{stationCode} 
+		</if>
+		GROUP BY SAP_material,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
+	   ) t1 where t1.version in ('current','prev') 
+	</select>
 </mapper>

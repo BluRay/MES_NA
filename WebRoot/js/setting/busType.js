@@ -2,8 +2,18 @@ var pageSize=1;
 var table;
 var dt;
 $(document).ready(function(){
+	getBusNumberSelect('#nav-search-input');
+	getKeysSelect("INTERNAL_BUS_TYPE", "车型内部名称", "#add_internalName","请选择","keyName");
+	getKeysSelect("INTERNAL_BUS_TYPE", "车型内部名称", "#edit_internalName","请选择","keyName");
 	
 	ajaxQuery();
+
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	})
 	
 	$(".btnQuery").on("click",function(){
 		ajaxQuery();
@@ -11,7 +21,7 @@ $(document).ready(function(){
 	$(document).on("click","#btnAdd",function(){
 		
 		var dialog = $( "#dialog_add" ).removeClass('hide').dialog({
-			width:600,
+			width:800,
 			modal: true,
 			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-gear green"></i> 新增车型</h4></div>',
 			title_html: true,
@@ -51,7 +61,7 @@ function ajaxQuery(){
 		sScrollY: $(window).height()-250,
 		scrollX: true,
 		/*scrollCollapse: true,*/
-		pageLength: 12,
+		pageLength: 10,
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
@@ -98,17 +108,13 @@ function ajaxQuery(){
 		columns: [
             {"title":"车型编号","class":"center","data":"busTypeCode","defaultContent": ""},
             {"title":"车型内部名称","class":"center","data":"internalName","defaultContent": ""},
-            {"title":"品牌","class":"center","data":"brand","defaultContent": ""},
-            {"title":"制造商","class":"center","data":"manufacturer","defaultContent": ""},
-            //{"title":"车辆类型","class":"center","data": "busVehicleTypeId","defaultContent": ""},
             {"title":"车辆型号","class":"center","data":"vehicleModel","defaultContent": ""},		            
             {"title":"底盘型号","class":"center","data":"chassisModel","defaultContent": ""},		            
             {"title":"车辆长度","class":"center","data": "vehicleLength","defaultContent": ""},
             {"title":"轴距","class":"center","data":"wheelbase","defaultContent": ""},
             {"title":"最大允许总质量","class":"center","data":"maxWeight","defaultContent": ""},		            
-            {"title":"额定载客数量","class":"center","data": "passengerNum","defaultContent": ""},
-            //{"title":"燃料类型","class":"center","data":"fuelType","defaultContent": ""},
-            {"title":"驱动电机","class":"center","data": "driveMotor","defaultContent": ""},
+            {"title":"额定载客人数","class":"center","data": "passengers","defaultContent": ""},
+            {"title":"座位数","class":"center","data":"passengerNum","defaultContent": ""},
             {"title":"电机型号","class":"center","data":"motorModel","defaultContent": ""},		            
             {"title":"电机最大功率","class":"center","data":"motorPower","defaultContent": ""},		            
             {"title":"电池型号","class":"center","data": "batteryModel","defaultContent": ""},
@@ -204,12 +210,10 @@ function ajaxAdd (argument) {
     $.ajax({
 		type: "post",
 		dataType: "json",
-		url: "/IMMS/setting/addBusType",
+		url: "addBusType",
 	    data: {
 			"busTypeCode":$("#add_busTypeCode").val(),
 			"internalName":$("#add_internalName").val(),
-			"brand":$("#add_brand").val(),
-			"manufacturer":$("#add_manufacturer").val(),
 			"vehicleModel":$("#add_vehicleModel").val(),
 			"driveMotor":$("#add_driveMotor").val(),
 			"chassisModel":$("#add_chassisModel").val(),
@@ -223,6 +227,7 @@ function ajaxAdd (argument) {
 			"passengerNum":$("#add_passengerNum").val(),
 			"maxWeight":$("#add_maxWeight").val(),
 			"lightDowndip":$("#add_lightDowndip").val(),
+			"passengers":$("#add_passenger").val(),
 			"maxSpeed":$("#add_maxSpeed").val()
 		},
 		async: false,
@@ -244,7 +249,7 @@ function ajaxEdit(id){
 
 	//查询订单信息
 	$.ajax({
-		url: "/IMMS/setting/getBusTypeById",
+		url: "getBusTypeById",
 		dataType: "json",
 		data: {"id" : id},
 		async: false,
@@ -267,9 +272,9 @@ function ajaxEdit(id){
 			$('#edit_driveMotor').val(response.data.driveMotor);
 			$('#edit_maxSpeed').val(response.data.maxSpeed);
 			$('#edit_lightDowndip').val(response.data.lightDowndip);
-
+			$('#edit_passenger').val(response.data.passengers);
 			var dialog = $( "#dialog-edit" ).removeClass('hide').dialog({
-				width:600,
+				width:800,
 				height:520,
 				modal: true,
 				title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>编辑车型</h4></div>",
@@ -368,8 +373,6 @@ function ajaxEdit(id){
 							    	"id" : $("#editId").val(),
 							    	"busTypeCode":$("#edit_busTypeCode").val(),
 									"internalName":$("#edit_internalName").val(),
-									"brand":$("#edit_brand").val(),
-									"manufacturer":$("#edit_manufacturer").val(),
 									"vehicleModel":$("#edit_vehicleModel").val(),
 									"driveMotor":$("#edit_driveMotor").val(),
 									"chassisModel":$("#edit_chassisModel").val(),
@@ -383,6 +386,7 @@ function ajaxEdit(id){
 									"passengerNum":$("#edit_passengerNum").val(),
 									"maxWeight":$("#edit_maxWeight").val(),
 									"lightDowndip":$("#edit_lightDowndip").val(),
+									"passengers":$("#edit_passenger").val(),
 									"maxSpeed":$("#edit_maxSpeed").val()
 							    },
 							    success:function(response){

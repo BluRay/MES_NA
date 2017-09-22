@@ -795,19 +795,14 @@ public class BaseDataController extends BaseController {
 		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
 		String factory=request.getParameter("factory");
 		String workshop=request.getParameter("workshop");
-		String line=request.getParameter("line");
-		String monitoryPoint_flag=request.getParameter("monitoryPoint_flag");
-		String keyProcess_flag=request.getParameter("keyProcess_flag");
-		String planNode_flag=request.getParameter("planNode_flag");
-		
+		String station=request.getParameter("station");
+		String process=request.getParameter("process");
 		
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		condMap.put("factory", factory);
 		condMap.put("workshop", workshop);
-		condMap.put("line", line);
-		condMap.put("monitoryPoint_flag", monitoryPoint_flag);
-		condMap.put("keyProcess_flag", keyProcess_flag);
-		condMap.put("planNode_flag", planNode_flag);
+		condMap.put("process", process);
+		condMap.put("station", station);
 		condMap.put("start", start);
 		condMap.put("length", length);
 		condMap.put("draw", draw);
@@ -867,16 +862,16 @@ public class BaseDataController extends BaseController {
 	 * 工序配置页面
 	 * @return
 	 */
-	@RequestMapping("/processConfig")
+	@RequestMapping("/stationConfig")
 	public ModelAndView processConfig(){
-		mv.setViewName("setting/processConfig");
+		mv.setViewName("setting/stationConfig");
 		return mv;
 	}
 	
 	/**
 	 * 获取工序配置列表
 	 */
-	@RequestMapping("/getProcessConfigList")
+	@RequestMapping("/getStationConfigList")
 	@ResponseBody
 	public ModelMap getProcessConfigList(){
 		model.clear();
@@ -893,16 +888,16 @@ public class BaseDataController extends BaseController {
 		condMap.put("length", length);
 		condMap.put("draw", draw);
 		
-		model.addAllAttributes(settingService.getProcessConfigList(condMap));
+		model.addAllAttributes(settingService.getStationConfigList(condMap));
 		return model;
 	}
 	
 	/**
 	 * 根据工厂、车间获取工序列表（不区分线别）
 	 */
-	@RequestMapping("/getProcessListNoLine")
+	@RequestMapping("/getStationListNoLine")
 	@ResponseBody
-	public ModelMap getProcessListNoLine(){
+	public ModelMap getStationListNoLine(){
 		model.clear();
 		String factory=request.getParameter("factory");
 		String workshop=request.getParameter("workshop");
@@ -910,16 +905,16 @@ public class BaseDataController extends BaseController {
 		condMap.put("factory", factory);
 		condMap.put("workshop", workshop);
 		
-		model.put("data", settingService.getProcessListNoLine(condMap));
+		model.put("data", settingService.getStationListNoLine(condMap));
 		return model;
 	}
 	
 	/**
 	 * 根据工厂、订单类型获取工序配置明细列表
 	 */
-	@RequestMapping("/getProcessConfigDetailList")
+	@RequestMapping("/getStationConfigDetailList")
 	@ResponseBody
-	public ModelMap getProcessConfigDetailList(){
+	public ModelMap getStationConfigDetailList(){
 		model.clear();
 		String factory=request.getParameter("factory");
 		String order_type=request.getParameter("order_type");
@@ -927,31 +922,31 @@ public class BaseDataController extends BaseController {
 		condMap.put("factory", factory);
 		condMap.put("order_type", order_type);
 		
-		model.put("data", settingService.getProcessConfigDetailList(condMap));
+		model.put("data", settingService.getStationConfigDetailList(condMap));
 		return model;
 	}
 	
 	/**
 	 * 根据工厂获取该工厂下所有车间的标准工序列表
 	 */
-	@RequestMapping("/getProcessListByFactory")
+	@RequestMapping("/getStationListByFactory")
 	@ResponseBody
-	public ModelMap getProcessListByFactory(){
+	public ModelMap getStationListByFactory(){
 		model.clear();
 		String factory=request.getParameter("factory");
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		condMap.put("factory", factory);
 		
-		model.put("data", settingService.getProcessListByFactory(condMap));
+		model.put("data", settingService.getStationListByFactory(condMap));
 		return model;
 	}
 	
 	/**
-	 * 新增工序配置
+	 * 新增工位配置
 	 */
-	@RequestMapping("/addProcessConfig")
+	@RequestMapping("/addStationConfig")
 	@ResponseBody
-	public ModelMap addProcessConfig(){
+	public ModelMap addStationConfig(){
 		model.clear();
 		String process_list_str=request.getParameter("process_list");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -972,7 +967,7 @@ public class BaseDataController extends BaseController {
 			map.put("editor_id", userid);
 			map.put("edit_date", curTime);
 		}
-		settingService.addProcessConfig(process_list,model);
+		settingService.addStationConfig(process_list,model);
 		
 		return model;
 	}
@@ -980,9 +975,9 @@ public class BaseDataController extends BaseController {
 	/**
 	 * 编辑工序配置
 	 */
-	@RequestMapping("/editProcessConfig")
+	@RequestMapping("/editStationConfig")
 	@ResponseBody
-	public ModelMap editProcessConfig(){
+	public ModelMap editStationConfig(){
 		model.clear();
 		String process_list_str=request.getParameter("process_list");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1003,16 +998,16 @@ public class BaseDataController extends BaseController {
 			map.put("editor_id", userid);
 			map.put("edit_date", curTime);
 		}
-		settingService.editProcessConfig(process_list,model);
+		settingService.editStationConfig(process_list,model);
 		
 		return model;
 	}
 	/**
 	 * 编辑工序配置
 	 */
-	@RequestMapping("/deleteProcessConfig")
+	@RequestMapping("/deleteStationConfig")
 	@ResponseBody
-	public ModelMap deleteProcessConfig(){
+	public ModelMap deleteStationConfig(){
 		model.clear();
 		String factory=request.getParameter("factory");
 		String order_type=request.getParameter("order_type");
@@ -1020,7 +1015,7 @@ public class BaseDataController extends BaseController {
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		condMap.put("factory", factory);
 		condMap.put("order_type", order_type);
-		settingService.deleteProcessConfig(condMap,model);
+		settingService.deleteStationConfig(condMap,model);
 		return model;
 	}
 	
@@ -1171,11 +1166,8 @@ public class BaseDataController extends BaseController {
 
 			busType.setBusTypeCode(request.getParameter("busTypeCode"));
             busType.setInternalName(request.getParameter("internalName"));
-            busType.setBrand(request.getParameter("brand"));
-            busType.setManufacturer(request.getParameter("manufacturer"));
             busType.setBatteryModel(request.getParameter("batteryModel"));
             busType.setChassisModel(request.getParameter("chassisModel"));
-            busType.setDriveMotor(request.getParameter("driveMotor"));
             busType.setLightDowndip(request.getParameter("lightDowndip"));
             busType.setMaxSpeed(request.getParameter("maxSpeed"));
             busType.setMaxWeight(request.getParameter("maxWeight"));
@@ -1186,6 +1178,7 @@ public class BaseDataController extends BaseController {
             busType.setPassengerNum(request.getParameter("passengerNum"));
             busType.setVehicleLength(request.getParameter("vehicleLength"));
             busType.setVehicleModel(request.getParameter("vehicleModel"));
+            busType.setPassengers(request.getParameter("passengers"));
             busType.setWheelbase(request.getParameter("wheelbase"));
             busType.setEditDate(edit_date);
             busType.setEditorId(editor_id);
@@ -1211,19 +1204,17 @@ public class BaseDataController extends BaseController {
 			busType.setId(id);
 			busType.setBusTypeCode(request.getParameter("busTypeCode"));
             busType.setInternalName(request.getParameter("internalName"));
-            busType.setBrand(request.getParameter("brand"));
-            busType.setManufacturer(request.getParameter("manufacturer"));
             busType.setBatteryModel(request.getParameter("batteryModel"));
             busType.setBatteryCapacity(request.getParameter("batteryCapacity"));
             busType.setRatedVoltage(request.getParameter("ratedVoltage"));
             busType.setChassisModel(request.getParameter("chassisModel"));
-            busType.setDriveMotor(request.getParameter("driveMotor"));
             busType.setLightDowndip(request.getParameter("lightDowndip"));
             busType.setMaxSpeed(request.getParameter("maxSpeed"));
             busType.setMaxWeight(request.getParameter("maxWeight"));
             busType.setMotorModel(request.getParameter("motorModel"));
             busType.setMotorPower(request.getParameter("motorPower"));
             busType.setPassengerNum(request.getParameter("passengerNum"));
+            busType.setPassengers(request.getParameter("passengers"));
             busType.setVehicleLength(request.getParameter("vehicleLength"));
             busType.setVehicleModel(request.getParameter("vehicleModel"));
             busType.setWheelbase(request.getParameter("wheelbase"));
@@ -1448,6 +1439,7 @@ public class BaseDataController extends BaseController {
 		conditionMap.put("org_type", request.getParameter("org_type"));
 		conditionMap.put("org_kind", request.getParameter("org_kind"));
 		conditionMap.put("name", request.getParameter("name"));
+		conditionMap.put("org_code", request.getParameter("org_code"));
 		conditionMap.put("manager", request.getParameter("manager"));
 		conditionMap.put("responsibilities",
 				request.getParameter("responsibilities"));
@@ -1521,6 +1513,7 @@ public class BaseDataController extends BaseController {
 			conditionMap.put("org_type", request.getParameter("org_type"));
 			conditionMap.put("org_kind", request.getParameter("org_kind"));
 			conditionMap.put("name", request.getParameter("name"));
+			conditionMap.put("org_code", request.getParameter("org_code"));
 			conditionMap
 					.put("sort_number", request.getParameter("sort_number"));
 			conditionMap.put("manager", request.getParameter("manager"));

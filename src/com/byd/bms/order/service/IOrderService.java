@@ -30,4 +30,10 @@ public interface IOrderService {
 	public void saveOrderConfigAllot(List detail_list);
 	public ModelMap getOrderQueryData(Map<String, Object> condMap);
 	public void getOrderConfigTotalQty(String order_id, ModelMap model);
+	// 海外MES 
+	public Map<String,Object> getProjectBomList(Map<String,Object> condMap);
+	public int saveBomInfo(Map<String,Object> condMap);
+	// 根据project_no查询当前Max version的BOM Item数据
+	public Map<String,Object> getBomItemList(Map<String,Object> condMap);
+	public Map<String, Object> getBomCompareList(Map<String, Object> condMap);
 }

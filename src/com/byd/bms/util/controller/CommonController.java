@@ -292,6 +292,25 @@ public class CommonController extends BaseController {
 	}
 	
 	/**
+	 * 获取车间工位信息
+	 * @return
+	 */
+	@RequestMapping("/getStationSelect")
+	@ResponseBody
+	public ModelMap getStationSelect(){
+
+		String factory = request.getParameter("factory");
+		String workshop = request.getParameter("workshop");
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", factory);
+		condMap.put("workshop", workshop);
+		model=new ModelMap();
+		model.put("data", commonService.getStationSelect(condMap));
+
+		return model;
+	}
+	
+	/**
 	 * added by xjw for 查询班组下拉列表(ORG表获取)
 	 * 
 	 * @return

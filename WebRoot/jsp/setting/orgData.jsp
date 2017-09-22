@@ -130,6 +130,14 @@
 					</fieldset>
 					<fieldset>
 						<div class="form-group form-horizontal">
+							<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Org Code： </label>
+							<div class="col-sm-9">
+                                <input style="height: 30px;width:280px" type="text" class="input-large revise carType" placeholder="" id="new_org_code" />				
+                                </div>
+						    </div>
+					</fieldset>					
+					<fieldset>
+						<div class="form-group form-horizontal">
 							<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Manager： </label>
 							<div class="col-sm-9">
                                 <input style="height: 30px;width:280px" type="text" class="input-large revise carType" placeholder="" id="new_manager" />				
@@ -192,6 +200,14 @@
                                 class="input-medium revise carType" id="edit_name" readonly="readonly"/>							
                             </div>
 					    </div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group form-horizontal">
+							<label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Org Code： </label>
+							<div class="col-sm-9">
+                                <input style="height: 30px;width:280px" type="text" class="input-large revise carType" placeholder="" id="edit_org_code" />				
+                                </div>
+						    </div>
 					</fieldset>
 					<fieldset>
 						<div class="form-group form-horizontal">

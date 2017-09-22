@@ -93,13 +93,13 @@ public interface ISettingDao {
 	public int addProcess(BmsBaseProcess process);
 	public void updateProcess(BmsBaseProcess process);
 	public void deleteProcess(List ids);
-	public List<Map<String,Object>> queryProcessConfigList(Map<String, Object> condMap);
-	public int queryProcessConfigCount(Map<String, Object> condMap);
-	public List<Map<String, Object>> queryProcessListNoLine(Map<String, Object> condMap);
-	public List<Map<String, Object>> queryProcessConfigDetailList( Map<String, Object> condMap);
-	public List<Map<String, Object>> queryProcessListByFactory(Map<String, Object> condMap);
-	public int insertProcessConfig(List<Map<String, Object>> process_list);
-	public void deleteProcessConfig(Map<String, Object> condMap);
+	public List<Map<String,Object>> queryStationConfigList(Map<String, Object> condMap);
+	public int queryStationConfigCount(Map<String, Object> condMap);
+	public List<Map<String, Object>> queryStationListNoLine(Map<String, Object> condMap);
+	public List<Map<String, Object>> queryStationConfigDetailList( Map<String, Object> condMap);
+	public List<Map<String, Object>> queryStationListByFactory(Map<String, Object> condMap);
+	public int insertStationConfig(List<Map<String, Object>> process_list);
+	public void deleteStationConfig(Map<String, Object> condMap);
 	
 	//车间班组
 	public List<BmsBaseStandardWorkgroup> getWorkgroupList(Map<String,Object> queryMap);

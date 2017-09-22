@@ -289,7 +289,7 @@ jQuery(function($) {
 			resizable: false,
 			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Department</h4></div>',
 			title_html: true,
-			width:650,
+			width:720,
 			height:570,
 			modal: true,
 			buttons: [ 
@@ -335,6 +335,7 @@ jQuery(function($) {
 									type: "get",
 								    data: {
 								    	"name" : name,
+								    	"org_code": $("#new_org_code").val(),
 								    	"responsibilities" : $("#new_responsibilities").val(),
 								    	"manager" : $("#new_manager").val(),
 								    	"org_kind" : $("#new_org_kind").val(),
@@ -423,8 +424,9 @@ jQuery(function($) {
                 	$('#edit_name').val(response.data[0].display_name);
                 	$('#edit_manager').val(response.data[0].manager);
                 	$('#edit_responsibilities').val(response.data[0].responsibilities);
+                	$('#edit_org_code').val(response.data[0].org_code);
                 	var dialog = $("#dialog-edit").removeClass('hide').dialog({
-            			width:650,
+            			width:720,
             			height:570,
             			modal: true,
             			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-gear green"></i> Edit Department</h4></div>',
@@ -455,6 +457,7 @@ jQuery(function($) {
             					    	"responsibilities" : $("#edit_responsibilities").val(),
             					    	"manager" : $("#edit_manager").val(),
             					    	"org_kind" : $("#edit_org_kind").val(),
+            					    	"org_code":$("#edit_org_code").val(),
             					    	"org_type" :$("#edit_org_type :selected").attr('keyvalue'),
             					    	"parent_id" : $("#p_id").val()
             					    },
@@ -597,11 +600,12 @@ function getWorkgroupListById(id,org_kind,org_type){
 	                    return "<input id='id' value='"+data+"' type='hidden' /><input type='checkbox' fid='cb_"+data+"'>";
 	                },"defaultContent": ""},
 		            {"title":"Org Name","class":"center","data":"display_name","defaultContent": ""},
+		            {"title":"Org Code","class":"center","data":"org_code","defaultContent": ""},
 		            {"title":"Org Type","class":"center","data":"org_type","render": function ( data, type, row ) {
 	                    return data=="0" ? "Company" : (data=="1"?"Plant":(data=="2"?"Workshop":(data=="3"?"Workgroup":"Team")))
 	                },"defaultContent": ""},
 		            {"title":"Org Model","class":"center","data":"org_kind","render": function ( data, type, row ) {
-	                    return data=="0" ? "Managed" : "Production"
+	                    return data=="0" ? "Production" : "Managed"
 	                },"defaultContent": ""},
 		            {"title":"Responsibilities","class":"center","data":"responsibilities","defaultContent": ""},
 		            {"title":"Manager","class":"center","data":"manager","defaultContent": ""},

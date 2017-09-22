@@ -54,6 +54,8 @@ public interface ICommonService {
 	public List<Map<String,String>> getUserInfoByCard(String string);//刷厂牌获取用户信息
 	
 	public void getStaffNameByNumber(String staff_number,ModelMap model);
+	
+	List<Map<String,Object>> getStationSelect(Map<String,Object> condMap);
 
 	/**
 	 * @author xiong.jianwu

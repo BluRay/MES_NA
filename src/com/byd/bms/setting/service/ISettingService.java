@@ -80,13 +80,13 @@ public interface ISettingService {
 	public int addProcess(BmsBaseProcess process);
 	public void updateProcess(BmsBaseProcess process);
 	public void deleteProcess(List ids);
-	public List<Map<String,Object>> getProcessListNoLine(Map<String, Object> condMap);
-	public List<Map<String,Object>> getProcessConfigDetailList(Map<String, Object> condMap);
-	public List<Map<String,Object>> getProcessListByFactory(Map<String, Object> condMap);
-	public void addProcessConfig(List<Map<String, Object>> process_list,ModelMap model);
+	public List<Map<String,Object>> getStationListNoLine(Map<String, Object> condMap);
+	public List<Map<String,Object>> getStationConfigDetailList(Map<String, Object> condMap);
+	public List<Map<String,Object>> getStationListByFactory(Map<String, Object> condMap);
+	public void addStationConfig(List<Map<String, Object>> process_list,ModelMap model);
 	@Transactional
-	public void editProcessConfig(List<Map<String, Object>> process_list,ModelMap model);
-	public void deleteProcessConfig(Map<String, Object> condMap,ModelMap model);
+	public void editStationConfig(List<Map<String, Object>> process_list,ModelMap model);
+	public void deleteStationConfig(Map<String, Object> condMap,ModelMap model);
 	//车间班组
 	public List<BmsBaseStandardWorkgroup> getWorkgroupList(Map<String,Object> queryMap);
 	public List<Map<String, Object>> getWorkshopTreeList(Map<String,Object> queryMap);
@@ -98,7 +98,7 @@ public interface ISettingService {
 	//public int getBusTypeTotalCount(Map<String,Object> queryMap);
 	public int addBusType(BmsBaseBusType busType);
 	public void updateBusType(BmsBaseBusType busType);
-	public Map<String, Object> getProcessConfigList(Map<String, Object> condMap);
+	public Map<String, Object> getStationConfigList(Map<String, Object> condMap);
 	public BmsBaseBusType getBusTypeById(Map<String,Object> queryMap);
 	//VIN生成规则
 	public Map<String, Object> getVinRuleList(Map<String,Object> queryMap);

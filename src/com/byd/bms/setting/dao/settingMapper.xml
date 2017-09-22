@@ -191,7 +191,7 @@
 	
 	<select id="getOrgDataTreeList" parameterType="Map" resultType="Map">
 		SELECT
-         id,CONCAT(parent_id,'') parent_id,name as display_name,
+         id,CONCAT(parent_id,'') parent_id,name as display_name,org_code,
          manager,org_type,org_kind,responsibilities,
          (SELECT COUNT(1) FROM BMS_NA_BASE_ORG f2 WHERE f2.parent_id = t.id) AS sub_count,
          (SELECT name FROM BMS_NA_BASE_ORG f2 WHERE f2.id = t.parent_id) AS parent_name
@@ -209,7 +209,7 @@
          ORDER BY org_type ASC	
 	</select>
 	<select id="getOrgDataByParentId" parameterType="Map" resultType="Map">
-		SELECT t.id,CONCAT(t.parent_id,'') parent_id,t.name as display_name,t.manager,t.org_type,t.org_kind,t.responsibilities,t.foreign_id,
+		SELECT t.id,CONCAT(t.parent_id,'') parent_id,t.name as display_name,t.manager,t.org_code,t.org_type,t.org_kind,t.responsibilities,t.foreign_id,
 		   (SELECT name FROM BMS_NA_BASE_ORG f2 WHERE f2.id = t.parent_id) AS parent_name
           from BMS_NA_BASE_ORG t
           where 1=1 and t.deleted='0'
@@ -228,8 +228,8 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		<![CDATA[
-			insert into BMS_NA_BASE_ORG(parent_id,org_type,org_kind,name,foreign_id,sort_number,manager,responsibilities,deleted,editor_id,edit_date) 
-			values(#{parent_id},#{org_type},#{org_kind},#{name},#{foreign_id},#{sort_number},#{manager},#{responsibilities},#{deleted},#{editor_id},#{edit_date})
+			insert into BMS_NA_BASE_ORG(parent_id,org_type,org_kind,name,org_code,foreign_id,sort_number,manager,responsibilities,deleted,editor_id,edit_date) 
+			values(#{parent_id},#{org_type},#{org_kind},#{name},#{org_code},#{foreign_id},#{sort_number},#{manager},#{responsibilities},#{deleted},#{editor_id},#{edit_date})
 		]]>
 	</insert>
 	<!-- 编辑组织结构 -->
@@ -238,7 +238,7 @@
 			<if test="parent_id!=''">
 			parent_id=#{parent_id},
 			</if>
-			org_type=#{org_type},org_kind=#{org_kind},name=#{name}<!-- ,sort_number=#{sort_number} -->,manager=#{manager},responsibilities=#{responsibilities},deleted=#{deleted},editor_id=#{editor_id},edit_date=#{edit_date}  
+			org_type=#{org_type},org_kind=#{org_kind},name=#{name},org_code=#{org_code},manager=#{manager},responsibilities=#{responsibilities},deleted=#{deleted},editor_id=#{editor_id},edit_date=#{edit_date}  
 			where id=#{id}
 	</update>
 	<!--删除组织结构 -->
@@ -511,9 +511,8 @@
 	
 	<!-- 工序 -->
 	<select id="getProcessList" parameterType="Map" resultType="Map">
-		select p.*,k.key_name plan_node_name,u.username editor
+		select p.*,u.username editor
 		from BMS_NA_BASE_PROCESS p
-		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
 		left join BMS_NA_BASE_USER u on p.editor_id=u.id
 		where 1=1 and p.delete_flag !='1'
 		<if test="factory !=null and factory !='All'">
@@ -522,19 +521,13 @@
 		<if test="workshop !=null and workshop !='All'">
 			and p.workshop=#{workshop}
 		</if>
-		<if test="line !=null and line !='All'">
-			and p.line=#{line}
+		<if test="station !=null and station !='All'">
+			and p.station like '%${station}%' 
 		</if>	
-		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
-			and p.monitory_point_flag=#{monitoryPoint_flag}
+		<if test="process !=null and process !='All'">
+			and p.process_name like '%${process}%' 
 		</if>
-		<if test="keyProcess_flag !=null and keyProcess_flag !=''">
-			and p.key_process_flag=#{keyProcess_flag}
-		</if>
-		<if test="planNode_flag ==1">
-			and p.plan_node_id !=0
-		</if>
-		order by p.factory,p.workshop,p.line,cast(substring(p.process_code,3) as signed)
+		order by p.factory,p.workshop,p.station,cast(RIGHT(p.process_code,1) as signed)
 		<if test="start !=null and length!=-1">
 			LIMIT #{start} ,#{length} 
 		</if>
@@ -550,24 +543,18 @@
 		<if test="workshop !=null and workshop !='All'">
 			and p.workshop=#{workshop}
 		</if>
-		<if test="line !=null and line !='All'">
-			and p.line=#{line}
-		</if>	
-		<if test="monitoryPoint_flag !=null and monitoryPoint_flag !=''">
-			and p.monitory_point_flag=#{monitoryPoint_flag}
+		<if test="station !=null and station !='All'">
+			and p.station like '%${station}%' 
 		</if>
-		<if test="keyProcess_flag !=null and keyProcess_flag !=''">
-			and p.key_process_flag=#{keyProcess_flag}
+		<if test="process !=null and process !='All'">
+			and p.process_name like '%${process}%' 
 		</if>
-		<if test="planNode_flag ==1">
-			and p.plan_node_id !=0
-		</if>
+	
 	</select>
 	
 	<update id="updateProcess" parameterType="com.byd.bms.setting.model.BmsBaseProcess">
-		update BMS_NA_BASE_PROCESS set factory=#{factory},workshop=#{workshop},line=#{line},plan_node_id=#{plan_node_id},
-		process_code=#{process_code},process_name=#{process_name},monitory_point_flag=#{monitory_point_flag},
-		key_process_flag=#{key_process_flag},memo=#{memo}
+		update BMS_NA_BASE_PROCESS set factory=#{factory},workshop=#{workshop},station=#{station},
+		process_code=#{process_code},process_name=#{process_name},memo=#{memo}
 		where id=#{id}
 	</update>
 	
@@ -575,9 +562,9 @@
 		<selectKey resultType="int" keyProperty="id" order="AFTER">
 			SELECT LAST_INSERT_ID() AS id
 		</selectKey>
-		insert into BMS_NA_BASE_PROCESS (factory,workshop,line,plan_node_id,process_code,process_name,key_process_flag,monitory_point_flag,memo,editor_id,edit_date)
+		insert into BMS_NA_BASE_PROCESS (factory,workshop,station,process_code,process_name,memo,editor_id,edit_date)
 		values 
-		(#{factory},#{workshop},#{line},#{plan_node_id},#{process_code},#{process_name},#{key_process_flag},#{monitory_point_flag},#{memo},#{editor_id},#{edit_date})
+		(#{factory},#{workshop},#{station},#{process_code},#{process_name},#{memo},#{editor_id},#{edit_date})
 	</insert>
 	
 	<update id="deleteProcess" parameterType="List">
@@ -588,9 +575,9 @@
 		</foreach>
 	</update>
 	
-	<select id="queryProcessConfigList" parameterType="Map" resultType="Map">
+	<select id="queryStationConfigList" parameterType="Map" resultType="Map">
 		select distinct r.factory,r.order_type,u.username editor,r.edit_date
-		from BMS_NA_PD_SCAN_RULE r
+		from BMS_NA_BASE_SCAN_RULE r
 		left join BMS_NA_BASE_USER u on r.editor_id=u.id
 		where 1=1
 		<if test="factory !=null and factory !='All'">
@@ -604,9 +591,9 @@
 		</if>
 	</select>
 	
-	<select id="queryProcessConfigCount" parameterType="Map" resultType="int">
+	<select id="queryStationConfigCount" parameterType="Map" resultType="int">
 		select count(distinct r.factory,r.order_type)
-		from BMS_NA_PD_SCAN_RULE r
+		from BMS_NA_BASE_SCAN_RULE r
 		left join BMS_NA_BASE_USER u on r.editor_id=u.id
 		where 1=1
 		<if test="factory !=null and factory !='All'">
@@ -617,10 +604,10 @@
 		</if>
 	</select>
 	
-	<select id="queryProcessListNoLine" parameterType="Map" resultType="Map">
-		select distinct p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
-		case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node
-		from BMS_NA_BASE_PROCESS p 
+	<select id="queryStationListNoLine" parameterType="Map" resultType="Map">
+		select distinct p.workshop,p.station_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+		case p.key_station_flag when '0' then 'N' else 'Y' end as key_station_flag, ifnull(k.key_name,'') plan_node
+		from BMS_NA_BASE_STATION p 
 		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
 		left join BMS_NA_BASE_WORKSHOP w on w.workshop_name=p.workshop and w.delete_flag='0'
 		where p.delete_flag !='1'
@@ -628,51 +615,51 @@
 			and p.factory=#{factory}
 		</if>
 		<if test="workshop !=null and workshop !=''">
-			and p.workshop=#{workshop}
+			and p.workshop=#{workshop} 
 		</if>
-		order by w.sort_flag,cast(substring(p.process_code,3) as signed)
+		order by w.sort_flag,LEFT(p.station_code,1),cast(RIGHT(p.station_code,1) as signed)
 	</select>
 	
-	<select id="queryProcessConfigDetailList"  parameterType="Map" resultType="Map">
-		select r.*,p.monitory_point_flag,p.key_process_flag,p.plan_node
-		from BMS_NA_PD_SCAN_RULE r
+	<select id="queryStationConfigDetailList"  parameterType="Map" resultType="Map">
+		select r.*,p.monitory_point_flag,p.key_station_flag,p.plan_node
+		from BMS_NA_BASE_SCAN_RULE r
 		left join (
-		select distinct p.factory,p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
-				case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node
-				from BMS_NA_BASE_PROCESS p 
+		select distinct p.factory,p.workshop,p.station_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+				case p.key_station_flag when '0' then 'N' else 'Y' end as key_station_flag, ifnull(k.key_name,'') plan_node
+				from BMS_NA_BASE_STATION p 
 				left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
 				where p.delete_flag !='1' and p.factory=#{factory}
-		) p on r.factory=p.factory and p.workshop=r.workshop and r.process_name=p.process_name
+		) p on r.factory=p.factory and p.workshop=r.workshop and r.station_name=p.station_name
 		where r.factory=#{factory} and r.order_type=#{order_type}
 		order by r.sequence
 	</select>
 	
-	<select id="queryProcessListByFactory" parameterType="Map" resultType="Map">
-		select concat('{"process_list":[',group_concat('{"process_name":"',p.process_name,'","monitory_point_flag":"',p.monitory_point_flag,'","key_process_flag":"',p.key_process_flag,'","plan_node":"',p.plan_node,'"}' order by p.seq),']}') as process_list,
+	<select id="queryStationListByFactory" parameterType="Map" resultType="Map">
+		select concat('{"process_list":[',group_concat('{"station_name":"',p.station_name,'","monitory_point_flag":"',p.monitory_point_flag,'","key_station_flag":"',p.key_station_flag,'","plan_node":"',p.plan_node,'"}' order by p.seq),']}') as process_list,
 		p.workshop
 		from(
-		select distinct p.workshop,p.process_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
-		case p.key_process_flag when '0' then 'N' else 'Y' end as key_process_flag, ifnull(k.key_name,'') plan_node,cast(substring(p.process_code,3) as signed) seq
-		from BMS_NA_BASE_PROCESS p 
+		select distinct p.workshop,p.station_name ,case  p.monitory_point_flag when '0' then 'N' else 'Y' end as monitory_point_flag,
+		case p.key_station_flag when '0' then 'N' else 'Y' end as key_station_flag, ifnull(k.key_name,'') plan_node,cast(substring(p.station_code,3) as signed) seq
+		from BMS_NA_BASE_STATION p 
 		left join BMS_NA_BASE_KEY k on p.plan_node_id=k.id
 		where p.delete_flag !='1' and p.factory=#{factory}) p
 		group by p.workshop
 	</select>
 	
-	<insert id="insertProcessConfig" parameterType="List">
+	<insert id="insertStationConfig" parameterType="List">
 		<selectKey resultType="int" keyProperty="id" order="AFTER">
 			SELECT LAST_INSERT_ID() AS id
 		</selectKey>
-		insert into BMS_NA_PD_SCAN_RULE (sequence,factory,workshop,order_type,process_name,editor_id,edit_date)
+		insert into BMS_NA_BASE_SCAN_RULE (sequence,factory,workshop,order_type,station_name,editor_id,edit_date)
 		values
 		<foreach collection="list" item="detail" index="index" separator=",">
-			(#{detail.sequence},#{detail.factory},#{detail.workshop},#{detail.order_type},#{detail.process_name},
+			(#{detail.sequence},#{detail.factory},#{detail.workshop},#{detail.order_type},#{detail.station_name},
 			#{detail.editor_id},#{detail.edit_date})
 		</foreach>		
 	</insert>
 	
-	<update id="deleteProcessConfig" parameterType="Map">
-		delete from BMS_NA_PD_SCAN_RULE where factory=#{factory} and order_type=#{order_type}
+	<update id="deleteStationConfig" parameterType="Map">
+		delete from BMS_NA_BASE_SCAN_RULE where factory=#{factory} and order_type=#{order_type}
 	</update>
 	<!-- VIN生成规则 
 	<resultMap type="com.byd.bms.setting.model.BmsBaseVinRule" id="vinRuleMap">
@@ -730,60 +717,25 @@
 	</update>
 	
 	<!-- 车型 -->
-	<!-- resultMap type="com.byd.bms.setting.model.BmsBaseBusType" id="busTypeMap">
-		<id property="id" column="id" />
-		<result property="busTypeCode" column="bus_type_code" />
-		<result property="internalName" column="internal_name" />
-		<result property="brand" column="brand" />
-		<result property="wmi" column="wmi" />
-		<result property="manufacturer" column="manufacturer" />
-		<result property="busVehicleTypeId" column="bus_vehicle_type" />
-		<result property="busBodyTypeId" column="bus_body_type" />
-		<result property="vehicleModel" column="vehicle_model" />
-		<result property="chassisModel" column="chassis_model" />
-		<result property="vehicleLength" column="vehicle_length" />
-		<result property="wheelbase" column="wheelbase" />
-		<result property="maxWeight" column="max_weight" />
-		<result property="passengers" column="passengers" />
-		<result property="fuelType" column="fuel_type" />
-		<result property="driveMotorTypeId" column="drive_motor_type" />
-		<result property="driveMotor" column="drive_motor" />
-		<result property="motorModel" column="motor_model" />
-		<result property="motorPower" column="motor_power" />
-		<result property="batteryModel" column="battery_model" />
-		<result property="batteryCapacity" column="battery_capacity" />
-		<result property="ratedVoltage" column="rated_voltage" />
-		<result property="passengerNum" column="passenger_num" />
-		<result property="lightDowndip" column="light_downdip" />
-		<result property="maxSpeed" column="max_speed" />
-		<result property="memo" column="memo" />
-		<result property="editorId" column="editor_id" />
-		<result property="editDate" column="edit_date" />
-	</resultMap-->
 	<insert id="addBusType" parameterType="com.byd.bms.setting.model.BmsBaseBusType">
 		<selectKey resultType="int" keyProperty="id" order="AFTER">
 			SELECT LAST_INSERT_ID() AS id
 		</selectKey>
-		insert into BMS_NA_BASE_BUS_TYPE (bus_type_code,internal_name,brand,manufacturer,
-		  bus_vehicle_type,fuel_type,bus_body_type,drive_motor_type,vehicle_model,drive_motor,
+		insert into BMS_NA_BASE_BUS_TYPE (bus_type_code,internal_name,vehicle_model,
 		  chassis_model,motor_model,vehicle_length,motor_power,wheelbase,battery_model,
-		  battery_capacity,rated_voltage,max_weight,
+		  battery_capacity,rated_voltage,max_weight,passengers,
 		  passenger_num,max_speed,light_downdip,editor_id,edit_date)
 		values
-			(#{busTypeCode},#{internalName},#{brand},#{manufacturer},#{busVehicleTypeId},#{fuelType},
-			#{busBodyTypeId},#{driveMotorTypeId},#{vehicleModel},#{driveMotor},#{chassisModel},
+			(#{busTypeCode},#{internalName},#{vehicleModel},#{chassisModel},
 			#{motorModel},#{vehicleLength},#{motorPower},#{wheelbase},#{batteryModel},#{batteryCapacity},
-			#{ratedVoltage},#{maxWeight},
-			#{passengerNum},#{maxSpeed},#{lightDowndip},#{editorId},#{editDate})
+			#{ratedVoltage},#{maxWeight},#{passengers},#{passengerNum},#{maxSpeed},#{lightDowndip},#{editorId},#{editDate})
 	</insert>
 	<select id="getBusTypeList" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseBusType">
 		select t.id id,
-		  bus_type_code busTypeCode,internal_name internalName,brand brand,manufacturer manufacturer,
-		  bus_vehicle_type busVehicleTypeId,fuel_type fuelType,bus_body_type busBodyTypeId,
-		  drive_motor_type driveMotorTypeId,vehicle_model vehicleModel,drive_motor driveMotor,
+		  bus_type_code busTypeCode,internal_name internalName,vehicle_model vehicleModel,
 		  chassis_model chassisModel,motor_model motorModel,vehicle_length vehicleLength,
-		  motor_power motorPower,wheelbase wheelbase,battery_model batteryModel,
-		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,max_weight maxWeight,
+		  motor_power motorPower,wheelbase wheelbase,max_weight maxWeight,battery_model batteryModel,
+		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,passengers,
 		  passenger_num passengerNum,max_speed maxSpeed,light_downdip lightDowndip,u.username editor,edit_date editDate
 		  from BMS_NA_BASE_BUS_TYPE t
 		  left join BMS_NA_BASE_USER u ON t.editor_id=u.id
@@ -795,12 +747,10 @@
 	</select>
 	<select id="getBusTypeById" parameterType="Map" resultType="com.byd.bms.setting.model.BmsBaseBusType">
 		select id id,
-		  bus_type_code busTypeCode,internal_name internalName,brand brand,manufacturer manufacturer,
-		  bus_vehicle_type busVehicleTypeId,fuel_type fuelType,bus_body_type busBodyTypeId,
-		  drive_motor_type driveMotorTypeId,vehicle_model vehicleModel,drive_motor driveMotor,
+		  bus_type_code busTypeCode,internal_name internalName,vehicle_model vehicleModel,
 		  chassis_model chassisModel,motor_model motorModel,vehicle_length vehicleLength,
 		  motor_power motorPower,wheelbase wheelbase,battery_model batteryModel,
-		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,max_weight maxWeight,
+		  battery_capacity batteryCapacity,rated_voltage ratedVoltage,max_weight maxWeight,passengers,
 		  passenger_num passengerNum,max_speed maxSpeed,light_downdip lightDowndip
 		  from BMS_NA_BASE_BUS_TYPE where 1=1 
 		<if test="busTypeCode !=null and busTypeCode !=''">
@@ -820,10 +770,9 @@
 	</select>
 	<update id="updateBusType" parameterType="com.byd.bms.setting.model.BmsBaseBusType">
 		update BMS_NA_BASE_BUS_TYPE set 
-		bus_type_code=#{busTypeCode},internal_name=#{internalName},brand=#{brand},manufacturer=#{manufacturer},
-		vehicle_model=#{vehicleModel},drive_motor=#{driveMotor},chassis_model=#{chassisModel},
+		bus_type_code=#{busTypeCode},internal_name=#{internalName},vehicle_model=#{vehicleModel},chassis_model=#{chassisModel},
 		motor_model=#{motorModel},vehicle_length=#{vehicleLength},motor_power=#{motorPower},
-		wheelbase=#{wheelbase},battery_model=#{batteryModel},battery_capacity=#{batteryCapacity},
+		wheelbase=#{wheelbase},battery_model=#{batteryModel},battery_capacity=#{batteryCapacity},passengers=#{passengers},
 		rated_voltage=#{ratedVoltage},max_weight=#{maxWeight},passenger_num=#{passengerNum},
 		max_speed=#{maxSpeed},light_downdip=#{lightDowndip},editor_id=#{editorId},edit_date=#{editDate}
 		where id=#{id}

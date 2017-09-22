@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
@@ -27,7 +27,7 @@
 			<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
-						href="<%=request.getContextPath()%>/index">首页</a></li>
+						href="/BMS/index">首页</a></li>
 					<li><a href="#">系统设置</a></li>
 					<li class="active">车型</li>
 				</ul>
@@ -35,11 +35,9 @@
 
 				<div class="nav-search" id="nav-search">
 					<form class="form-search">
-						<span class="input-icon"> <input type="text"
-							placeholder="Search ..." class="nav-search-input"
-							id="nav-search-input" autocomplete="off" /><i
-							class="ace-icon fa fa-search nav-search-icon"></i>
-						</span>
+							<span class="input-icon">
+								<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" /><i class="ace-icon fa fa-search nav-search-icon"></i>
+							</span>
 					</form>
 				</div>
 				<!-- /.nav-search -->
@@ -65,7 +63,7 @@
 					<div class="col-xs-12"  style="width:100%">
 						<table id="tableData" 
 							class="table table-striped table-bordered table-hover"
-							style="font-size: 12px; width:2100px;overflow-x:auto" >
+							style="font-size: 12px; width:1500px;overflow-x:auto" >
 						</table>
 					</div>
 				</div>
@@ -78,27 +76,14 @@
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;车辆型号</label>
 							<div style="float:left;width:70%" class="col-sm-8">
 							    <input type="hidden" id="editId" />
-								<input type="text" class="input-medium" placeholder="车辆型号..." id="edit_busTypeCode" />
+								<input type="text" class="input-medium" id="edit_busTypeCode" />
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
 							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;车辆内部名称</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆内部名称..." id="edit_internalName" />
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBrand">*&nbsp;品牌</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="品牌..." id="edit_brand"  value="比亚迪牌" readonly="readonly"/>
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newManufacturer">*&nbsp;制造商</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="制造商..." id="edit_manufacturer" value="比亚迪汽车工业有限公司" readonly="readonly"/>
+								<select name="" id="edit_internalName" class="input-medium"></select>
+								<!-- <input type="text" class="input-medium" placeholder="车辆内部名称..." id="edit_internalName" /> -->
 							</div>
 						</div>
 					</div>
@@ -106,27 +91,13 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newVehicleModel">*&nbsp;车辆类型</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆类型..." id="edit_vehicleModel" />
+								<input type="text" class="input-medium" id="edit_vehicleModel" />
 							</div>
 						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newDriveMotor">*&nbsp;驱动电机</label>
+						<div style="float:left;width:55%">
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newChassisModel">*&nbsp;底盘型号</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="驱动电机..." id="edit_driveMotor" />
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newChassisModel">*&nbsp;底盘型号</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="底盘型号..." id="edit_chassisModel" />
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMotorModel">*&nbsp;电机型号</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电机型号..." id="edit_motorModel" />
+								<input type="text" class="input-medium" id="edit_chassisModel" />
 							</div>
 						</div>
 					</div>
@@ -134,13 +105,13 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newVehicleLength">*&nbsp;车辆长度</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆长度..." id="edit_vehicleLength" />
+								<input type="text" class="input-medium" id="edit_vehicleLength" />mm
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMotorPower">*&nbsp;电机最大功率</label>
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMotorModel">*&nbsp;电机型号</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电机最大功率..." id="edit_motorPower" />
+								<input type="text" class="input-medium" id="edit_motorModel" />
 							</div>
 						</div>
 					</div>
@@ -148,13 +119,13 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newWheelbase">*&nbsp;轴距</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="轴距..." id="edit_wheelbase" />
+								<input type="text" class="input-medium" id="edit_wheelbase" />mm
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBatteryModel">*&nbsp;电池型号</label>
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMotorPower">*&nbsp;电机最大功率</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电池型号..." id="edit_batteryModel" />
+								<input type="text" class="input-medium" id="edit_motorPower" />KW
 							</div>
 						</div>
 					</div>
@@ -162,27 +133,27 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBatteryCapacity">*&nbsp;电池容量</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电池容量..." id="edit_batteryCapacity" />
+								<input type="text" class="input-medium" id="edit_batteryCapacity" />AH
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newRatedVoltage">*&nbsp;额定电压</label>
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBatteryModel">*&nbsp;电池型号</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="额定电压..." id="edit_ratedVoltage" />
+								<input type="text" class="input-medium" id="edit_batteryModel" />
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newPassengerNum">*&nbsp;乘员数(人)</label>
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newPassengerNum">*&nbsp;座位数</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="乘员数..." id="edit_passengerNum" />
+								<input type="text" class="input-medium" id="edit_passengerNum" />人
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxWeight">*&nbsp;最大允许质量</label>
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newRatedVoltage">*&nbsp;额定电压</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="最大允许质量..." id="edit_maxWeight" />
+								<input type="text" class="input-medium" id="edit_ratedVoltage" />V
 							</div>
 						</div>
 					</div>
@@ -190,13 +161,27 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxSpeed">*&nbsp;最高车速</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="最高车速..." id="edit_maxSpeed" />
+								<input type="text" class="input-medium" id="edit_maxSpeed" />km/h
+							</div>
+						</div>
+						<div  style="float:left;width:55%">
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxWeight">*&nbsp;最大允许质量</label>
+							<div style="float:left;width:60%" class="col-sm-8">
+								<input type="text" class="input-medium" id="edit_maxWeight" />KG
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+					    <div style="float:left;width:45%">
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="editPassager">*&nbsp;额定载客人数</label>
+							<div style="float:left;width:70%" class="col-sm-8">
+								<input type="text" class="input-medium" id="edit_passenger" />人
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
 							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newLightDowndip">*&nbsp;灯光倾下值</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="灯光倾下值..." id="edit_lightDowndip" />
+								<input type="text" class="input-medium" id="edit_lightDowndip" />
 							</div>
 						</div>
 					</div>
@@ -215,52 +200,11 @@
 						<div  style="float:left;width:55%">
 							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;车辆内部名称</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆内部名称..." id="add_internalName" />
+								<select name="" id="add_internalName" class="input-medium"></select>
+								<!-- <input type="text" class="input-medium" placeholder="车辆内部名称..." id="add_internalName" /> -->
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBrand">*&nbsp;品牌</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="品牌..." id="add_brand"  value="比亚迪牌" readonly="readonly"/>
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newManufacturer">*&nbsp;制造商</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="制造商..." id="add_manufacturer" value="比亚迪汽车工业有限公司" readonly="readonly"/>
-							</div>
-						</div>
-					</div>
-					<!--div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;车辆类型</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆类型..." id="add_busTypeCode" />
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;燃料类型</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆内部名称..." id="add_internalName" />
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;车身类型</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆型号..." id="add_busTypeCode" />
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newOrderName">*&nbsp;驱动电机类型</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆内部名称..." id="add_internalName" />
-							</div>
-						</div>
-					</div-->
 					<div class="form-group">
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newVehicleModel">*&nbsp;车辆类型</label>
@@ -268,18 +212,18 @@
 								<input type="text" class="input-medium" placeholder="车辆类型..." id="add_vehicleModel" />
 							</div>
 						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newDriveMotor">*&nbsp;驱动电机</label>
+					    <div style="float:left;width:55%">
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newChassisModel">*&nbsp;底盘型号</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="驱动电机..." id="add_driveMotor" />
+								<input type="text" class="input-medium" placeholder="底盘型号..." id="add_chassisModel" />
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newChassisModel">*&nbsp;底盘型号</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="底盘型号..." id="add_chassisModel" />
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newVehicleLength">*&nbsp;车辆长度</label>
+							<div style="float:left;width:65%;margin-right:1px" class="col-sm-8">
+								<input type="text" class="input-medium" placeholder="车辆长度..." id="add_vehicleLength" />mm
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
@@ -291,24 +235,23 @@
 					</div>
 					<div class="form-group">
 					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newVehicleLength">*&nbsp;车辆长度</label>
-							<div style="float:left;width:65%;margin-right:1px" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="车辆长度..." id="add_vehicleLength" />
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newWheelbase">*&nbsp;轴距</label>
+							<div style="float:left;width:70%" class="col-sm-8">
+								<input type="text" class="input-medium" placeholder="轴距..." id="add_wheelbase" />mm
 							</div>
-							<label style="float:left;width:2%;align:left;margin-left:0px" class="col-sm-3 col-sm-3 control-label no-padding-right" for="newVehicleLength">mm</label>
 						</div>
 						<div  style="float:left;width:55%">
 							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMotorPower">*&nbsp;电机最大功率</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电机最大功率..." id="add_motorPower" />
+								<input type="text" class="input-medium" placeholder="电机最大功率..." id="add_motorPower" />KW
 							</div>
 						</div>
 					</div>
 					<div class="form-group">
 					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newWheelbase">*&nbsp;轴距</label>
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBatteryCapacity">*&nbsp;电池容量</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="轴距..." id="add_wheelbase" />
+								<input type="text" class="input-medium" placeholder="电池容量..." id="add_batteryCapacity" />AH
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
@@ -320,29 +263,15 @@
 					</div>
 					<div class="form-group">
 					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newBatteryCapacity">*&nbsp;电池容量</label>
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newPassengerNum">*&nbsp;座位数</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="电池容量..." id="add_batteryCapacity" />
+								<input type="text" class="input-medium" placeholder="乘员数..." id="add_passengerNum" />人
 							</div>
 						</div>
 						<div  style="float:left;width:55%">
 							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newRatedVoltage">*&nbsp;额定电压</label>
 							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="额定电压..." id="add_ratedVoltage" />
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-					    <div style="float:left;width:45%">
-							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newPassengerNum">*&nbsp;乘员数(人)</label>
-							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="乘员数..." id="add_passengerNum" />
-							</div>
-						</div>
-						<div  style="float:left;width:55%">
-							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxWeight">*&nbsp;最大允许质量</label>
-							<div style="float:left;width:60%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="最大允许质量..." id="add_maxWeight" />
+								<input type="text" class="input-medium" placeholder="额定电压..." id="add_ratedVoltage" />V
 							</div>
 						</div>
 					</div>
@@ -350,7 +279,21 @@
 					    <div style="float:left;width:45%">
 							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxSpeed">*&nbsp;最高车速</label>
 							<div style="float:left;width:70%" class="col-sm-8">
-								<input type="text" class="input-medium" placeholder="最高车速..." id="add_maxSpeed" />
+								<input type="text" class="input-medium" placeholder="最高车速..." id="add_maxSpeed" />km/h
+							</div>
+						</div>
+						<div  style="float:left;width:55%">
+							<label style="float:left;width:40%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newMaxWeight">*&nbsp;最大允许质量</label>
+							<div style="float:left;width:60%" class="col-sm-8">
+								<input type="text" class="input-medium" placeholder="最大允许质量..." id="add_maxWeight" />KG
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+					    <div style="float:left;width:45%">
+							<label style="float:left;width:30%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="newPassager">*&nbsp;额定载客人数</label>
+							<div style="float:left;width:70%" class="col-sm-8">
+								<input type="text" class="input-medium" placeholder="额定载客人数..." id="add_passenger" />人
 							</div>
 						</div>
 						<div  style="float:left;width:55%">

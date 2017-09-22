@@ -34,8 +34,8 @@ $(document).ready(function(){
 		$("#memo").val("");
 		
 		var dialog = $( "#dialog-process" ).removeClass('hide').dialog({
-			width:600,
-			height:370,
+			width:720,
+			height:450,
 			modal: true,
 			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>&nbsp;Add Station</h4></div>",
 			title_html: true,
@@ -196,7 +196,7 @@ function ajaxQuery(){
 function showEditPage(row){
 	$("#factory").find("option:contains('"+row.factory+"')").prop("selected",true);
 	getWorkshopSelect('',$("#factory :selected").text(),row.workshop,'#workshop','Please Choose','id');
-	getLineSelect($("#factory :selected").text(),$("#workshop :selected").text(),row.line,'#line','Please Choose','id');
+	getLineSelectStandard(row.line,'#line','Please Choose','id');
 	if(row.plan_node_name){
 		$("#plan_node").find("option:contains('"+row.plan_node_name+"')").prop("selected",true);
 	}else{
@@ -214,8 +214,8 @@ function showEditPage(row){
 		$("#key_station_flag").prop("checked",false);
 	$("#memo").val(row.memo);
 	$( "#dialog-process" ).removeClass('hide').dialog({
-		width:600,
-		height:370,
+		width:720,
+		height:450,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>&nbsp;Edit Station</h4></div>",
 		title_html: true,

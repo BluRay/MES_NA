@@ -3,6 +3,7 @@ package com.byd.bms.order.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,7 +42,7 @@ import com.google.gson.JsonParser;
  * @author xjw 2017-04-12
  */ 
 @Controller
-@RequestMapping("/order")
+@RequestMapping("/project")
 public class OrderController extends BaseController{
 	
 	static Logger logger = Logger.getLogger(OrderController.class.getName());
@@ -536,6 +538,247 @@ public class OrderController extends BaseController{
 		condMap.put("orderNo", order_no);
 		Map map=orderService.getOrderByNo(condMap);
 		model.put("data", map);
+		return model;
+	}
+	/* 订单BOM信息页面 */
+	@RequestMapping("/getProjectBomInfo")
+	public ModelAndView getProjectBomInfo(){ 
+		mv.setViewName("order/getProjectBomInfo");
+        return mv;  
+    } 
+	/**
+	 * ajax 获取订单BOM数据
+	 * @return model
+	 */
+	@RequestMapping("/getProjectBomList")
+	@ResponseBody
+	public ModelMap getProjectBomList(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw"));//jquerydatatables 
+		int start=Integer.parseInt(request.getParameter("start"));//分页数据起始数
+		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
+		String projectNo=request.getParameter("projectNo");//订单编号
+		String status=request.getParameter("status");//订单状态
+		String actYear=request.getParameter("actYear");//生产年份
+		String plant=request.getParameter("plant");//工厂
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("projectNo", projectNo);
+		condMap.put("actYear",actYear);
+		condMap.put("plant", plant);
+		condMap.put("status", status);
+		Map<String,Object> result=orderService.getProjectBomList(condMap);
+		model.addAllAttributes(result);
+		
+		return model;
+	}
+	
+	/* 订单BOM导入页面 */
+	@RequestMapping("/importBomInfo")
+	public ModelAndView importBomInfo(){ 
+		mv.setViewName("order/importBomInfo");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("projectId",request.getParameter("projectId"));
+	    map.put("projectNo",request.getParameter("projectNo"));
+		mv.getModelMap().addAllAttributes(map);
+        return mv;  
+    } 
+	@RequestMapping(value="/uploadBomInfo",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelMap uploadBomInfo(@RequestParam(value="file",required=false) MultipartFile file){
+		logger.info("uploading.....");
+		String fileName="bom.xls";
+		try{
+		ExcelModel excelModel = new ExcelModel();
+		excelModel.setReadSheets(1);
+		excelModel.setStart(5);
+		Map<String, Integer> dataType = new HashMap<String, Integer>();
+		dataType.put("0", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("1", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("2", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("3", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("4", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("5", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("6", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("7", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("8", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("9", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("10", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("11", ExcelModel.CELL_TYPE_CANNULL);
+		excelModel.setDataType(dataType);
+		excelModel.setPath(fileName);
+		File tempfile=new File(fileName);
+		file.transferTo(tempfile);
+		/**
+		 * 读取输入流中的excel文件，并且将数据封装到ExcelModel对象中
+		 */
+		InputStream is = new FileInputStream(tempfile);
+
+		ExcelTool excelTool = new ExcelTool();
+		excelTool.readExcel(is, excelModel);
+
+		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
+		for (Object[] data : excelModel.getData()) {
+			int line=6; // 模板从第6行开始是bom数据
+			String errorMessage="";
+			Map<String, String> infomap = new HashMap<String, String>();
+            if(data[0] != null && !data[0].toString().equals("")){
+            	infomap.put("item_no",data[0].toString().trim());
+            }else{
+            	errorMessage="Line "+line+": Item不能为空;";
+            }
+            if(data[1] != null && !data[1].toString().equals("")){
+            	infomap.put("SAP_material",data[1].toString().trim());
+            }else{
+            	errorMessage+="SAP不能为空;";
+            }
+			infomap.put("BYD_P/N", data[2] == null ? null : data[2].toString().trim());
+			if(data[3] != null && !data[3].toString().equals("")){
+				infomap.put("part_name",data[3].toString().trim());
+            }else{
+            	errorMessage+="Part Name不能为空;";
+            }
+			infomap.put("specification", data[4] == null ? null : data[4].toString().trim());
+			if(data[5] != null && !data[5].toString().equals("")){
+				infomap.put("unit",data[5].toString().trim());
+            }else{
+            	errorMessage+="Unit不能为空;";
+            }
+			if(data[6] != null && !data[6].toString().equals("")){
+				infomap.put("quantity",data[6].toString().trim());
+				boolean isNumber=isNumber(data[6].toString().trim());
+				if(!isNumber){
+					errorMessage+="Quantity必须是数字;";
+				}
+            }else{
+            	errorMessage+="Quantity不能为空;";
+            }
+			infomap.put("en_description", data[7] == null ? null : data[7].toString().trim());
+			if(data[8] != null && !data[8].toString().equals("")){
+				infomap.put("vendor",data[8].toString().trim());
+            }else{
+            	errorMessage+="Vendor不能为空;";
+            }
+			if(data[9] != null && !data[9].toString().equals("")){
+				infomap.put("station_code",data[9].toString().trim());
+            }else{
+            	errorMessage+="Station Code不能为空;";
+            }
+			infomap.put("note", data[11] == null ? null : data[11].toString().trim());
+			infomap.put("error", errorMessage);
+			addList.add(infomap);
+			line++;
+		}
+		initModel(true,"导入成功！",addList);
+		}catch(Exception e){
+			initModel(false,"导入失败！",null);
+		}
+		return mv.getModelMap();
+	}
+	
+	@RequestMapping("/saveProjectBomInfo")
+	@ResponseBody
+	public ModelMap saveProjectBomInfo(){
+		model.clear();
+		String addList=request.getParameter("addList");
+		String projectId=request.getParameter("projectId");
+		String documentNo=request.getParameter("documentNo");
+		String version=request.getParameter("version");
+		String dcn=request.getParameter("dcn");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String edit_date = df.format(new Date());
+		String editor_id=String.valueOf(session.getAttribute("user_id"));
+		JSONArray add_arr=JSONArray.fromObject(addList);
+		Iterator it=add_arr.iterator();
+		List<Map<String,Object>> bom_list=new ArrayList<Map<String,Object>>();
+		Map<String,Object> param_map=new HashMap<String,Object>();
+		while(it.hasNext()){
+			JSONObject jel=(JSONObject) it.next();
+			Map<String,Object> bom=(Map<String, Object>) JSONObject.toBean(jel, Map.class);
+			bom_list.add(bom);
+		}
+		param_map.put("bom_list", bom_list);
+		param_map.put("projectId",projectId);
+		param_map.put("documentNo",documentNo);
+		param_map.put("version",version);
+		param_map.put("dcn",dcn);
+		param_map.put("editor_id",editor_id);
+		param_map.put("edit_date",edit_date);
+		try{
+			orderService.saveBomInfo(param_map);
+			initModel(true,"保存成功！",null);
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false,"保存失败！"+e.getMessage(),null);
+		}
+		
+		return mv.getModelMap();
+	}
+	public static boolean isNumber(String numStr){
+        try {            
+        	new BigDecimal(numStr);            
+        	return true;        
+        } catch (Exception e) {            
+        	return false;        
+        }
+	}
+	/* 订单BOM明细显示页面 */
+	@RequestMapping("/showBomInfo")
+	public ModelAndView showBomInfo(){ 
+		mv.setViewName("order/showBomInfo");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("projectNo",request.getParameter("projectNo"));
+	    map.put("version",request.getParameter("version"));
+	    map.put("dcn",request.getParameter("dcn"));
+		mv.getModelMap().addAllAttributes(map);
+        return mv;  
+    } 
+	@RequestMapping("/getBomItemList")
+	@ResponseBody
+	public ModelMap getBomItemList(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw")!=null ? request.getParameter("draw") : "1");//jquerydatatables 
+		int start=Integer.parseInt(request.getParameter("start")!=null ? request.getParameter("start") : "0");
+		int length=Integer.parseInt(request.getParameter("length")!=null ? request.getParameter("length") : "-1");//每一页数据条数
+		String projectNo=request.getParameter("projectNo");//订单编号
+		String sapNo=request.getParameter("sapNo");
+		String stationCode=request.getParameter("stationCode");
+		String plant=request.getParameter("plant");//工厂
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("projectNo", projectNo);
+		condMap.put("stationCode",stationCode);
+		condMap.put("plant", plant);
+		condMap.put("sapNo", sapNo);
+		Map<String,Object> result=orderService.getBomItemList(condMap);
+		model.addAllAttributes(result);
+		return model;
+	}
+	@RequestMapping("/getBomCompareList")
+	@ResponseBody
+	public ModelMap getBomCompareList(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+//		int draw=Integer.parseInt(request.getParameter("draw"));//jquerydatatables 
+//		int start=Integer.parseInt(request.getParameter("start"));//分页数据起始数
+//		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
+		String projectNo=request.getParameter("projectNo");
+		String sapNo=request.getParameter("sapNo");
+		String stationCode=request.getParameter("stationCode");
+		String compareType=request.getParameter("compareType");
+//		condMap.put("draw", draw);
+//		condMap.put("start", start);
+//		condMap.put("length", length);
+		condMap.put("projectNo", projectNo);
+		condMap.put("stationCode",stationCode);
+		condMap.put("sapNo", sapNo);
+		condMap.put("compareType", compareType);
+		Map<String,Object> result=orderService.getBomCompareList(condMap);
+		model.addAllAttributes(result);
 		return model;
 	}
 }

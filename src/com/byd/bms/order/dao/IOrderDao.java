@@ -37,5 +37,17 @@ public interface IOrderDao {
 	public List queryOrderQueryList(Map<String, Object> condMap);
 	public int queryOrderQueryListCount(Map<String, Object> condMap);
 	public int queryOrderConfigTotalQty(String order_id);
-	
+	// 海外MES系统 start
+	public List<Map<String, Object>> getProjectBomList(Map<String, Object> condMap);
+	public int getProjectBomTotalCount(Map<String,Object> queryMap);
+	Map<String, Object> queryBomHeader(Map<String, Object> bom);
+	public int saveBomHeader(Map<String, Object> bom);
+	public int saveBomDetails(Map<String, Object> smap);
+	public int updateBomHeader(Map<String, Object> bom);
+	public int deleteBomByHeader(@Param(value="header_id")int header_id);
+	public List<Map<String, Object>> getBomItemList(Map<String, Object> condMap);
+	public int getBomItemTotalCount(Map<String,Object> queryMap);
+	public List<Map<String, Object>> getBomCompareList(Map<String, Object> condMap);
+	public List<Map<String, Object>> getBomCompareDiffList(Map<String, Object> condMap);
+	public List<Map<String, Object>> getMaxVersion(Map<String, Object> condMap);
 }

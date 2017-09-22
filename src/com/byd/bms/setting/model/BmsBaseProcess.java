@@ -4,7 +4,7 @@ public class BmsBaseProcess {
 	private int id;
 	private String factory;
 	private String workshop;
-	private String line;
+	private String station;
 	private String process_code;
 	private String process_name;
 	private String key_process_flag;
@@ -35,11 +35,11 @@ public class BmsBaseProcess {
 	public void setWorkshop(String workshop) {
 		this.workshop = workshop;
 	}
-	public String getLine() {
-		return line;
+	public String getStation() {
+		return station;
 	}
-	public void setLine(String line) {
-		this.line = line;
+	public void setStation(String station) {
+		this.station = station;
 	}
 	public String getProcess_code() {
 		return process_code;

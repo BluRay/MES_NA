@@ -126,7 +126,7 @@
 	
 	<select id="queryLineListAuth" parameterType="Map" resultType="Map">			
 		select distinct p.line as name
-		from BMS_NA_BASE_PROCESS p
+		from BMS_NA_BASE_STATION p
 		where p.factory=#{factory} and p.workshop=#{workshop}
 		<if test="function_url !=null and  function_url !=''">
 		AND (locate(o.org_code,
@@ -196,6 +196,14 @@
 		<if test="workgroup !=null and workgorup !=''">
 			and o.name like concat('%',#{workgroup},'%')
 		</if>
+	</select>
+	
+	<select id="queryWorkshopStationList" parameterType="Map" resultType="Map">
+		SELECT s.factory,s.workshop,s.station_code,s.station_name id,CONCAT(s.station_code,'：',s.station_name) name,s.monitory_point_flag,s.key_station_flag,s.quality_monitory_flag 
+		FROM BMS_NA_BASE_STATION s  WHERE 1=1 
+		AND s.factory = #{factory} AND s.workshop = #{workshop} 
+		GROUP BY s.factory,s.workshop,s.station_name 
+		ORDER BY LEFT(s.station_code,1),cast(RIGHT(s.station_code,1) as signed) 
 	</select>
 	
 	<select id="queryTeamList" parameterType="Map" resultType="Map">		

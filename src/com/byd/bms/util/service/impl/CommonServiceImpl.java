@@ -140,6 +140,11 @@ public class CommonServiceImpl implements ICommonService {
 		return commonDao.queryWorkgroupList(condMap);
 	}
 	@Override
+	public List<Map<String, Object>> getStationSelect(
+			Map<String, Object> condMap) {
+		return commonDao.queryWorkshopStationList(condMap);
+	}
+	@Override
 	public List<Map<String, Object>> getWorkgroupSelectAll(
 			Map<String, Object> condMap) {
 		return commonDao.queryWorkgroupListAll(condMap);

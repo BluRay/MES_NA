@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>BMS 标题</title>
+<title>MES Settings Process</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <link rel="stylesheet" href="../assets/css/fixedColumns.bootstrap.min.css" />
@@ -26,9 +26,9 @@
 			<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
-						href="<%=request.getContextPath()%>/index">首页</a></li>
-					<li><a href="#">系统设置</a></li>
-					<li class="active">标准工序</li>
+						href="<%=request.getContextPath()%>/index">Index</a></li>
+					<li><a href="#">Settings</a></li>
+					<li class="active">Process</li>
 				</ul>
 				<!-- /.breadcrumb -->
 
@@ -48,25 +48,26 @@
 				<div id="form" class="well form-search">
 					<table>
 						<tr>
-							<td>工厂：</td>
+							<td>Plant：</td>
 							<td>
-							<select name="" id="search_factory" class="input-small"><option value=''>全部</option></select>
+							<select name="" id="search_factory" class="input-small"><option value=''>All</option></select>
 							</td>
-							<td>车间：</td>
+							<td>Workshop：</td>
 							<td>
-							<select name="" id="search_workshop" class="input-small"><option value=''>全部</option></select>
+							<select name="" id="search_workshop" class="input-small"><option value=''>All</option></select>
 							</td>
-							<td>线别：</td>
+							<td>Station Name：</td>
 							<td>
-							<select name="" id="search_line" class="input-small"><option value=''>全部</option></select>
+							<input name=""  id="search_station" class="input_small"  width="150">
 							</td>
-							<td style='padding-left:10px;'><input id="input_monitoryPointFlag" type="checkbox"> <span>生产监控点 </span></td>
-							<td style='padding-left:10px;'><input id="input_keyProcessFlag" type="checkbox"> <span>关键工序</span></td>
-							<td style='padding-left:10px;'><input id="input_planNodeFlag" type="checkbox"><span> 计划节点</span></td>
+							<td>Process Name：</td>
 							<td>
-								<input type="button" class="btn btn-sm btn-primary btnQuery" id="btnQuery" value="查询" style="margin-left: 2px;"></input>
-								<input type="button" class="btn btn-sm btn-success " id="btnAdd" value="新增" style="margin-left: 2px;"></input>
-								<input type="button" class="btn btn-sm btn-danger" id="btnDelete" value="删除" style="margin-left: 2px;"></input></td>
+							<input name=""  id="search_process" class="input_small" width="250">
+							</td>
+							<td>
+								<input type="button" class="btn btn-sm btn-primary btnQuery" id="btnQuery" value="Search" style="margin-left: 2px;"></input>
+								<input type="button" class="btn btn-sm btn-success " id="btnAdd" value="Add" style="margin-left: 2px;"></input>
+								<input type="button" class="btn btn-sm btn-danger" id="btnDelete" value="Delete" style="margin-left: 2px;"></input></td>
 						</tr>
 					</table>
 				</div>
@@ -86,53 +87,39 @@
 			<div id="dialog-process" class="hide">
 				<form id="" class="form-horizontal">
 					<div class="form-group">
-							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderName">*工厂</label>
+							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderName">*Plant</label>
 							<div class="col-sm-4">
-							<select name="" id="factory" class="input-medium"> <option value=''>请选择</option></select>
+							<select name="" id="factory" class="input-medium"> <option value=''>Please Choose</option></select>
 							</div>
-							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderCode">*车间</label>
+							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderCode">*Workshop</label>
 							<div class="col-sm-4">
 							<select name="" id="workshop" class="input-medium"> 
-								<option value=''>请选择</option>
+								<option value=''>Please Choose</option>
 							</select>
 							</div>			
 					</div>
 
 					<div class="form-group">
-							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderCode">*线别</label>
-							<div class="col-sm-4">
-							<select name="" id="line" class="input-medium"><option value=''>请选择</option></select>
+							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="newOrderCode">*Station Name</label>
+							<div class="col-sm-6">
+							<select name="" id="station" class="input-medium"  style="width: 280px;"><option value=''>Please Choose</option></select>
 							</div>
-							<label class="col-sm-2 control-label no-padding-right" for="">计划节点</label>
-							<div class="col-sm-4">
-							<select name="" id="plan_node" class="input-medium"></select>
-							</div>				
 					</div>
 					
 					<div class="form-group">
-							<label class="col-sm-2 control-label no-padding-right" for="">*工序编号</label>
+							<label class="col-sm-2 control-label no-padding-right" for="">*Process Code</label>
 							<div class="col-sm-4">
-							<input type="text" class="input-medium" placeholder="工序编号..." id="process_code" />
+							<input type="text" class="input-medium" placeholder="Process Code..." id="process_code" />
 							</div>
-							<label class="col-sm-2 control-label no-padding-right" for="new_order_qty">*工序名称</label>
-							<div class="col-sm-4">
-							<input type="text" class="input-medium" placeholder="工序名称..." id="process_name" />
+					</div>
+					<div class="form-group">
+							<label class="col-sm-2 control-label no-padding-right" for="new_order_qty">*Process Name</label>
+							<div class="col-sm-8">
+							<input type="text" class="input-medium" placeholder="Process Name..."  style="width: 280px;" id="process_name" />
 							</div>					
 					</div>
-					
 					<div class="form-group">
-							<label class="col-sm-2 control-label no-padding-right" for="monitory_point_flag">生产监控点</label>
-							<div class="col-sm-4">
-							<input type="checkbox" id="monitory_point_flag" style="margin-top: 8px;" />
-							</div>
-							<label class="col-sm-2 control-label no-padding-right" for="monitory_point_flag">关键工序</label>
-							<div class="col-sm-4">
-							<input type="checkbox"  id="key_process_flag"  style="margin-top: 8px;" />
-							</div>				
-					</div>
-					
-					<div class="form-group">
-						<label class="col-sm-2 control-label no-padding-right" for="">备注</label>
+						<label class="col-sm-2 control-label no-padding-right" for="">Process Description</label>
 						<div class="col-sm-10">
 							<textarea class="input-xlarge" style="width: 95%"
 								id="memo" rows="2"></textarea>
