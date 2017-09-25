@@ -188,5 +188,20 @@ public class PlanController extends BaseController{
 		model = mv.getModelMap();
 		return model;
 	}
+	
+	@RequestMapping("/reVisionPlan")
+	@ResponseBody
+	public ModelMap reVisionPlan(){
+		String factory_id = request.getParameter("factory_id");
+		String factory_name = request.getParameter("factory_name");
+		String order_no = request.getParameter("order_no");
+		String revision_str = request.getParameter("revision_str");
+		String plan_month = request.getParameter("plan_month");
+		String edit_user = request.getSession().getAttribute("user_id") + "";
+		int result = planService.reVisionPlan(factory_id,factory_name, order_no, revision_str, plan_month,edit_user);		
+		initModel(true,"success",result);
+		model = mv.getModelMap();
+		return model;
+	}
 
 }

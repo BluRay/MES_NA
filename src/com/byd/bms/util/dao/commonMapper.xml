@@ -3,20 +3,14 @@
 <mapper namespace="com.byd.bms.util.dao.ICommonDao">
 
 	<select id="queryOrderList" parameterType="Map" resultType="Map">
-		select o.id,o.order_name name,o.order_no orderNo,o.order_code
-		orderCode,o.order_qty orderQty,t.bus_type_code busType,t.id bus_type_id
-		from BMS_NA_OR_ORDER o
-		left join BMS_NA_BASE_BUS_TYPE t on o.bus_type_id=t.id 
-		<if test="factory !=null and  factory !=''">
-		left join BMS_NA_OR_FACTORY_ORDER fo on fo.order_id=o.id
-		left join BMS_NA_BASE_FACTORY f on fo.factory_id=f.id
-		</if>		
-		where o.order_no like CONCAT('%',#{orderNo},'%') 
+		select o.id,o.project_name name,o.project_no orderNo,o.quantity orderQty,o.bus_type busType
+		from BMS_NA_PROJECT o		
+		where o.project_no like CONCAT('%',#{orderNo},'%') 
 		<if test="busType!=null and  busType!=''">
-			and t.bus_type_code=#{busType}
+			and o.bus_type=#{busType}
 		</if>
 		<if test="factory !=null and  factory !=''">
-			and f.factory_name=#{factory}
+			and o.production_plant=#{factory}
 		</if>
 		order by o.id desc
 	</select>

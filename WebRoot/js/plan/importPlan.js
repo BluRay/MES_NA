@@ -112,7 +112,7 @@ function ajaxQuery(){
 		            {"title":"Edit Time","class":"center","data":"create_date","defaultContent": ""},
 		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
-		                    return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title=\"查看详情\" onclick=\"javascript:window.location = ('planPreview?version="+row['version'] + "&plan_month="+row['plan_month'] + "&factory_id=" +$("#search_factory").val()+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		                    return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title=\"Show Detail\" onclick=\"javascript:window.location = ('planPreview?version="+row['version'] + "&plan_month="+row['plan_month'] + "&factory_id=" +$("#search_factory").val()+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
 		                },
 		            }
 		          ],

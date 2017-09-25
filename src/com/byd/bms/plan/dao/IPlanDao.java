@@ -30,5 +30,7 @@ public interface IPlanDao {
 	public int insertProductionPlan(Map<String,Object> queryMap);
 
 	public List<PlanMasterPlan> getPlanMasterList(Map<String,Object> queryMap);
+	public int updatePlanMasterInfo(PlanMasterPlan masterPlan);
+	public int insertOperateChangeLog(BmsBaseOperateChangeLog changLog);
 	
 }

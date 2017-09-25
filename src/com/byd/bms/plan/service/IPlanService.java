@@ -20,5 +20,6 @@ public interface IPlanService {
 	public Map<String,Object> getPlanMasterIndex(Map<String,Object> queryMap);
 
 	public List<PlanMasterPlan> showPlanMasterList(Map<String,Object> queryMap);
+	public int reVisionPlan(String factory_id,String factory_name, String order_no, String revision_str, String plan_month,String userId);
 	
 }
