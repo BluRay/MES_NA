@@ -149,10 +149,10 @@ function getOrderNoSelect(elementId, submitId, fn_backcall, bustype,factoryEleme
 				if (value.orderNo == item) {
 					order_name = value.name;
 					bus_type = value.busType;
-					order_qty = value.orderQty + "台";
+					order_qty = value.orderQty + "Bus";
 				}
 			})
-			return item + "  " + order_name + " " + bus_type + order_qty;
+			return item + "  " + order_name + " (" + bus_type + "  "+order_qty+")";
 		},
 		matcher : function(item) {
 			if(areaflg!="copy"){//复制粘贴，非选择默认列表第一个项
@@ -475,7 +475,7 @@ function getAllFromOptions(elementId,valName){
 			selectVal_ALL+=$(this).val()+",";		
 	});
 	if(valName=="name"){
-		selectVal=(selectName=="全部"||selectName=="请选择"||selectName=="")?selectVal_ALL:$(elementId+" :selected").text();
+		selectVal=(selectName=="All"||selectName=="Please Choose"||selectName=="")?selectVal_ALL:$(elementId+" :selected").text();
 	}else
 		selectVal=$(elementId).val()==""?selectVal_ALL:$(elementId).val();
 	
