@@ -119,7 +119,7 @@ function ajaxQuery(){
     				
     				$("<td style=\"text-align:center;\" />").html("PlanNode").appendTo(tr);
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html("Month").appendTo(tr);
-    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" width=\"30px\" />").html("Stockpile").appendTo(tr);
+    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" width=\"30px\" />").html("Stock").appendTo(tr);
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
@@ -158,7 +158,7 @@ function ajaxQuery(){
     	    		$("<td style=\"line-height:12px;\" />").html("").appendTo(tr);
     	    		$("#tableData tbody").append(tr);
     			}
-    			tr = $("<tr id=\""+ index + "," +value.month+"\"/>");
+    			tr = $("<tr height=\"30px\" id=\""+ index + "," +value.month+"\"/>");
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.plan_node).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.month).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(stock[index%12]).appendTo(tr);

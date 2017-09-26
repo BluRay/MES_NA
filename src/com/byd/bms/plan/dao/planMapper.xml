@@ -61,7 +61,7 @@
 		]]>
 	</update>
 	
-	<update id="deleteProductionPlan" parameterType="int">
+	<update id="deleteProductionPlan" parameterType="Map">
 		DELETE FROM BMS_NA_PROJECT_PRODUCTION_PLAN WHERE 
 		project_id = (SELECT PR.id FROM BMS_NA_PROJECT PR WHERE PR.project_no = #{project_no})
 		AND plan_code_value = (SELECT value FROM BMS_NA_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name_en = #{plan_node})
@@ -70,6 +70,12 @@
 		AND plan_date > #{cur_day}
 		</if>
 	</update>
+	<update id="deleteOneProductionPlan" parameterType="Map">
+		DELETE FROM BMS_NA_PROJECT_PRODUCTION_PLAN WHERE 
+		project_id = #{project_id}
+		AND plan_code_value = #{plan_code_value}
+		AND plan_date = #{cur_day}
+	</update>
 	<insert id="insertProductionPlan" parameterType="Map">
 	INSERT INTO BMS_NA_PROJECT_PRODUCTION_PLAN
 	(project_id, plant_id, plan_code_value, plan_date, plan_qty,creator_id, creat_date, releaser_id, release_date)
@@ -77,6 +83,14 @@
 	(SELECT id FROM BMS_NA_BASE_FACTORY WHERE factory_name = #{factory_name}),
 	(SELECT value FROM BMS_NA_BASE_KEY WHERE key_code = 'PLAN_CODE' AND key_name_en = #{plan_node}),
 	#{plan_date}, #{plan_qty},#{userid}, #{curTime},#{userid}, #{curTime})
+	</insert>
+	<insert id="insertOneProductionPlan" parameterType="Map">
+	INSERT INTO BMS_NA_PROJECT_PRODUCTION_PLAN
+	(project_id, plant_id, plan_code_value, plan_date, plan_qty,creator_id, creat_date, releaser_id, release_date)
+	VALUES(#{project_id},
+	#{plant_id},
+	#{plan_code_value},
+	#{plan_date}, #{plan_qty},(SELECT staff_number FROM BMS_NA_BASE_USER WHERE id = #{userid}), #{curTime},(SELECT staff_number FROM BMS_NA_BASE_USER WHERE id = #{userid}), #{curTime})
 	</insert>
 	
 	<select id="getPlanMasterList" parameterType="Map" resultType="com.byd.bms.plan.model.PlanMasterPlan">

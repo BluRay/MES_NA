@@ -278,6 +278,34 @@ public class PlanServiceImpl implements IPlanService {
 
 			}
 			planDao.updatePlanMasterInfo(editPlanMasterPlan);
+			//调整今天以后的计划需自动重新发布
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date dd = new Date();
+			String curTime = df.format(dd);
+			int curMonth = Integer.valueOf(new SimpleDateFormat("yyyyMM").format(dd));
+			int curDay = Integer.valueOf(new SimpleDateFormat("dd").format(dd));
+			int thisMonth = Integer.parseInt(revisionArray[3].replace("-", ""));
+			String thisMonthStr = revisionArray[3];
+			int thisDay = Integer.parseInt(revisionArray[4]);
+			Map<String, Object> condMap = new HashMap<String, Object>();
+			condMap.put("project_id", Integer.parseInt(revisionArray[0]));
+			condMap.put("plant_id", Integer.parseInt(revisionArray[1]));
+			condMap.put("plan_code_value", Integer.parseInt(revisionArray[2]));
+			condMap.put("cur_day", thisMonthStr + "-" + ((thisDay<10)?"0":"") + thisDay);
+			condMap.put("plan_date", thisMonthStr + "-" + ((thisDay<10)?"0":"") + thisDay);
+			condMap.put("plan_qty", Integer.parseInt(revisionArray[5]));
+			condMap.put("curTime", curTime);
+			condMap.put("userid", userId);
+			if(thisMonth == curMonth){
+				if(thisDay > curDay){
+					planDao.deleteOneProductionPlan(condMap);
+					planDao.insertOneProductionPlan(condMap);
+				}
+			}else if (thisMonth > curMonth){
+				planDao.deleteOneProductionPlan(condMap);
+				planDao.insertOneProductionPlan(condMap);
+			}
+			
 			//根据revision_str 更新日志表 operate_change_type_id = 63 table_name = BMS_PLAN_MASTER_PLAN
 			BmsBaseOperateChangeLog changLog = new BmsBaseOperateChangeLog();
 			changLog.setOperate_change_type_id(63);

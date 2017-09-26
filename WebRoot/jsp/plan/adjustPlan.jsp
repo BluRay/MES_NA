@@ -59,7 +59,7 @@
 								<td>
 								<input type="text" style="display:none" class="input-small revise" id="project_id"></input>
 								<input type="text" style="display:none" class="input-small revise" id="factory_id"></input>
-								<input type="text" style="width:400px" class="input-large revise" id="revision_str"></input>
+								<input type="text" style="display:none;width:400px" class="input-large revise" id="revision_str"></input>
 								</td>
 							</tr>
 						</table>
@@ -67,7 +67,7 @@
 					
 					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 					<thead><tr>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;width:60px;">Adjust Plan</th><th id="th_order_no" style="text-align:center;padding-left:0px;padding-right:0px;" width="55px">-</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;width:60px;">AdjustPlan</th><th id="th_order_no" style="text-align:center;padding-left:0px;padding-right:0px;" width="55px">-</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="33px">Date</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">1</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">2</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">3</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">4</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">5</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="22px">6</th>
