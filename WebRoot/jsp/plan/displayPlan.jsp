@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<html lang="zh-CN">
+<html lang="en">
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>计划预览</title>
+		<title>Display Plan</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 	</head>
@@ -20,9 +20,9 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">首页</a></li>
-						<li><a href="importMaster">计划导入</a></li>
-						<li class="active">计划预览</li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
+						<li><a href="importMaster">Import Plan</a></li>
+						<li class="active">Display Plan</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
@@ -41,7 +41,7 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>生产工厂：</td>
+								<td>Production Factory :</td>
 								<td><select id="search_factory" class="input-small" style="height: 30px;width:120px"></select></td>
 								<td>&nbsp;订单编号：</td>
 								<td><input id="search_order_no" placeholder="请输入订单编号..." style="height: 30px;width:120px" class="col-sm-10" type="text"></td>
@@ -90,5 +90,5 @@
 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script type="text/javascript" src="../js/datePicker/WdatePicker.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
-	<script type="text/javascript" src="../js/plan/planPreview.js"></script>
+	<script type="text/javascript" src="../js/plan/displayPlan.js"></script>
 </html>

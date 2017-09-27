@@ -52,6 +52,18 @@ public class PlanController extends BaseController{
         return mv;  
 	}
 	
+	@RequestMapping("/displayPlan")
+	public ModelAndView displayPlan(){
+		mv.setViewName("plan/displayPlan");
+        return mv;  
+	}
+	
+	@RequestMapping("/productionReport")
+	public ModelAndView productionReport(){
+		mv.setViewName("plan/productionReport");
+        return mv;  
+	}
+	
 	@RequestMapping("/showPlanMasterIndex")
 	@ResponseBody
 	public ModelMap showPlanMasterIndex(){

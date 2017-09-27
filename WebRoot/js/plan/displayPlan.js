@@ -8,11 +8,10 @@ $(document).ready(function () {
 		getBusNumberSelect('#nav-search-input');
 		$("#search_plan_version").val(GetQueryString("version"));
 		getOrderNoSelect("#search_order_no","#orderId");
-		getFactorySelect("plan/planRevision",'',"#search_factory",null,'id');
+		getFactorySelect("plan/displayPlan",'',"#search_factory",null,'id');
 		new Date().getFullYear();
 		$("#search_plan_month").val(''+new Date().getFullYear() + ((new Date().getMonth()+1<10)?'0':'') + (new Date().getMonth()+1))
 		$("#search_plan_month").val(GetQueryString("plan_month"));
-		//$("#search_factory").find("option :contains("+GetQueryString("factory_name")+")").attr("selected",true);
 		$("#search_factory").val(GetQueryString("factory_id"));
 		if($("#search_plan_month").val() !== ""){
 			ajaxQuery();
