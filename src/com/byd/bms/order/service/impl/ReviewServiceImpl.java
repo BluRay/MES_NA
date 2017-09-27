@@ -17,9 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import com.byd.bms.order.dao.IReviewDao;
-import com.byd.bms.order.model.BmsFactoryOrderDetail;
 import com.byd.bms.order.model.BmsOrder;
-import com.byd.bms.order.model.BmsOrderConfigDetail;
 import com.byd.bms.order.model.BmsOrderReviewResults;
 import com.byd.bms.order.service.IReviewService;
 import com.byd.bms.setting.dao.ISettingDao;

@@ -4,7 +4,7 @@
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>标准故障库</title>
+		<title>MES Quality Defect Code</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
@@ -23,9 +23,9 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">首页</a></li>
-						<li><a href="#">制程品质</a></li>
-						<li class="active">标准故障库</li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
+						<li><a href="#">Quality</a></li>
+						<li class="active">Defect Code</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
@@ -44,11 +44,13 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>缺陷名称：</td>
-								<td><input id="input_bug" placeholder="缺陷名称..." style="width:100px" type="text"></td>
-								<td>&nbsp;缺陷类别：</td>
-								<td><input id="input_bug_type" placeholder="缺陷类别..." style="width:100px" type="text"></td>
-								<td>&nbsp;严重等级：</td>
+								<td>Defect Type：</td>
+								<td>
+								<select name="" id="search_defect_type" class="input-small"><option value=''>All</option></select>
+								</td>								
+								<td>Defect Description：</td>
+								<td><input id="search_defect_name" placeholder="Defect Description..." style="width:100px" type="text"></td>
+								<td>&nbsp;Serious Level：</td>
 								<td width="300px">
 									<label class="" style="display:-webkit-inline-box;margin-left:10px">
 									<input type="checkbox" name="faultlevel" value="S" />S
@@ -63,7 +65,7 @@
 									<input type="checkbox" name="faultlevel" value="C" />C								
 									</label>
 								</td>
-								<td><input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="查询" style="margin-left: 2px;"></input><input id="btnAdd" type="button" class="btn btn-sm btn-success" value="新增" style="margin-left: 2px;"></input></td>
+								<td><input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="Search" style="margin-left: 2px;"></input><input id="btnAdd" type="button" class="btn btn-sm btn-success" value="Add" style="margin-left: 2px;"></input></td>
 							</tr>
 						</table>
 					</div>	
@@ -78,50 +80,56 @@
 				<form>
 					<table>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">*缺陷类别：</td><td style="width:150px"><input type="text" class="input-medium" id="new_bug_type" style="width:150px"/></td>
-						<td></td><td></td>
+						<td align="right" style="width:150px">*Defect Type：</td>
+						<td style="width:150px">
+							<select name="" id="new_defect_type" class="input-small" style="width:150px"><option value=''>Please Choose</option></select>
+						</td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">*严重等级：</td><td style="width:150px">
+						<td align="right" style="width:150px">*Fault Level：</td>
+						<td style="width:150px">
 							<select class="input-medium" id="new_faultlevel" style="width:150px">
 								<option value="S">S</option>
 								<option value="A">A</option>
 								<option value="B">B</option>
 								<option value="C">C</option>
-							</select></td>
-						<td align="right" style="width:100px">缺陷分类：</td><td style="width:150px">
-							<input type="text" class="input-medium" id="new_faulttype" style="width:150px" />
+							</select>
 						</td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">*缺陷名称：</td><td colspan=3><input type="text" class="input-medium" id="new_bug" style="width:400px"/></td>
+						<td align="right" style="width:150px">Defect Code：</td><td style="width:150px">
+							<input type="text" class="input-medium" id="new_defect_code" style="width:150px" />
+						</td>
 					</tr>
-					
+					<tr style="height:40px">
+						<td align="right" style="width:150px">*Defect Description：</td>
+						<td ><input type="text" class="input-medium" id="new_defect_name" style="width:300px"/></td>
+					</tr>
 					</table>
 				</form>
 			
 			</div>
 			
-			<div id="dialog-edit" class="hide" style="align:center;width:700px;height:500px">
+			<div id="dialog-edit" class="hide" style="align:center;width:750px;height:500px">
 				<form>
 					<table>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">缺陷类别：</td><td style="width:150px"><input type="text" class="input-medium" id="edit_bug_type" style="width:150px"/></td>
+						<td align="right" style="width:150px">Defect Type：</td><td style="width:150px"><input type="text" class="input-medium" id="edit_defect_type" style="width:150px"/></td>
 						<td></td><td></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">严重等级：</td><td style="width:150px">
+						<td align="right" style="width:150px">Fault Level：</td><td style="width:150px">
 							<select class="input-medium" id="edit_faultlevel" style="width:150px">
 								<option value="S">S</option>
 								<option value="A">A</option>
 								<option value="B">B</option>
 								<option value="C">C</option>
 							</select></td>
-						<td align="right" style="width:100px">缺陷分类：</td><td style="width:150px">
-							<input type="text" class="input-medium" id="edit_faulttype" style="width:150px" />
+						<td align="right" style="width:150px">Defect Code：</td><td style="width:150px">
+							<input type="text" class="input-medium" id="edit_defect_code" style="width:150px" />
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">缺陷名称：</td><td colspan=3><input type="text" class="input-medium" id="edit_bug" style="width:400px"/></td>
+						<td align="right" style="width:150px">Defect Description：</td><td colspan=3><input type="text" class="input-medium" id="edit_defect_name" style="width:400px"/></td>
 					</tr>
 					
 					</table>

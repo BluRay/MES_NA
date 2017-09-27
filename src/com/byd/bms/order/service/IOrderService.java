@@ -13,27 +13,22 @@ import com.google.gson.JsonArray;
 
 public interface IOrderService {
 	public Map<String,Object> getOrderListPage(Map<String,Object> condMap);
-	public int getBusNumberStart(Map<String, Object> conditionMap);
 	public List getOrderDetailList(Map<String, Object> conditionMap);
 	@Transactional
-	public void editOrder(JSONArray jel_del, JSONArray jel, Map<String,String> odermap);
+	public void editOrder(BmsOrder order);
 	public Map<String,Object> getOrderByNo(Map<String,Object> queryMap);
 	public String getOrderSerial(String year);
 	@Transactional
-	public void createOrder(BmsOrder order, String factoryOrderNum);
+	public void createOrder(BmsOrder order);
 	public List getBusNumberByOrder(Map<String, Object> conditionMap);
-	public Map<String,Object> getOrderConfigListPage(Map<String, Object> condMap);
-	public List getConfigDetailList(String configId);
-	public void saveOrderConfigDetail(Map<String, Object> configDetail);
-	public Map<String, Object> getConfigAllotListPage(Map<String, Object> condMap);
-	public List getConfigListByOrder(Map<String, Object> condMap);
-	public void saveOrderConfigAllot(List detail_list);
 	public ModelMap getOrderQueryData(Map<String, Object> condMap);
-	public void getOrderConfigTotalQty(String order_id, ModelMap model);
 	// 海外MES 
 	public Map<String,Object> getProjectBomList(Map<String,Object> condMap);
 	public int saveBomInfo(Map<String,Object> condMap);
 	// 根据project_no查询当前Max version的BOM Item数据
 	public Map<String,Object> getBomItemList(Map<String,Object> condMap);
 	public Map<String, Object> getBomCompareList(Map<String, Object> condMap);
+	public void getBusInProcess(String project_id, ModelMap model);
+	public ModelMap getProjectQueryData(Map<String, Object> condMap);
+	public List getBusNumberByProject(Map<String, Object> conditionMap);
 }

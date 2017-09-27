@@ -2,14 +2,10 @@ package com.byd.bms.quality.model;
 
 public class StdFaultLibBean {
 	private int id;
-	private int partsId;
-	private String parts;
-	private String bugType;
-	private String bug;
+	private String defectType;
+	private String defectCode;
 	private String faultLevel;
-	private String faultType;
-	private String workshop;
-	private String workgroup;
+	private String defectName;
 	private int editorId;
 	private String editor;
 	private String editDate;
@@ -19,29 +15,17 @@ public class StdFaultLibBean {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getPartsId() {
-		return partsId;
+	public String getDefectType() {
+		return defectType;
 	}
-	public void setPartsId(int partsId) {
-		this.partsId = partsId;
+	public void setDefectType(String defectType) {
+		this.defectType = defectType;
 	}
-	public String getParts() {
-		return parts;
+	public String getDefectCode() {
+		return defectCode;
 	}
-	public void setParts(String parts) {
-		this.parts = parts;
-	}
-	public String getBugType() {
-		return bugType;
-	}
-	public void setBugType(String bugType) {
-		this.bugType = bugType;
-	}
-	public String getBug() {
-		return bug;
-	}
-	public void setBug(String bug) {
-		this.bug = bug;
+	public void setDefectCode(String defectCode) {
+		this.defectCode = defectCode;
 	}
 	public String getFaultLevel() {
 		return faultLevel;
@@ -49,23 +33,11 @@ public class StdFaultLibBean {
 	public void setFaultLevel(String faultLevel) {
 		this.faultLevel = faultLevel;
 	}
-	public String getFaultType() {
-		return faultType;
+	public String getDefectName() {
+		return defectName;
 	}
-	public void setFaultType(String faultType) {
-		this.faultType = faultType;
-	}
-	public String getWorkshop() {
-		return workshop;
-	}
-	public void setWorkshop(String workshop) {
-		this.workshop = workshop;
-	}
-	public String getWorkgroup() {
-		return workgroup;
-	}
-	public void setWorkgroup(String workgroup) {
-		this.workgroup = workgroup;
+	public void setDefectName(String defectName) {
+		this.defectName = defectName;
 	}
 	public int getEditorId() {
 		return editorId;

@@ -25,7 +25,6 @@ import com.byd.bms.plan.model.PlanIssuance;
 import com.byd.bms.plan.model.PlanIssuanceCount;
 import com.byd.bms.plan.model.PlanIssuanceTotal;
 import com.byd.bms.plan.service.IPlanService;
-import com.byd.bms.production.model.ProductionException;
 import com.byd.bms.util.DataSource;
 import com.byd.bms.util.ExcelModel;
 import com.byd.bms.util.model.BmsBaseOperateChangeLog;

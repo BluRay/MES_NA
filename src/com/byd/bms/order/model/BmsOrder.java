@@ -6,29 +6,44 @@ package com.byd.bms.order.model;
  */
 public class BmsOrder {
 	private int id;
-	private String order_no;
-	private String order_name;
-	private String order_name_str;
-	private String order_code;
-	private String order_type;
-	private int bus_type_id;
+	private String project_no;
+	private String project_name;
+	private String customer;
+	private String search_name;
 	private String bus_type;
-	private int order_qty;
-	private int issed_qty;
-	private String productive_year;
+	private int quantity;
 	private String delivery_date;
-	private String status;
-	private String memo;
+	private String project_date;
+	private int production_plant_id;
+	private String production_plant;
+	private String project_status;
+	private String sales_manager;
 	private int editor_id;
 	private String edit_date;
-	private String customer;
-	private String order_area;
-	
-	public String getOrder_name_str() {
-		return order_name_str;
+	private String project_manager;
+	public int getId() {
+		return id;
 	}
-	public void setOrder_name_str(String order_name_str) {
-		this.order_name_str = order_name_str;
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getProject_no() {
+		return project_no;
+	}
+	public void setProject_no(String project_no) {
+		this.project_no = project_no;
+	}
+	public String getProject_name() {
+		return project_name;
+	}
+	public void setProject_name(String project_name) {
+		this.project_name = project_name;
+	}
+	public String getCustomer() {
+		return customer;
+	}
+	public void setCustomer(String customer) {
+		this.customer = customer;
 	}
 	public String getBus_type() {
 		return bus_type;
@@ -36,47 +51,11 @@ public class BmsOrder {
 	public void setBus_type(String bus_type) {
 		this.bus_type = bus_type;
 	}
-	public int getId() {
-		return id;
+	public int getQuantity() {
+		return quantity;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getOrder_no() {
-		return order_no;
-	}
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
-	}
-	public String getOrder_name() {
-		return order_name;
-	}
-	public void setOrder_name(String order_name) {
-		this.order_name = order_name;
-	}
-	public String getOrder_code() {
-		return order_code;
-	}
-	public void setOrder_code(String order_code) {
-		this.order_code = order_code;
-	}
-	public int getBus_type_id() {
-		return bus_type_id;
-	}
-	public void setBus_type_id(int bus_type_id) {
-		this.bus_type_id = bus_type_id;
-	}
-	public int getOrder_qty() {
-		return order_qty;
-	}
-	public void setOrder_qty(int order_qty) {
-		this.order_qty = order_qty;
-	}
-	public String getProductive_year() {
-		return productive_year;
-	}
-	public void setProductive_year(String productive_year) {
-		this.productive_year = productive_year;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 	public String getDelivery_date() {
 		return delivery_date;
@@ -84,17 +63,23 @@ public class BmsOrder {
 	public void setDelivery_date(String delivery_date) {
 		this.delivery_date = delivery_date;
 	}
-	public String getStatus() {
-		return status;
+	public String getProduction_plant() {
+		return production_plant;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setProduction_plant(String production_plant) {
+		this.production_plant = production_plant;
 	}
-	public String getMemo() {
-		return memo;
+	public String getProject_status() {
+		return project_status;
 	}
-	public void setMemo(String memo) {
-		this.memo = memo;
+	public void setProject_status(String project_status) {
+		this.project_status = project_status;
+	}
+	public String getSales_manager() {
+		return sales_manager;
+	}
+	public void setSales_manager(String sales_manager) {
+		this.sales_manager = sales_manager;
 	}
 	public int getEditor_id() {
 		return editor_id;
@@ -108,29 +93,29 @@ public class BmsOrder {
 	public void setEdit_date(String edit_date) {
 		this.edit_date = edit_date;
 	}
-	public int getIssed_qty() {
-		return issed_qty;
+	public String getProject_manager() {
+		return project_manager;
 	}
-	public void setIssed_qty(int issed_qty) {
-		this.issed_qty = issed_qty;
+	public void setProject_manager(String project_manager) {
+		this.project_manager = project_manager;
 	}
-	public String getOrder_type() {
-		return order_type;
+	public String getSearch_name() {
+		return search_name;
 	}
-	public void setOrder_type(String order_type) {
-		this.order_type = order_type;
+	public void setSearch_name(String search_name) {
+		this.search_name = search_name;
 	}
-	public String getCustomer() {
-		return customer;
+	public String getProject_date() {
+		return project_date;
 	}
-	public void setCustomer(String customer) {
-		this.customer = customer;
+	public void setProject_date(String project_date) {
+		this.project_date = project_date;
 	}
-	public String getOrder_area() {
-		return order_area;
+	public int getProduction_plant_id() {
+		return production_plant_id;
 	}
-	public void setOrder_area(String order_area) {
-		this.order_area = order_area;
-	}	
-
+	public void setProduction_plant_id(int production_plant_id) {
+		this.production_plant_id = production_plant_id;
+	}
+	
 }

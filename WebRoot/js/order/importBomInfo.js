@@ -24,26 +24,26 @@ $(document).ready(function(){
 					}
 					var datalist=response.data;
 					var columns=[
-			            {"class":"center","width":"45px","data":"item_no","defaultContent": ""},
-			            {"class":"center","data":"SAP_material","defaultContent": ""},
-			            {"class":"center","data":"BYD_P/N","defaultContent": ""},
-			            {"class":"center","data": "part_name","defaultContent": ""},
-			            {"class":"center","width":"160px","data":"specification","defaultContent": ""},
-			            {"class":"center","width":"45px","data": "unit","defaultContent": ""},
-			            {"class":"center","width":"60px","data": "quantity","defaultContent": ""},
-			            {"class":"center","data": "en_description","defaultContent": ""},
-			            {"class":"center","data": "vendor","defaultContent": ""},
-			            {"class":"center","width":"80px","data": "station_code","defaultContent": ""},
-			            {"class":"center","data": "note","defaultContent": ""},
-			            {"class":"center","data": "error","defaultContent": ""}
+			            {"title":"Item No.","class":"center","width":"70px","data":"item_no","defaultContent": ""},
+			            {"title":"SAP Material","class":"center","width":"100px","data":"SAP_material","defaultContent": ""},
+			            {"title":"BYD_P/N","class":"center","width":"100px","data":"BYD_P/N","defaultContent": ""},
+			            {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
+			            {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
+			            {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},
+			            {"title":"Quantity","class":"center","width":"60px","data": "quantity","defaultContent": ""},
+			            {"title":"English Description","class":"center","data": "en_description","defaultContent": ""},
+			            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
+			            {"title":"Station Code","class":"center","width":"100px","data": "station_code","defaultContent": ""},
+			            {"title":"Note","class":"center","data": "note","defaultContent": ""},
+			            {"title":"Message","class":"center","data": "error","defaultContent": ""}
 			        ];
 
 					$("#tableResult").DataTable({
 						paiging:false,
-//						fixedColumns:   { //固定列，行有错位现象
-//				            leftColumns: 1,
-//				            rightColumns:0
-//				        },
+						fixedColumns:   { //固定列，行有错位现象
+				            leftColumns: 0,
+				            rightColumns:0
+				        },
 						ordering:false,
 						processing:true,
 						searching: false,
@@ -56,10 +56,7 @@ $(document).ready(function(){
 						orderMulti:false,
 						info:false,
 						language: {
-							processing: "",
-							emptyTable:"",					     
-							infoEmpty:"",
-							zeroRecords:""
+							
 						},
 						aoColumnDefs : [
 			                {
@@ -82,7 +79,7 @@ $(document).ready(function(){
 					
 				}
 				var head_width=$(".dataTables_scrollHead").width();
-                $(".dataTables_scrollHead").css("width",head_width-20);
+                $(".dataTables_scrollHead").css("width",head_width-17);
 				$(".divLoading").hide();
 			}			
 		});

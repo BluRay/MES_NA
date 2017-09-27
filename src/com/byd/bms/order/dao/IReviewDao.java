@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import com.byd.bms.order.model.BmsFactoryOrderDetail;
 import com.byd.bms.order.model.BmsOrder;
 import com.byd.bms.order.model.BmsOrderReviewResults;
 @Repository(value="reviewDao")

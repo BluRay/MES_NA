@@ -81,16 +81,12 @@ function ajaxQuery(){
  						orderMulti:false,
  						info:false,
  						language: {
- 							processing: "",
- 							emptyTable:"",					     
- 							infoEmpty:"",
- 							zeroRecords:""
  						},
  						data:datalist,
  						columns:columns
  					});
  				var head_width=$(".dataTables_scrollHead").width();
-                $(".dataTables_scrollHead").css("width",head_width-20);
+                $(".dataTables_scrollHead").css("width",head_width-15);
  				$(".divLoading").hide();
         }
 
@@ -191,7 +187,7 @@ function ajaxCompareQuery(type){
  						columns:columns
  					});
  				var head_width=$(".dataTables_scrollHead").width();
-                 $(".dataTables_scrollHead").css("width",head_width-20);
+                 $(".dataTables_scrollHead").css("width",head_width-15);
  				$(".divLoading").hide();
         }
 

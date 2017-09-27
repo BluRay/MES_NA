@@ -17,7 +17,6 @@ import com.byd.bms.plan.model.PlanMasterPlan;
 import com.byd.bms.plan.model.PlanPause;
 import com.byd.bms.plan.model.PlanProductionPlan;
 import com.byd.bms.plan.model.PlanVIN;
-import com.byd.bms.production.model.ProductionException;
 import com.byd.bms.util.model.BmsBaseOperateChangeLog;
 
 @Repository(value="planDao")

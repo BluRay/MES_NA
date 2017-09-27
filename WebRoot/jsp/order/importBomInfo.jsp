@@ -98,7 +98,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</table>
 				</div>
 				<div class="row"  >
-					<div class="col-xs-12" style="width: calc(100vw + 20px)">
+					<div class="col-xs-12" style="width: calc(100vw + 17px)">
 						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;table-layout:fixed;width:1200px" >
 						    <thead>
 						       <tr>

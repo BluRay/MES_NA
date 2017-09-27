@@ -8,7 +8,7 @@ $(document).ready(function(){
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
@@ -119,7 +119,7 @@ function ajaxQuery(){
 
             $.ajax({
                 type: "post",
-                url: "getOrderConfigList",
+                url: "getOrderKeyPartsList",
                 cache: false,  //禁用缓存
                 data: param,  //传入组装的参数
                 dataType: "json",

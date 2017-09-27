@@ -6,22 +6,12 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.byd.bms.order.model.BmsFactoryOrderDetail;
 import com.byd.bms.order.model.BmsOrder;
 @Repository(value="orderDao")
 public interface IOrderDao {
-	public List<Map<String,Object>> getOrderList(Map<String,Object> queryMap);
-	public int getOrderTotalCount(Map<String,Object> queryMap);
+	
 	public Map<String,Object> getOrderByNo(Map<String,Object> queryMap);
 	public List<BmsOrder> getOrderDetailList(Map<String,Object> queryMap);
-	public int getBusNumberStart(Map<String, Object> conditionMap);
-	public void deleteFactoryOrderById(int factory_order_id);
-	public void deleteFactoryOrderNoProduction(int order_id);
-	public int updateOrder(BmsOrder order);
-	public int insertFactoryOrder(BmsFactoryOrderDetail factoryorder);
-	public int updateFactoryOrder(BmsFactoryOrderDetail factoryorder);
-	public String queryOrderSerial(String year);
-	public int insertOrder(BmsOrder order);
 	public List queryBusNumberByOrder(Map<String, Object> conditionMap);
 	public List<Map<String, Object>> getOrderConfigList(Map<String, Object> condMap);
 	public int getConfigTotalCount(Map<String, Object> condMap);
@@ -50,4 +40,20 @@ public interface IOrderDao {
 	public List<Map<String, Object>> getBomCompareList(Map<String, Object> condMap);
 	public List<Map<String, Object>> getBomCompareDiffList(Map<String, Object> condMap);
 	public List<Map<String, Object>> getMaxVersion(Map<String, Object> condMap);
+	
+	public List<Map<String,Object>> getOrderList(Map<String,Object> queryMap);
+	public int getOrderTotalCount(Map<String,Object> queryMap);
+	public void insertBus(List<Map<String, Object>> bus_list);
+	public String queryOrderSerial(String year);
+	public int updateOrder(BmsOrder order);
+	public int insertOrder(BmsOrder order);
+	public String queryBusLatestSerial(String project_name);
+	public Map<String, Object> queryBusInProcessByProject(@Param(value="project_id")String project_id);
+	public Map<String,Object> getBusNumberStartByProject(@Param(value="project_id")String project_id);
+	public List<Map<String,Object>> getProjectList(Map<String,Object> queryMap);
+	public int getProjectTotalCount(Map<String,Object> queryMap);
+	public List queryProjectQueryList(Map<String, Object> condMap);
+	public int queryProjectQueryListCount(Map<String, Object> condMap);
+	public List queryBusNumberByProject(Map<String, Object> conditionMap);
+	public void deleteUnProcessBus(Map<String, Object> condMap);
 }

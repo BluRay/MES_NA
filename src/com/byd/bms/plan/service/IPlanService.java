@@ -12,7 +12,6 @@ import com.byd.bms.plan.model.PlanIssuanceTotal;
 import com.byd.bms.plan.model.PlanMasterPlan;
 import com.byd.bms.plan.model.PlanPause;
 import com.byd.bms.plan.model.PlanProductionPlan;
-import com.byd.bms.production.model.ProductionException;
 
 public interface IPlanService {
 	public String checkImportPlanFactory(Map<String,Object> queryMap);
