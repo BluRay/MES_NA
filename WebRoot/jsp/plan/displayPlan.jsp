@@ -43,21 +43,21 @@
 							<tr>
 								<td>Production Factory :</td>
 								<td><select id="search_factory" class="input-small" style="height: 30px;width:120px"></select></td>
-								<td>&nbsp;订单编号：</td>
-								<td><input id="search_order_no" placeholder="请输入订单编号..." style="height: 30px;width:120px" class="col-sm-10" type="text"></td>
-								<td>&nbsp;计划月份：</td>
-								<td width="80px"><input id="search_plan_month" placeholder="计划月份..." onClick="WdatePicker({el:'search_plan_month',dateFmt:'yyyyMM'});" style="height: 30px;width:80px" type="text"></td>
-								<td>&nbsp;计划版本：</td>
-								<td><input id="search_plan_version" style="height: 30px;" placeholder="请输入计划版本..." class="col-sm-12" type="text"></td>
-								<td><input type="button" class="btn btn-sm btn-success" id="btnQuery" value="查询" style="margin-left: 2px;"></input>&nbsp;</td>
+								<td>&nbsp;Project Name : &nbsp;</td>
+								<td><input id="search_order_no" placeholder="Project Name..." style="height: 30px;width:120px" class="col-sm-10" type="text"></td>
+								<td>&nbsp;Plan Month : &nbsp;</td>
+								<td width="80px"><input id="search_plan_month" placeholder="Plan Month..." onClick="WdatePicker({el:'search_plan_month',dateFmt:'yyyy-MM'});" style="height: 30px;width:80px" type="text"></td>
+								<td>&nbsp;Plan Version : &nbsp;</td>
+								<td><input id="search_plan_version" style="height: 30px;" placeholder="Plan Version..." class="col-sm-12" type="text"></td>
+								<td><input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
 								<td></td>
 							</tr>
 						</table>
 					</div>		
 					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 					<thead><tr>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;width:60px;">计划预览</th><th id="th_order_no" style="text-align:center;padding-left:0px;padding-right:0px;" width="55px"></th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">日期</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;width:60px;">Plan</th><th id="th_order_no" style="text-align:center;padding-left:0px;padding-right:0px;" width="55px"></th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Date</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">1</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">2</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">3</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">4</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">5</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">6</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">7</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">8</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">9</th>
@@ -70,8 +70,8 @@
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">25</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">26</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">27</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">28</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">29</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">30</th>
 						
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">31</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="38px">合计</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="38px">总计</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="23px">31</th><th style="text-align:center;padding-left:0px;padding-right:0px;" width="38px">Sum</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="38px">Total</th>
 					</tr></thead>
 					<tbody></tbody>
 					</table>

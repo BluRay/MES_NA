@@ -1,4 +1,4 @@
-var pageSize=1;
+ var pageSize=1;
 var table;
 var table_height = $(window).height()-260;
 $(document).ready(function () {	
@@ -45,32 +45,28 @@ function ajaxQuery(){
 	    data: {
 	    	"version":$('#search_plan_version').val(),
 	    	"factory_id": $('#search_factory').val(),
+	    	"factory_name": $("#search_factory :selected").text(),
 	    	"plan_month": $('#search_plan_month').val(),
 	    	"order_no": $('#search_order_no').val()
 	    },
 	    success:function(response){		    		
     		$("#tableData tbody").html("");
-    		var day = new Array("日", "一", "二", "三", "四", "五", "六"); 
+    		var day = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"); 
     		var stock = new Array(0,0,0,0,0,0,0,0,0,0,0,0);		//库存
     		$.each(response.data,function (index,value) {
-    			
-    			//$("#th_order_no").html(value.order_no);
-    			if(index%12 == 0){
-    				//var firstDay = new Date(value.plan_month.substring(0,4) + "-" + value.plan_month.substring(4,6) + "-01");
-    				//var strTime="2011-04-16";    //字符串日期格式           
-    				var date= new Date(Date.parse((value.plan_month.substring(0,4) + "-" + value.plan_month.substring(4,6) + "-01").replace(/-/g,  "/")));      //转换成Data();
-    				//alert(day[date.getDay()]);
+    			if(index%12 == 0){       
+    				var date= new Date(Date.parse((value.month + "-01").replace(/-/g,  "/")));      //转换成Data();
     				if($("#search_plan_version").val() != ''){
-    					$("#search_order_no").val(value.order_no);
+    					$("#search_order_no").val(value.project_no);
     				}
     				
-    				$("#order_id").val(value.order_id);
-    				$("#factory_id").val(value.factory_id);
+    				//$("#order_id").val(value.project_id);
+    				//$("#factory_id").val(value.factory_id);
     				var tr = $("<tr/>");
     				var i = 0; var fday = date.getDay();
-    	    		$("<td style=\"text-align:center;\" />").html(value.order_no).appendTo(tr);
-    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html("月份").appendTo(tr);
-    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" width=\"30px\" />").html("库存").appendTo(tr);
+    	    		$("<td style=\"text-align:center;\" />").html(value.project_no).appendTo(tr);
+    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html("Month").appendTo(tr);
+    	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" width=\"30px\" />").html("Stock").appendTo(tr);
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
     	    		$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(day[(date.getDay()+i%7)%7]).appendTo(tr);i++;
@@ -110,8 +106,8 @@ function ajaxQuery(){
     	    		$("#tableData tbody").append(tr);
     			}
     			tr = $("<tr />");
-    			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;\" />").html(value.plan_code_keyname + "").appendTo(tr);
-    			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.plan_month).appendTo(tr);
+    			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;\" />").html(value.plan_node + "").appendTo(tr);
+    			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.month).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(stock[index%12]).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html((value.d1==0)?"":value.d1).appendTo(tr);$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html((value.d2==0)?"":value.d2).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html((value.d3==0)?"":value.d3).appendTo(tr);$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html((value.d4==0)?"":value.d4).appendTo(tr);
