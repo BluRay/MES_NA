@@ -373,9 +373,6 @@
 		<if test="plant !=null and plant !=''">
 			and find_in_set(f.id,#{plant})
 		</if>
-		<if test="actYear !=null and actYear !=''">
-			and o.project_date=#{actYear}
-		</if>
 		<if test="status !=null and status !=''">
 			and o.status=#{status}
 		</if>
@@ -393,9 +390,6 @@
 		</if>
 		<if test="plant !=null and plant !=''">
 			and find_in_set(f.id,#{plant})
-		</if>
-		<if test="actYear !=null and actYear !=''">
-			and o.project_date=#{actYear}
 		</if>
 		<if test="status !=null and status !=''">
 			and o.status=#{status}

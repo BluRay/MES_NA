@@ -37,7 +37,7 @@ function ajaxQuery(){
 	var tb=$("#tableOrder").DataTable({
 		serverSide: true,
 		fixedColumns:   {
-            leftColumns: 0,
+            leftColumns: 2,
             rightColumns:2
         },
 		dom: 'Bfrtip',
@@ -72,7 +72,6 @@ function ajaxQuery(){
 				"draw":1,
 				"project_no":$("#search_project_no").val(),
 				"plant":getAllFromOptions("#search_plant","val"),
-				"actYear":$("#search_productive_year").val(),
 				"status":$("#search_status").val()
 			};
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
@@ -349,7 +348,7 @@ function drawBusInfoTable(data){
 
 	var t=$("#tableBusNumber").dataTable({
 		paiging:false,
-		showRowNumber:true,
+		//showRowNumber:true,
 		ordering:false,
 		searching: false,
 		autoWidth:false,
@@ -367,7 +366,7 @@ function drawBusInfoTable(data){
 		},
 		data:data,
 		columns: [
-            {"title":"No.","class":"center","data":"","defaultContent": ""
+            {"title":"No.","class":"center","data":"","width":"35px","defaultContent": ""
             	,"render":function(data,type,row,meta){
 				return meta.row + meta.settings._iDisplayStart + 1; // 序号值
 	        }
@@ -376,7 +375,7 @@ function drawBusInfoTable(data){
             {"title":"VIN","class":"center","data":"vin","defaultContent": ""},
             {"title":"Station","class":"center","data":"factory_name","defaultContent": ""},
             {"title":"Welding Online","class":"center","data":"workshop","defaultContent": ""},
-            {"title":"Welding Offline","width":"200","class":"center","data":"process_name","defaultContent": ""},
+            {"title":"Welding Offline","class":"center","data":"process_name","defaultContent": ""},
             {"title":"Painting Online","class":"center","data":"welding_online_date","defaultContent": ""},
             {"title":"Painting Offline","class":"center","data":"welding_offline_date","defaultContent": ""},
             {"title":"Chassis Online","class":"center","data":"painting_online_date","defaultContent": ""},
@@ -453,9 +452,7 @@ function drawBomTable(data){
 			lengthChange:false,
 			orderMulti:false,
 			info:false,
-			language: {
-				
-			},
+			language: {},
 			data:data,
 			columns:columns
 		});

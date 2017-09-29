@@ -93,7 +93,7 @@
 					</table>
 				</div>
 				<div id="dialog-message" class="hide" style="width: calc(100vw + 10px)">
-					<table id="tableBusNumber" style="font-size: 12px;width:2100px;overflow-x:auto" class="table table-bordered table-striped">
+					<table id="tableBusNumber" style="font-size: 12px;width:1200px;overflow-x:auto" class="table table-bordered table-striped">
 					</table>
 				</div>
 				
