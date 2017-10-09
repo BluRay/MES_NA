@@ -57,5 +57,9 @@ public interface IProductionDao {
 	public int getBusNumberTotalCount(Map<String, Object> condMap);
 	/*** 打印后更新VIN表打印次数，打印人，打印时间，打印状态*/
 	public int updateVinPrint(Map<String,Object> conditionMap);
+	
+    public List<Map<String, Object>> getProjectBusNumberList(Map<String, Object> condMap);
+	
+	public int getProjectBusNumberCount(Map<String, Object> condMap);
 	/**************************** tang jin end*********************************/
 }

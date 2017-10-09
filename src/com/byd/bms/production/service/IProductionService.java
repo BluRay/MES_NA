@@ -31,5 +31,7 @@ public interface IProductionService {
 	public Map<String, Object> getBusNumberList(Map<String, Object> conditionMap);
 	/** 打印后更新车号表打印次数，打印人，打印时间，打印状态*/
 	public int updateVinPrint(Map<String,Object> conditionMap);
+	
+	public Map<String, Object> getProjectBusNumberList(Map<String, Object> conditionMap);
 	/*****************************tang jin end  *****************************/
 }

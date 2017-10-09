@@ -115,7 +115,7 @@ public class ProductionController extends BaseController {
 	@ResponseBody
 	public ModelMap uploadProjectVinInfo(@RequestParam(value="file",required=false) MultipartFile file){
 		logger.info("uploading.....");
-		String fileName="vin.xls";
+		String fileName=file.getOriginalFilename();
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		String project_id=request.getParameter("project_id");
 		condMap.put("project_id", project_id);
@@ -419,4 +419,26 @@ public class ProductionController extends BaseController {
 		model.addAllAttributes(result);
 		return model;
 	}
+	@RequestMapping("/getProjectBusNumberList")
+	@ResponseBody
+	public ModelMap getProjectBusNumberList(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw")!=null ? request.getParameter("draw") : "1"); 
+		int start=Integer.parseInt(request.getParameter("start")!=null ? request.getParameter("start") : "0");
+		int length=Integer.parseInt(request.getParameter("length")!=null ? request.getParameter("length") : "-1");
+		String plant=request.getParameter("plant");
+		String project_no=request.getParameter("project_no");
+		String status=request.getParameter("status");
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("plant", plant);
+		condMap.put("project_no", project_no);
+		condMap.put("status", status);
+		Map<String,Object> result=productionService.getProjectBusNumberList(condMap);
+		model.addAllAttributes(result);
+		return model;
+	}
+	
 }

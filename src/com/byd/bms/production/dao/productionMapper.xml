@@ -242,4 +242,39 @@
 			#{item}
 		</foreach>
 	</update>
+	<select id="getProjectBusNumberList" parameterType="Map" resultType="Map">
+		SELECT p.*,f.factory_name plant,u.username FROM BMS_NA_PROJECT p
+		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
+		LEFT JOIN BMS_NA_BASE_USER u on u.id=p.editor_id
+		where 1=1
+		<if test="plant !=null and plant !=''">
+			and f.factory_name=#{plant}  
+		</if>
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no} 
+		</if>
+		<if test="status !=null and status !=''">
+			and p.project_status=#{status}    
+		</if>
+		ORDER BY p.id DESC
+		<if test="start !=null and length !='-1' ">
+			LIMIT #{start} ,#{length} 
+		</if>			
+	</select>
+	
+	<select id="getProjectBusNumberCount" parameterType="Map" resultType="int">
+		SELECT count(1) FROM BMS_NA_PROJECT p
+		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
+		LEFT JOIN BMS_NA_BASE_USER u on u.id=p.editor_id
+		where 1=1
+		<if test="plant !=null and plant !=''">
+			and f.factory_name=#{plant}  
+		</if>
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no} 
+		</if>
+		<if test="status !=null and status !=''">
+			and p.project_status=#{status}    
+		</if>
+	</select>
 </mapper>

@@ -256,4 +256,18 @@ public class ProductionServiceImpl implements IProductionService {
 	public int updateVinPrint(Map<String, Object> conditionMap) {
 		return productionDao.updateVinPrint(conditionMap);
 	}
+
+	@Override
+	public Map<String, Object> getProjectBusNumberList(
+			Map<String, Object> conditionMap) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist=productionDao.getProjectBusNumberList(conditionMap);
+		totalCount=productionDao.getProjectBusNumberCount(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
 }

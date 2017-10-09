@@ -90,7 +90,7 @@
 									</select>  
 									<input type="button" class="btn btn-sm btn-primary" disabled="disabled" id="btnSubmit" value="Confirm"></input>
 									<input type="button" class="btn btn-sm" id="reset" value="Clear"></input>
-									<input type="hidden" id='currentNode' name='currentNode' value='485'></input>
+									<input type="hidden" id='currentNode' name='currentNode' value=''></input>
 									<!-- 修改为对应的NodeID -->
 									<input type="hidden" id='line' name='currentLine'
 										value=''></input> <span class="help-inline" id="vinHint"></span>

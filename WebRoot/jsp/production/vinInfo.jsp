@@ -129,8 +129,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/assets/js/bootstrap3-typeahead.js"></script>
 	<script src="<%=basePath%>/js/jsrender.min.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
-	<script src="<%=basePath%>/js/tableExport.js"></script>
 	<script src="<%=basePath%>/js/jquery.form.js"></script>
+<%-- 	<script src="<%=basePath%>/js/xlsx.core.min.js"></script> --%>
+<%-- 	<script src="<%=basePath%>/js/FileSaver.js"></script> --%>
+	<script src="<%=basePath%>/js/tableExport.js"></script>
     <script src="<%=basePath%>/js/production/vinInfo.js"></script>
 </body>
 

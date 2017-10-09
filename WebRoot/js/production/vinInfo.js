@@ -36,7 +36,7 @@ $(document).ready(function(){
 			            {"title":"No.","class":"center","data":"no","defaultContent": ""},
 			            {"title":"Bus No.","class":"center","data": "bus_number","defaultContent": ""},
 			            {"title":"VIN","class":"center","data": "vin","defaultContent": ""},
-			            {"title":"Message","class":"center","data": "error","defaultContent": ""}
+			            {"title":"","class":"center","data": "error","defaultContent": ""}
 			        ];
 
 					$("#tableVinImport").DataTable({
@@ -65,6 +65,9 @@ $(document).ready(function(){
 			                }   
 			                },
 			            ],
+			            buttons: [
+			          	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
+			          	    ],
 						data:datalist,
 						columns:columns
 					});
@@ -78,7 +81,6 @@ $(document).ready(function(){
 			}			
 		});
 	});
-	
 });
 
 
@@ -108,7 +110,7 @@ function ajaxQuery(){
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
-				"projectNo":$("#search_project_no").val(),
+				"project_no":$("#search_project_no").val(),
 				"status":$("#search_status").val(),
 				"factory":getAllFromOptions("#search_factory","val")
 			};
@@ -118,7 +120,7 @@ function ajaxQuery(){
 
             $.ajax({
                 type: "post",
-                url: "../project/getProjectBomList",
+                url: "getProjectBusNumberList",
                 data: param,  //传入组装的参数
                 dataType: "json",
                 success: function (result) {
@@ -139,8 +141,8 @@ function ajaxQuery(){
             {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
             {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
             {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
-            {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
-            {"title":"Status","class":"center","data":"status","render":function(data,type,row){
+            {"title":"Plant","class":"center","data": "plant","defaultContent": ""},
+            {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
             	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
             },
             {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
@@ -220,6 +222,7 @@ function importVinInfo(row){
 				orderMulti:false,
 				info:false,
 				language: {},
+				
 				data:data,
 				columns:columns
 			});
@@ -230,7 +233,11 @@ function importVinInfo(row){
 	})
 }
 function downloadTemplate(){
-	$("#tableVinImport").tableExport({type:'excel',escape:'false'});
+	$("#tableVinImport thead").children("tr").children("th:hidden").remove();
+	$("#tableVinImport").tableExport({
+		type:'xlsx',fileName:'vin',worksheetName:'vin',
+		//excelstyles:['border-bottom', 'border-top', 'border-left', 'border-right']
+		});
 }
 function save() {
 	var save_flag=true;
