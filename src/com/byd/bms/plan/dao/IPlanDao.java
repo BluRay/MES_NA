@@ -34,4 +34,6 @@ public interface IPlanDao {
 	public int updatePlanMasterInfo(PlanMasterPlan masterPlan);
 	public int insertOperateChangeLog(BmsBaseOperateChangeLog changLog);
 	
+	public List<Map<String,String>> getPlanSerach(Map<String,Object> queryMap);
+	
 }

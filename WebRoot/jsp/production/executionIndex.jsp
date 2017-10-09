@@ -22,7 +22,7 @@
 		margin-bottom: 3px;
 		color: #555;
 		background-color:#f5f5f5;
-		width: 56px;
+		/* width: 70px; */
 		padding: 0px;
 		height:27px;
 		cursor: pointer;
@@ -44,8 +44,8 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">首页</a></li>
-						<li><a href="executionindex">车间工序</a></li>
+							href="/BMS/index">Index</a></li>
+						<li><a href="executionindex">Production Execution</a></li>
 						<li class="active">
 						<select name="" id="search_factory" class="myselect">
 						</select>
@@ -56,8 +56,15 @@
 						</li>
 					</ul>
 					<!-- /.breadcrumb -->
+					
+					<div style="right: 180px; position: absolute; top: 5px;" class="breadcrumb">
+						<i class="fa fa-print bigger-130" aria-hidden="true" style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Bus No.
+						<i class="fa fa-print bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Key Parts
+						<i class="fa fa-wrench bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> ECN
+					</div>
+					
 
-					<div class="nav-search" id="nav-search">
+					<div class="nav-search" id="nav-search">				
 						<form class="form-search">
 							<span class="input-icon">
 								<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" /><i class="ace-icon fa fa-search nav-search-icon"></i>

@@ -8,9 +8,9 @@ $(document).ready(
 				var canvas_w = canvas.width;
 				var canvas_h = canvas.height;
 				var bw = 20;
-				var bh = 30;
+				var bh = 20;
 				var bgX = 50;//起始X坐标
-				var bgY = 40;//起始Y坐标
+				var bgY = 20;//起始Y坐标
 				var recw = 150;//矩形的宽
 				var rech = 70;//矩形高
 				var c = document.getElementById("first_canvas");
@@ -40,7 +40,7 @@ $(document).ready(
 					if(rect.code&&rect.monitorFlag=='1'){
 						//alert(rect.lineName);
 						window.location.href="execution?factory_id="+rect.factoryId+
-						"&workshop_id="+rect.workshopId+"&line="+rect.lineName+"&process_id="+rect.processId
+						"&workshop_id="+rect.workshopId+"&line="+rect.lineName+"&station_id="+rect.processId
 					}else{
 						alert("该节点未配置为扫描节点！");
 					}
@@ -60,7 +60,7 @@ $(document).ready(
 					rect_list=[];
 					line_process=ajaxGetLineProcess();
 					bgX = 50;//起始X坐标 重置
-					bgY = 40;//起始Y坐标 重置
+					bgY = 20;//起始Y坐标 重置
 					$(canvas).attr("height",80) //画布高度重置
 					drawCanvas(line_process);
 				});
@@ -70,7 +70,7 @@ $(document).ready(
 					rect_list=[];
 					line_process=ajaxGetLineProcess();
 					bgX = 50;//起始X坐标 重置
-					bgY = 40;//起始Y坐标 重置
+					bgY = 20;//起始Y坐标 重置
 					$(canvas).attr("height",80) //画布高度重置
 					drawCanvas(line_process);
 				});
@@ -109,32 +109,35 @@ $(document).ready(
 				function drawCanvas(line_process){
 					
 					//$(canvas).attr("height", 220*line_process.length);
-					var cvs_height=parseFloat($(canvas).attr("height"));
-					var line_height=0;
+					var cvs_height=parseFloat($(canvas).attr("height"));					
+					var prcess_height=0;
 					var lineList=[];
 					$.each(line_process,function(index,value){
 						var lineId=value.line_id;
 						var lineName=value.line_name;
 						var factoryId=$("#search_factory").val();
 						var workshopId=$("#search_workshop").val();				
-						var processlist=JSON.parse(value.process_list);						
+						var processlist=JSON.parse(value.process_list);	
+						var line_height=0;
 						$.each(processlist,function(index,process){
 							//var obj=process;
 							//process.lineId=lineId;
 							process.lineName=lineName;
 							process.factoryId=factoryId;
 							process.workshopId=workshopId;
-							line_height+=(rech+bh);
+							line_height++;
 						});
-
+						prcess_height+=Math.ceil(line_height/6)
+						//alert(prcess_height)
 						var line={};
 						line.name=lineName;
 						line.processlist=processlist;
 						lineList.push(line);
 						
 					})
-					//alert(Math.ceil(line_height/6));
-					$(canvas).attr("height",cvs_height+Math.ceil(line_height/6)+bgY);
+					//alert(prcess_height);
+					//alert(prcess_height*(rech+bh)+bgY);
+					$(canvas).attr("height",prcess_height*(rech+bh));
 					$.each(lineList,function(index,line){
 						drawLineProcess(line.name, line.processlist);
 					})				
@@ -213,7 +216,7 @@ $(document).ready(
 					ctx.beginPath();
 					ctx.fillStyle = "black";
 					ctx.font = "12px Arial";
-					ctx.fillText(rect.name, ((recw - (12 * rect.name.length)) / 2+3 + x_s),
+					ctx.fillText(rect.name, ((recw - (6 * rect.name.length)) / 2 + x_s),
 							50 + y_s);
 					
 					ctx.closePath();

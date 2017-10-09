@@ -345,7 +345,10 @@ function ajaxShowBusNumber(project_id){
 }
 
 function drawBusInfoTable(data){
-
+	if($.fn.dataTable.isDataTable("#tableBusNumber")){
+		$('#tableBusNumber').DataTable().destroy();
+		$('#tableBusNumber').empty();
+	}
 	var t=$("#tableBusNumber").dataTable({
 		paiging:false,
 		//showRowNumber:true,
@@ -372,7 +375,7 @@ function drawBusInfoTable(data){
 	        }
             },
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
-            {"title":"VIN","class":"center","data":"vin","defaultContent": ""},
+            {"title":"VIN","class":"center","data":"VIN","defaultContent": ""},
             {"title":"Station","class":"center","data":"factory_name","defaultContent": ""},
             {"title":"Welding Online","class":"center","data":"workshop","defaultContent": ""},
             {"title":"Welding Offline","class":"center","data":"process_name","defaultContent": ""},
@@ -388,8 +391,8 @@ function drawBusInfoTable(data){
        ],
        
 	});
-	var head_width=$(".dataTables_scrollHead").width();
-    $(".dataTables_scrollHead").css("width",head_width-10);
+//	var head_width=$(".dataTables_scrollHead").width();
+//    $(".dataTables_scrollHead").css("width",head_width-10);
 }
 function ajaxShowBom(project_no){
 	$(".divLoading").addClass("fade in").show();
@@ -425,6 +428,10 @@ function ajaxShowBom(project_no){
 }
 
 function drawBomTable(data){
+	if($.fn.dataTable.isDataTable("#tableBom")){
+		$('#tableBom').DataTable().destroy();
+		$('#tableBom').empty();
+	}
 	var columns=[
 	    {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
 	    {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
@@ -439,25 +446,24 @@ function drawBomTable(data){
 	    {"title":"Note","class":"center","data": "note","defaultContent": ""},
 	];
 
-		$("#tableBom").DataTable({
-			paiging:false,
-			ordering:false,
-			processing:true,
-			searching: false,
-			autoWidth:false,
-			paginate:false,
-			sScrollY: $(window).height()-260,
-			scrollX: true,
-			scrollCollapse: true,
-			lengthChange:false,
-			orderMulti:false,
-			info:false,
-			language: {},
-			data:data,
-			columns:columns
-		});
-		var head_width=$(".dataTables_scrollHead").width();
-	    $(".dataTables_scrollHead").css("width",head_width-10);
-	
+	$("#tableBom").DataTable({
+		paiging:false,
+		ordering:false,
+		processing:true,
+		searching: false,
+		autoWidth:false,
+		paginate:false,
+		sScrollY: $(window).height()-260,
+		scrollX: true,
+		scrollCollapse: true,
+		lengthChange:false,
+		orderMulti:false,
+		info:false,
+		language: {},
+		data:data,
+		columns:columns
+	});
+//	var head_width=$(".dataTables_scrollHead").width();
+//    $(".dataTables_scrollHead").css("width",head_width-10);
 }
 

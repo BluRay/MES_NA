@@ -193,8 +193,9 @@
 	
 	<!-- 海外 MES系统 start -->
 	<select id="getProjectBomList" parameterType="Map" resultType="Map">
-		SELECT p.*,h.DCN,h.version,u.username,h.edit_date FROM BMS_NA_PROJECT p			
+		SELECT p.*,f.factory_name plant,h.DCN,h.version,u.username,h.edit_date FROM BMS_NA_PROJECT p			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
+		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
 		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
 		LEFT JOIN BMS_NA_BASE_USER u ON u.id=h.editor_id
 		where 1=1
@@ -203,9 +204,6 @@
 		</if>
 		<if test="status !=null and status !=''">
 			and p.project_status = #{status} 
-		</if>
-		<if test="actYear !=null and actYear !=''">
-			and p.project_date = #{actYear} 
 		</if>
 		<if test="plant !=null and plant !=''">
 			and find_in_set(p.production_plant ,#{plant} )
@@ -219,6 +217,7 @@
 	<select id="getProjectBomTotalCount" parameterType="Map" resultType="int">
 		SELECT count(1) FROM BMS_NA_PROJECT p			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
+		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
 		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id) 
 		where 1=1
 		<if test="projectNo !=null and projectNo !=''">
@@ -226,9 +225,6 @@
 		</if>
 		<if test="status !=null and status !=''">
 			and p.project_status = #{status} 
-		</if>
-		<if test="actYear !=null and actYear !=''">
-			and p.project_date = #{actYear} 
 		</if>
 		<if test="plant !=null and plant !=''">
 			and find_in_set(p.production_plant ,#{plant} )
@@ -351,7 +347,7 @@
 	</select>
 
 	<select id="queryProjectQueryList" parameterType="Map" resultType="Map">
-		select o.id,o.project_no,o.project_name,o.delivery_date,o.customer,o.quantity,o.production_plant,
+		select o.id,o.project_no,o.project_name,o.delivery_date,o.customer,o.quantity,o.production_plant,f.factory_name plant,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.welding_online >0 AND b.project_id = o.id) as welding_online_count,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.welding_offline  >0 AND b.project_id = o.id) as welding_offline_count,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.painting_online >0 AND b.project_id = o.id) as painting_online_count,
@@ -365,7 +361,7 @@
         (SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.delivery>0 AND b.project_id = o.id) as delivery_count      
 		from BMS_NA_PROJECT o
 		left join BMS_NA_BASE_BUS_TYPE t on o.bus_type=t.id
-		left join BMS_NA_BASE_FACTORY f on o.production_plant=f.id
+		left join BMS_NA_BASE_FACTORY f on o.production_plant_id=f.id
 		where 1=1
 		<if test="project_no !=null and project_no !=''">
 			and o.project_no=#{project_no}
@@ -396,7 +392,7 @@
 		</if>
 	</select>
 	<select id="queryBusNumberByProject" parameterType="Map" resultType="Map">
-		SELECT b.id,b.project_id,b.bus_number,b.VIN,b.current_station,p.station,
+		SELECT b.id,b.project_id,o.project_no,b.bus_number,b.VIN,b.current_station,p.station,
 		b.welding_online,b.welding_offline,b.painting_online,b.painting_offline,b.chassis_online,b.chassis_offline,
 		b.assembly_online,b.assembly_offline,b.testing,b.outgoing,o.project_no,o.project_name
 		FROM BMS_NA_PROJECT_BUS b

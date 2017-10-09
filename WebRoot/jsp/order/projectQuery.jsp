@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>订单查询</title>
+<title>Project Query</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />	
@@ -88,12 +88,12 @@
 					</div>
 				</div>
 
-				<div id="dialog-config" class="hide" style="width: calc(100vw + 10px)">
-				    <table id="tableBom" style="font-size: 12px;width:1200px;overflow-x:auto" class="table table-bordered table-striped">
+				<div id="dialog-config" class="hide" > <!-- style="width: calc(100vw + 10px)" -->
+				    <table id="tableBom" style="font-size: 12px;width:1100px;overflow-x:auto" class="table table-bordered table-striped">
 					</table>
 				</div>
-				<div id="dialog-message" class="hide" style="width: calc(100vw + 10px)">
-					<table id="tableBusNumber" style="font-size: 12px;width:1200px;overflow-x:auto" class="table table-bordered table-striped">
+				<div id="dialog-message" class="hide">   <!-- style="width: calc(100vw + 10px)"-->
+					<table id="tableBusNumber" style="font-size: 12px;width:1100px;overflow-x:auto" class="table table-bordered table-striped">
 					</table>
 				</div>
 				
@@ -101,30 +101,30 @@
 			</div>
 			<!-- /.main-container -->
 		</div>
-		
-		<script>
-			var $table = $('#table'),$remove = $('#remove'),selections = [];
-		</script>
-		<script src="../js/datePicker/WdatePicker.js"></script>
-		<script src="../assets/js/jquery-ui.min.js"></script>
-		<script src="../assets/js/jquery.gritter.min.js"></script>
-		<script src="../assets/js/jquery.dataTables.min.js"></script>
-		<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
-		<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
-		<script src="../assets/js/dataTables.rowGroup.js"></script>
-		<script src="../assets/js/ace/elements.onpage-help.js"></script>
-		<script src="../assets/js/ace/ace.onpage-help.js"></script>
-		<script src="../assets/js/bootstrap3-typeahead.js"></script>
-		<script src="../js/jquery.form.js"></script>
-		<script src="../assets/js/jszip.min.js"></script>
-		<script src="../assets/js/dataTables.buttons.js"></script>
-		<script src="../assets/js/buttons.colVis.js"></script>
-		<script src="../assets/js/buttons.html5.js"></script>
-	<!-- 	<script src="../assets/js/buttons.flash.js"></script>  -->
-		<!-- <script src="../js/bootstrap-table.js"></script> -->
-		<script src="../js/common.js"></script>
-		<!-- <script src="../js/bootstrapInit.js"></script>	 -->
-		<script src="../js/order/projectQuery.js"></script>
+	</div>	
+	<script>
+		var $table = $('#table'),$remove = $('#remove'),selections = [];
+	</script>
+	<script src="../js/datePicker/WdatePicker.js"></script>
+	<script src="../assets/js/jquery-ui.min.js"></script>
+	<script src="../assets/js/jquery.gritter.min.js"></script>
+	<script src="../assets/js/jquery.dataTables.min.js"></script>
+	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
+	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
+	<script src="../assets/js/dataTables.rowGroup.js"></script>
+	<script src="../assets/js/ace/elements.onpage-help.js"></script>
+	<script src="../assets/js/ace/ace.onpage-help.js"></script>
+	<script src="../assets/js/bootstrap3-typeahead.js"></script>
+	<script src="../js/jquery.form.js"></script>
+	<script src="../assets/js/jszip.min.js"></script>
+	<script src="../assets/js/dataTables.buttons.js"></script>
+	<script src="../assets/js/buttons.colVis.js"></script>
+	<script src="../assets/js/buttons.html5.js"></script>
+<!-- 	<script src="../assets/js/buttons.flash.js"></script>  -->
+	<!-- <script src="../js/bootstrap-table.js"></script> -->
+	<script src="../js/common.js"></script>
+	<!-- <script src="../js/bootstrapInit.js"></script>	 -->
+	<script src="../js/order/projectQuery.js"></script>
 
 <style type="text/css">
 .table{

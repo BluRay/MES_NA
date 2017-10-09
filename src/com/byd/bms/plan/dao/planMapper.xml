@@ -134,4 +134,219 @@
 		]]>
 	</insert>
 	
+	<select id="getPlanSerach" parameterType="Map" resultType="Map">
+		select record.order_desc,case record.key_name when '自制下线' then '自制件下线' when '车辆入库' then '入库' else record.key_name end as key_name
+		,record.production_qty,record.order_id,record.order_no,ifnull(record.real_qty,0) real_qty,ifnull(record.total_qty,0) total_qty,ifnull(p.total_plan_qty,0) total_plan_qty 
+		from
+		(
+		SELECT '焊装上线' key_name,p.id,p.project_no,tmp.real_qty,tmp.total_qty,SUM(p.quantity) production_qty,
+		p.project_name order_desc FROM BMS_NA_PROJECT p
+		LEFT JOIN (
+			select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.project_id
+			from BMS_NA_PROJECT_BUS b 
+			left join BMS_NA_PROJECT_BUS b1 on b.id=b1.id 
+			<if test="start_date !=null and start_date !=''">
+				and b1.welding_online > CONCAT(#{start_date},' 00:00:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b1.welding_online &lt;= CONCAT(#{end_date},' 23:59:59')
+			</if>
+			where b.welding_online != '' group by b.project_id
+			) tmp ON tmp.project_id=p.id
+		WHERE p.production_plant= #{factory_name}
+		AND p.project_no = #{project_no}
+		GROUP BY p.id
+	
+		union all
+		SELECT '焊装下线' key_name,p.id,p.project_no,tmp.real_qty,tmp.total_qty,SUM(p.quantity) production_qty,
+		p.project_name order_desc FROM BMS_NA_PROJECT p
+		LEFT JOIN (
+			select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.project_id
+			from BMS_NA_PROJECT_BUS b 
+			left join BMS_NA_PROJECT_BUS b1 on b.id=b1.id 
+			<if test="start_date !=null and start_date !=''">
+				and b1.welding_offline > CONCAT(#{start_date},' 00:00:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b1.welding_offline &lt;= CONCAT(#{end_date},' 23:59:59')
+			</if>
+			where b.welding_online != '' group by b.project_id
+			) tmp ON tmp.project_id=p.id
+		WHERE p.production_plant= #{factory_name}
+		AND p.project_no = #{project_no}
+		GROUP BY p.id
+		
+		union all
+		SELECT '涂装上线' key_name,p.id,p.project_no,tmp.real_qty,tmp.total_qty,SUM(p.quantity) production_qty,
+		p.project_name order_desc FROM BMS_NA_PROJECT p
+		LEFT JOIN (
+			select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.project_id
+			from BMS_NA_PROJECT_BUS b 
+			left join BMS_NA_PROJECT_BUS b1 on b.id=b1.id 
+			<if test="start_date !=null and start_date !=''">
+				and b1.painting_online > CONCAT(#{start_date},' 00:00:00')
+			</if>
+			<if test="end_date !=null and end_date !=''">
+				and b1.painting_online &lt;= CONCAT(#{end_date},' 23:59:59')
+			</if>
+			where b.welding_online != '' group by b.project_id
+			) tmp ON tmp.project_id=p.id
+		WHERE p.production_plant= #{factory_name}
+		AND p.project_no = #{project_no}
+		GROUP BY p.id
+		
+		union all
+		select '涂装下线' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.painting_offline_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.painting_offline_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.painting_offline_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+		
+		union all
+		select '底盘上线' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.chassis_online_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.chassis_online_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.chassis_online_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+
+		union all
+		select '底盘下线' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.chassis_offline_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.chassis_offline_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.chassis_offline_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+		
+		union all
+		select '总装上线' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.assembly_online_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.assembly_online_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.assembly_online_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+		
+		union all
+		select '总装下线' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.assembly_offline_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.assembly_offline_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.assembly_offline_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+		
+		union all
+		select '车辆入库' key_name,fo.order_id,o.order_no,tmp.real_qty,tmp.total_qty,sum(fo.production_qty) production_qty,concat(o.order_no,' ',o.order_name,t.bus_type_code,' ',sum(fo.production_qty),'台') order_desc 
+		from BMS_OR_FACTORY_ORDER fo 
+		left join BMS_OR_ORDER o on o.id=fo.order_id 
+		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
+		left join 
+		(select count(distinct b1.bus_number) real_qty,count(distinct b.bus_number) total_qty,b.order_id
+		from BMS_PLAN_BUS b 
+		left join BMS_PLAN_BUS b1 on b.id=b1.id 
+		<if test="start_date !=null and start_date !=''">
+			and b1.warehousing_date > CONCAT(date_sub(#{start_date},interval 1 day),' 17:30:00')
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and b1.warehousing_date &lt;=concat(#{end_date},' 17:30:00')
+		</if>
+		where b.warehousing_date != '' and b.factory_id=#{factory_id} group by b.order_id) tmp on tmp.order_id=fo.order_id
+		where fo.factory_id=#{factory_id}
+		<if test="order_no !=null and order_no !=''">
+			and o.order_no like concat(#{order_no},'%')
+		</if>
+		group by fo.order_id
+		) record  
+		left join 
+		(
+		select k.key_name,sum(p1.plan_qty) total_plan_qty,p1.order_id
+		from BMS_PLAN_PRODUCTION_PLAN p1
+		left join BMS_BASE_KEY k on p1.plan_code_value=k.value AND key_code = 'PLAN_CODE'
+		where  p1.factory_id=#{factory_id}
+		<if test="start_date !=null and start_date !=''">
+			and p1.plan_date >=#{start_date}
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and p1.plan_date &lt;=#{end_date}
+		</if>
+		group by p1.order_id,k.key_name
+		) p on p.key_name=record.key_name and p.order_id=record.order_id
+		left join BMS_BASE_KEY k on record.key_name=k.key_name
+		WHERE (p.total_plan_qty>0 OR record.real_qty >0)
+		<if test="workshop !=null and workshop !=''">
+			and record.key_name like concat(#{workshop},'%')
+		</if>		
+		order by record.order_id,cast(k.value as signed)
+	</select>
+	
 </mapper>

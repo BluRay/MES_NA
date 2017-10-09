@@ -82,7 +82,7 @@ function ajaxQuery(){
 		            {"title":"Year","class":"center","data":"product_year","defaultContent": ""},
 		            {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
 		            {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
-		            {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
+		            {"title":"Plant","class":"center","data": "plant","defaultContent": ""},
 		            {"title":"Status","class":"center","data":"status","render":function(data,type,row){
 		            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
 		            },

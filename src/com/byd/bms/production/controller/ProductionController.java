@@ -55,14 +55,36 @@ public class ProductionController extends BaseController {
 	protected IOrderService orderService;
 	/****************************  xiongjianwu ***************************/
 	/**
-	 * 生产模块首页
+	 * 车间工序页面
 	 * @return
 	 */
-	@RequestMapping("/index")
-	public ModelAndView index(){
-		mv.setViewName("production/productionIndex");
+	@RequestMapping("/executionindex")
+	public ModelAndView executionindex(){
+		mv.getModelMap().addAttribute("workshop", request.getParameter("workshop"));
+		mv.setViewName("production/executionIndex");
 		return mv;
 	}
+
+	/**
+	 * 获取线别工序列表
+	 * @return
+	 */
+	@RequestMapping("/getLineProcessList")
+	@ResponseBody
+	public ModelMap getLineProcessList(){
+		model=new ModelMap();
+		String conditions=request.getParameter("conditions");
+		JSONObject jo = JSONObject.fromObject(conditions);
+		Map<String, Object> conditionMap = new HashMap<String, Object>();	
+		for (Iterator it = jo.keys(); it.hasNext();) {
+			String key = (String) it.next();
+			conditionMap.put(key, jo.get(key));
+		}
+		model.put("dataList", productionService.getLineProcessList(conditionMap));
+		
+		return model;
+	}
+
 	/**
 	 * VIN导入
 	 * @return
@@ -115,7 +137,6 @@ public class ProductionController extends BaseController {
 		 * 读取输入流中的excel文件，并且将数据封装到ExcelModel对象中
 		 */
 		InputStream is = new FileInputStream(tempfile);
-
 		ExcelTool excelTool = new ExcelTool();
 		excelTool.readExcel(is, excelModel);
 
@@ -157,6 +178,160 @@ public class ProductionController extends BaseController {
 		}
 		return mv.getModelMap();
 	}
+	/**
+	 * 生产扫描页面
+	 * @return
+	 */
+	@RequestMapping("/execution")
+	public ModelAndView execution(){
+		mv.setViewName("production/productionExecution");
+		return mv;
+	}
+
+	/**
+	 * 查询监控工序下拉列表
+	 * @return
+	 */
+	@RequestMapping("/getStationMonitorSelect")
+	@ResponseBody
+	public ModelMap getStationMonitorSelect(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", request.getParameter("factory"));
+		condMap.put("workshop", request.getParameter("workshop"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("order_type", request.getParameter("order_type"));
+		model=new ModelMap();
+		model.put("data", productionService.getStationMonitorSelect(condMap));
+		return model;
+	}
+	
+	/**
+	 * 车辆扫描后获取车辆信息（订单、车间、线别、当前工序、状态、颜色、订单配置信息）
+	 * @return
+	 */
+	@RequestMapping("/getBusInfo")
+	@ResponseBody
+	public ModelMap getBusInfo(){
+		model=new ModelMap();
+		//封装查询条件
+		String bus_number=request.getParameter("bus_number");
+
+		//查询车辆基本信息
+		Map<String,Object> businfo=new HashMap<String,Object>();
+		businfo=productionService.getBusInfo(bus_number);
+		if(businfo==null){
+			model.put("businfo", null);
+			model.put("nextStation", null);
+		}else{
+			Map<String,Object> condMap=new HashMap<String,Object>();
+			condMap.put("factory_name", businfo.get("factory"));
+			condMap.put("order_type", businfo.get("order_type"));
+			condMap.put("station_name", businfo.get("station_name"));
+			Map<String,Object> nextStation=productionService.getNextStation(condMap);
+			model.put("businfo", businfo);
+			model.put("nextStation", nextStation);
+		}
+		
+		return model;
+	}
+	
+	/**
+	 * 根据车号、工厂、车间、工序、订单、车型、配置查询关键零部件列表
+	 * @return
+	 */
+	@RequestMapping("/getKeyParts")
+	@ResponseBody
+	public ModelMap getKeyParts(){	
+		model=new ModelMap();
+		int factory_id=Integer.parseInt(request.getParameter("factory_id"));
+		String workshop=(String)  request.getParameter("workshop");
+		String station_name=(String)  request.getParameter("station_name");
+		String bus_number=request.getParameter("bus_number");
+		String project_id=request.getParameter("project_id");
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory_id", factory_id);
+		condMap.put("workshop", workshop);
+		condMap.put("station_name", station_name);
+		condMap.put("bus_number", bus_number);
+		condMap.put("project_id", project_id);
+		model.put("partsList", productionService.getKeyParts(condMap));
+					
+		return model;	
+	}
+	
+	/**
+	 * 车辆扫描，判断该工序是否有扫描记录，未扫描判断上一个计划节点是否有扫描记录，无则提示先扫描上一个计划节点
+	 * 保存扫描信息、关键零部件信息、更新bus表对应车辆的latest_process_id
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/enterExecution")
+	@ResponseBody
+	public ModelMap enterExecution(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		/**
+		 * 封装service 参数
+		 */
+		int factory_id=Integer.parseInt(request.getParameter("factory_id"));
+		String factory_name=request.getParameter("factory_name");
+		String workshop_name=request.getParameter("workshop_name");
+		int station_id=Integer.parseInt(request.getParameter("station_id"));
+		String station_name=request.getParameter("station_name");
+		String line_name=request.getParameter("line_name");
+		String plan_node_name=request.getParameter("plan_node_name");
+		String field_name=request.getParameter("field_name");
+		String bus_number=request.getParameter("bus_number");
+		String parts_list_str=request.getParameter("parts_list");
+		String order_type=request.getParameter("order_type");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		String project_id=request.getParameter("project_id");
+		String rework=request.getParameter("rework");
+		String on_offline=request.getParameter("on_offline");
+		
+		condMap.put("factory_id", factory_id);
+		condMap.put("factory_name", factory_name);
+		condMap.put("workshop_name", workshop_name);
+		condMap.put("station_id", station_id);
+		condMap.put("station_name", station_name);
+		condMap.put("line_name", line_name);
+		condMap.put("plan_node_name", plan_node_name);
+		condMap.put("bus_number", bus_number);
+		condMap.put("field_name", field_name.equals("")?"":(field_name));
+		condMap.put("order_type", order_type);
+		condMap.put("project_id", project_id);
+		condMap.put("editor_id", userid);
+		condMap.put("edit_date", curTime);
+		condMap.put("rework", rework);
+		condMap.put("on_offline", on_offline);
+		
+		/**
+		 * 关键零部件列表
+		 */
+		List<Map<String,Object>> parts_list=new ArrayList<Map<String,Object>>();
+		if(parts_list_str.contains("{")){
+			JSONArray jsa=JSONArray.fromObject(parts_list_str);
+			parts_list=JSONArray.toList(jsa, Map.class);
+		}	
+		for(Map m:parts_list){
+			m.put("production_plant_id", factory_id);
+			m.put("bus_number", bus_number);
+			m.put("station_name", station_name);
+			m.put("editor_id", userid);
+			m.put("edit_date", curTime);
+		}
+		
+		try{
+			model.addAllAttributes(productionService.scan(condMap,parts_list));
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}
+
+		return model;
+	}
+		
 	@RequestMapping("/saveVinInfo")
 	@ResponseBody
 	public ModelMap saveVinInfo(){
@@ -188,5 +363,60 @@ public class ProductionController extends BaseController {
 		}
 		
 		return mv.getModelMap();
+	}
+	@RequestMapping("/printBusNumber")
+	public ModelAndView printBusNumber(){
+		mv.setViewName("production/printBusNumber");
+		return mv;
+	}
+	@RequestMapping("/showBusNumberList")
+	@ResponseBody
+	public ModelMap showBusNumberList(){
+		model=new ModelMap();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw")!=null ? request.getParameter("draw") : "1"); 
+		int start=Integer.parseInt(request.getParameter("start")!=null ? request.getParameter("start") : "0");
+		int length=Integer.parseInt(request.getParameter("length")!=null ? request.getParameter("length") : "-1");
+		String plant=request.getParameter("plant");
+		String project_no=request.getParameter("project_no");
+		String bus_number=request.getParameter("bus_number");
+		String print_flag=request.getParameter("print_flag");
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("plant", plant);
+		condMap.put("project_no", project_no);
+		condMap.put("bus_number", bus_number);
+		condMap.put("print_flag", print_flag);
+		Map<String,Object> result=productionService.getBusNumberList(condMap);
+		model.addAllAttributes(result);
+		return model;
+	}
+	
+	@RequestMapping("/afterVinPrint")
+	@ResponseBody
+	public ModelMap afterVinPrint(){
+		model=new ModelMap();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<String> vinList= new ArrayList<String>();
+		String conditions=request.getParameter("conditions");
+		vinList=Arrays.asList(conditions.split(","));
+		Map<String, Object> conditionMap = new HashMap<String, Object>();
+		conditionMap.put("vinList", vinList);
+		conditionMap.put("printer", userid);
+		conditionMap.put("printDate", curTime);
+		int i=productionService.updateVinPrint(conditionMap);
+		if(i>0){
+			result.put("success", true);
+			result.put("message", "打印成功");
+		}else{
+			result.put("success", false);
+			result.put("message", "打印失败");
+		}
+		model.addAllAttributes(result);
+		return model;
 	}
 }

@@ -214,5 +214,21 @@ public class PlanController extends BaseController{
 		model = mv.getModelMap();
 		return model;
 	}
+	
+	@RequestMapping("/showPlanSearch")
+	@ResponseBody
+	public ModelMap showPlanSearch(){
+		Map<String,Object> conditionMap=new HashMap<String,Object>();
+		conditionMap.put("factory_id", request.getParameter("factory_id"));
+		conditionMap.put("order_no", request.getParameter("order_no"));
+		String workshop = "";
+		if (!request.getParameter("workshop").equals("全部")) workshop = request.getParameter("workshop");
+		if(workshop.equals("成品库")) workshop="入库";
+		conditionMap.put("workshop", workshop);
+		conditionMap.put("start_date", request.getParameter("start_date"));
+		conditionMap.put("end_date", request.getParameter("end_date"));
+		
+		return model;
+	}
 
 }

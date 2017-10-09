@@ -55,9 +55,9 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">首页</a></li>
-						<li><a href="executionindex">车间工序</a></li>
-						<li><a href="#">车辆扫描</a></li>
+							href="/BMS/index">Index</a></li>
+						<li><a href="executionindex">Production execution</a></li>
+						<li><a href="#">Scan</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -77,44 +77,33 @@
 							<div>
 								<!-- 内容主体 -->
 								<form id="form" class="well form-search">
-									<label><b>车号：</b></label> <input type="text"
-										class="input-medium" style="height: 30px;"
-										placeholder="请扫描/输入车号..." id="vinText"> <input
-										type="text" style="display: none" class="input-medium"
-										style="height: 30px;" placeholder="请扫描/输入车号..." id="vinText2">
+									<label><b>Bus No.:</b></label> 
+									<input type="text" class="input-medium" style="height: 30px;" id="vinText"> 
+									<input type="text" style="display: none" class="input-medium" style="height: 30px;"  id="vinText2">
 									<select name="exec_type" id="exec_type" class="input-small" >
-										<option value="正常">正常</option>
-										<!-- <option value="返修">返修</option>
-										<option value="技改">技改</option> -->
-									</select> 
-									<select name="exec_onoff" id="exec_onoff" class="input-small" style="display:none">
-										<option value="上线">上线</option>
-										<option value="下线">下线</option>
-									</select> <input type="button" class="btn btn-sm btn-primary"
-										disabled="disabled" id="btnSubmit" value="确定"></input> <input
-										type="button" class="btn btn-sm" id="reset" value="清空"></input>
-									<input type="hidden" id='currentNode' name='currentNode'
-										value='485'></input>
+										<option value="0">normal</option>
+										<option value="1">rework</option>										
+									</select>
+									<select  id="on_offline" class="input-small" >
+										<option value="online">online</option>
+										<option value="offline">offline</option>										
+									</select>  
+									<input type="button" class="btn btn-sm btn-primary" disabled="disabled" id="btnSubmit" value="Confirm"></input>
+									<input type="button" class="btn btn-sm" id="reset" value="Clear"></input>
+									<input type="hidden" id='currentNode' name='currentNode' value='485'></input>
 									<!-- 修改为对应的NodeID -->
 									<input type="hidden" id='line' name='currentLine'
-										value='涂装工厂I线'></input> <span class="help-inline" id="vinHint">请输入车号后回车</span>
-									<!-- 	<label><b>关键零部件：</b></label><input type="text" placeholder="请扫描关键零部件" style="padding-top:5px;" /> -->
-
+										value=''></input> <span class="help-inline" id="vinHint"></span>
+									
 									<div class="help-inline" id="carInfo" style="display: inline-block;">
-										<span class="label label-info" rel="tooltip" title="VIN"
-											id="infoVIN"></span> <span class="label label-info"
-											rel="tooltip" title="订单" id="infoOrder"></span> <span
-											class="label label-info" rel="tooltip" title="当前车间"
-											id="infoWorkShop"></span> <span class="label label-info"
-											rel="tooltip" title="当前线别" id="infoLine"></span> <span
-											class="label label-info" rel="tooltip" title="当前工位"
-											id="infoProcess"></span> <span class="label label-info"
-											rel="tooltip" title="配置" id="infoConf"></span> <span
-											class="label label-info" rel="tooltip" title="状态"
-											id="infoStatus"></span> <span class="label label-info"
-											rel="tooltip" title="颜色" id="infoColor"></span> <span
-											class="label label-info" rel="tooltip" title="座位数"
-											id="infoSeats"></span>
+										<span class="label label-info" rel="tooltip" title="VIN" id="infoVIN"></span> 
+										<span class="label label-info" rel="tooltip" title="Project" id="infoOrder"></span> 
+										<span class="label label-info" rel="tooltip" title="Workshop" id="infoWorkShop"></span> 
+										<span class="label label-info" rel="tooltip" title="Line" id="infoLine"></span> 
+										<span class="label label-info" rel="tooltip" title="Current Station" id="infoStation"></span> 
+										<span class="label label-info" rel="tooltip" title="Status" id="infoStatus"></span> 
+										<span class="label label-info" rel="tooltip" title="Color" id="infoColor"></span> 
+										<span class="label label-info" rel="tooltip" title="Seats" id="infoSeats"></span>
 									</div>
 								</form>
 							</div>
@@ -126,11 +115,8 @@
 							<!-- end 提示信息 -->
 
 							<h5 class="row header smaller lighter blue"
-								style="padding-left: 12px; margin-top: 10px; margin-bottom: 0px; border-bottom: none">节点信息：</h5>
+								style="padding-left: 12px; margin-top: 10px; margin-bottom: 0px; border-bottom: none">Process Info:</h5>
 							<div class="widget-box" style="opacity: 1;">
-								<!-- <div class="widget-header" >
-							<h6 class="widget-title">节点信息：</h6>
-				</div>  -->
 								<div class="widget-body">
 									<div class="widget-main" style="padding: 6px;">
 										<div style="height: 70px" class="accordion-inner"
@@ -138,12 +124,11 @@
 											<table id="TodayWaxPlanTable" style="width: 700px"
 												class="table-condensed">
 												<tr>
-													<td align="left">&nbsp;生产工厂</td>
-													<td align="left">&nbsp;生产车间</td>
-													<td align="left">&nbsp;生产线别</td>
-													<td align="left">&nbsp;监控点</td>
-													<td align="left">&nbsp;监控名</td>
-													<td align="left">&nbsp;操作员</td>
+													<td align="left">&nbsp;Plant</td>
+													<td align="left">&nbsp;Workshop</td>
+													<td align="left">&nbsp;Line</td>
+													<td align="left">&nbsp;Station</td>
+													<td align="left">&nbsp;Operator</td>
 												</tr>
 												<tr>
 													<td><select disabled="disabled" name="exec_factory"
@@ -155,12 +140,9 @@
 													<td><select name="exec_line" id="exec_line"
 														class="input-small">
 													</select></td>
-													<td><select name="exec_process" id="exec_process"
-														class="input-small">
-													</select></td>
-													<td><input type="text" disabled="disabled"
-														style="height: 30px;" name="exec_processname"
-														id="exec_processname" class="input-medium"></td>
+													<td><select name="exec_process" id="exec_station"
+														class="input-large">
+													</select></td>													
 													<td><select name="exec_user" id="exec_user"
 														class="input-small">
 															<option value="<%=session.getAttribute("user_id")%>"><%=session.getAttribute("display_name")%></option>
@@ -173,25 +155,25 @@
 								</div>
 							</div>
 
-							<div class="col-xs-8">
+							<div class="col-xs-10">
 								<h5 class="row header smaller lighter blue"
-									style="padding-left: 0px; margin-top: 10px; margin-bottom: 0px; border-bottom: none">关键零部件：</h5>
+									style="padding-left: 0px; margin-top: 10px; margin-bottom: 0px; border-bottom: none">Key Parts:</h5>
 							</div>
-							<div class="col-xs-4">
+							<!-- <div class="col-xs-4">
 								<h5 class="row header smaller lighter blue"
 									style="padding-left: 0px; margin-top: 10px; margin-bottom: 0px; border-bottom: none">配置信息：</h5>
-							</div>
+							</div> -->
 
-							<div class="col-xs-8">
+							<div class="col-xs-10">
 								<table id="partsListTable" style="width: 1500px; margin-left: -12px;" class="table  table-bordered">
 									<thead>
 										<tr>
-											<td align="left" width="10%">物料编码</td>
-											<td align="left" width="15%">零部件编号</td>
-											<td align="left" width="20%">零部件名称</td>
-											<td align="left" width="15%">材料/规格</td>
-											<td align="left" width="25%">供应商</td>
-											<td align="left" width="15%">批次</td>
+											<td align="left" width="10%">SAP No</td>
+											<td align="left" width="15%">Part No</td>
+											<td align="left" width="20%">Part Name</td>
+											<!-- <td align="left" width="15%">材料/规格</td> -->
+											<td align="left" width="20%">Vendor</td>
+											<td align="left" width="25%">Batch/serial number</td>
 										</tr>
 									</thead>
 									<tbody>
@@ -200,7 +182,7 @@
 								</table>
 							</div>
 
-							<div class="col-xs-4">
+					<!-- 		<div class="col-xs-4">
 								<table id="configListTable" style="max-width: 110%; width: 107%; margin-left: -12px;" class="table  table-bordered">
 									<thead>
 										<tr>
@@ -213,7 +195,7 @@
 									</tbody>
 								</table>
 							</div>
-
+ -->
 						</div>
 					</div>
 				</div>				

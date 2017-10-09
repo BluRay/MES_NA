@@ -102,18 +102,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;table-layout:fixed;width:1200px" >
 						    <thead>
 						       <tr>
-						          <th>Item</th>
-						          <th>SAP</th>
-						          <th>BYD P/N</th>
-						          <th>Part Name</th>
-						          <th>Material Specification</th>
-						          <th>Unit</th>
-						          <th>Quantity</th>
-						          <th>English Description</th>
-						          <th>Vendor</th>
-						          <th>Station Code</th>
-						          <th>Note</th>
-						          <th>Message</th>
+						          <th align="center">Item</th>
+						          <th align="center">SAP</th>
+						          <th align="center">BYD P/N</th>
+						          <th align="center">Part Name</th>
+						          <th align="center">Material Specification</th>
+						          <th align="center">Unit</th>
+						          <th align="center">Quantity</th>
+						          <th align="center">English Description</th>
+						          <th align="center">Vendor</th>
+						          <th align="center">Station Code</th>
+						          <th align="center">Note</th>
+						          <th align="center">Message</th>
 						       </tr>
 						    </thead>
 						</table>

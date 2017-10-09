@@ -22,7 +22,7 @@
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
 						<li><a href="#">Plan</a></li>
-						<li class="active">Import plan</li>
+						<li class="active">Import Plan</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->

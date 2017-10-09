@@ -8,6 +8,28 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 public interface IProductionService {
-	public Map<String, Object> getVinList(Map<String, Object> conditionMap);
+	/*****************************xiong jianwu start  *****************************/
+	public List getLineProcessList(Map<String,Object> condMap);
+	
+	List<Map<String,Object>> getStationMonitorSelect(Map<String, Object> condMap);
+	
+	List<Map<String,Object>>  getKeyParts(Map<String, Object> condMap);
+	
+	public Map<String, Object> getBusInfo(String bus_number);
+	
+	@Transactional
+	public Map<String, Object> scan(Map<String,Object> condMap,List partsList);
+	
+	public Map<String,Object> getNextStation(Map<String,Object> condMap);
+	
+	/*****************************xiong jianwu end  *****************************/
+	/*****************************tang jin start  *****************************/
+    public Map<String, Object> getVinList(Map<String, Object> conditionMap);
+	
 	public int batchUpdateVin(List<Map<String,Object>> list);
+
+	public Map<String, Object> getBusNumberList(Map<String, Object> conditionMap);
+	/** 打印后更新车号表打印次数，打印人，打印时间，打印状态*/
+	public int updateVinPrint(Map<String,Object> conditionMap);
+	/*****************************tang jin end  *****************************/
 }

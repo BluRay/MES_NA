@@ -321,4 +321,9 @@ public class PlanServiceImpl implements IPlanService {
 		return 0;
 	}
 	
+	@Override
+	public List<Map<String, String>> getPlanSerach(Map<String, Object> queryMap) {
+		return planDao.getPlanSerach(queryMap);
+	}
+	
 }
