@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<html lang="zh-CN">
+<html lang="en">
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
@@ -57,38 +57,34 @@
 					<div class="tabbable">
 						<ul class="nav nav-tabs" id="myTab">
 							<li id="div1" class="active">
-								<a data-toggle="tab" href="#home">计划达成数据</a>
+								<a data-toggle="tab" href="#home">Production Report</a>
 							</li>
 							<li id="div2">
-								<a data-toggle="tab" href="#messages">计划达成明细</a>
+								<a data-toggle="tab" href="#messages">Production Report Detail</a>
 							</li>
 						</ul>
 
 						<div class="tab-content" id="tab-content">
 							<div id="home" class="tab-pane fade in active">
-								<p style="font-weight:bold">车间计划达成：</p>
+								<p style="font-weight:bold">WorkShop Production Data：</p>
 								<table id="tablePlan_total" style="table-layout:fixed;font-size:12px;text-align:center" class="table table-bordered table-striped">
 									<thead>
 								         <tr id='0'>
-								        	<th style="text-align:center;">生产车间</th>
-								            <th style="text-align:center;">自制件下线</th>
-								            <th style="text-align:center;">部件下线</th>
-								            <th style="text-align:center;">焊装上线</th>
-								            <th style="text-align:center;">焊装下线</th>
-								            <th style="text-align:center;">涂装上线</th>
-								            <th style="text-align:center;">涂装下线</th>
-								            <th style="text-align:center;">底盘上线</th>
-								            <th style="text-align:center;">底盘下线</th>
-								            <th style="text-align:center;">总装上线</th>
-								            <th style="text-align:center;">总装下线</th>
-								            <th style="text-align:center;">入库</th>
+								        	<th style="text-align:center;">WorkShop</th>
+								            <th style="text-align:center;">WeldingOnline</th>
+								            <th style="text-align:center;">WeldingOffline</th>
+								            <th style="text-align:center;">PaintingOnline</th>
+								            <th style="text-align:center;">PaintingOffline</th>
+								            <th style="text-align:center;">ChassisOnline</th>
+								            <th style="text-align:center;">ChassisOffline</th>
+								            <th style="text-align:center;">AssemblyOnline</th>
+								            <th style="text-align:center;">AssemblyOffline</th>
+								            <th style="text-align:center;">Warehousing</th>
 								        </tr>
 								    </thead>
 									<tbody>
 										<tr id="tr_plan">
-											<td>计划数量</td>
-											<td></td>
-											<td></td>
+											<td>Plan Number</td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -100,9 +96,7 @@
 											<td></td>
 										</tr>
 										<tr id="tr_realDone">
-											<td>实际完成量</td>
-											<td></td>
-											<td></td>
+											<td>Real Finish</td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -114,9 +108,7 @@
 											<td></td>
 										</tr>
 										<tr id="tr_doneRate">
-											<td>实际达成率</td>
-											<td></td>
-											<td></td>
+											<td>Finish Rate</td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -128,9 +120,7 @@
 											<td></td>
 										</tr>
 										<tr id="tr_undone">
-											<td>欠产数量</td>
-											<td></td>
-											<td></td>
+											<td>Undone Number</td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -144,16 +134,16 @@
 									</tbody>
 								</table>
 								
-								<p style="font-weight:bold">订单计划达成：</p>
+								<p style="font-weight:bold">Project Production Data：</p>
 								<table id="tablePlan" style="table-layout:fixed;font-size:12px" class="table table-bordered table-striped">
 									<thead>
 								         <tr id='0'>
-								         	<th style="text-align:center;width:250px">生产订单</th>
-								        	<th style="text-align:center;">生产车间</th>
-								            <th style="text-align:center;">计划数量</th>
-								            <th style="text-align:center;">实际完成量</th>
-								            <th style="text-align:center;">实际达成率</th>
-								            <th style="text-align:center;">累计完成量</th>
+								         	<th style="text-align:center;width:250px">Project</th>
+								        	<th style="text-align:center;">Workshop</th>
+								            <th style="text-align:center;">Plan Number</th>
+								            <th style="text-align:center;">Real Finish</th>
+								            <th style="text-align:center;">Finish Rate</th>
+								            <th style="text-align:center;">Total Finish</th>
 								        </tr>
 								    </thead>
 								<tbody>
@@ -165,8 +155,8 @@
 								<table id="tablePlanDetail" style="font-size:12px;overflow:auto"  class="table table-striped table-bordered table-hover">
 									<thead>
 								         <tr id='0'>
-								         	<th style="width:80px;text-align:center;">订单</th>
-								        	<th style="width:105px;text-align:center;">车间</th>
+								         	<th style="width:80px;text-align:center;">Project</th>
+								        	<th style="width:105px;text-align:center;">WorkShop</th>
 								            <th id="D1" style="text-align:center; width:55px;"> </th>
 								            <th id="D2" style="text-align:center; width:55px;"> </th>
 								            <th id="D3" style="text-align:center; width:55px;"> </th>
@@ -198,9 +188,9 @@
 								            <th id="D29" style="text-align:center; width:55px;"> </th>
 								            <th id="D30" style="text-align:center; width:55px;"> </th>
 								            <th id="D31" style="text-align:center; width:55px;"> </th>
-								            <th id="Total" style="width:65px;text-align:center;">合计</th>
-								            <th id="TotalMonth" style="width:70px;text-align:center;padding-left:1px;padding-right:0px">本月合计</th>
-								            <th id="TotalOrder" style="width:70px;text-align:center;padding-left:1px;padding-right:0px">订单合计</th>
+								            <th id="Total" style="width:65px;text-align:center;">SUM</th>
+								            <th id="TotalMonth" style="width:70px;text-align:center;padding-left:1px;padding-right:0px">Total</th>
+								            <th id="TotalOrder" style="width:70px;text-align:center;padding-left:1px;padding-right:0px">ProjectTotal</th>
 								        </tr>
 								    </thead>
 								<tbody>

@@ -22,4 +22,5 @@ public interface IPlanService {
 	public int reVisionPlan(String factory_id,String factory_name, String order_no, String revision_str, String plan_month,String userId);
 	
 	public List<Map<String, String>> getPlanSerach(Map<String, Object> queryMap);
+	public Map<String, Object> showPlanSearchDetail(Map<String, Object> queryMap);
 }

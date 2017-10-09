@@ -35,5 +35,10 @@ public interface IPlanDao {
 	public int insertOperateChangeLog(BmsBaseOperateChangeLog changLog);
 	
 	public List<Map<String,String>> getPlanSerach(Map<String,Object> queryMap);
+	public List<Map<String,String>> getPlanOrderList(Map<String,Object> queryMap);
+	public List<Map<String,String>> getPlanSearchPlanQty(Map<String,Object> queryMap);
+	public int getPlanSearchRealQty(Map<String,Object> queryMap);
+	public int getPlanSearchTotalMonthPlanQty(Map<String,Object> queryMap);
+	public int getPlanSearchTotalRealQty(Map<String,Object> queryMap);
 	
 }

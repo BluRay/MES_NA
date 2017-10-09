@@ -232,7 +232,7 @@
 	</select>
 	<select id="queryBomHeader" parameterType="Map" resultType="Map">
 		select * from BMS_NA_PROJECT_BOM_HEAD where project_id=#{projectId}
-		 and version=#{version} and document_no=#{documentNo} and dcn=#{dcn}
+		 and version=#{version} <!-- and document_no=#{documentNo} and dcn=#{dcn}  -->
 	</select>
 	
 	<insert id="saveBomHeader" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >

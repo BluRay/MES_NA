@@ -227,7 +227,26 @@ public class PlanController extends BaseController{
 		conditionMap.put("workshop", workshop);
 		conditionMap.put("start_date", request.getParameter("start_date"));
 		conditionMap.put("end_date", request.getParameter("end_date"));
+		List<Map<String, String>> datalist=new ArrayList<Map<String,String>>();
+		datalist = planService.getPlanSerach(conditionMap);
+		initModel(true,null,datalist);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/showPlanSearchDetail")
+	@ResponseBody
+	public ModelMap showPlanSearchDetail(){
+		Map<String,Object> conditionMap=new HashMap<String,Object>();
+		conditionMap.put("date_array", request.getParameter("date_array"));
+		conditionMap.put("order_no", request.getParameter("order_no"));
+		conditionMap.put("factory_id", request.getParameter("factory_id"));
+		conditionMap.put("workshop", request.getParameter("workshop"));
+		conditionMap.put("workshop", request.getParameter("workshop"));
 		
+		Map<String, Object> datalist  = planService.showPlanSearchDetail(conditionMap);
+		initModel(true,null,datalist);
+		model = mv.getModelMap();
 		return model;
 	}
 
