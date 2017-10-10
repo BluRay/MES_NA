@@ -193,7 +193,7 @@
 	
 	<!-- 海外 MES系统 start -->
 	<select id="getProjectBomList" parameterType="Map" resultType="Map">
-		SELECT p.*,f.factory_name plant,h.DCN,h.version,u.username,h.edit_date FROM BMS_NA_PROJECT p			
+		SELECT p.*,f.factory_name plant,h.DCN,h.version,u.username,h.edit_date bom_edit_date FROM BMS_NA_PROJECT p			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
 		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
 		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
@@ -206,9 +206,9 @@
 			and p.project_status = #{status} 
 		</if>
 		<if test="plant !=null and plant !=''">
-			and find_in_set(p.production_plant ,#{plant} )
+			and find_in_set(p.production_plant_id ,#{plant} )
 		</if>
-			ORDER BY p.id DESC
+			ORDER BY p.id,h.version DESC
 		<if test="start !=null and length !='-1' ">
 			LIMIT #{start} ,#{length} 
 		</if>			
@@ -227,7 +227,7 @@
 			and p.project_status = #{status} 
 		</if>
 		<if test="plant !=null and plant !=''">
-			and find_in_set(p.production_plant ,#{plant} )
+			and find_in_set(p.production_plant_id ,#{plant} )
 		</if>
 	</select>
 	<select id="queryBomHeader" parameterType="Map" resultType="Map">
@@ -370,7 +370,7 @@
 			and find_in_set(f.id,#{plant})
 		</if>
 		<if test="status !=null and status !=''">
-			and o.status=#{status}
+			and o.project_status=#{status}
 		</if>
 		 order by o.id desc
 		<if test="start !=null and length !='-1'">
@@ -388,7 +388,7 @@
 			and find_in_set(f.id,#{plant})
 		</if>
 		<if test="status !=null and status !=''">
-			and o.status=#{status}
+			and o.project_status=#{status}
 		</if>
 	</select>
 	<select id="queryBusNumberByProject" parameterType="Map" resultType="Map">

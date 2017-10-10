@@ -4,7 +4,19 @@ var dt;
 
 $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
-	
+	$('#file').ace_file_input({
+		no_file:'...',
+		btn_choose:'Browse',
+		btn_change:'Browse',
+		width:"150px",
+		droppable:false,
+		onchange:null,
+		thumbnail:false, //| true | large
+		//allowExt: ['pdf','PDF'],
+	}).on('file.error.ace', function(event, info) {
+		//alert("请上传正确的文件!");
+		return false;
+    });
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 

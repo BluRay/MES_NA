@@ -79,13 +79,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							    <form id="uploadForm" action="#" enctype="multipart/form-data" method="post">
 									<table>
 										<tr>
-											<td><input id="file" type="file" name="file" accept="*.xlsx"/></td>
-											<td><input id="btn_upload" style="margin-right: 5px;" type="button" class="btn btn-sm btn-primary" value="Import"/></td>
+											<td width="150px"><input id="file" type="file" name="file" accept="*.xlsx"/></td>
+											<td><input id="btn_upload" style="margin-left:5px;" type="button" class="btn btn-sm btn-primary" value="Import"/></td>
 										</tr>
 									</table>
 						        </form>
 							</td>
-							<td><a href="../docs/bom.xls">Download the pilot template</a></td>
+							<td><a href="../docs/bom.xlsx">Download the pilot template</a></td>
 							<td></td>
 							<td><input type="button"
 								class="btn btn-sm btn-primary btnSave" id="btnSave" value="Save"
@@ -137,6 +137,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/tableExport.js"></script>
 	<script src="<%=basePath%>/js/jquery.form.js"></script>
+	<script src="<%=basePath%>/assets/js/ace/elements.fileinput.js"></script>
     <script src="<%=basePath%>/js/order/importBomInfo.js"></script>
 </body>
 

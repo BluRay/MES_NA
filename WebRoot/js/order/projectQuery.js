@@ -24,8 +24,8 @@ function initPage(){
 	var cur_year = new Date().getFullYear();
 	var factory_default=getQueryString("factory_id");
 	$("#search_productive_year").val(cur_year);
-	//getOrderNoSelect("#search_order_no","#orderId");
-	//getFactorySelect("",factory_default,"#search_factory","全部","id")
+	getOrderNoSelect("#search_project_no","#orderId");
+	getFactorySelect("project/projectQuery",factory_default,"#search_plant","All","id")
 	ajaxQuery();
 	
 }
@@ -124,10 +124,10 @@ function ajaxQuery(){
 		            {"title":"Outgoing","class":"center","data": "outgoing_count","defaultContent": ""},
 		            {"title":"Delivered","class":"center","data":"delivery_count","defaultContent":""},
 		            {"title":"BOM","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
-		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(\""+ row.project_no+"\");' style='color:blue;cursor: pointer;'></i>";
+		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(\""+ row.project_no+"\");' style='color:blue;cursor: pointer;' title='Bom'></i>";
 		            }},
 		            {"title":"Details","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
-		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;'></i>";
+		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;' title='Details'></i>";
 		            }},
 		       ],
 	});

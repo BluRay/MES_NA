@@ -441,4 +441,58 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
+	/*****************Start Abnormity 生产异常反馈 AddBy:Yangke 171010************************************************************/
+	@RequestMapping("/abnormity")
+	public ModelAndView abnormity(){
+		mv.setViewName("production/abnormity");
+		return mv;
+	}
+	/**
+	 * 查询监控工序下拉列表
+	 * @return
+	 */
+	@RequestMapping("/getProcessMonitorSelect")
+	@ResponseBody
+	public ModelMap getProcessMonitorSelect(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", request.getParameter("factory"));
+		condMap.put("workshop", request.getParameter("workshop"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("order_type", request.getParameter("order_type"));
+		model=new ModelMap();
+		model.put("data", productionService.getProcessMonitorSelect(condMap));
+		return model;
+	}
+	
+	@RequestMapping("/enterException")
+	@ResponseBody
+	public ModelMap enterException(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		logger.info("---->enterException " + curTime + " " + userid);
+		
+		String bus_list = request.getParameter("bus_list");
+		bus_list.replaceAll(",+", ",");
+		String[] bus_number = bus_list.split(",");
+		for (int i = 0 ; i <bus_number.length ; i++ ) {
+			Map<String,Object> conditionMap=new HashMap<String,Object>();
+			if (request.getParameter("factory") != null) conditionMap.put("plant", request.getParameter("factory"));
+			if (request.getParameter("workshop") != null) conditionMap.put("workshop", request.getParameter("workshop"));
+			if (request.getParameter("line") != null) conditionMap.put("line", request.getParameter("line"));
+			if (request.getParameter("process") != null) conditionMap.put("abnormal_station_id", request.getParameter("process"));
+			if (request.getParameter("process_name") != null) conditionMap.put("abnormal_station", request.getParameter("process_name"));
+			conditionMap.put("bus_number", bus_number[i].trim());
+			if (request.getParameter("reason_type_id") != null) conditionMap.put("abnormal_cause_id", request.getParameter("reason_type_id"));
+			if (request.getParameter("reason_type") != null) conditionMap.put("abnormal_cause", request.getParameter("reason_type"));
+			if (request.getParameter("start_time") != null) conditionMap.put("open_date", request.getParameter("start_time"));
+			if (request.getParameter("detailed_reasons") != null) conditionMap.put("detailed_reason", request.getParameter("detailed_reasons"));
+			productionService.insertAbnormity(conditionMap);
+		}
+		return model;
+	}
+	
+	
+	/*****************End Abnormity 生产异常反馈************************************************************/
+	
 }

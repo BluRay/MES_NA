@@ -6,8 +6,8 @@ $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
 	cur_year = new Date().getFullYear();
 	$("#search_productive_year").val(cur_year)
-	//getFactorySelect("project/getProjectBomInfo",'',"#search_factory","全部",'id');
-	//getOrderNoSelect("#search_project_no","#orderId");
+	getFactorySelect("project/getProjectBomInfo",'',"#search_factory","All",'id');
+	getOrderNoSelect("#search_project_no","#orderId");
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 
@@ -30,7 +30,7 @@ function ajaxQuery(){
 //            leftColumns: 3,
 //            rightColumns:3
 //        },
-       // rowsGroup:[0,1,2,3,4,5],
+        rowsGroup:[0,1,2,3,4,5,6,7],
 		paiging:true,
 		ordering:false,
 		searching: false,
@@ -79,11 +79,11 @@ function ajaxQuery(){
 		columns: [
 		            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
 		            {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
-		            {"title":"Year","class":"center","data":"product_year","defaultContent": ""},
+		            //{"title":"Year","class":"center","data":"product_year","defaultContent": ""},
 		            {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
 		            {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
-		            {"title":"Plant","class":"center","data": "plant","defaultContent": ""},
-		            {"title":"Status","class":"center","data":"status","render":function(data,type,row){
+		            {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
+		            {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
 		            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
 		            },
 		            {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
@@ -91,10 +91,10 @@ function ajaxQuery(){
 		            {"title":"Version","class":"center","data": "version","defaultContent": ""},
 		            {"title":"DCN","class":"center","data": "DCN","defaultContent": ""},
 		            {"title":"Editor","class":"center","data": "username","defaultContent": ""},
-		            {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
+		            {"title":"Edit Date","class":"center","data": "bom_edit_date","defaultContent": ""},
 		            {"title":"","class":"center","data":null,"render":function(data,type,row){
-		                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"查看详情\" onclick=\"javascript:window.location = ('showBomInfo?version="+row['version']+"&projectNo="+row['project_no']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;"+
-		                  "&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"导入\" onclick=\"javascript:window.location = ('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"Display\" onclick=\"javascript:window.location = ('showBomInfo?version="+row['version']+"&projectNo="+row['project_no']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;"+
+		                  "&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" onclick=\"javascript:window.location = ('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
 		            	return str;
 		                },
 		            }

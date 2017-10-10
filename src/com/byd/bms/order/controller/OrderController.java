@@ -294,7 +294,7 @@ public class OrderController extends BaseController{
 	@ResponseBody
 	public ModelMap uploadBomInfo(@RequestParam(value="file",required=false) MultipartFile file){
 		logger.info("uploading.....");
-		String fileName="bom.xls";
+		String fileName=file.getOriginalFilename();
 		try{
 		ExcelModel excelModel = new ExcelModel();
 		excelModel.setReadSheets(1);

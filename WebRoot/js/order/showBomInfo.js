@@ -1,8 +1,11 @@
 var pageSize=1;
 var dt;
 $(document).ready(function(){
-	getBusNumberSelect('#nav-search-input');
-	getOrderNoSelect("#search_project_no","#orderId");
+	initPage();
+	function initPage(){
+		getBusNumberSelect('#nav-search-input');
+		getOrderNoSelect("#search_project_no","#orderId");
+	}
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 
@@ -24,6 +27,9 @@ $(document).ready(function(){
 			return false;
 		}
 	})
+	$('#btnBack').click(function(event) {
+		window.open("/MES_NA/project/getProjectBomInfo","_parent");
+	});
 });
 function ajaxQuery(){
 	if($.fn.dataTable.isDataTable("#tableResult")){

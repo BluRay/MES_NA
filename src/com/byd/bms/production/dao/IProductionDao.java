@@ -62,4 +62,6 @@ public interface IProductionDao {
 	
 	public int getProjectBusNumberCount(Map<String, Object> condMap);
 	/**************************** tang jin end*********************************/
+	
+	public int insertAbnormity(Map<String,Object> conditionMap);
 }

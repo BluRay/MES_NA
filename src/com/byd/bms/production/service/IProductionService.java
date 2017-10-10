@@ -34,4 +34,7 @@ public interface IProductionService {
 	
 	public Map<String, Object> getProjectBusNumberList(Map<String, Object> conditionMap);
 	/*****************************tang jin end  *****************************/
+	
+	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);
+	public int insertAbnormity(Map<String, Object> conditionMap);
 }

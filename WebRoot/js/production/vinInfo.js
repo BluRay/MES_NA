@@ -4,12 +4,24 @@ var dt;
 
 $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
-	//getFactorySelect("project/getProjectBomInfo",'',"#search_factory","全部",'id');
-	//getOrderNoSelect("#search_project_no","#orderId");
+	getFactorySelect("production/vinInfo",'',"#search_factory","全部",'id');
+	getOrderNoSelect("#search_project_no","#orderId");
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 
-	
+	$('#file').ace_file_input({
+		no_file:'...',
+		btn_choose:'Browse',
+		btn_change:'Browse',
+		width:"150px",
+		droppable:false,
+		onchange:null,
+		thumbnail:false, //| true | large
+		//allowExt: ['pdf','PDF'],
+	}).on('file.error.ace', function(event, info) {
+		//alert("请上传正确的文件!");
+		return false;
+    });
 	ajaxQuery();
 
 //	$('#nav-search-input').bind('keydown', function(event) {
@@ -163,10 +175,10 @@ function ajaxQuery(){
 function importVinInfo(row){
 	var project_id=row.id;
 	$("#project_no").text(row.project_no+" "+row.project_name+" "+row.quantity +" Bus");
-	if($.fn.dataTable.isDataTable("#tableVinImport")){
-		$('#tableVinImport').DataTable().destroy();
-		$('#tableVinImport').empty();
-	}
+//	if($.fn.dataTable.isDataTable("#tableVinImport")){
+//		$('#tableVinImport').DataTable().destroy();
+//		$('#tableVinImport').empty();
+//	}
 	$.ajax({
 		url: "getVinListByProject",
 		dataType: "json",
@@ -175,7 +187,14 @@ function importVinInfo(row){
 		error: function () {},
 		success: function (response) {
 			$("#project_id").val(project_id);
-			var data=response.data;
+			var datalist=response.data;
+			$.each(datalist,function(index,value){
+				var tr=$("<tr/>");
+				$("<td style='text-align:center;'/>").html(index).appendTo(tr);
+				$("<td style='text-align:center;'/>").html(value.bus_number).appendTo(tr);
+				$("<td style='text-align:center;'/>").html(value.VIN).appendTo(tr);
+				$("#tableVinImport tbody").append(tr);
+			});
 			var dialog = $("#dialog-import").removeClass('hide').dialog({
 				width:700,
 				height:580,
@@ -200,32 +219,7 @@ function importVinInfo(row){
 					},
 				]
 			});
-			var columns=[
-	     		{"title":"No.","class":"center","data":"","defaultContent": ""
-	     			,"render":function(data,type,row,meta){
-	     			return meta.row + meta.settings._iDisplayStart + 1; // 序号值
-	     		}},
-	     	    {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
-	     	    {"title":"VIN","class":"center","data":"VIN","defaultContent": ""},
-	     	];
-			$("#tableVinImport").DataTable({
-				paiging:false,
-				ordering:false,
-				processing:true,
-				searching: false,
-				autoWidth:false,
-				paginate:false,
-				sScrollY: $(window).height()-320,
-				scrollX: true,
-				scrollCollapse: true,
-				lengthChange:false,
-				orderMulti:false,
-				info:false,
-				language: {},
-				
-				data:data,
-				columns:columns
-			});
+
 		},
 		complete:function (response){
         	//$(".divLoading").hide();
@@ -233,7 +227,9 @@ function importVinInfo(row){
 	})
 }
 function downloadTemplate(){
-	$("#tableVinImport thead").children("tr").children("th:hidden").remove();
+	//$("#tableVinImport thead").children("tr").children("th").eq(0).html("No.").css("height","0px");
+	//$("#tableVinImport thead").children("tr").children("th").eq(1).html("Bus No.").css("height","0px");
+	//$("#tableVinImport thead").children("tr").children("th").eq(2).html("VIN").css("height","0px");
 	$("#tableVinImport").tableExport({
 		type:'xlsx',fileName:'vin',worksheetName:'vin',
 		//excelstyles:['border-bottom', 'border-top', 'border-left', 'border-right']

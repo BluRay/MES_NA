@@ -2,10 +2,10 @@ var dt="";
 $(document).ready(function () {	
 	initPage();
 	function initPage(){
-//		getBusNumberSelect('#search_bus_number');
+		getBusNumberSelect('#search_bus_number');
 //		getBusNumberSelect('#nav-search-input');
-//		getOrderNoSelect("#search_order_no","#orderId");
-//		getFactorySelect("production/printVin",'',"#search_factory","全部",'id');
+		getOrderNoSelect("#search_project_no","#orderId");
+		getFactorySelect("production/printBusNumber",'',"#search_plant","All",'id');
 //		getFactorySelect("production/printVin",'',"#vin_factory",null,'id');
 	};
 

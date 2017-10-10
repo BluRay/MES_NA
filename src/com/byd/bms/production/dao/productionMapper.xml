@@ -37,12 +37,11 @@
 	</select>
 	
 	<select id="queryBusInfo" parameterType="String" resultType="Map">
-		select b.*,f.factory_name,CONCAT(o.project_name,o.bus_type,' ',o.quantity,'台') AS order_desc,
-		f.factory_name factory,p.workshop,p.line,p.station_name,'Standard order' order_type,o.bus_type
+		select b.*,o.project_name AS order_desc,
+		o.production_plant factory,p.workshop,p.line,p.station_name,'Standard order' order_type,o.bus_type
 		from BMS_NA_PROJECT_BUS b
-		left join BMS_NA_BASE_FACTORY f on b.production_plant_id=f.id
 		left join BMS_NA_PROJECT o on b.project_id=o.id
-		left join BMS_NA_BASE_STATION p on p.id=b.latest_station_id
+		left join BMS_NA_BASE_STATION p on p.id=b.current_station
 		where b.bus_number=#{bus_number}
 	</select>
 	
@@ -277,4 +276,10 @@
 			and p.project_status=#{status}    
 		</if>
 	</select>
+	
+	<insert id="insertAbnormity" useGeneratedKeys="true" keyProperty="id" parameterType="Map">
+	INSERT INTO BMS_NA_PRODUCTION_ABNORMITY
+	(plant, workshop, line, abnormal_station_id, abnormal_station, bus_number, abnormal_cause_id, abnormal_cause, detailed_reason, open_date)
+	VALUES(#{plant},#{workshop},#{line},#{abnormal_station_id},#{abnormal_station},#{bus_number},#{abnormal_cause_id},#{abnormal_cause},#{detailed_reason},#{open_date})
+	</insert>
 </mapper>

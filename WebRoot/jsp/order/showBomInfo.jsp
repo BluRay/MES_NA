@@ -68,12 +68,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						    <td><input type="button"
 								class="btn btn-sm btn-primary btnQuery" id="btnQuery" value="Search"
 								style="margin-left: 2px;"></input>
+							    <input type="button"
+							    class="btn btn-sm btn-primary btnSave" id="btnBack" value="Back"
+							    style="margin-right: 2px;"></input>
 							</td>
 						</tr>
 						<tr>
 							<td colspan=6>
 								<label>
-									<input name="type" type="radio" value="0" />&nbsp;display the current version 
+									<input name="type" type="radio" value="0" checked>&nbsp;display the current version 
 								</label> 
 <!-- 							</td> -->
 <!-- 							<td colspan=2> -->

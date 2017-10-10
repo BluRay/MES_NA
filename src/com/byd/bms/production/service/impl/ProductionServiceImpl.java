@@ -270,4 +270,14 @@ public class ProductionServiceImpl implements IProductionService {
 		result.put("data", datalist);
 		return result;
 	}
+	
+	@Override
+	public List<Map<String, Object>> getProcessMonitorSelect(Map<String, Object> condMap) {	
+		return productionDao.queryProcessMonitorList(condMap);
+	}
+
+	@Override
+	public int insertAbnormity(Map<String, Object> conditionMap) {
+		return productionDao.insertAbnormity(conditionMap);
+	}
 }

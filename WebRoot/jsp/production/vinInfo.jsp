@@ -98,10 +98,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<div class="col-sm-9">
 								<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
 									<div class="col-sm-4">
-										<input id="file" style="margin-left: -10px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" accept=".xls" type="file">&nbsp;&nbsp;				
+										<input id="file" style="margin-left: -10px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" accept=".xlsx" type="file">&nbsp;&nbsp;				
 									</div>
 									<div class="col-sm-4">
-										&nbsp;<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:35px" class="btn btn-primary" value="上传并导入" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+										&nbsp;<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
 									</div>
 									<div class="col-sm-4">
 										&nbsp;<a onclick="downloadTemplate()" style="cursor:pointer;">Download template</a>
@@ -110,6 +110,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							</div>									
 						</div>
 						<table id="tableVinImport" style="font-size: 12px;width:655px" class="table table-bordered table-striped">
+			                <thead>
+			                    <tr>
+			                        <th style="text-align:center;">No.</th>
+			                        <th style="text-align:center;">Bus No.</th>
+			                        <th style="text-align:center;">VIN</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                </tbody>
 			            </table>
 					</div>
 				</div>
@@ -130,9 +139,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/js/jsrender.min.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/jquery.form.js"></script>
-<%-- 	<script src="<%=basePath%>/js/xlsx.core.min.js"></script> --%>
-<%-- 	<script src="<%=basePath%>/js/FileSaver.js"></script> --%>
+	<script src="<%=basePath%>/js/xlsx.core.min.js"></script>
+<%-- 	<script src="<%=basePath%>/js/xlsx.js"></script> --%>
+<%-- 	<script src="<%=basePath%>/js/jszip.js"></script> --%>
+	<script src="<%=basePath%>/js/FileSaver.js"></script>
 	<script src="<%=basePath%>/js/tableExport.js"></script>
+	<script src="<%=basePath%>/assets/js/ace/elements.fileinput.js"></script>
     <script src="<%=basePath%>/js/production/vinInfo.js"></script>
 </body>
 
