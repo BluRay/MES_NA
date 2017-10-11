@@ -64,7 +64,7 @@ $(document).ready(function () {
             	"factory" : $('#exec_factory :selected').text(),
             	"workshop" : $('#exec_workshop :selected').text(),
             	"line" : $('#exec_line :selected').text(),
-            	"process" : $('#exec_processname').val(),
+            	"process" : ($('#exec_processname').val()=="")?0:$('#exec_processname').val(),
             	"process_name" : $('#exec_processname:selected').text(),
                 "bus_list":$('#form-field-tags').val(),
                 "reason_type_id":$('#reason_type :selected').attr("keyvalue")||"0",
@@ -74,18 +74,7 @@ $(document).ready(function () {
                 "editor_id":$('#exec_user').val(),
             },
             success: function(response){
-                if(response.success){ 
-                    fadeMessageAlert(null,"SUCCESS","gritter-info");
-                    //resetPage();
-                }
-                else{
-                    fadeMessageAlert(null,"ERROR","agritter-error");
-                }
-
-                setTimeout(function() {
-                    $("#vinHint").hide().html("未输入车号");
-                    toggleVinHint(true);
-                },60000);
+            	fadeMessageAlert(null,"SUCCESS","gritter-info");
             },
             error:function(){alertError();}
         });

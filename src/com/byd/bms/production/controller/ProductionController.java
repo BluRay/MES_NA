@@ -441,10 +441,16 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
-	/*****************Start Abnormity 生产异常反馈 AddBy:Yangke 171010************************************************************/
+	/*****************Start Abnormity 生产异常反馈 生产异常处理 AddBy:Yangke 171010************************************************************/
 	@RequestMapping("/abnormity")
 	public ModelAndView abnormity(){
 		mv.setViewName("production/abnormity");
+		return mv;
+	}
+	
+	@RequestMapping("/measureAbnormity")
+	public ModelAndView measureAbnormity(){
+		mv.setViewName("production/measureAbnormity");
 		return mv;
 	}
 	/**
@@ -480,15 +486,44 @@ public class ProductionController extends BaseController {
 			if (request.getParameter("factory") != null) conditionMap.put("plant", request.getParameter("factory"));
 			if (request.getParameter("workshop") != null) conditionMap.put("workshop", request.getParameter("workshop"));
 			if (request.getParameter("line") != null) conditionMap.put("line", request.getParameter("line"));
-			if (request.getParameter("process") != null) conditionMap.put("abnormal_station_id", request.getParameter("process"));
-			if (request.getParameter("process_name") != null) conditionMap.put("abnormal_station", request.getParameter("process_name"));
+			if (request.getParameter("process") != ""){
+				conditionMap.put("abnormal_station_id", request.getParameter("process"));
+			}else{
+				conditionMap.put("abnormal_station_id", "0");
+			}
+			conditionMap.put("abnormal_station", request.getParameter("process_name"));
 			conditionMap.put("bus_number", bus_number[i].trim());
 			if (request.getParameter("reason_type_id") != null) conditionMap.put("abnormal_cause_id", request.getParameter("reason_type_id"));
 			if (request.getParameter("reason_type") != null) conditionMap.put("abnormal_cause", request.getParameter("reason_type"));
 			if (request.getParameter("start_time") != null) conditionMap.put("open_date", request.getParameter("start_time"));
-			if (request.getParameter("detailed_reasons") != null) conditionMap.put("detailed_reason", request.getParameter("detailed_reasons"));
+			conditionMap.put("detailed_reason", request.getParameter("detailed_reasons"));
 			productionService.insertAbnormity(conditionMap);
 		}
+		return model;
+	}
+	
+	@RequestMapping("/getExceptionList")
+	@ResponseBody
+	public ModelMap getExceptionList(){
+		int draw=(request.getParameter("draw")!=null)?Integer.parseInt(request.getParameter("draw")):1;	
+		int start=(request.getParameter("start")!=null)?Integer.parseInt(request.getParameter("start")):0;		//分页数据起始数
+		int length=(request.getParameter("length")!=null)?Integer.parseInt(request.getParameter("length")):50;	//每一页数据条数
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("plant", request.getParameter("plant"));
+		condMap.put("workshop", request.getParameter("workshop"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("bus_number", request.getParameter("bus_number"));
+		condMap.put("status", request.getParameter("status"));
+		condMap.put("start_time", request.getParameter("start_time"));
+		condMap.put("end_time", request.getParameter("end_time"));
+		Map<String,Object> list = productionService.getExceptionList(condMap);
+		mv.clear();
+		mv.getModelMap().addAllAttributes(list);
+		model = mv.getModelMap();
 		return model;
 	}
 	

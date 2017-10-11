@@ -282,4 +282,71 @@
 	(plant, workshop, line, abnormal_station_id, abnormal_station, bus_number, abnormal_cause_id, abnormal_cause, detailed_reason, open_date)
 	VALUES(#{plant},#{workshop},#{line},#{abnormal_station_id},#{abnormal_station},#{bus_number},#{abnormal_cause_id},#{abnormal_cause},#{detailed_reason},#{open_date})
 	</insert>
+	
+	<select id="getExceptionList" parameterType="Map" resultType="Map">
+		SELECT * FROM BMS_NA_PRODUCTION_ABNORMITY E
+		WHERE 1=1
+		<if test="id !='' and id !=null">
+		AND E.id=#{id}
+		</if>
+		<if test="factory !='' and factory !=null">
+		AND E.plant=#{plant}
+		</if>
+		<if test="workshop !='' and workshop !=null">
+		AND E.workshop=#{workshop}
+		</if>
+		<if test="line !='' and line !=null">
+		AND E.line LIKE CONCAT('%',#{line},'%')
+		</if>
+		<if test="bus_number !='' and bus_number !=null">
+		AND E.bus_number=#{bus_number}
+		</if>
+		<if test="status == '1'">
+		AND E.measure_date IS NULL
+		</if>
+		<if test="status == '2'">
+		AND E.measure_date IS NOT NULL
+		</if>
+		<if test="start_time !='' and start_time !=null">
+		AND E.open_date>=#{start_time}
+		</if>
+		<if test="end_time !='' and end_time !=null">
+		AND E.open_date &lt;= #{end_time}
+		</if>
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>	
+	</select>
+	<select id="getExceptionCount" parameterType="Map" resultType="int">
+		SELECT COUNT(id) FROM BMS_NA_PRODUCTION_ABNORMITY E
+		WHERE 1=1
+		<if test="id !='' and id !=null">
+		AND E.id=#{id}
+		</if>
+		<if test="factory !='' and factory !=null">
+		AND E.plant=#{plant}
+		</if>
+		<if test="workshop !='' and workshop !=null">
+		AND E.workshop=#{workshop}
+		</if>
+		<if test="line !='' and line !=null">
+		AND E.line LIKE CONCAT('%',#{line},'%')
+		</if>
+		<if test="bus_number !='' and bus_number !=null">
+		AND E.bus_number=#{bus_number}
+		</if>
+		<if test="status == '1'">
+		AND E.measure_date IS NULL
+		</if>
+		<if test="status == '2'">
+		AND E.measure_date IS NOT NULL
+		</if>
+		<if test="start_time !='' and start_time !=null">
+		AND E.open_date>=#{start_time}
+		</if>
+		<if test="end_time !='' and end_time !=null">
+		AND E.open_date &lt;= #{end_time}
+		</if>
+	</select>
+	
 </mapper>

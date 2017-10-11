@@ -280,4 +280,17 @@ public class ProductionServiceImpl implements IProductionService {
 	public int insertAbnormity(Map<String, Object> conditionMap) {
 		return productionDao.insertAbnormity(conditionMap);
 	}
+
+	@Override
+	public Map<String, Object> getExceptionList(Map<String, Object> queryMap) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist = productionDao.getExceptionList(queryMap);
+		totalCount = productionDao.getExceptionCount(queryMap);
+		Map<String, Object> result = new HashMap<String,Object>();		
+		result.put("draw", queryMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
 }

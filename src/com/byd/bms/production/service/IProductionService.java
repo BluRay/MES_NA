@@ -37,4 +37,5 @@ public interface IProductionService {
 	
 	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);
 	public int insertAbnormity(Map<String, Object> conditionMap);
+	public Map<String,Object> getExceptionList(Map<String,Object> queryMap);
 }

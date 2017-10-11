@@ -64,4 +64,6 @@ public interface IProductionDao {
 	/**************************** tang jin end*********************************/
 	
 	public int insertAbnormity(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getExceptionList(Map<String,Object> conditionMap);
+	public int getExceptionCount(Map<String,Object> conditionMap);
 }
