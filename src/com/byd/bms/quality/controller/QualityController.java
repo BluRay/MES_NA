@@ -146,25 +146,22 @@ public class QualityController extends BaseController {
 	 * 订单配置列表
 	 * @return
 	 */
-	@RequestMapping("/getOrderKeyPartsList")
+	@RequestMapping("/getProjectKeyPartsTemplateList")
 	@ResponseBody
-	public ModelMap getOrderKeyPartsList(){
+	public ModelMap getProjectKeyPartsTemplateList(){
 		model=new ModelMap();;
 		Map<String,Object> condMap=new HashMap<String,Object>();
-		int draw=Integer.parseInt(request.getParameter("draw"));//jquerydatatables 
-		int start=Integer.parseInt(request.getParameter("start"));//分页数据起始数
-		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
-		String order_id=request.getParameter("order_id");//订单
-		String order_config_id=request.getParameter("order_config_id");//订单配置
-		String bus_type_id=request.getParameter("bus_type_id");//车型
+		int draw=Integer.parseInt(request.getParameter("draw"));
+		int start=Integer.parseInt(request.getParameter("start"));
+		int length=Integer.parseInt(request.getParameter("length"));
+		String project_no=request.getParameter("project_no");
+		String bus_type=request.getParameter("bus_type");//车型
 		condMap.put("draw", draw);
 		condMap.put("start", start);
 		condMap.put("length", length);
-		condMap.put("order_id", order_id);
-		condMap.put("order_config_id", order_config_id);
-		condMap.put("bus_type_id",bus_type_id);
-		qualityService.getOrderKeyPartsList(condMap,model);
-		
+		condMap.put("project_no", project_no);
+		condMap.put("bus_type",bus_type);
+		qualityService.getOrderKeyPartsTemplateList(condMap,model);
 		return model;
 	}
 	
@@ -176,7 +173,7 @@ public class QualityController extends BaseController {
 	@ResponseBody
 	public ModelMap uploadKeyPartsFile(@RequestParam(value="file",required=false) MultipartFile file){
 		logger.info("uploading.....");
-		String fileName="keyPartsDetail.xls";
+		String fileName=file.getOriginalFilename();
 		try{
 		ExcelModel excelModel = new ExcelModel();
 		excelModel.setReadSheets(1);
@@ -189,7 +186,6 @@ public class QualityController extends BaseController {
 		dataType.put("4", ExcelModel.CELL_TYPE_CANNULL);
 		dataType.put("5", ExcelModel.CELL_TYPE_CANNULL);
 		dataType.put("6", ExcelModel.CELL_TYPE_CANNULL);
-		dataType.put("7", ExcelModel.CELL_TYPE_CANNULL);
 		excelModel.setDataType(dataType);
 		excelModel.setPath(fileName);
 		File tempfile=new File(fileName);
@@ -207,32 +203,21 @@ public class QualityController extends BaseController {
 		for (Object[] data : excelModel.getData()) {
 			Map<String, String> infomap = new HashMap<String, String>();
 
-			infomap.put("sap_mat", data[0] == null ? null : data[0].toString().trim());
-			infomap.put("parts_no", data[1] == null ? null : data[1].toString().trim());
+			infomap.put("item_no", data[0] == null ? null : data[0].toString().trim());
+			infomap.put("sap_material", data[1] == null ? null : data[1].toString().trim());
 			infomap.put("parts_name", data[2] == null ? null : data[2].toString().trim());
-			infomap.put("size", data[3] == null ? null : data[3].toString().trim());
+			infomap.put("byd_pn", data[3] == null ? null : data[3].toString().trim());
 			infomap.put("vendor", data[4] == null ? null : data[4].toString().trim());
 			infomap.put("workshop", data[5] == null ? null : data[5].toString().trim());
-			infomap.put("process", data[6] == null ? null : data[6].toString().trim());
-			String is_3c=data[7] == null ? "" : data[7].toString().trim();
-			String parts_name=data[2] == null ? null : data[2].toString().trim();
-			if(!is_3c.equals("是")&&!is_3c.equals("否")){
-				throw new Exception("数据错误，第"+i+"行数据“3C件”请填写‘是’或者‘否’！");
-			}
-			if(parts_name==null||parts_name.isEmpty()){
-				throw new Exception("数据错误，第"+i+"行数据“零部件名称”为空！");
-			}
-			infomap.put("ccc", data[7] == null ? null : data[7].toString().trim());
-			infomap.put("cccNo", data[8] == null ? null : data[8].toString().trim());
+			infomap.put("station", data[6] == null ? null : data[6].toString().trim());
+			
 			addList.add(infomap);
 			i++;
 		}
-		initModel(true,"导入成功！",addList);
+		initModel(true,"Success！",addList);
 		
-		//根据车间、工序校验车间工序是否有效
-		qualityService.validateWorkshopProcess(addList);
 		}catch(Exception e){
-			initModel(false,"导入失败！"+e.getMessage(),null);
+			initModel(false,"Failure！"+e.getMessage(),null);
 		}
 		return mv.getModelMap();
 	}
@@ -241,14 +226,13 @@ public class QualityController extends BaseController {
 	 * 保存关键零部件明细
 	 * @return
 	 */
-	@RequestMapping("saveKeyParts")
+	@RequestMapping("saveKeyPartsTemplateInfo")
 	@ResponseBody
-	public ModelMap saveKeyParts(){
+	public ModelMap saveKeyPartsTemplateInfo(){
 		Map<String,Object> keyParts=new HashMap<String,Object>();
-		keyParts.put("order_config_id",Integer.parseInt(request.getParameter("order_config_id")));
-		keyParts.put("order_id",Integer.parseInt(request.getParameter("order_id")));
-		keyParts.put("bus_type_id",Integer.parseInt(request.getParameter("bus_type_id")));
-		keyParts.put("parts_detail", request.getParameter("parts_detail"));
+		keyParts.put("parts_detail", request.getParameter("addList"));
+		keyParts.put("project_id", request.getParameter("project_id"));
+		//keyParts.put("version", request.getParameter("version"));
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String curTime = df.format(new Date());
 		int userid=(int) session.getAttribute("user_id");
@@ -272,17 +256,149 @@ public class QualityController extends BaseController {
 	@ResponseBody
 	public ModelMap getKeyPartsList(){
 		model=new ModelMap();
-		String order_id=request.getParameter("order_id");//订单
-		String order_config_id=request.getParameter("order_config_id");//订单配置
-		String bus_type_id=request.getParameter("bus_type_id");//车型
+		String project_id=request.getParameter("project_id");//订单
+		String version=request.getParameter("version");
 		HashMap<String, Object> condMap =new HashMap<String,Object>();
-		condMap .put("order_id", order_id);
-		condMap.put("order_config_id", order_config_id);
-		condMap.put("bus_type_id",bus_type_id);
-		
+		condMap.put("project_id", project_id);
+		condMap.put("version", version);
 		qualityService.getKeyPartsList(condMap,model);
 		
 		return model;
 	}
+	/**
+	 * 订单成品记录表模板
+	 * @return
+	 */
+	@RequestMapping("/productRecordOrderTpl")
+	public ModelAndView productRecordOrderTpl(){
+		mv.setViewName("quality/productRecordOrderTpl");
+		return mv;
+	}
+	/**
+	 * 订单配置列表
+	 * @return
+	 */
+	@RequestMapping("/getPrdRcdOrderTplList")
+	@ResponseBody
+	public ModelMap getPrdRcdOrderTplList(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw"));
+		int start=Integer.parseInt(request.getParameter("start"));
+		int length=Integer.parseInt(request.getParameter("length"));
+		String project_no=request.getParameter("project_no");
+		String bus_type=request.getParameter("bus_type");//车型
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("project_no", project_no);
+		condMap.put("bus_type",bus_type);
+		qualityService.getPrdRcdOrderTplList(condMap,model);
+		return model;
+	}
 	
+	/**
+	 * 关键零部件模板上传
+	 * @return
+	 */
+	@RequestMapping(value="/uploadPrdRcdOrderTplFile",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelMap uploadPrdRcdOrderTplFile(@RequestParam(value="file",required=false) MultipartFile file){
+		logger.info("uploading.....");
+		String fileName=file.getOriginalFilename();
+		try{
+		ExcelModel excelModel = new ExcelModel();
+		excelModel.setReadSheets(1);
+		excelModel.setStart(1);
+		Map<String, Integer> dataType = new HashMap<String, Integer>();
+		dataType.put("0", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("1", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("2", ExcelModel.CELL_TYPE_STRING);
+		dataType.put("3", ExcelModel.CELL_TYPE_CANNULL);
+		dataType.put("4", ExcelModel.CELL_TYPE_CANNULL);
+		excelModel.setDataType(dataType);
+		excelModel.setPath(fileName);
+		File tempfile=new File(fileName);
+		file.transferTo(tempfile);
+		/**
+		 * 读取输入流中的excel文件，并且将数据封装到ExcelModel对象中
+		 */
+		InputStream is = new FileInputStream(tempfile);
+
+		ExcelTool excelTool = new ExcelTool();
+		excelTool.readExcel(is, excelModel);
+
+		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
+		for (Object[] data : excelModel.getData()) {
+			Map<String, String> infomap = new HashMap<String, String>();
+
+			infomap.put("item_no", data[0] == null ? null : data[0].toString().trim());
+			infomap.put("station", data[1] == null ? null : data[1].toString().trim());
+			infomap.put("process_name", data[2] == null ? null : data[2].toString().trim());
+			infomap.put("inspection_item", data[3] == null ? null : data[3].toString().trim());
+			infomap.put("specification_and_standard", data[4] == null ? null : data[4].toString().trim());
+			addList.add(infomap);
+		}
+		initModel(true,"Success！",addList);
+		
+		}catch(Exception e){
+			initModel(false,"Failure！"+e.getMessage(),null);
+		}
+		return mv.getModelMap();
+	}
+	
+	/**
+	 * 保存关键零部件明细
+	 * @return
+	 */
+	@RequestMapping("savePrdRcdOrderTplInfo")
+	@ResponseBody
+	public ModelMap savePrdRcdOrderTplInfo(){
+		Map<String,Object> keyParts=new HashMap<String,Object>();
+		keyParts.put("detail", request.getParameter("addList"));
+		keyParts.put("project_id", request.getParameter("project_id"));
+		keyParts.put("version", request.getParameter("version"));
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		int userid=(int) session.getAttribute("user_id");
+		keyParts.put("editor_id", userid);
+		keyParts.put("edit_date", curTime);
+		try{
+			qualityService.saveInspectionRecordTemplate(keyParts);
+			initModel(true,"保存成功！",null);
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false,"保存失败！"+e.getMessage(),null);
+		}
+		return mv.getModelMap();
+	}
+	
+	/**
+	 *  查询关键零部件明细
+	 * @return
+	 */
+	@RequestMapping("getPrdRcdOrderTplDetailList") 
+	@ResponseBody
+	public ModelMap getPrdRcdOrderTplDetailList(){
+		model=new ModelMap();
+		String project_id=request.getParameter("project_id");//订单
+		String version=request.getParameter("version");
+		HashMap<String, Object> condMap =new HashMap<String,Object>();
+		condMap.put("project_id", project_id);
+		condMap.put("version", version);
+		qualityService.getPrdRcdOrderTplDetailList(condMap,model);
+		
+		return model;
+	}
+	
+	@RequestMapping("getProjectByNo")
+	@ResponseBody
+	public ModelMap getProjectByNo(){
+		model=new ModelMap();
+		String project_no=request.getParameter("project_no");
+		HashMap<String, Object> condMap =new HashMap<String,Object>();
+		condMap.put("project_no", project_no);
+		qualityService.getProjectByNo(condMap,model);
+		return model;
+	}
 }

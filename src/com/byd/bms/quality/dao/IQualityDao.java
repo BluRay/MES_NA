@@ -21,13 +21,22 @@ public interface IQualityDao {
 	public List<Map<String, String>> getFaultLibList(Map<String, Object> conditionMap);	
 	public int getFaultLibCount(Map<String, Object> conditionMap);
 	
-	int getConfigTotalCount(Map<String, Object> condMap);
-	List<Map<String, Object>> getOrderConfigList(Map<String, Object> condMap);
+	int getOrderKeyPartsTemplateCount(Map<String, Object> condMap);
+	List<Map<String, Object>> getOrderKeyPartsTemplateList(Map<String, Object> condMap);
 	Map<String, Object> queryKeyPartsHeader(Map<String, Object> keyParts);
 	int saveKeyPartsHeader(Map<String, Object> keyParts);
-	int saveKeyPartsDetails(Map<String, Object> smap);
+	int saveKeyPartsDetails(List detail_list);
 	int updateKeyPartsHeader(Map<String, Object> keyParts);
 	int deleteKeyPartsByHeader(@Param(value="header_id")int header_id);
 	List<Map<String, Object>> queryKeyPartsList(Map<String, Object> condMap);
 	List<Map<String, String>> queryWorkshopProcessList(@Param(value="addList")List<Map<String, String>> addList);
+	public String queryKeyPartsMaxVersion(String project_id);
+	public List<Map<String, String>> getKeyPartsList(Map<String, Object> keyParts);
+	int getPrdRcdOrderTplCount(Map<String, Object> condMap);
+	List<Map<String, Object>> getPrdRcdOrderTplList(Map<String, Object> condMap);
+	Map<String, Object> getProjectByNo(Map<String, Object> condMap);
+	int saveInspectionRecordTemplate(List detail_list);
+	public String queryInspectionRecordMaxVersion(String project_id);
+	public int deleteInspectionRecordTemplate(Map<String, Object> condMap);
+	public List<Map<String, String>> getPrdRcdOrderTplDetailList(Map<String, Object> map);
 }

@@ -53,7 +53,7 @@ public class ProductionController extends BaseController {
 	protected ISettingService settingService;
 	@Autowired
 	protected IOrderService orderService;
-	/****************************  xiongjianwu ***************************/
+	/****************************  xiongjianwu start***************************/
 	/**
 	 * 车间工序页面
 	 * @return
@@ -332,6 +332,17 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 		
+	/**
+	 * 车间工序页面
+	 * @return
+	 */
+	@RequestMapping("/ecnUpdate")
+	public ModelAndView ecnUpdate(){
+		mv.setViewName("production/ecnUpdate");
+		return mv;
+	}
+	/****************************  xiongjianwu end***************************/
+	
 	@RequestMapping("/saveVinInfo")
 	@ResponseBody
 	public ModelMap saveVinInfo(){

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>订单成品记录表模板</title>
+<title>Inspection record template</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />	
@@ -14,7 +14,7 @@
 <link rel="stylesheet"
 	href="../assets/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
-
+<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
 </head>
 <body class="no-skin" style="font-family: 'Microsoft YaHei';">
 	<!-- 头 -->
@@ -30,10 +30,9 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">首页</a></li>
-						<li><a href="#">制程品质</a></li>
-						<li><a href="#">基础数据</a></li>
-						<li><a href="#">订单成品记录表模板</a></li>
+							href="/BMS/index">Index</a></li>
+						<li><a href="#">Quality</a></li>
+						<li><a href="#">Inspection record template</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -51,30 +50,16 @@
 					<form id="form" class="well form-search">
 						<table>
 							<tr>
-								<td>车型：</td>
+								<td>Bus Type：</td>
 								<td>
 									<select name="" id="search_bus_type" class="input-medium carType" style="height: 30px;width:100px;" ></select>
 								</td>
- 								<td>订单：</td>
-								<td><input style="height: 30px;width:130px;" type="text" class="input-medium revise" placeholder="订单编号..." id="search_order_no" /></td> 
-								<td>配置：</td>
-								<td>
-									<select name="" id="search_order_config" class="input-medium carType" style="height: 30px;width:100px;" >
-										<option value=''>全部</option>
-									</select>
-								</td>
-								<td>检验节点：</td>
-								<td>
-									<!-- <input type="text"  id="search_parts" class="input-medium" style="height: 30px;width:90px;" ></input> -->
-									<select id="search_node" class="input-medium" style="height: 30px;width:120px;" >
-										<option value=''>全部</option>
-									</select>
-								</td>						
-								<td><input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="查询" style="margin-left: 2px;"></input>						
-										 <input type="button" class="btn btn-sm btn-success" id="btnCopy" value="复制" style="margin-left: 2px;"></input>
+ 								<td>Project No.：</td>
+								<td><input style="height: 30px;width:130px;" type="text" class="input-medium revise" placeholder="Project No. .." id="search_project_no" /></td> 				
+								<td><input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="Search" style="margin-left: 2px;"></input>						
+									<input type="button" class="btn btn-sm btn-success" id="btnAdd" value="Add" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
-
 						</table>
 					</form>
 						
@@ -87,42 +72,30 @@
 				</div>
 
 			<div id="dialog-config" class="hide">
-				<form id="create_form" class="form-horizontal">
-					<div class="form-group">							
+				<div class="form-group">
+				<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Project No.：</label>
+				<input id="order" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
+			</div>
+			<div class="form-group">					
+				<label class="col-sm-2 control-label no-padding-right" for="">*&nbsp;Template：</label>
+				<div class="col-sm-9">
+					<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
 						<div class="col-sm-4">
-							<label class="control-label no-padding-right" for="" style="width: 30%;">*&nbsp;订单：</label>
-							<input id="order" type="text" class="input-medium" style="height: 30px;width:50%;" ></input>
-						</div>	
-						<div class="col-sm-4">
-							<label class="control-label no-padding-right" for="" style="width: 40%;">*&nbsp;车型：</label>
-							<input id="bus_type" type="text" class="input-medium" style="height: 30px;width:50%;background-color:white" disabled></input>
-						</div>					
-					</div>
-					<div class="form-group">	
-						<div class="col-sm-4">
-							<label class="control-label no-padding-right" for="" style="width: 30%;">*&nbsp;配置：</label>
-							<select id="order_config" class="input-medium" style="height: 30px;width:50%;" >
-								<option value=''>请选择</option>
-							</select>
-						</div>				
-						<div class="col-sm-4">
-							<label class="control-label no-padding-right " for=""  style="width: 40%;">*&nbsp;检验节点：</label>
-							<select id="node" class="input-medium" style="height: 30px;width:50%" >
-							</select>
-						</div>		
-						<div class="col-sm-4">
-							<input type="button" class="btn btn-sm btn-primary" id="btnQueryTpl" value="查询" style="margin-left: 2px;"></input>						
-							
-						</div>		
-					</div>
-					<div class="form-group">					
-						<div class="col-sm-12">			
-							<table class="table table-striped table-bordered table-hover" style="width: 860px;font-size:12px;" id="tplDetailTable">
-							</table>
+							<input id="file" style="margin-left:-20px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" type="file"> 				
 						</div>
-					</div>
-					
-			</form>
+						<div class="col-sm-4">
+							<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+							<a href="../docs/inspection.xlsx">Download template</a>
+						</div>							
+					</form>
+				</div>									
+			</div>
+			<div class="form-group">					
+				<div class="col-sm-12">			
+					<table class="table table-striped table-bordered table-hover" style="width: 860px;font-size:12px;" id="tplDetailTable">
+					</table>
+				</div>
+			</div>
 		</div>
 		
 		<div id="dialog-editTplTable" class="hide">
@@ -136,8 +109,7 @@
 		</div>
 			<!-- /.main-container -->
 		</div>
-	
-	<script src="../js/datePicker/WdatePicker.js"></script>
+	</div>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
@@ -146,6 +118,7 @@
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
+	<script src="../assets/js/ace/elements.fileinput.js"></script>
 	<script src="../js/quality/productRecordOrderTpl.js"></script>
 </body>
 

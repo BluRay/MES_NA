@@ -12,88 +12,160 @@ $(document).ready(function(){
 		}
 	})
 	
-	$(document).on("input","#search_order_no",function(){
+	$(document).on("input","#search_project_no",function(){
 		//alert("change");
-		$("#search_order_no").attr("order_id","");
-	})
-	$("#search_order_no").change(function(){
-		getOrderConfigSelect($(this).attr("order_id")||"","","#search_order_config","全部","id") ;
+		$("#search_project_no").attr("order_id","");
 	})
 	
 	$(document).on("input","#order",function(){
 		//alert("change");
 		$("#order").attr("order_id","");
 	})
-	$("#order").change(function(){
-		getOrderConfigSelect($(this).attr("order_id")||"","","#order_config","请选择","id") ;
-	})
-	/**
-	 * 匹配车型模板
-	 */
-	$("#btnQueryTpl").click(function(){
-		var tpl_header_id=$("#order").attr("tpl_header_id")||"";
-		if(tpl_header_id!=""){
-			json_tpl_list=getTplDetailByHeader(tpl_header_id);
-		}else
-			json_tpl_list=getBusTplDetail();
-		
-		drawTplDetailTable("#tplDetailTable",json_tpl_list,true);
-	})	
 	
-	$(document).on("click","#btnCopy",function(){
-		$("#create_form").resetForm();
-		$("#bus_type").attr("disabled",true);
-		$("#order").attr("disabled",false);
-		$("#order_config").attr("disabled",false);
-		$("#order").attr("tpl_header_id","");
-		$("#order").attr("order_id","");
-		$("#bus_type").attr("bus_type_id","");
-		getOrderNoSelect("#order","#orderId",function(obj){
-			//alert(obj.busType);
-			$("#bus_type").val(obj.busType).attr("bus_type_id",obj.bus_type_id);
-		});
-		//$("#bus_type").prop("disabled",true);
-		getKeysSelect("CHECK_NODE", "", "#node","请选择","id")
-		$("#node").prop("disabled",false); 
-		$("#tplDetailTable").html("");
-		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-			width:900,
-			height:550,
-			modal: true,
-			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>车型成品记录表模板导入</h4></div>",
-			title_html: true,
-			buttons: [ 
-				{
-					text: "取消",
-					"class" : "btn btn-minier",
-					click: function() {
-						$( this ).dialog( "close" ); 
-					} 
-				},
-				{
-					text: "确定",
-					"class" : "btn btn-primary btn-minier",
-					click: function() {
-						ajaxSave(); 
-					} 
-				}
-			]
-		});
-	})
+	
+	$("#btnAdd").click(function(){
+		if($.fn.dataTable.isDataTable("#tplDetailTable")){
+			$('#tplDetailTable').DataTable().destroy();
+			$('#tplDetailTable').empty();
+		}
+		if($("#search_project_no").val()==""){
+			alert("Please Enter Project No.");
+			$("#search_project_no").focus();
+			return false;
+		}
+		$("#uploadForm").show();
+		$.ajax({
+            type: "post",
+            url: "getProjectByNo",
+            cache: false,  //禁用缓存
+            data: {
+            	"project_no": $("#search_project_no").val()
+            },  //传入组装的参数
+            dataType: "json",
+            success: function (result) {
+            	var data=result.data;
+            	var project_id=data.id;
+            	if(data==null){
+            		alert("Project No. cannot be Found");
+            		$("#search_project_no").focus();
+            		return ;
+            	}
+            	$("#order").val($("#search_project_no").val());
+        		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
+        			width:900,
+        			height:550,
+        			modal: true,
+        			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection record template</h4></div>",
+        			title_html: true,
+        			buttons: [ 
+        				{
+        					text: "Cancel",
+        					"class" : "btn btn-minier",
+        					click: function() {
+        						$( this ).dialog( "close" ); 
+        					} 
+        				},
+        				{
+        					text: "Save",
+        					"class" : "btn btn-primary btn-minier",
+        					click: function() {
+        						save(project_id); 
+        						$( this ).dialog( "close" ); 
+        					} 
+        				}
+        			]
+        		});
+            }
+        });
+		
+	});
+	$("#btn_upload").click (function () {
+		$(".divLoading").addClass("fade in").show();
+		$("#uploadForm").ajaxSubmit({
+			url:"uploadPrdRcdOrderTplFile",
+			type: "post",
+			dataType:"json",
+			success:function(response){
+				if(response.success){	
+					if($.fn.dataTable.isDataTable("#tplDetailTable")){
+						$('#tplDetailTable').DataTable().destroy();
+						$('#tplDetailTable').empty();
+					}
+					var datalist=response.data;
+					var columns=[
+			            {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
+			            {"title":"Station","class":"center","data":"station","defaultContent": ""},
+			            {"title":"Process Name","class":"center","data": "process_name","defaultContent": ""},
+			            {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},
+			            {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
+			            {"title":"","class":"center","data": "error","defaultContent": ""}
+			        ];
 
+					$("#tplDetailTable").DataTable({
+						paiging:false,
+						ordering:false,
+						processing:true,
+						searching: false,
+						autoWidth:false,
+						paginate:false,
+						sScrollY: $(window).height()-250,
+						scrollX: true,
+						scrollCollapse: true,
+						lengthChange:false,
+						orderMulti:false,
+						info:false,
+						language: {
+							
+						},
+						aoColumnDefs : [
+			                {
+			                "aTargets" :[5],
+			                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
+			                	if($(nTd).text()!=''){
+			                		//数据格式错误 整行用红色字体标示
+			                		$(nTd).parent().css('color', '#ff0000');
+				                	$(nTd).css('color', '#ff0000').css('font-weight', 'bold').css('width','200px');
+			                	}
+			                }   
+			                },
+			            ],
+						data:datalist,
+						columns:columns
+					});
+
+				}else{
+					
+				}
+				$(".divLoading").hide();
+			}			
+		});
+	});
 })
 
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
-	getBusTypeSelect('','#search_bus_type','全部','id');
-	getKeysSelect("CHECK_NODE", "", "#search_node","全部","id") 
-	getOrderNoSelect("#search_order_no","#orderId",null,$('#search_bus_type').val());
+	getBusTypeSelect('','#search_bus_type','All','id');
+	getOrderNoSelect("#search_project_no","#orderId",null,$('#search_bus_type').val());
 	ajaxQuery();
+	$('#file').ace_file_input({
+		no_file:'...',
+		btn_choose:'Browse',
+		btn_change:'Browse',
+		width:"150px",
+		droppable:false,
+		onchange:null,
+		thumbnail:false, //| true | large
+		//allowExt: ['pdf','PDF'],
+	}).on('file.error.ace', function(event, info) {
+		//alert("请上传正确的文件!");
+		return false;
+    });
 }
 
 function ajaxQuery(){
 	$("#tableResult").DataTable({
 		serverSide: true,
+		rowsGroup:[0,1],
 		paiging:true,
 		ordering:false,
 		searching: false,
@@ -106,24 +178,12 @@ function ajaxQuery(){
 		lengthChange:false,
 		orderMulti:false,
 		language: {
-			emptyTable:"抱歉，未查询到数据！",
-			info:"共计 _TOTAL_ 条，当前第 _PAGE_ 页 共 _PAGES_ 页",
-			infoEmpty:"",
-			paginate: {
-			  first:"首页",
-		      previous: "上一页",
-		      next:"下一页",
-		      last:"尾页",
-		      loadingRecords: "请稍等,加载中...",		     
-			}
 		},
 		ajax:function (data, callback, settings) {
 			var param ={
 					"draw":1,
-					"bus_type_id":$("#search_bus_type").val(),
-					"order_id":$("#search_order_no").attr("order_id"),
-					"order_config_id":$("#search_order_config").val(),
-					"test_node_id":$("#search_node").val()
+					"bus_type":$("#search_bus_type").find("option:selected").text(),
+					"project_no":$("#search_project_no").val()
 				};
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;//开始的记录序号
@@ -153,22 +213,80 @@ function ajaxQuery(){
 		
 		},
 		columns: [
-		          	{"title":"车型(版本)","class":"center","data":"bus_type","defaultContent": "","render":function(data,type,row){
-		          		return data+"("+row.version_cp+")";
-		          	}},
-		          	{"title":"订单","class":"center","data":"order_desc","defaultContent": ""},
-		          	{"title":"配置","class":"center","data":"order_config","defaultContent": ""},
-		            {"title":"检验节点","class":"center","data":"test_node","defaultContent": ""},
-		            {"title":"版本号","class":"center","data":"version","defaultContent": ""},
-		            {"title":"维护人","class":"center","data": "editor","defaultContent": ""},
-		            {"title":"维护时间","class":"center","data":"edit_date","defaultContent": ""},		            	            
-		            {"title":"操作","class":"center","data":"","render":function(data,type,row){
-		            	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='查看' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;"+ 
-		            	"<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='编辑' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
+		          	{"title":"Bus Type","class":"center","data":"bus_type","defaultContent": ""},
+		          	{"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
+		            {"title":"Version Number","class":"center","data":"version","defaultContent": ""},
+		            {"title":"Editor","class":"center","data":"editor","defaultContent": ""},
+		            {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
+		            {"title":"","class":"center","data":"order_id","render":function(data,type,row){
+		            	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;" 
+		            	}
+		            },{"title":"","class":"center","data":"order_id","render":function(data,type,row){
+		            	return "<i class=\"ace-icon fa fa-upload bigger-130 editorder\" title='Import' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
 		            	}
 		            }
 		          ]
 	});
+}
+function save(project_id,version) {
+	var save_flag=true;
+	var trs=$("#tplDetailTable tbody").find("tr");
+	if(trs.length==0){
+		save_flag=false;
+		alert("没有可保存的数据");
+		return false;
+	}
+	var addList=[];
+	$.each(trs,function(i,tr){
+		var tds=$(tr).children("td");
+		var error = $(tds).eq(5).html();
+		if(error!=''){
+			var item_no = $(tds).eq(0).html();
+			save_flag=false;
+			alert("Item:"+item_no+" 数据存在异常，请修改后在导入");
+			return false;
+		}
+		var item_no = $(tds).eq(0).html();
+		var station = $(tds).eq(1).html();
+		var process_name = $(tds).eq(2).html();
+		var inspection_item = $(tds).eq(3).html();
+		var specification_and_standard = $(tds).eq(4).html();
+		var keyparts={};
+		keyparts.item_no=item_no;
+		keyparts.specification_and_standard=specification_and_standard;
+		keyparts.inspection_item=inspection_item;
+		keyparts.process_name=process_name;
+		keyparts.station=station;
+		addList.push(keyparts);
+	});
+	if(save_flag){
+		$.ajax({
+			url:'savePrdRcdOrderTplInfo',
+			method:'post',
+			dataType:'json',
+			async:false,
+			data:{
+				"addList":JSON.stringify(addList),
+				"project_id":project_id,
+				"version":version
+			},
+			success:function(response){
+	            if(response.success){
+	            	$.gritter.add({
+						title: 'Message：',
+						text: "<h5>"+response.message+"！</h5>",
+						class_name: 'gritter-info'
+					});
+	            }else{
+	            	$.gritter.add({
+						title: 'Message：',
+						text: "<h5>"+response.message+"！</h5>",
+						class_name: 'gritter-info'
+					});
+	            }
+			}
+		});
+	}
 }
 
 function drawTplDetailTable(tableId,data,editable){
@@ -181,7 +299,7 @@ function drawTplDetailTable(tableId,data,editable){
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
-		rowsGroup:[0],
+		//rowsGroup:[0],
 		/*//sScrollY: $(window).height()-250,
 		scrollX: true,*/
 		scrollCollapse: false,
@@ -189,9 +307,6 @@ function drawTplDetailTable(tableId,data,editable){
 		orderMulti:false,
 		info:false,
 		language: {
-			emptyTable:"",					     
-			infoEmpty:"",
-			zeroRecords:"未匹配到车型模板！"
 		},
 		columnDefs: [{
             "targets": [0,1,2,3],
@@ -206,50 +321,47 @@ function drawTplDetailTable(tableId,data,editable){
         }],
 		data:data||{},
 		columns: [
-		            {"title":"检验项目","class":"center","data":"test_item","defaultContent": ""},
-		            {"title":"检验标准","class":"center","width":"40%","data":"test_standard","defaultContent": ""},
-		            {"title":"要求","class":"center","data": "test_request","defaultContent": ""},
-		            {"title":"是否必录项","class":"center","width":"10%","data":"is_null","defaultContent": ""},		            	            
+		            {"title":"No.","class":"center","data":"","width":"35px","defaultContent": ""
+		            	,"render":function(data,type,row,meta){
+						return (meta.row + meta.settings._iDisplayStart) + 1; // 序号值
+			        }
+		            },
+		            {"title":"Station","class":"center","data":"station","defaultContent": ""},
+		            {"title":"Process Name","class":"center","data": "process_name","defaultContent": ""},
+		            {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},		
+		            {"title":"Specification And Standard","class":"center","data":"specification_and_standard","defaultContent": ""}	            	          
 		          ]	
 	});
 	
 }
 
 function showEditPage(row){
-	$("#order").attr("order_id",row.order_id);
-	$("#order").val(row.order_no).prop("disabled",true);
-	$("#order").attr("tpl_header_id",row.id);
-	$("#bus_type").attr("bus_type_id",row.bus_type_id);
-	$("#bus_type").val(row.bus_type);
-	$("#bus_type").prop("disabled",true);
-	getKeysSelect("CHECK_NODE", row.test_node_id, "#node","请选择","id");
-	$("#node").prop("disabled",true);
-	getOrderConfigSelect(row.order_id||"",row.order_config_id,"#order_config","请选择","id") ;
-	$("#order_config").prop("disabled",true);
-	var detail_list=getTplDetailByHeader(row.id)
-	json_tpl_list=detail_list;
-	var version_cp=row.version_cp;
-	drawTplDetailTable("#tplDetailTable",detail_list,true);
-	
+	if($.fn.dataTable.isDataTable("#tplDetailTable")){
+		$('#tplDetailTable').DataTable().destroy();
+		$('#tplDetailTable').empty();
+	}
+	$("#uploadForm").show();
+	$("#order").val(row.project_no);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,
 		height:550,
 		modal: true,
-		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>订单成品记录表模板录入</h4></div>",
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection record template</h4></div>",
 		title_html: true,
 		buttons: [ 
 			{
-				text: "取消",
+				text: "Cancel",
 				"class" : "btn btn-minier",
 				click: function() {
 					$( this ).dialog( "close" ); 
 				} 
 			},
 			{
-				text: "确定",
+				text: "Save",
 				"class" : "btn btn-primary btn-minier",
 				click: function() {
-					ajaxSave(row.id); 
+					save(row.id,row.version); 
+					$( this ).dialog( "close" ); 
 				} 
 			}
 		]
@@ -257,33 +369,22 @@ function showEditPage(row){
 }
 
 function showInfoPage(row){
-	//getBusTypeSelect(row.bus_type_id,'#bus_type','请选择','id');
-	$("#order").val(row.order_no).prop("disabled",true);
-	$("#bus_type").val(row.bus_type);
-	$("#bus_type").prop("disabled",true);
-	getKeysSelect("CHECK_NODE", row.test_node_id, "#node","请选择","id");
-	$("#node").prop("disabled",true);
-	getOrderConfigSelect(row.order_id||"",row.order_config_id,"#order_config","请选择","id") ;
-	$("#order_config").prop("disabled",true);
-	var detail_list=getTplDetailByHeader(row.id)
+	if($.fn.dataTable.isDataTable("#tplDetailTable")){
+		$('#tplDetailTable').DataTable().destroy();
+		$('#tplDetailTable').empty();
+	}
+	var detail_list=getTplDetailByHeader(row.id,row.version)
 	drawTplDetailTable("#tplDetailTable",detail_list,false);
 	$("#uploadForm").hide();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,
 		height:550,
 		modal: true,
-		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>订单成品记录表模板查看</h4></div>",
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Display Inspection Record Template</h4></div>",
 		title_html: true,
 		buttons: [ 
-		/*	{
-				text: "取消",
-				"class" : "btn btn-minier",
-				click: function() {
-					$( this ).dialog( "close" ); 
-				} 
-			},*/
 			{
-				text: "关闭",
+				text: "Close",
 				"class" : "btn btn-primary btn-minier",
 				click: function() {
 					$( this ).dialog( "close" ); 
@@ -293,15 +394,16 @@ function showInfoPage(row){
 	});
 }
 
-function getTplDetailByHeader(tpl_header_id){
+function getTplDetailByHeader(project_id,version){
 	var detail_list=null;
 	$.ajax({
-		url:"getPrdRcdOrderTplDetail",
+		url:"getPrdRcdOrderTplDetailList",
 		type:"post",
 		async:false,
 		dataType:"json",
 		data:{
-			tpl_header_id:tpl_header_id
+			"project_id":project_id,
+			"version":version
 		},
 		success:function(response){
 			detail_list=response.data;

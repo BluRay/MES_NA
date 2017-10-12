@@ -837,4 +837,8 @@
 		LEFT JOIN BMS_NA_BASE_ROLE r on ur.role_id=r.id
 		WHERE ur.staff_number=#{staff_number}
 	</select>
+	
+	<select id="queryBusListByProject" parameterType="String" resultType="Map">
+		select bus_number,VIN from BMS_NA_PROJECT_BUS where project_id=#{project_id}
+	</select>
 </mapper>

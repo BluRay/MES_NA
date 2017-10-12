@@ -114,4 +114,6 @@ public interface ICommonDao {
 	public List<Map<String,String>> queryStaffInfo(Map<String, Object> conditionMap);//查询员工信息
 
 	List<Map<String, Object>> queryRoleListAuth(@Param("staff_number")String staff_number);
+
+	List<Map<String, Object>> queryBusListByProject(@Param("project_id") String project_id);
 }

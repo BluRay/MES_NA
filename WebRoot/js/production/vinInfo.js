@@ -4,7 +4,7 @@ var dt;
 
 $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
-	getFactorySelect("production/vinInfo",'',"#search_factory","全部",'id');
+	getFactorySelect("production/vinInfo",'',"#search_factory","All",'id');
 	getOrderNoSelect("#search_project_no","#orderId");
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
@@ -179,6 +179,7 @@ function importVinInfo(row){
 //		$('#tableVinImport').DataTable().destroy();
 //		$('#tableVinImport').empty();
 //	}
+	$("#tableVinImport tbody").html("");
 	$.ajax({
 		url: "getVinListByProject",
 		dataType: "json",

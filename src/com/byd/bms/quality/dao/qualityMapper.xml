@@ -60,76 +60,66 @@
 		</if>
 	</select>
 	
-		<select id="getOrderConfigList" parameterType="Map" resultType="Map">
-		select o.id,c.id config_id,o.order_no,CONCAT(o.order_no,' ',o.order_name,t.bus_type_code,'  ',o.order_qty,' ','台') AS order_desc,
-		o.memo,t.bus_type_code bus_type,c.order_config_name,u.username editor,h.edit_date,o.bus_type_id
-		from BMS_OR_ORDER_CONFIG c 
-		left join BMS_OR_ORDER o on o.id=c.order_id
-		left join BMS_BASE_BUS_TYPE t on o.bus_type_id=t.id 
-		left join BMS_QM_KEY_PARTS_TEMPLATE_HEADER h on h.bus_type_id=t.id and h.order_id=c.order_id and h.order_config_id=c.id
-		left join BMS_BASE_USER u on u.id=h.editor_id
+	<select id="getOrderKeyPartsTemplateList" parameterType="Map" resultType="Map">
+		select distinct(t.version) version,p.id,p.project_no,
+		CONCAT(p.project_no,' ',p.project_name,p.bus_type,'  ',p.quantity,' ',' Bus') AS order_desc,
+		p.bus_type,u.username editor,t.edit_date
+		from BMS_NA_PROJECT p
+		left join BMS_NA_PROJECT_TRACE_TEMPLATE t on p.id=t.project_id
+<!-- 		left join BMS_NA_BASE_BUS_TYPE bt on bt.id=p.bus_type -->
+		left join BMS_NA_BASE_USER u on u.id=t.editor_id
 		where 1=1
-		<if test="order_id !=null and order_id !=''">
-			and o.id=#{order_id}
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
 		</if>
-		<if test="bus_type_id !=null and bus_type_id !=''">
-			and o.bus_type_id=#{bus_type_id}
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
 		</if>
-		<if test="order_config_id !=null and order_config_id !='' ">
-			and c.id=#{order_config_id}
-		</if>
-			order by o.order_no desc
+			order by p.project_no,version desc
 		<if test="start !=null">
 			limit #{start},#{length}
 		</if>
 		
 	</select>
 	
-	<select id="getConfigTotalCount" parameterType="Map" resultType="int">
-		select count(c.id)
-		from BMS_OR_ORDER_CONFIG c 
-		left join BMS_OR_ORDER o on o.id=c.order_id
+	<select id="getOrderKeyPartsTemplateCount" parameterType="Map" resultType="int">
+		select count(DISTINCT CONCAT(IFNULL(version,''), p.id) as count from BMS_NA_PROJECT p
+		left join BMS_NA_PROJECT_TRACE_TEMPLATE t on p.id=t.project_id
+<!-- 		left join BMS_NA_BASE_BUS_TYPE bt on bt.id=p.bus_type -->
+		left join BMS_NA_BASE_USER u on u.id=t.editor_id
 		where 1=1
-		<if test="order_id !=null and order_id !=''">
-			and o.id=#{order_id}
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
 		</if>
-		<if test="bus_type_id !=null and bus_type_id !=''">
-			and o.bus_type_id=#{bus_type_id}
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
 		</if>
-		<if test="order_config_id !=null and order_config_id !='' ">
-			and c.id=#{order_config_id}
+			order by p.project_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
 		</if>
 	</select>
 	
-	<select id="queryKeyPartsHeader" parameterType="Map" resultType="Map">
-		select id,bus_type_id,order_id,order_config_id from BMS_QM_KEY_PARTS_TEMPLATE_HEADER 
-		where bus_type_id=#{bus_type_id} and order_id=#{order_id} and order_config_id=#{order_config_id}
+	<select id="queryKeyPartsMaxVersion" parameterType="String" resultType="String">
+		select max(version) from BMS_NA_PROJECT_TRACE_TEMPLATE where project_id=#{project_id} 
 	</select>
-	
-	<insert id="saveKeyPartsHeader" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
-		<selectKey resultType="int" keyProperty="id" order="AFTER">
-			SELECT
-			LAST_INSERT_ID()
-		</selectKey>
-		insert into BMS_QM_KEY_PARTS_TEMPLATE_HEADER (bus_type_id,order_id,order_config_id,editor_id,edit_date)
-		values (#{bus_type_id},#{order_id},#{order_config_id},#{editor_id},#{edit_date})
-	</insert>
 	
 	<update id='updateKeyPartsHeader' parameterType="Map">
 		update BMS_QM_KEY_PARTS_TEMPLATE_HEADER set editor_id=#{editor_id} ,edit_date=#{edit_date}
 		where bus_type_id=#{bus_type_id} and order_id=#{order_id} and order_config_id=#{order_config_id}
 	</update>
 	
-	<insert id="saveKeyPartsDetails" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+	<insert id="saveKeyPartsDetails" parameterType="List" useGeneratedKeys="true" keyProperty="id" >
 		<selectKey resultType="int" keyProperty="id" order="AFTER">
 			SELECT
 			LAST_INSERT_ID()
 		</selectKey>
-		insert into BMS_QM_KEY_PARTS_TEMPLATE_DETAILS 
-		(key_components_template_id,sap_mat,parts_no,parts_name,size,vendor,workshop,process,3C_components,3C_no)
+		insert into BMS_NA_PROJECT_TRACE_TEMPLATE 
+		(project_id,version,sap_material,parts_name,byd_pn,vendor,workshop,station,editor_id,edit_date)
 		values
-		<foreach collection="detail_list" item="detail" index="index" separator=",">
-			(#{header_id},#{detail.sap_mat},#{detail.parts_no},#{detail.parts_name},#{detail.size},#{detail.vendor},#{detail.workshop},#{detail.process},#{detail.ccc},#{detail.cccNo})
+		<foreach collection="list" item="detail" index="index" separator=",">
+			(#{detail.project_id},#{detail.version},#{detail.sap_material},#{detail.parts_name},#{detail.byd_pn},
+			#{detail.vendor},#{detail.workshop},#{detail.station},#{detail.editor_id},#{detail.edit_date})
 		</foreach>		
 	</insert>
 	
@@ -151,5 +141,71 @@
      		(workshop=#{detail.workshop} and process_name=#{detail.process})
      	</foreach>
      </select>
-     
+     <select id="getKeyPartsList" parameterType="Map" resultType="Map">
+		select d.item_no,d.sap_material,d.parts_name,d.byd_pn,d.vendor,d.workshop,d.station
+		from BMS_NA_PROJECT_TRACE_TEMPLATE d
+		where d.project_id=#{project_id} and d.version=#{version}
+	</select>
+	<select id="getPrdRcdOrderTplList" parameterType="Map" resultType="Map">
+		select distinct(t.version) version,p.id,p.project_no,
+		CONCAT(p.project_no,' ',p.project_name,p.bus_type,'  ',p.quantity,' ',' Bus') AS order_desc,
+		p.bus_type,u.username editor,t.edit_date
+		from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE t
+		left join BMS_NA_PROJECT p on p.id=t.project_id
+		left join BMS_NA_BASE_USER u on u.id=t.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+			order by p.project_no,version desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	
+	<select id="getPrdRcdOrderTplCount" parameterType="Map" resultType="int">
+		select count(distinct project_id,version) as count from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE t
+		left join BMS_NA_PROJECT p on p.id=t.project_id
+		left join BMS_NA_BASE_USER u on u.id=t.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+			order by p.project_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	<select id="getProjectByNo" parameterType="Map" resultType="Map">
+		select * from BMS_NA_PROJECT p where 1=1 and p.project_no=#{project_no}
+	</select>
+	<insert id="saveInspectionRecordTemplate" parameterType="List" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE 
+		(project_id,version,station,process_name,inspection_item,specification_and_standard,editor_id,edit_date)
+		values
+		<foreach collection="list" item="detail" index="index" separator=",">
+			(#{detail.project_id},#{detail.version},#{detail.station},#{detail.process_name},
+			#{detail.inspection_item},#{detail.specification_and_standard},#{detail.editor_id},#{detail.edit_date})
+		</foreach>		
+	</insert>
+	<select id="queryInspectionRecordMaxVersion" parameterType="String" resultType="String">
+		select max(version) from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE where project_id=#{project_id} 
+	</select>
+	<delete id="deleteInspectionRecordTemplate" parameterType="Map">
+		delete from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE where project_id=#{project_id} and version=#{version}
+	</delete>
+	<select id="getPrdRcdOrderTplDetailList" parameterType="Map" resultType="Map">
+		select * from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
+		where d.project_id=#{project_id} and d.version=#{version}
+	</select>
 </mapper>

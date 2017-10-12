@@ -379,13 +379,12 @@
 	</select>
 	
 	<select id="queryProjectQueryListCount" parameterType="Map" resultType="int">
-		select count(o.id) from BMS_NA_PROJECT o
-		left join BMS_NA_BASE_FACTORY f on o.production_plant=f.id where 1=1
+		select count(o.id) from BMS_NA_PROJECT o where 1=1
 		<if test="project_no !=null and project_no !=''">
 			and o.project_no=#{project_no}
 		</if>
 		<if test="plant !=null and plant !=''">
-			and find_in_set(f.id,#{plant})
+			and find_in_set(o.production_plant_id,#{plant})
 		</if>
 		<if test="status !=null and status !=''">
 			and o.project_status=#{status}

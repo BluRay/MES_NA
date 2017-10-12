@@ -142,4 +142,11 @@ public interface ICommonService {
 	 * @param model
 	 */
 	void getRoleListAuth(String staff_number, ModelMap model);
+	/**
+	 * @author xiong.jianwu
+	 * 根据project查询车辆列表
+	 * @param project_id
+	 * @param model
+	 */
+	void getBusListByProject(String project_id, ModelMap model);
 }

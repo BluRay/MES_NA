@@ -548,5 +548,12 @@ public class CommonServiceImpl implements ICommonService {
 		model.put("data", datalist);
 		
 	}
+	@Override
+	public void getBusListByProject(String project_id, ModelMap model) {
+		List<Map<String,Object>> datalist=new ArrayList<Map<String,Object>>();
+		datalist=commonDao.queryBusListByProject(project_id);
+		model.put("data", datalist);
+		
+	}
 	
 }

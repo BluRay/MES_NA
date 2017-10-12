@@ -12,81 +12,105 @@ $(document).ready(function(){
 			return false;
 		}
 	})
-	$(document).on("input","#search_order_no",function(){
-		//alert("change");
-		$("#search_order_no").attr("order_id","");
-	})
-	$("#search_order_no").change(function(){
-		getOrderConfigSelect($(this).attr("order_id")||"","","#search_order_config","全部","id") ;
-	})
+	$(document).on("input","#search_project_no",function(){
+		$("#search_project_no").attr("order_id","");
+	});
+	$("#btn_upload").click (function () {
+		$(".divLoading").addClass("fade in").show();
+		$("#uploadForm").ajaxSubmit({
+			url:"uploadKeyPartsFile",
+			type: "post",
+			dataType:"json",
+			success:function(response){
+				if(response.success){	
+					if($.fn.dataTable.isDataTable("#keyPartsTable")){
+						$('#keyPartsTable').DataTable().destroy();
+						$('#keyPartsTable').empty();
+					}
+					var datalist=response.data;
+					var columns=[
+			            {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
+			            {"title":"SAP Material","class":"center","data":"sap_material","defaultContent": ""},
+			            {"title":"Part Name","class":"center","data": "parts_name","defaultContent": ""},
+			            {"title":"BYD_P/N","class":"center","data":"byd_pn","defaultContent": ""},
+			            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
+			            {"title":"Workshop","class":"center","data": "workshop","defaultContent": ""},
+			            {"title":"Station","class":"center","data": "station","defaultContent": ""},
+			            {"title":"","class":"center","data": "error","defaultContent": ""}
+			        ];
 
+					$("#keyPartsTable").DataTable({
+						paiging:false,
+						ordering:false,
+						processing:true,
+						searching: false,
+						autoWidth:false,
+						paginate:false,
+						sScrollY: $(window).height()-250,
+						scrollX: true,
+						scrollCollapse: true,
+						lengthChange:false,
+						orderMulti:false,
+						info:false,
+						language: {
+							
+						},
+						aoColumnDefs : [
+			                {
+			                "aTargets" :[7],
+			                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
+			                	if($(nTd).text()!=''){
+			                		//数据格式错误 整行用红色字体标示
+			                		$(nTd).parent().css('color', '#ff0000');
+				                	$(nTd).css('color', '#ff0000').css('font-weight', 'bold').css('width','200px');
+			                	}
+			                }   
+			                },
+			            ],
+						data:datalist,
+						columns:columns
+					});
+
+				}else{
+					
+				}
+				$(".divLoading").hide();
+			}			
+		});
+	});
+	
 })
 
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
-	getBusTypeSelect('','#search_bus_type','全部','id');
-	getOrderNoSelect("#search_order_no","#orderId",null,$('#search_bus_type').val());
+	getBusTypeSelect('','#search_bus_type','All','id');
+	getOrderNoSelect("#search_project_no","#orderId",null,$('#search_bus_type').val());
 	ajaxQuery();
+	$('#file').ace_file_input({
+		no_file:'...',
+		btn_choose:'Browse',
+		btn_change:'Browse',
+		width:"150px",
+		droppable:false,
+		onchange:null,
+		thumbnail:false, //| true | large
+		//allowExt: ['pdf','PDF'],
+	}).on('file.error.ace', function(event, info) {
+		//alert("请上传正确的文件!");
+		return false;
+    });
 }
 
-
-
-function drawKeyPartsTable(tableId,data){
-	$(tableId).dataTable({
-		paiging:false,
-		ordering:false,
-		searching: false,
-		autoWidth:false,
-		destroy: true,
-		paginate:false,
-		//sScrollY: $(window).height()-250,
-		scrollX: true,
-		scrollCollapse: false,
-		lengthChange:false,
-		orderMulti:false,
-		info:false,
-		language: {
-			emptyTable:"",					     
-			infoEmpty:"",
-			zeroRecords:"请导入关键零部件！"
-		},
-		columnDefs: [{
-            "searchable": false,
-            "orderable": false,
-            "targets": 0
-        }],
-		data:data||{},
-		columns: [
-		            {"title":"物料编码","class":"center","data":"sap_mat","defaultContent": ""},
-		            {"title":"零部件编号","class":"center","data":"parts_no","defaultContent": ""},
-		            {"title":"零部件名称","class":"center","data": "parts_name","defaultContent": ""},
-		            {"title":"材料/规格","class":"center","data":"size","defaultContent": ""},		            	            
-		            {"title":"供应商名称","class":"center","data": "vendor","defaultContent": ""},
-		            {"title":"装配车间","class":"center","data":"workshop","defaultContent":""},
-		            {"title":"工序","class":"center","data":"process","defaultContent": ""},	
-		            {"title":"3C件","class":"center","data":"ccc","defaultContent": "","width":"6%"},
-		            {"title":"3C编号","class":"center","data":"cccNo","defaultContent": ""},	
-		          ]	
-	});
-}
 
 function ajaxQuery(){
-/*	$('#scroll_div').ace_scroll({
-		height: $(window).height()-250,
-		mouseWheelLock: true,
-		alwaysVisible : false
-	});*/
+
 	$("#tableResult").DataTable({
 		serverSide: true,
+		rowsGroup:[0,1],
 		paiging:true,
 		ordering:false,
 		searching: false,
 		bAutoWidth:false,
-/*		fixedColumns:   {
-            leftColumns: 0,
-            rightColumns:1
-        },*/
-	/*	sDom: 'r<"H"lf><"datatable-scroll"t><"F"ip>',*/
 		destroy: true,
 		sScrollY: $(window).height()-250,
 		scrollX: true,
@@ -94,24 +118,13 @@ function ajaxQuery(){
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {
-			emptyTable:"抱歉，未查询到数据！",
-			info:"共计 _TOTAL_ 条，当前第 _PAGE_ 页 共 _PAGES_ 页",
-			infoEmpty:"",
-			paginate: {
-			  first:"首页",
-		      previous: "上一页",
-		      next:"下一页",
-		      last:"尾页",
-		      loadingRecords: "请稍等,加载中...",		     
-			}
+		language: {	
 		},
 		ajax:function (data, callback, settings) {
 			var param ={
 					"draw":1,
-					"bus_type_id":$("#search_bus_type").val(),
-					"order_id":$("#search_order_no").attr("order_id"),
-					"order_config_id":$("#search_order_config").val()
+					"bus_type":$("#search_bus_type").find("option:selected").text(),
+					"project_no":$("#search_project_no").val()
 				};
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;//开始的记录序号
@@ -119,7 +132,7 @@ function ajaxQuery(){
 
             $.ajax({
                 type: "post",
-                url: "getOrderKeyPartsList",
+                url: "getProjectKeyPartsTemplateList",
                 cache: false,  //禁用缓存
                 data: param,  //传入组装的参数
                 dataType: "json",
@@ -141,15 +154,16 @@ function ajaxQuery(){
 		
 		},
 		columns: [
-		          	{"title":"车型","class":"center","data":"bus_type","defaultContent": ""},
-		            {"title":"订单","class":"center","data":"order_desc","defaultContent": ""},
-		            {"title":"配置","class":"center","data":"order_config_name","defaultContent": ""},
-		            {"title":"备注","class":"center","data":"memo","defaultContent": ""},
-		            {"title":"维护人","class":"center","data": "editor","defaultContent": ""},
-		            {"title":"维护时间","class":"center","data":"edit_date","defaultContent": ""},		            	            
-		            {"title":"操作","class":"center","data":"order_id","render":function(data,type,row){
-		            	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='查看' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;"+ 
-		            	"<i class=\"ace-icon fa fa-upload bigger-130 editorder\" title='导入' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
+		          	{"title":"Bus Type","class":"center","data":"bus_type","defaultContent": ""},
+		            {"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
+		            {"title":"Version","class":"center","data":"version","defaultContent": ""},
+		            {"title":"Editor","class":"center","data": "editor","defaultContent": ""},
+		            {"title":"Edit Date","class":"center","data":"edit_date","defaultContent": ""},		            	            
+		            {"title":"","class":"center","data":"order_id","render":function(data,type,row){
+		            	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;" 
+		            	}
+		            },{"title":"","class":"center","data":"order_id","render":function(data,type,row){
+		            	return "<i class=\"ace-icon fa fa-upload bigger-130 editorder\" title='Import' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
 		            	}
 		            }
 		          ]
@@ -159,53 +173,111 @@ function ajaxQuery(){
 
 function showEditPage(row){
 		$("#order").html(row.order_desc);
-		$("#order_config").html(row.order_config_name);
-		var bus_type_id=row.bus_type_id;
-		var order_id=row.id;
-		var order_config_id=row.config_id;
-		
-		drawKeyPartsTable("#keyPartsTable");
+	
+		//drawKeyPartsTable("#keyPartsTable");
 		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 			width:1100,
 			height:550,
 			modal: true,
-			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> 订单关键零部件导入</h4></div>",
+			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import Bus traceTemplate </h4></div>",
 			title_html: true,
 			buttons: [ 
 				{
-					text: "取消",
+					text: "Cancel",
 					"class" : "btn btn-minier",
 					click: function() {
 						$( this ).dialog( "close" ); 
 					} 
 				},
 				{
-					text: "确定",
+					text: "Confirm",
 					"class" : "btn btn-primary btn-minier",
 					click: function() {
-						ajaxAdd(order_id,order_config_id,bus_type_id); 
+						save(row.id,row.version); 
+						$( this ).dialog( "close" ); 
 					} 
 				}
 			]
 		});
 }
 
+function save(project_id,version) {
+	var save_flag=true;
+	var trs=$("#keyPartsTable tbody").find("tr");
+	if(trs.length==0){
+		save_flag=false;
+		alert("没有可保存的数据");
+		return false;
+	}
+	var addList=[];
+	$.each(trs,function(i,tr){
+		var tds=$(tr).children("td");
+		var error = $(tds).eq(7).html();
+		if(error!=''){
+			var item_no = $(tds).eq(0).html();
+			save_flag=false;
+			alert("Item:"+item_no+" 数据存在异常，请修改后在导入");
+			return false;
+		}
+		var item_no = $(tds).eq(0).html();
+		var sap_material = $(tds).eq(1).html();
+		var parts_name = $(tds).eq(2).html();
+		var byd_pn = $(tds).eq(3).html();
+		var vendor = $(tds).eq(4).html();
+		var workshop = $(tds).eq(5).html();
+		var station = $(tds).eq(6).html();
+		var keyparts={};
+		keyparts.item_no=item_no;
+		keyparts.sap_material=sap_material;
+		keyparts.byd_pn=byd_pn;
+		keyparts.parts_name=parts_name;
+		keyparts.vendor=vendor;
+		keyparts.workshop=workshop;
+		keyparts.station=station;
+		addList.push(keyparts);
+	});
+	if(save_flag){
+		$.ajax({
+			url:'saveKeyPartsTemplateInfo',
+			method:'post',
+			dataType:'json',
+			async:false,
+			data:{
+				"addList":JSON.stringify(addList),
+				"project_id":project_id,
+				"version":version
+			},
+			success:function(response){
+	            if(response.success){
+	            	$.gritter.add({
+						title: 'Message：',
+						text: "<h5>"+response.message+"！</h5>",
+						class_name: 'gritter-info'
+					});
+	            }else{
+	            	$.gritter.add({
+						title: 'Message：',
+						text: "<h5>"+response.message+"！</h5>",
+						class_name: 'gritter-info'
+					});
+	            }
+			}
+		});
+	}
+}
+
 function showInfoPage(row){
 	$("#order_view").html(row.order_desc);
-	$("#order_config_view").html(row.order_config_name);
-	var bus_type_id=row.bus_type_id;
-	var order_id=row.id;
-	var order_config_id=row.config_id;
-	var param={};
-	param.order_id=order_id;
-	param.order_config_id=order_config_id;
-	param.bus_type_id=bus_type_id;
-	
+	var project_id=row.id;
+	var version=row.version;
 	$.ajax({
 		type: "post",
         url: "getKeyPartsList",
         cache: false,  //禁用缓存
-        data: param,  //传入组装的参数
+        data: {
+        	"project_id":project_id,
+        	"version":version
+        },  //传入组装的参数
         dataType: "json",
         success: function (response) {
         	drawKeyPartsTable("#keyPartsTable_view",response.data);
@@ -217,18 +289,12 @@ function showInfoPage(row){
 		width:1100,
 		height:550,
 		modal: true,
-		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> 订单关键零部件查看</h4></div>",
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Display Bus traceTemplate</h4></div>",
 		title_html: true,
 		buttons: [ 
-			/*{
-				text: "取消",
-				"class" : "btn btn-minier",
-				click: function() {
-					$( this ).dialog( "close" ); 
-				} 
-			},*/
+			
 			{
-				text: "关闭",
+				text: "Close",
 				"class" : "btn btn-primary btn-minier",
 				click: function() {
 					$( this ).dialog( "close" ); 
@@ -237,73 +303,39 @@ function showInfoPage(row){
 		]
 	});
 }
-/**
- * 上传导入
- */
-function upload(form,file){
-	if (file == "") {
-		alert("请选择文件！");
-		return false;
-	}
-	allowSubmit = false;
-	if (!file)
-		return;
-	while (file.indexOf("\\") != -1)
-		file = file.slice(file.indexOf("\\") + 1);
-		ext = file.slice(file.indexOf(".")).toLowerCase();
-	for (var i = 0; i < extArray.length; i++) {
-		if (extArray[i] == ext) {
-			allowSubmit = true;
-			break;
-		}
-	}
-	if (allowSubmit) {
-		$("#uploadForm").ajaxSubmit({
-			dataType : "json",
-			type : 'post', // 提交方式 get/post
-			url : 'uploadKeyPartsFile', // 需要提交的 url
-			data : {
-				
-			},
-			success : function(response) {
-				//alert(response.data);
-				json_keyParts=response.data;
-				if(response.success){
-					drawKeyPartsTable("#keyPartsTable",response.data);
-				}else{
-					alert(response.message)
-				}
-				$("#uploadForm").resetForm();
-			}
-		})	
-	}
-}
-
-function ajaxAdd(order_id,order_config_id,bus_type_id){
-	if(json_keyParts.length==0){
-		alert("请上传关键零部件明细！");
-		return false;
-	}
-	
-	$.ajax({
-		url:"saveKeyParts",
-		type:"post",
-		dataType:"json",
-		data:{
-			order_id:order_id,
-			order_config_id:order_config_id,
-			bus_type_id:bus_type_id,
-			parts_detail:JSON.stringify(json_keyParts)
+function drawKeyPartsTable(tableId,data){
+	$(tableId).dataTable({
+		paiging:false,
+		ordering:false,
+		searching: false,
+		autoWidth:false,
+		destroy: true,
+		paginate:false,
+		//sScrollY: $(window).height()-250,
+		scrollX: true,
+		scrollCollapse: false,
+		lengthChange:false,
+		orderMulti:false,
+		info:false,
+		language: {
 		},
-		success:function(response){
-			if(response.success){
-				alert(response.message);
-				ajaxQuery();
-				$( "#dialog-config" ).dialog("close");
-			}else{
-				alert(response.message);
-			}
-		}
-	})
-}; 
+		columnDefs: [{
+            "searchable": false,
+            "orderable": false,
+            "targets": 0
+        }],
+		data:data||{},
+		columns: [
+		            {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
+		            {"title":"SAP No.","class":"center","data":"sap_material","defaultContent": ""},
+		            {"title":"Parts Name","class":"center","data": "parts_name","defaultContent": ""},
+		          //  {"title":"材料/规格","class":"center","data":"size","defaultContent": ""},		            	            
+		            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
+		            {"title":"Workshop","class":"center","data":"workshop","defaultContent":""},
+		            {"title":"Station","class":"center","data":"station","defaultContent": ""},	
+//		            {"title":"3C件","class":"center","data":"ccc","defaultContent": "","width":"6%"},
+//		            {"title":"3C编号","class":"center","data":"cccNo","defaultContent": ""},	
+		          ]	
+	});
+}
 

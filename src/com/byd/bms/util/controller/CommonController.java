@@ -738,4 +738,20 @@ public class CommonController extends BaseController {
 				
 		return model;
 	}
+	
+	/**
+	 * @author xiong.jianwu
+	 * 根据project查询车辆列表
+	 * @return
+	 */
+	@RequestMapping("/getBusListByProject")
+	@ResponseBody
+	public ModelMap getBusListByProject(){
+		model.clear();
+		String project_id=request.getParameter("project_id");
+		commonService.getBusListByProject(project_id,model);
+		
+		return model;
+	}
+	
 }

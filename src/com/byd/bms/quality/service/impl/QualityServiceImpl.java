@@ -1,6 +1,8 @@
 package com.byd.bms.quality.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,10 +56,10 @@ public class QualityServiceImpl implements IQualityService {
 	}
 
 	@Override
-	public void getOrderKeyPartsList(Map<String, Object> condMap, ModelMap model) {
+	public void getOrderKeyPartsTemplateList(Map<String, Object> condMap, ModelMap model) {
 		int totalCount=0;
-		List<Map<String, Object>> datalist=qualityDao.getOrderConfigList(condMap);
-		totalCount=qualityDao.getConfigTotalCount(condMap);
+		List<Map<String, Object>> datalist=qualityDao.getOrderKeyPartsTemplateList(condMap);
+		totalCount=qualityDao.getOrderKeyPartsTemplateCount(condMap);
 		Map<String, Object> result=new HashMap<String,Object>();
 		result.put("draw", condMap.get("draw"));
 		result.put("recordsTotal", totalCount);
@@ -70,7 +72,24 @@ public class QualityServiceImpl implements IQualityService {
 	@Transactional
 	public void saveKeyPartsDetail(Map<String, Object> keyParts) {
 		String parts_detail=(String)keyParts.get("parts_detail");
+		String project_id=keyParts.get("project_id").toString();
+		String editor_id=keyParts.get("editor_id").toString();
+		String edit_date=(String)keyParts.get("edit_date");
+		String version=qualityDao.queryKeyPartsMaxVersion(project_id);
 		List detail_list=new ArrayList();
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+		if(version==null){
+			version ="V"+ df.format(new Date())+"01";
+		}else{
+			String monthyear=version.substring(1, 9);
+			if(monthyear.equals(df.format(new Date()).toString())){
+				String versionStr=version.substring(version.length()-2, version.length());
+				int versionNo=Integer.parseInt(versionStr)+1;
+				version ="V"+ df.format(new Date())+"0"+versionNo;
+			}else{
+				version ="V"+ df.format(new Date())+"01";
+			}    
+		}
 		JSONArray jsa=new JSONArray();
 		if(parts_detail.contains("[")){
 			jsa=JSONArray.fromObject(parts_detail);
@@ -79,39 +98,17 @@ public class QualityServiceImpl implements IQualityService {
 		while(it.hasNext()){
 			JSONObject el= (JSONObject) it.next();
 			Map<String,Object> detail=(Map<String, Object>) JSONObject.toBean(el, Map.class);
+			detail.put("project_id", project_id);
+			detail.put("version", version);
+			detail.put("editor_id", editor_id);
+			detail.put("edit_date", edit_date);
 			detail_list.add(detail);
 		}
-		
-		int header_id=0;
-		Map<String,Object> m=qualityDao.queryKeyPartsHeader(keyParts);
-		if(m!=null){
-			header_id=Integer.parseInt(m.get("id").toString());
-		}
-		Map<String,Object> smap=null;
-		if(header_id==0){
-			qualityDao.saveKeyPartsHeader(keyParts);
-			header_id=(int) keyParts.get("id");	
-			smap=new HashMap<String,Object>();
-			smap.put("header_id", header_id);
-			smap.put("detail_list", detail_list);
-			
-			if(detail_list.size()>0){
-				qualityDao.saveKeyPartsDetails(smap);
-			}	
-		}else{
-			qualityDao.updateKeyPartsHeader(keyParts);
-			if(detail_list.size()>0){
-				smap=new HashMap<String,Object>();
-				smap.put("header_id", header_id);
-				smap.put("detail_list", detail_list);
-				qualityDao.deleteKeyPartsByHeader(header_id);
-				qualityDao.saveKeyPartsDetails(smap);
-			}		
-		}
+		qualityDao.saveKeyPartsDetails(detail_list);
 	}
 	@Override
 	public void getKeyPartsList(HashMap<String, Object> condMap, ModelMap model) {
-		model.put("data", qualityDao.queryKeyPartsList(condMap));		
+		model.put("data", qualityDao.getKeyPartsList(condMap));		
 	}
 	@Override
 	public void validateWorkshopProcess(List<Map<String, String>> addList) throws Exception {
@@ -124,5 +121,76 @@ public class QualityServiceImpl implements IQualityService {
 				throw new Exception("数据错误，第"+(i+1)+"行数据装配车间("+addList.get(i).get("workshop")+")、工序("+addList.get(i).get("process")+")不存在！");
 			};		
 		}		
+	}
+	@Override
+	public void getPrdRcdOrderTplList(Map<String, Object> condMap, ModelMap model) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist=qualityDao.getPrdRcdOrderTplList(condMap);
+		totalCount=qualityDao.getPrdRcdOrderTplCount(condMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", condMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+
+	}
+	public void getProjectByNo(Map<String, Object> condMap, ModelMap model){
+		Map<String, Object> datalist=qualityDao.getProjectByNo(condMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	@Override
+	@Transactional
+	public void saveInspectionRecordTemplate(Map<String, Object> keyParts) {
+		List detail_list=new ArrayList();
+		String detail=(String)keyParts.get("detail");
+		String project_id=keyParts.get("project_id").toString();
+		String editor_id=keyParts.get("editor_id").toString();
+		String edit_date=(String)keyParts.get("edit_date");
+		String version=keyParts.get("version")!=null ? (String)keyParts.get("version"):"";
+		if(version.equals("")){ // 新增导入
+			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+			// 同一天内 新增导入多次的情况
+			version=qualityDao.queryInspectionRecordMaxVersion(project_id);
+			if(version!=null){
+				String monthyear=version.substring(1, 9);
+				if(monthyear.equals(df.format(new Date()).toString())){
+					String versionStr=version.substring(version.length()-2, version.length());
+					int versionNo=Integer.parseInt(versionStr)+1;
+					version ="V"+ df.format(new Date())+"0"+versionNo;
+				}else{
+					version ="V"+ df.format(new Date())+"01";
+				}    
+			}else{
+				version ="V"+ df.format(new Date())+"01";
+			}
+		}
+		JSONArray jsa=new JSONArray();
+		if(detail.contains("[")){
+			jsa=JSONArray.fromObject(detail);
+		}
+		Iterator it=jsa.iterator();
+		while(it.hasNext()){
+			JSONObject el= (JSONObject) it.next();
+			Map<String,Object> detailmap=(Map<String, Object>) JSONObject.toBean(el, Map.class);
+			detailmap.put("project_id", Integer.parseInt(project_id));
+			detailmap.put("version", version);
+			detailmap.put("editor_id", Integer.parseInt(editor_id));
+			detailmap.put("edit_date", edit_date);
+			detail_list.add(detailmap);
+		}
+		if(keyParts.get("version")!=null){ // 更新此前版本,先删除
+			Map<String,Object> map=new HashMap<String,Object>();
+			map.put("project_id", Integer.parseInt(project_id));
+			map.put("version", (String)keyParts.get("version"));
+			qualityDao.deleteInspectionRecordTemplate(map);
+		}
+		qualityDao.saveInspectionRecordTemplate(detail_list);
+	}
+	@Override
+	public void getPrdRcdOrderTplDetailList(HashMap<String, Object> condMap, ModelMap model) {
+		model.put("data", qualityDao.getPrdRcdOrderTplDetailList(condMap));		
 	}
 }
