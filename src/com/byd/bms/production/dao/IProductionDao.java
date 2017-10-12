@@ -43,7 +43,8 @@ public interface IProductionDao {
 	Map<String, Object> queryWarehouseInfo(Map<String, Object> condMap);
 
 	Map<String, Object> queryScanNodeRecord(Map<String, Object> condMap);//查询节点是否扫描了
-	
+
+	List<Map<String, Object>> queryStationList(Map<String, Object> condMap);
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);
@@ -66,4 +67,6 @@ public interface IProductionDao {
 	public int insertAbnormity(Map<String,Object> conditionMap);
 	public List<Map<String, Object>> getExceptionList(Map<String,Object> conditionMap);
 	public int getExceptionCount(Map<String,Object> conditionMap);
+	public int measuresAbnormity(Map<String,Object> conditionMap);
+
 }

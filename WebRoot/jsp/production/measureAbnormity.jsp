@@ -87,10 +87,46 @@
 						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><select id="new_abnormal_cause" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">OpenDate：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Chouse Open Date..." id="new_opendate" onClick="WdatePicker({el:'new_opendate',dateFmt:'yyyy-MM-dd'});" /></td>
+						<td align="right" style="width:100px">OpenDate：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Open Date..." id="new_opendate" onClick="WdatePicker({el:'new_opendate',dateFmt:'yyyy-MM-dd'});" /></td>
 					</tr>
 					<tr style="height:40px">
 						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" id="new_detailed_reason" class="form-control" style="width:300px" /></td>
+					</tr>
+					
+					</table>
+				</form>
+			
+			</div>
+			
+			<div id="dialog-edit" class="hide" style="align:center;width:1200px;height:500px">
+				<form>
+					<table>
+					<tr style="height:40px">
+						<td align="right" style="width:200px">Plant：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_plant" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_workshop" class="form-control" style="width:150px" /><input type="text" id="edit_id" class="form-control" style="width:150px;display:none" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:200px">Line：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_line" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">AbnormalStation：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalStation" class="form-control" style="width:150px" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:200px">BusNumber：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_busnumber" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalCause" class="form-control" style="width:150px" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right">OpenDate：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_opendate" class="form-control" style="width:150px" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" disabled="disabled" id="edit_detailed_reason" class="form-control" style="width:300px" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">Responsible Department：</td><td colspan="3" style="width:150px"><select id="edit_responsibleDepartment" class="form-control" style="width:150px"></select></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">Measures：</td><td colspan="3" style="width:150px"><input type="text" id="edit_measures" class="form-control" style="width:300px" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">Measures Time：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Measures Time..." id="edit_measuresTime" onClick="WdatePicker({el:'edit_measuresTime',dateFmt:'yyyy-MM-dd HH:mm'});" /></td>
 					</tr>
 					
 					</table>

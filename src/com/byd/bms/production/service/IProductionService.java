@@ -21,7 +21,8 @@ public interface IProductionService {
 	public Map<String, Object> scan(Map<String,Object> condMap,List partsList);
 	
 	public Map<String,Object> getNextStation(Map<String,Object> condMap);
-	
+
+	public List<Map<String, Object>> getStationSelect(Map<String, Object> condMap);
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
     public Map<String, Object> getVinList(Map<String, Object> conditionMap);
@@ -38,4 +39,5 @@ public interface IProductionService {
 	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);
 	public int insertAbnormity(Map<String, Object> conditionMap);
 	public Map<String,Object> getExceptionList(Map<String,Object> queryMap);
+	public int measuresAbnormity(Map<String, Object> conditionMap);
 }

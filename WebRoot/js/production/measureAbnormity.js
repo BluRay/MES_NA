@@ -351,11 +351,96 @@ function ajaxQuery(){
 		            {"title":"Abnormal Cause","class":"center","data":"abnormal_cause","defaultContent": ""},
 		            {"title":"Detailed Reason","class":"center","data":"detailed_reason","defaultContent": ""},
 		            {"title":"Open Date","class":"center","data":"open_date","defaultContent": ""},
+		            {"title":"Status","class":"center","data":"open_date","defaultContent": "",
+		            	"render": function ( data, type, row ) {
+		            		var status = "Processing"
+		            		if(row['responsible_department_id']==''){
+		            			status = "Closed"
+		            		}
+		            		return status;
+		            	}
+		            },
 		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
-		                    return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title=\"查看详情\" onclick=\"javascript:window.location = ('planPreview?version="+row['version'] + "&plan_month="+row['plan_month'] + "&factory_id=" +$("#search_factory").val()+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		            		if(row['responsible_department_id']!=''){
+		                    return "<i class=\"glyphicon glyphicon-edit bigger-130 showbus\" title=\"处理\" onclick='editPause(" +
+		                    row['id'] + ",\"" + row['plant'] + "\",\"" + row['workshop'] + "\",\"" + row['line'] + "\",\"" + row['abnormal_station'] + "\",\"" + 
+		                    row['bus_number'] + "\",\"" + row['abnormal_cause'] + "\",\"" + row['detailed_reason'].replace(/\r/ig, "").replace(/\n/ig, "") + "\",\"" + 
+		                    row['open_date'] + "\")' style='color:blue;cursor: pointer;'></i>&nbsp;";
+		            		}else{
+		            			return "";
+		            		}
 		                },
 		            }
 		          ],
+	});
+}
+
+function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_cause,detailed_reason,open_date){
+	$("#edit_plant").val(plant);
+	$("#edit_workshop").val(workshop);
+	$("#edit_id").val(id);
+	$("#edit_line").val(line);
+	$("#edit_abnormalStation").val(abnormal_station);
+	$("#edit_busnumber").val(bus_number);
+	$("#edit_abnormalCause").val(abnormal_cause);
+	$("#edit_opendate").val(open_date);
+	$("#edit_detailed_reason").val(detailed_reason);
+	$("#edit_measures").val("");
+	$("#measure_date").val("");
+	
+	$("#dialog-edit").removeClass('hide').dialog({
+		resizable: false,
+		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Abnormity</h4></div>',
+		title_html: true,
+		width:'800px',
+		modal: true,
+		buttons: [{
+					text: "Close",
+					"class" : "btn btn-minier",
+					click: function() {$( this ).dialog( "close" );} 
+				},
+				{
+					text: "Add",
+					id:"btn_ok",
+					"class" : "btn btn-success btn-minier",
+					click: function() {
+						btnEditConfirm(id);
+					} 
+				}
+			]
+	});
+	
+}
+
+function btnEditConfirm(id){
+	if($("#edit_measuresTime").val()==""){
+		alert(Warn['P_measureAbnormity_01']);
+		$("#edit_measuresTime").focus();
+		return false;
+	}
+	if($("#measures").val()==""){
+		alert(Warn['P_measureAbnormity_02']);
+		$("#measures").focus();
+		return false;
+	}
+	
+	$.ajax({
+		type : "get",
+		dataType : "json",
+		async : false,
+		url : "measuresAbnormity",
+		data : {
+			"id" : id,
+			"responsible_department_id": $("#edit_responsibleDepartment").val(),
+			"responsible_department" : $('#edit_responsibleDepartment :selected').text(),
+			"measures" : $("#edit_measures").val(),
+			"measure_date" : $("#edit_measuresTime").val(),
+		},
+		success : function(response) {
+			fadeMessageAlert(null,"SUCCESS","gritter-info");
+        	$("#dialog-edit").dialog( "close" );
+    		ajaxQuery();
+		}
 	});
 }

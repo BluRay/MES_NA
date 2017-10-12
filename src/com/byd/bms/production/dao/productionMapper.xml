@@ -161,6 +161,17 @@
 	<update id="updateProject" parameterType="Map">
 		update BMS_NA_PROJECT set project_status=#{status} where id=#{project_id}
 	</update>
+	
+	<select id="queryStationList" parameterType="Map" resultType="Map">
+		select distinct station_code, station_name from BMS_NA_BASE_STATION
+		where factory=#{factory} 
+		<if test="workshop !=null and workshop !=''">
+			and workshop=#{workshop}
+		</if>
+		<if test="line !=null and line !=''">
+			and line=#{line}
+		</if>
+	</select>
 <!-- ########################### xiong jianwu end#############################-->	
 
 	<select id="getVinTotalCount" parameterType="Map" resultType="int">
@@ -348,5 +359,9 @@
 		AND E.open_date &lt;= #{end_time}
 		</if>
 	</select>
+	<update id="measuresAbnormity" parameterType="Map">
+		update BMS_NA_PRODUCTION_ABNORMITY SET responsible_department_id =#{responsible_department_id},responsible_department = #{responsible_department},measures = #{measures},measure_date=#{measure_date}
+		where id=#{id}
+	</update>
 	
 </mapper>

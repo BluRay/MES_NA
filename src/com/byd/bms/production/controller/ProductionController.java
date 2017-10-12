@@ -341,6 +341,72 @@ public class ProductionController extends BaseController {
 		mv.setViewName("production/ecnUpdate");
 		return mv;
 	}
+	
+	/**
+	 * 查询工厂工位下拉列表
+	 * @return
+	 */
+	@RequestMapping("/getStationSelect")
+	@ResponseBody
+	public ModelMap getStationSelect(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", request.getParameter("factory"));
+		model=new ModelMap();
+		model.put("data", productionService.getStationSelect(condMap));
+		return model;
+	}
+	
+	@RequestMapping(value="/uploadTechMaterial",method=RequestMethod.POST)
+	@ResponseBody
+	public ModelMap uploadTechMaterial(@RequestParam(value="file",required=false) MultipartFile file){
+		model.clear();
+		String fileName=file.getOriginalFilename();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		
+		try{
+		ExcelModel excelModel = new ExcelModel();
+		excelModel.setReadSheets(1);
+		excelModel.setStart(1);
+		Map<String, Integer> dataType = new HashMap<String, Integer>();
+		dataType.put("0", ExcelModel.CELL_TYPE_STRING);
+		dataType.put("1", ExcelModel.CELL_TYPE_STRING);
+		dataType.put("2", ExcelModel.CELL_TYPE_STRING);
+		dataType.put("3", ExcelModel.CELL_TYPE_STRING);
+		dataType.put("4", ExcelModel.CELL_TYPE_NUMERIC);
+		dataType.put("5", ExcelModel.CELL_TYPE_STRING);
+		
+		excelModel.setDataType(dataType);
+		excelModel.setPath(fileName);
+		File tempfile=new File(fileName);
+		file.transferTo(tempfile);
+		/**
+		 * 读取输入流中的excel文件，并且将数据封装到ExcelModel对象中
+		 */
+		InputStream is = new FileInputStream(tempfile);
+		ExcelTool excelTool = new ExcelTool();
+		excelTool.readExcel(is, excelModel);
+		List<Map<String, Object>> materialList = new ArrayList<Map<String, Object>>();
+		int i=1;
+		for(Object[] data:excelModel.getData()){
+			Map<String,Object> m=new HashMap<String,Object>();
+			m.put("item_no", i);
+			m.put("SAP_material", data[0].toString());
+			m.put("BYD_NO", data[1].toString());
+			m.put("description", data[2].toString());
+			m.put("specification", data[3].toString());
+			m.put("qty", data[4].toString());
+			m.put("note", data[5].toString());
+			materialList.add(m);
+			i++;
+		}	
+		
+		initModel(true, "Upload Success!", materialList);
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false, "Upload Failed!", null);
+		}
+		return mv.getModelMap();
+	}
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")
@@ -534,6 +600,26 @@ public class ProductionController extends BaseController {
 		Map<String,Object> list = productionService.getExceptionList(condMap);
 		mv.clear();
 		mv.getModelMap().addAllAttributes(list);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	
+	@RequestMapping("/measuresAbnormity")
+	@ResponseBody
+	public ModelMap measuresAbnormity(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("id", request.getParameter("id"));
+		if (request.getParameter("responsible_department_id") != ""){
+			condMap.put("responsible_department_id", request.getParameter("responsible_department_id"));
+		}else{
+			condMap.put("responsible_department_id", "0");
+		}
+		condMap.put("responsible_department", request.getParameter("responsible_department"));
+		condMap.put("measures", request.getParameter("measures"));
+		condMap.put("measure_date", request.getParameter("measure_date"));
+		int result = productionService.measuresAbnormity(condMap);
+		initModel(true,String.valueOf(result),null);
 		model = mv.getModelMap();
 		return model;
 	}

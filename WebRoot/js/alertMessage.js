@@ -5,5 +5,18 @@ var Warn={
     'W_04' : '未配置扫描逻辑',
     'W_05' : 'XXX工位还未扫描，请先扫描XXX工位!',
     'W_06' : 'XXX工位还未扫描上线，请先扫描XXX工位上线!',
-    'W_07' : '该节点未扫描上线，请先扫描XXX节点上线 !'
+    'W_07' : '该节点未扫描上线，请先扫描XXX节点上线 !',    	
+    'W_08' : '请输入有效的Project！',
+    'W_09' : '请选择需要技改的车号！',
+    'W_10' : '请填写 ECN NO.！',
+    'W_11' : '请填写 Items！',
+    'W_12' : '请选择 Work Station！',
+    'W_13' : '请填写 Problem Detail！',
+    'W_14' : '请选择 Scope of Change！',
+
+    /********Start Yangke***********************/
+    'P_measureAbnormity_01'	: '处理日期不能为空！',
+    'P_measureAbnormity_02'	: 'measures 不能为空！'
+    	
+    /********End  Yangke***********************/
 }

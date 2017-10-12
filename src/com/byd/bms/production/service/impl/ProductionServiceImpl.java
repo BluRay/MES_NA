@@ -239,6 +239,12 @@ public class ProductionServiceImpl implements IProductionService {
 	}
 
 	
+	@Override
+	public List<Map<String, Object>> getStationSelect(Map<String, Object> condMap) {
+		List<Map<String, Object>> stations=productionDao.queryStationList(condMap);
+		return stations;
+	}
+
 	/*****************************xiong jianwu end  *****************************/
 	@Override
 	public Map<String, Object> getBusNumberList(Map<String, Object> conditionMap) {
@@ -292,5 +298,10 @@ public class ProductionServiceImpl implements IProductionService {
 		result.put("recordsFiltered", totalCount);
 		result.put("data", datalist);
 		return result;
+	}
+
+	@Override
+	public int measuresAbnormity(Map<String, Object> conditionMap) {
+		return productionDao.measuresAbnormity(conditionMap);
 	}
 }

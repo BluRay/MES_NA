@@ -24,6 +24,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <script src="<%=basePath%>/assets/js/jquery.mobile.custom.min.js"></script>
 <script src="<%=basePath%>/assets/js/ace-extra.min.js"></script>
 <script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
+<script src="<%=basePath%>/js/alertMessage.js"></script>
 		<!-- page specific plugin scripts -->
 		<!-- ace scripts -->
 		<script src="<%=basePath%>/assets/js/ace-elements.min.js"></script>

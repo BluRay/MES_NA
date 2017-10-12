@@ -3,7 +3,7 @@
 <mapper namespace="com.byd.bms.util.dao.ICommonDao">
 
 	<select id="queryOrderList" parameterType="Map" resultType="Map">
-		select o.id,o.project_name name,o.project_no orderNo,o.quantity orderQty,o.bus_type busType
+		select o.id,o.project_name name,o.project_no orderNo,o.quantity orderQty,o.bus_type busType,o.production_plant factory
 		from BMS_NA_PROJECT o		
 		where o.project_no like CONCAT('%',#{orderNo},'%') 
 		<if test="busType!=null and  busType!=''">

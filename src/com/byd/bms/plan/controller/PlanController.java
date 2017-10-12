@@ -151,15 +151,15 @@ public class PlanController extends BaseController{
 				String node = excelModel.getData().get(i)[2].toString().trim();
 				int lineCountSwitch = i % 9;
 				switch(lineCountSwitch){
-					case 0 : if(!node.equals("焊装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 1 : if(!node.equals("焊装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 2 : if(!node.equals("涂装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 3 : if(!node.equals("涂装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 4 : if(!node.equals("底盘上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 5 : if(!node.equals("底盘下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 6 : if(!node.equals("总装上线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 7 : if(!node.equals("总装下线")){throw new RuntimeException("导入文件的格式有误！");}break; 
-					case 8 : if(!node.equals("车辆入库")){throw new RuntimeException("导入文件的格式有误！");}break; 
+					case 0 : if(!node.equals("welding_online")){throw new RuntimeException("import file ERROR！");}break; 
+					case 1 : if(!node.equals("welding_offline")){throw new RuntimeException("import file ERROR！");}break; 
+					case 2 : if(!node.equals("painting_online")){throw new RuntimeException("import file ERROR！");}break; 
+					case 3 : if(!node.equals("painting_offline")){throw new RuntimeException("import file ERROR！");}break; 
+					case 4 : if(!node.equals("chassis_online")){throw new RuntimeException("import file ERROR！");}break; 
+					case 5 : if(!node.equals("chassis_offline")){throw new RuntimeException("import file ERROR！");}break; 
+					case 6 : if(!node.equals("assembly_online")){throw new RuntimeException("import file ERROR！");}break; 
+					case 7 : if(!node.equals("assembly_offline")){throw new RuntimeException("import file ERROR！");}break; 
+					case 8 : if(!node.equals("outgoing")){throw new RuntimeException("import file ERROR！");}break; 
 				}
 			}
 			//上传的文件验证完成
@@ -169,7 +169,7 @@ public class PlanController extends BaseController{
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			initModel(false,"导入文件的格式有误！",null);
+			initModel(false,"import file ERROR！",null);
 			model = mv.getModelMap();
 			return model;
 		}
