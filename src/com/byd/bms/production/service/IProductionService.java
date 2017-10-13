@@ -22,7 +22,11 @@ public interface IProductionService {
 	
 	public Map<String,Object> getNextStation(Map<String,Object> condMap);
 
-	public List<Map<String, Object>> getStationSelect(Map<String, Object> condMap);
+	public List<Map<String, Object>> getStationSelect(Map<String, Object> condMap);	
+	
+	@Transactional
+	public void addEcnItems(Map<String, Object> condMap, ModelMap model);
+
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
     public Map<String, Object> getVinList(Map<String, Object> conditionMap);

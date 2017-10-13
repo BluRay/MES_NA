@@ -99,7 +99,7 @@ function ajaxQuery(){
 	    	"version":"",
 	    	"factory_id": $('#search_factory').val(),
 	    	"factory_name": $("#search_factory :selected").text(),
-	    	"order_no": $('#search_order_no').val(),
+	    	"order_no": $('#search_project_no').val(),
 	    	"plan_month": $("#search_year").val() + "-" + $("#search_month").val()
 	    },
 	    success:function(response){

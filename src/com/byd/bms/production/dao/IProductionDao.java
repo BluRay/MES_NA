@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.byd.bms.setting.model.BmsBaseFactory;
 @Repository(value="productionDao")
 public interface IProductionDao {
 	/*****************************xiong jianwu start  *****************************/
@@ -45,6 +44,15 @@ public interface IProductionDao {
 	Map<String, Object> queryScanNodeRecord(Map<String, Object> condMap);//查询节点是否扫描了
 
 	List<Map<String, Object>> queryStationList(Map<String, Object> condMap);
+
+	void insertEcnHead(Map<String, Object> condMap);
+
+	void batchInsertEcnItems(List<Map<String, Object>> item_list);
+
+	void batchInsertItemBus(List<Map<String, Object>> item_bus_list);
+
+	void batchInsertMaterial(List<Map<String, Object>> item_material_list);
+	
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);

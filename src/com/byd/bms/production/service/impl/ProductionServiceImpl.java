@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -237,12 +238,75 @@ public class ProductionServiceImpl implements IProductionService {
 		Map<String,Object> nextProcess=productionDao.queryNextStation(condMap);
 		return nextProcess;
 	}
-
 	
 	@Override
 	public List<Map<String, Object>> getStationSelect(Map<String, Object> condMap) {
 		List<Map<String, Object>> stations=productionDao.queryStationList(condMap);
 		return stations;
+	}	
+
+	@Override
+	@Transactional
+	public void addEcnItems(Map<String, Object> condMap, ModelMap model) {
+		//保存BMS_NA_ECN_HEAD表信息
+		productionDao.insertEcnHead(condMap);
+		int ecn_id=Integer.parseInt(condMap.get("id").toString());
+		
+		//保存ecn items 信息包括ecn_id，返回items id
+		String itemlist_str=condMap.get("ecnItemList").toString();
+		JSONArray items=JSONArray.fromObject(itemlist_str);
+		Iterator it_del=items.iterator();
+		List<Map<String,Object>> item_list=new ArrayList<Map<String,Object>>();
+		
+		while(it_del.hasNext()){
+			JSONObject jel=(JSONObject) it_del.next();
+			Map<String,Object> item=(Map<String, Object>) JSONObject.toBean(jel, Map.class);
+			item.put("ecn_id", ecn_id);
+			item_list.add(item);
+		}
+		
+		productionDao.batchInsertEcnItems(item_list);
+			
+		//保存BMS_NA_ECN_ITEM_BUS信息，包括ecn items 返回的items id	
+		String bus_list_str=condMap.get("bus_list").toString();
+		List<Map<String,Object>> item_bus_list=new ArrayList<Map<String,Object>>();
+		List<String> bus_list=Arrays.asList(bus_list_str.split(","));
+		
+		//为每个ecn item 保存需要技改的车辆信息
+		Iterator it_del_items=item_list.iterator();
+		while(it_del_items.hasNext()){
+			JSONObject jel=(JSONObject) it_del_items.next();
+			String ecn_item_id=jel.getString("id");
+			for(String bus:bus_list){
+				Map<String,Object> item_bus=new HashMap<String,Object>();
+				item_bus.put("bus_number", bus);
+				item_bus.put("ecn_item_id", ecn_item_id);
+				item_bus_list.add(item_bus);
+			}
+			
+		}
+		productionDao.batchInsertItemBus(item_bus_list);	
+		
+		//保存BMS_NA_ECN_ITEM_MATERIAL 信息，包括ecn items 返回的items id
+		List<Map<String,Object>> item_material_list=new ArrayList<Map<String,Object>>();
+		
+		while(it_del_items.hasNext()){
+			JSONObject jel=(JSONObject)it_del_items.next();
+			String material_str=jel.getString("materialList");
+			String ecn_item_id=jel.getString("id");
+			
+			JSONArray materials=JSONArray.fromObject(material_str);
+			Iterator it_del_m=materials.iterator();
+			while(it_del_m.hasNext()){
+				JSONObject jel_m=(JSONObject)it_del_m.next();
+				Map<String,Object> material=(Map<String, Object>) JSONObject.toBean(jel_m, Map.class);
+				material.put("ecn_item_id", ecn_item_id);
+				item_material_list.add(material);		
+			}
+			
+		}
+		
+		productionDao.batchInsertMaterial(item_material_list);
 	}
 
 	/*****************************xiong jianwu end  *****************************/

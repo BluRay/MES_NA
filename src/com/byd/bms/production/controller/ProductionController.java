@@ -12,10 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -356,9 +358,9 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
-	@RequestMapping(value="/uploadTechMaterial",method=RequestMethod.POST)
+	@RequestMapping(value="/uploadEcnMaterial",method=RequestMethod.POST)
 	@ResponseBody
-	public ModelMap uploadTechMaterial(@RequestParam(value="file",required=false) MultipartFile file){
+	public ModelMap uploadEcnMaterial(@RequestParam(value="file",required=false) MultipartFile file){
 		model.clear();
 		String fileName=file.getOriginalFilename();
 		Map<String,Object> condMap=new HashMap<String,Object>();
@@ -406,6 +408,75 @@ public class ProductionController extends BaseController {
 			initModel(false, "Upload Failed!", null);
 		}
 		return mv.getModelMap();
+	}
+	
+	/**
+	 * 新增技改单技改任务
+	 * @return
+	 */
+	@RequestMapping("/addEcnItems")
+	@ResponseBody
+	public ModelMap addEcnItems(@RequestParam(value="ecn_pictures",required=false) MultipartFile ecn_pictures){
+		model.clear();
+		String project_id=request.getParameter("project_id");
+		String project =request.getParameter("project");
+		String ecn_no=request.getParameter("ecn_no");
+		//保存图片
+		String piecture=saveFileMethod(ecn_pictures);
+		String design_pepole=request.getParameter("design_pepole");
+		String ecnItemList=request.getParameter("taskList");
+		String bus_list=request.getParameter("bus_list");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("project_id", project_id);
+		condMap.put("project", project);
+		condMap.put("ecn_no", ecn_no);
+		condMap.put("design_pepole", design_pepole);
+		condMap.put("creator_id", userid);
+		condMap.put("create_date", curTime);
+		condMap.put("ecnItemList", ecnItemList);
+		condMap.put("pictures", piecture);
+		condMap.put("bus_list", bus_list);
+		
+		productionService.addEcnItems(condMap,model);
+		
+		return model;
+	}
+	
+	
+	private String saveFileMethod(MultipartFile file) {
+		ServletContext servletContext = ContextLoader.getCurrentWebApplicationContext().getServletContext(); 
+		String filepath = "";
+		if (file != null) {
+			try {
+				 //取得当前上传文件的文件名称  
+                String myFileName = file.getOriginalFilename();  
+                //如果名称不为“”,说明该文件存在，否则说明该文件不存在  
+                if(myFileName.trim() !=""){  
+    				// 把上传的文件放到指定的路径下
+    				String path = servletContext.getRealPath("/file/upload/ecn/");
+    				// 写到指定的路径中
+    				File savedir = new File(path);
+    				// 如果指定的路径没有就创建
+    				if (!savedir.exists()) {
+    					savedir.mkdirs();
+    				}
+    				//System.out.println(myFileName.substring(myFileName.indexOf("."),myFileName.length()));
+    				File saveFile = new File(savedir, String.valueOf(System.currentTimeMillis()) + myFileName.substring(myFileName.indexOf("."),myFileName.length()));
+                    System.out.println(myFileName);  
+                    file.transferTo(saveFile);
+                    filepath = "/MES/file/upload/ecn/" + saveFile.getName();
+                }
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		return filepath;
 	}
 	/****************************  xiongjianwu end***************************/
 	
