@@ -256,10 +256,10 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_PROJECT_BOM_ITEM 
-		(bom_head_id,item_no,SAP_material,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note)
+		(bom_head_id,item_no,SAP_material,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note)
 		values
 		<foreach collection="bomList" item="detail" index="index" separator=",">
-			(#{bom_head_id},#{detail.item_no},#{detail.SAP_material},#{detail.BYD_PN},#{detail.part_name},
+			(#{bom_head_id},#{detail.item_no},#{detail.SAP_material},#{detail.BYD_NO},#{detail.part_name},
 			#{detail.specification},#{detail.unit},#{detail.quantity},#{detail.en_description},#{detail.vendor},
 			#{detail.station_code},#{detail.note})
 		</foreach>		
@@ -308,10 +308,10 @@
 		where p.project_no=#{projectNo} order by id desc LIMIT 0 ,2 		
 	</select>
 	<select id="getBomCompareList" parameterType="Map" resultType="Map">
-        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
+        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
 		  from ( SELECT  (
 		   case h.version when '${currentVersion}' then 'current' when '${prevVersion}' then 'prev' end) version,SAP_material,
-				item_no,BYD_PN,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
+				item_no,BYD_NO,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
 		        FROM BMS_NA_PROJECT_BOM_ITEM d
 				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
@@ -323,14 +323,14 @@
 		<if test="stationCode !=null and stationCode !=''">
 			and d.station_code = #{stationCode} 
 		</if>
-		GROUP BY SAP_material,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
+		GROUP BY SAP_material,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
 	</select>
 	<select id="getBomCompareDiffList" parameterType="Map" resultType="Map">
         select * from (
-        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
+        select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
 		  from ( SELECT  (
 		   case h.version when '${currentVersion}' then 'current' when '${prevVersion}' then 'prev' end) version,SAP_material,
-				item_no,BYD_PN,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
+				item_no,BYD_NO,part_name,specification,unit,d.quantity,en_description,vendor,station_code,note 
 		        FROM BMS_NA_PROJECT_BOM_ITEM d
 				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
@@ -342,7 +342,7 @@
 		<if test="stationCode !=null and stationCode !=''">
 			and d.station_code = #{stationCode} 
 		</if>
-		GROUP BY SAP_material,item_no,BYD_PN,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
+		GROUP BY SAP_material,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
 	   ) t1 where t1.version in ('current','prev') 
 	</select>
 

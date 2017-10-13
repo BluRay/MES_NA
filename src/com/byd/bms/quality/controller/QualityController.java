@@ -61,6 +61,17 @@ public class QualityController extends BaseController {
     }
 	
 	//========================yk start=================================//
+	
+	/************START punchList AddBy Yangke 171013******************************/
+	@RequestMapping("/punchList")
+	public ModelAndView punchList(){
+		mv.setViewName("quality/punchList");
+        return mv;  
+    }
+	
+	
+	/************END punchList****************************************************/
+	
 	@RequestMapping("addFaultLib")
 	@ResponseBody
 	public ModelMap addFaultLib(){

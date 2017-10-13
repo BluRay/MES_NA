@@ -28,7 +28,7 @@ $(document).ready(function(){
 		}
 	})
 	$('#btnBack').click(function(event) {
-		window.open("/MES_NA/project/getProjectBomInfo","_parent");
+		window.open("../project/getProjectBomInfo","_parent");
 	});
 });
 function ajaxQuery(){
@@ -58,7 +58,7 @@ function ajaxQuery(){
             var columns=[
 	            {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
 	            {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
-	            {"title":"BYD_P/N","class":"center","data":"BYD_PN","defaultContent": ""},
+	            {"title":"BYD_P/N","class":"center","data":"BYD_NO","defaultContent": ""},
 	            {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
 	            {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
 	            {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},
@@ -135,7 +135,7 @@ function ajaxCompareQuery(type){
                         {"title":"","class":"center","width":"45px","data":"version","defaultContent": ""},
  			            {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
  			            {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
- 			            {"title":"BYD_P/N","class":"center","data":"BYD_PN","defaultContent": ""},
+ 			            {"title":"BYD_P/N","class":"center","data":"BYD_NO","defaultContent": ""},
  			            {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
  			            {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
  			            {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},

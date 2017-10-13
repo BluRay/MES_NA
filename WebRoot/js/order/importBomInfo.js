@@ -116,7 +116,7 @@ $(document).ready(function(){
 			}
 			var item_no = $(tds).eq(0).html();
 			var SAP_material = $(tds).eq(1).html();
-			var BYD_PN = $(tds).eq(2).html();
+			var BYD_NO = $(tds).eq(2).html();
 			var part_name = $(tds).eq(3).html();
 			var specification = $(tds).eq(4).html();
 			var unit = $(tds).eq(5).html();
@@ -129,7 +129,7 @@ $(document).ready(function(){
 			var bom={};
 			bom.item_no=item_no;
 			bom.SAP_material=SAP_material;
-			bom.BYD_PN=BYD_PN;
+			bom.BYD_NO=BYD_NO;
 			bom.part_name=part_name;
 			bom.specification = specification;
 			bom.unit=unit;
@@ -145,7 +145,7 @@ $(document).ready(function(){
 		}
 	});
 	$('#btnBack').click(function(event) {
-		window.open("/MES_NA/project/getProjectBomInfo","_parent");
+		window.open("../project/getProjectBomInfo","_parent");
 	})
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
