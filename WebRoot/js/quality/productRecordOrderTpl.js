@@ -13,71 +13,66 @@ $(document).ready(function(){
 	})
 	
 	$(document).on("input","#search_project_no",function(){
-		//alert("change");
 		$("#search_project_no").attr("order_id","");
 	})
-	
-	$(document).on("input","#order",function(){
-		//alert("change");
-		$("#order").attr("order_id","");
-	})
-	
 	
 	$("#btnAdd").click(function(){
 		if($.fn.dataTable.isDataTable("#tplDetailTable")){
 			$('#tplDetailTable').DataTable().destroy();
 			$('#tplDetailTable').empty();
 		}
-		if($("#search_project_no").val()==""){
-			alert("Please Enter Project No.");
-			$("#search_project_no").focus();
-			return false;
-		}
-		$("#uploadForm").show();
-		$.ajax({
-            type: "post",
-            url: "getProjectByNo",
-            cache: false,  //禁用缓存
-            data: {
-            	"project_no": $("#search_project_no").val()
-            },  //传入组装的参数
-            dataType: "json",
-            success: function (result) {
-            	var data=result.data;
-            	var project_id=data.id;
-            	if(data==null){
-            		alert("Project No. cannot be Found");
-            		$("#search_project_no").focus();
-            		return ;
-            	}
-            	$("#order").val($("#search_project_no").val());
-        		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-        			width:900,
-        			height:550,
-        			modal: true,
-        			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection record template</h4></div>",
-        			title_html: true,
-        			buttons: [ 
-        				{
-        					text: "Cancel",
-        					"class" : "btn btn-minier",
-        					click: function() {
-        						$( this ).dialog( "close" ); 
-        					} 
-        				},
-        				{
-        					text: "Save",
-        					"class" : "btn btn-primary btn-minier",
-        					click: function() {
-        						save(project_id); 
-        						$( this ).dialog( "close" ); 
-        					} 
-        				}
-        			]
-        		});
-            }
-        });
-		
+		$("#add_project_no").removeAttr("readonly");
+		$("#add_project_no").val("");
+		$("#file").val("");
+		$("#importDiv").show();
+		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
+			width:1100,
+			height:550,
+			modal: true,
+			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection Record Template</h4></div>",
+			title_html: true,
+			buttons: [ 
+				{
+					text: "Cancel",
+					"class" : "btn btn-minier",
+					click: function() {
+						$( this ).dialog( "close" ); 
+					} 
+				},
+				{
+					text: "Save",
+					"class" : "btn btn-primary btn-minier",
+					click: function() {
+						if($("#add_project_no").val()==""){
+							alert("Project No. cennot be null");
+							$("#add_project_no").focus();
+							return ;
+						}
+						$.ajax({
+				            type: "post",
+				            url: "getProjectByNo",
+				            cache: false,  //禁用缓存
+				            data: {
+				            	"project_no": $("#add_project_no").val()
+				            },  //传入组装的参数
+				            dataType: "json",
+				            success: function (result) {
+				            	var data=result.data;
+				            	if(data==null){
+				            		alert("Project No. cannot be Found");
+				            		$("#add_project_no").focus();
+				            		return ;
+				            	}else{
+				            		var project_id=data.id;
+				            		save(project_id); 
+				            	}
+				            }
+				        });
+						//$( this ).dialog( "close" );
+					} 
+				}
+			]
+		});
 	});
 	$("#btn_upload").click (function () {
 		$(".divLoading").addClass("fade in").show();
@@ -145,7 +140,8 @@ $(document).ready(function(){
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
 	getBusTypeSelect('','#search_bus_type','All','id');
-	getOrderNoSelect("#search_project_no","#orderId",null,$('#search_bus_type').val());
+	getOrderNoSelect("#search_project_no","#orderId");
+	getOrderNoSelect("#add_project_no","#orderId");
 	ajaxQuery();
 	$('#file').ace_file_input({
 		no_file:'...',
@@ -272,6 +268,7 @@ function save(project_id,version) {
 			},
 			success:function(response){
 	            if(response.success){
+	            	$( "#dialog-config" ).dialog("close");
 	            	$.gritter.add({
 						title: 'Message：',
 						text: "<h5>"+response.message+"！</h5>",
@@ -340,13 +337,15 @@ function showEditPage(row){
 		$('#tplDetailTable').DataTable().destroy();
 		$('#tplDetailTable').empty();
 	}
-	$("#uploadForm").show();
-	$("#order").val(row.project_no);
+	$("#importDiv").show();
+	$("#file").val("");
+	$("#add_project_no").attr("readonly","readonly");
+	$("#add_project_no").val(row.project_no);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,
 		height:550,
 		modal: true,
-		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection record template</h4></div>",
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection Record Template</h4></div>",
 		title_html: true,
 		buttons: [ 
 			{
@@ -360,8 +359,32 @@ function showEditPage(row){
 				text: "Save",
 				"class" : "btn btn-primary btn-minier",
 				click: function() {
-					save(row.id,row.version); 
-					$( this ).dialog( "close" ); 
+					if($("#add_project_no").val()==""){
+						alert("Project No. cennot be null");
+						$("#add_project_no").focus();
+						return ;
+					}
+					$.ajax({
+			            type: "post",
+			            url: "getProjectByNo",
+			            cache: false,  //禁用缓存
+			            data: {
+			            	"project_no": $("#add_project_no").val()
+			            },  //传入组装的参数
+			            dataType: "json",
+			            success: function (result) {
+			            	var data=result.data;
+			            	var project_id=data.id;
+			            	if(data==null){
+			            		alert("Project No. cannot be Found");
+			            		$("#add_project_no").focus();
+			            		return ;
+			            	}else{
+			            		save(row.id,row.version); 
+								$( this ).dialog( "close" ); 
+			            	}
+			            }
+			        });
 				} 
 			}
 		]
@@ -375,7 +398,7 @@ function showInfoPage(row){
 	}
 	var detail_list=getTplDetailByHeader(row.id,row.version)
 	drawTplDetailTable("#tplDetailTable",detail_list,false);
-	$("#uploadForm").hide();
+	$("#importDiv").hide();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,
 		height:550,

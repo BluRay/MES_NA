@@ -335,7 +335,7 @@ public class ProductionController extends BaseController {
 	}
 		
 	/**
-	 * 车间工序页面
+	 * 技改维护页面
 	 * @return
 	 */
 	@RequestMapping("/ecnUpdate")
@@ -423,7 +423,7 @@ public class ProductionController extends BaseController {
 		String ecn_no=request.getParameter("ecn_no");
 		//保存图片
 		String piecture=saveFileMethod(ecn_pictures);
-		String design_pepole=request.getParameter("design_pepole");
+		String design_people=request.getParameter("design_people");
 		String ecnItemList=request.getParameter("taskList");
 		String bus_list=request.getParameter("bus_list");
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -434,7 +434,7 @@ public class ProductionController extends BaseController {
 		condMap.put("project_id", project_id);
 		condMap.put("project", project);
 		condMap.put("ecn_no", ecn_no);
-		condMap.put("design_pepole", design_pepole);
+		condMap.put("design_people", design_people);
 		condMap.put("creator_id", userid);
 		condMap.put("create_date", curTime);
 		condMap.put("ecnItemList", ecnItemList);
@@ -478,6 +478,111 @@ public class ProductionController extends BaseController {
 
 		return filepath;
 	}
+	/**
+	 * 技改维护页面查询技改任务列表
+	 * @return
+	 */
+	@RequestMapping("/getEcnItemList")
+	@ResponseBody
+	public ModelMap getEcnItemList(){
+		model.clear();
+		String ecn_no=request.getParameter("ecn_no");
+		String status=request.getParameter("status");
+		String start_date=request.getParameter("start_date");
+		String end_date=request.getParameter("end_date");
+		int draw=Integer.parseInt(request.getParameter("draw")!=null ? request.getParameter("draw") : "1"); 
+		int start=Integer.parseInt(request.getParameter("start")!=null ? request.getParameter("start") : "0");
+		int length=Integer.parseInt(request.getParameter("length")!=null ? request.getParameter("length") : "-1");
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("ecn_no", ecn_no);
+		condMap.put("status", status);
+		condMap.put("start_date", start_date);
+		condMap.put("end_date", end_date);
+		
+		productionService.getEcnItemList(condMap,model);
+		
+		return model;
+	}
+	
+	/**
+	 * 根据ecn_id查询技改任务列表
+	 * @return
+	 */
+	@RequestMapping("/getItemListByEcn")
+	@ResponseBody
+	public ModelMap getItemListByEcn(){
+		model.clear();
+		String ecn_id=request.getParameter("ecn_id");
+		productionService.getItemListByEcn(ecn_id,model);
+		
+		return model;
+	}
+	/**
+	 * 技改单修改
+	 * @return
+	 */
+	@RequestMapping("/updateEcnItems")
+	@ResponseBody
+	public ModelMap updateEcnItems(@RequestParam(value="ecn_pictures",required=false) MultipartFile ecn_pictures){
+		model.clear();
+		String project_id=request.getParameter("project_id");
+		String project =request.getParameter("project");
+		String ecn_no=request.getParameter("ecn_no");
+		String ecn_id=request.getParameter("ecn_id");
+		//保存图片
+		String piecture=saveFileMethod(ecn_pictures);
+		String design_people=request.getParameter("design_people");
+		String ecnItemList=request.getParameter("taskList");
+		String bus_list=request.getParameter("bus_list");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("project_id", project_id);
+		condMap.put("project", project);
+		condMap.put("ecn_no", ecn_no);
+		condMap.put("ecn_id", ecn_id);
+		condMap.put("design_people", design_people);
+		condMap.put("creator_id", userid);
+		condMap.put("create_date", curTime);
+		condMap.put("ecnItemList", ecnItemList);
+		condMap.put("pictures", piecture);
+		condMap.put("bus_list", bus_list);
+		
+		
+		productionService.updateEcnItems(condMap,model);
+		
+		return model;
+	}
+	/**
+	 * 技改任务删除
+	 * @return
+	 */
+	@RequestMapping("/deleteEcnItem")
+	@ResponseBody
+	public ModelMap deleteEcnItem(){
+		model.clear();
+		String ecn_item_id=request.getParameter("ecn_item_id");
+		productionService.deleteEcnItem(ecn_item_id,model);
+		
+		return model;
+	}
+	
+	/**
+	 * 技改跟进页面
+	 * @return
+	 */
+	@RequestMapping("/ecnConfirm")
+	public ModelAndView ecnConfirm(){
+		mv.setViewName("production/ecnConfirm");
+		return mv;
+	}
+	
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")

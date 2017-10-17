@@ -4,7 +4,7 @@
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>关键零部件跟踪</title>
+		<title>Bus Trace</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
@@ -23,9 +23,9 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">首页</a></li>
-						<li><a href="#">制程品质</a></li>
-						<li class="active">关键零部件跟踪</li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
+						<li><a href="#">Quality</a></li>
+						<li class="active">Bus Trace</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
@@ -44,18 +44,15 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>车型：</td>
+								<td>Bus Type：</td>
 								<td><select name="" id="search_bus_type" class="input-small carType"></select></td>
-								<td>&nbsp;订单编号：</td>
-								<td><input id="search_order" placeholder="订单编号..." style="width:90px" type="text" ></td>
-								<td>&nbsp;配置：</td>
-								<td><select id="search_config" class="input-small" style="width:90px"></select></td>
-								<td>&nbsp;工厂：</td>
-								<td><select id="search_factory" class="form-control" style="width:100px"></select></td>
-								<td>&nbsp;车间：</td>
-								<td><select name="" id="search_workshop" class="input-medium carType" style="height: 30px;width:90px;" ></select>
-								<td>&nbsp;车号：</td>
-								<td><input id="search_busNumber" placeholder="车号..." style="width:150px" type="text" > </td>
+								<td>&nbsp;Project No.：</td>
+								<td><input id="search_project_no"  style="width:90px" type="text" ></td>
+								
+<!-- 								<td>&nbsp;Plant：</td> -->
+<!-- 								<td><select id="search_factory" class="form-control" style="width:100px"></select></td> -->
+								<td>&nbsp;Bus No.：</td>
+								<td><input id="search_busNumber"  style="width:150px" type="text" > </td>
 								<td>
 								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="查询" style="margin-left: 10px;"></input>
 <!-- 								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="新增" style="margin-left: 2px;"></input> -->
@@ -124,30 +121,13 @@
 				</form>
 			</div>
 			
-			<div id="dialog-edit" class="hide" style="align:center;width:1200px;height:600px">
-				<table class="table table-striped table-bordered table-hover dataTable no-footer"
-					               style="font-size: 12px;margin-bottom:3px" >
-					<tr>
-						<td>车号：</td>
-						<td id="busNumber"></td>
-						<td>工厂：</td>
-						<td id="factory"></td>
-						<td>车间：</td>
-						<td id="workshop"></td>
-					</tr>
-					<tr>
-						<td>车型：</td>
-						<td id="busType"></td>
-						<td>订单：</td>
-						<td id="orderName"></td>
-						<td>配置：</td>
-						<td id="configTable"></td>
-					</tr>
-				</table>
+			<div id="dialog-edit" class="hide" style="align:center;width:900px;height:600px">
+				<div class="form-group">
+						<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Bus No.：</label>
+						<label id="bus_number" class="col-sm-4  no-padding-left"  style="margin-left:15px;"></label>
+					</div>
 				<div class = "div-dialog">
 					<form id="form_edit">
-					    <input type='hidden'  id="factoryId">
-<!-- 						<table id="tableDataDetail" class="table table-striped table-bordered table-hover" style="overflow-x:auto;font-size: 12px;"> -->
 						<table id="tableDataDetail" class="table table-striped table-bordered table-hover dataTable no-footer"
 					            style="font-size: 12px;" role="grid" aria-describedby="tableData_info">
 						</table>

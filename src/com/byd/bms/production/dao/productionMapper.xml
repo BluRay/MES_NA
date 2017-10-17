@@ -18,7 +18,7 @@
 		<if test="project_id !=null and project_id !=''">
 			and b.project_id like CONCAT(#{project_id},'%')   
 		</if>
-		ORDER BY p.id DESC
+		ORDER BY b.bus_number DESC
 		<if test="start !=null and length !='-1' ">
 			LIMIT #{start} ,#{length} 
 		</if>			
@@ -172,6 +172,124 @@
 			and line=#{line}
 		</if>
 	</select>
+	
+	<insert id="insertEcnHead" parameterType="Map" useGeneratedKeys="true" keyProperty="id">
+		insert into BMS_NA_ECN_HEAD (project_id,project,ecn_no,pictures,design_people,creator_id,create_date)
+		values
+		(#{project_id},#{project},#{ecn_no},#{pictures},#{design_people},#{creator_id},#{create_date})
+	</insert>
+	
+	<insert id="batchInsertEcnItems" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+		insert into BMS_NA_ECN_ITEM (ecn_id,item_no,items,problem_details,work_station,scope_change,status)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">		
+			(#{item.ecn_id},#{item.item_no},#{item.items},#{item.problem_details},#{item.work_station},
+			#{item.scope_change},'1')
+		</foreach>
+		
+	</insert>
+
+	<insert id="batchInsertItemBus" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+		insert into BMS_NA_ECN_ITEM_BUS (ecn_item_id,bus_number)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">		
+			(#{item.ecn_item_id},#{item.bus_number})
+		</foreach>
+		
+	</insert>
+	
+	<insert id="batchInsertMaterial" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+		insert into BMS_NA_ECN_ITEM_MATERIAL (ecn_item_id,item_no,SAP_material,BYD_NO,description,specification,qty,note)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">		
+			(#{item.ecn_item_id},#{item.item_no},#{item.SAP_material},#{item.BYD_NO},#{item.description},
+			#{item.specification},#{item.qty},#{item.note})
+		</foreach>
+		
+	</insert>
+	
+	<select id="queryEcnItemList" parameterType="Map" resultType="Map">
+		select h.id ecn_id,h.project_id,h.project,p.project_name,h.ecn_no,h.pictures,h.design_people,i.status,p.production_plant factory,
+		i.id ecn_item_id,i.item_no,i.items,i.problem_details,i.work_station,i.signed_time_first,i.finished_time_first,
+		(select group_concat(b.bus_number) from BMS_NA_ECN_ITEM_BUS b where b.ecn_item_id=i.id) as bus_list
+		from BMS_NA_ECN_HEAD h
+		left join BMS_NA_ECN_ITEM i on h.id=i.ecn_id
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		where 1=1
+		<if test="ecn_no !=null and ecn_no !=''">
+			and h.ecn_no like concat('%',#{ecn_no},'%')
+		</if>
+		<if test="status !=null and status !='All'">
+			and i.status = #{status}
+		</if>
+		<if test="start_date !=null and start_date !=''">
+			and h.create_date >= #{start_date}
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and h.create_date &lt;= #{end_date}
+		</if>
+		order by h.id
+		<if test="start !=null and length !='-1' ">
+			LIMIT #{start} ,#{length} 
+		</if>	
+		
+		
+	</select>
+	
+	<select id="queryEcnItemCount" parameterType="Map" resultType="int">
+		select count(i.id)
+		from BMS_NA_ECN_HEAD h
+		left join BMS_NA_ECN_ITEM i on h.id=i.ecn_id		
+		where 1=1
+		<if test="ecn_no !=null and ecn_no !=''">
+			and h.ecn_no like concat('%',#{ecn_no},'%')
+		</if>
+		<if test="status !=null and status !='All'">
+			and i.status = #{status}
+		</if>
+		<if test="start_date !=null and start_date !=''">
+			and h.create_date >= #{start_date}
+		</if>
+		<if test="end_date !=null and end_date !=''">
+			and h.create_date &lt;= #{end_date}
+		</if>
+	</select>
+	
+	<select id="queryItemListByEcn" parameterType="String" resultType="Map">
+		select i.* from BMS_NA_ECN_ITEM i
+		where i.ecn_id=#{ecn_id}
+	</select>
+	
+	<select id="queryEcnMaterialByItem" parameterType="String" resultType="Map">
+		select m.* from BMS_NA_ECN_ITEM_MATERIAL m
+		where m.ecn_item_id=#{ecn_item_id}
+	</select>
+	
+	<update id="updateEcnHead" parameterType="Map">
+		update BMS_NA_ECN_HEAD set ecn_no=#{ecn_no},pictures=#{pictures},design_people=#{design_people},creator_id=#{creator_id},create_date=#{create_date}
+		where id=#{ecn_id}
+	</update>
+	
+	<update id="batchUpdateEcnItems" parameterType="List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+		update BMS_NA_ECN_ITEM set item_no=#{item.item_no},items=#{item.items},problem_details=#{item.problem_details},
+		work_station=#{item.work_station},scope_change=#{item.scope_change}
+		where id=#{item.id}
+		</foreach>
+	</update>
+	
+	<delete id="deleteMaterialByItem" parameterType="String">
+		delete from BMS_NA_ECN_ITEM_MATERIAL where ecn_item_id=#{ecn_item_id}
+	</delete>
+	
+	<delete id="deleteEcnBusByItem" parameterType="String">
+		delete from BMS_NA_ECN_ITEM_BUS where ecn_item_id=#{ecn_item_id}
+	</delete>
+	
+	<delete id="deleteEcnItem" parameterType="String">
+		delete from BMS_NA_ECN_ITEM where id=#{ecn_item_id}
+	</delete>
+	
 <!-- ########################### xiong jianwu end#############################-->	
 
 	<select id="getVinTotalCount" parameterType="Map" resultType="int">
@@ -196,7 +314,7 @@
 		LEFT JOIN BMS_NA_BASE_USER u on u.id=b.printer_id
 		where 1=1
 		<if test="plant !=null and plant !=''">
-			and f.factory_name=#{plant}  
+			and b.production_plant_id=#{plant}  
 		</if>
 		<if test="project_no !=null and project_no !=''">
 			and p.project_no=#{project_no} 
@@ -224,7 +342,7 @@
 		LEFT JOIN BMS_NA_BASE_FACTORY f ON b.production_plant_id = f.id
 		where 1=1
 		<if test="plant !=null and plant !=''">
-			and f.factory_name=#{plant}  
+			and b.production_plant_id=#{plant}  
 		</if>
 		<if test="project_no !=null and project_no !=''">
 			and p.project_no=#{project_no} 
@@ -363,5 +481,6 @@
 		update BMS_NA_PRODUCTION_ABNORMITY SET responsible_department_id =#{responsible_department_id},responsible_department = #{responsible_department},measures = #{measures},measure_date=#{measure_date}
 		where id=#{id}
 	</update>
+	
 	
 </mapper>

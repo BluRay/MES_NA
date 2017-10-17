@@ -3,7 +3,6 @@ package com.byd.bms.production.service;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
@@ -27,6 +26,15 @@ public interface IProductionService {
 	@Transactional
 	public void addEcnItems(Map<String, Object> condMap, ModelMap model);
 
+	public void getEcnItemList(Map<String, Object> condMap, ModelMap model);
+
+	public void getItemListByEcn(String ecn_id, ModelMap model);
+	
+	@Transactional
+	public void updateEcnItems(Map<String, Object> condMap, ModelMap model);
+
+	@Transactional
+	public void deleteEcnItem(String ecn_item_id, ModelMap model);
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
     public Map<String, Object> getVinList(Map<String, Object> conditionMap);
@@ -44,4 +52,8 @@ public interface IProductionService {
 	public int insertAbnormity(Map<String, Object> conditionMap);
 	public Map<String,Object> getExceptionList(Map<String,Object> queryMap);
 	public int measuresAbnormity(Map<String, Object> conditionMap);
+
+
+
+
 }

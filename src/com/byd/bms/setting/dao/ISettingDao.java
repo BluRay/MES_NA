@@ -81,14 +81,14 @@ public interface ISettingDao {
 	public int checkDeleteLine(List ids);
 	
 	//工位
-	public List<BmsBaseStation> getStationList(Map<String,Object> queryMap);
+	public List<Map<String,Object>> getStationList(Map<String,Object> queryMap);
 	public int getStationTotalCount(Map<String,Object> queryMap);
 	public int addStation(BmsBaseStation station);
 	public void updateStation(BmsBaseStation station);
 	public void deleteStation(List ids);
 	
 	//工序
-	public List<BmsBaseProcess> getProcessList(Map<String,Object> queryMap);
+	public List<Map<String,Object>> getProcessList(Map<String,Object> queryMap);
 	public int getProcessTotalCount(Map<String,Object> queryMap);
 	public int addProcess(BmsBaseProcess process);
 	public void updateProcess(BmsBaseProcess process);

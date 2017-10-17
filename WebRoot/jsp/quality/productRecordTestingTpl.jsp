@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>Bus trace Template</title>
+<title>Testing Template</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />	
@@ -15,7 +15,6 @@
 	href="../assets/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
 <link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
-
 </head>
 <body class="no-skin" style="font-family: 'Microsoft YaHei';">
 	<!-- 头 -->
@@ -33,7 +32,7 @@
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
 							href="/BMS/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
-						<li><a href="#">Bus trace Template</a></li>
+						<li><a href="#">Testing Template</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -51,13 +50,19 @@
 					<form id="form" class="well form-search">
 						<table>
 							<tr>
-								<td>Bus Type：</td>
+								<td>Bus type：</td>
 								<td>
 									<select name="" id="search_bus_type" class="input-medium carType" style="height: 30px;width:100px;" ></select>
 								</td>
-								<td>Project No.：</td>
-								<td><input style="height: 30px;width:130px;" type="text" class="input-medium revise" id="search_project_no" /></td>					
-								<td><input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="Search" style="margin-left: 2px;"></input>	
+ 								<td>Project No.：</td>
+								<td><input style="height: 30px;width:130px;" type="text" class="input-medium revise" placeholder="" id="search_project_no" /></td>
+								<td>Testing Type：</td>
+								<td>
+									<select id="search_testing_type_value" class="input-medium" style="height: 30px;width:120px;" >
+									</select>
+								</td>						
+								<td>
+								    <input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="Search" style="margin-left: 2px;"></input>						
 									<input type="button" class="btn btn-sm btn-success" id="btnAdd" value="Add" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
@@ -67,7 +72,7 @@
 						
 					<div class="row">
 					<div class="col-xs-12" id="scroll_div">
-						<table id="tableResult" class="table table-striped table-bordered table-hover " style="font-size: 12px;" >
+						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;" >
 						</table>	
 					</div>
 					</div>
@@ -76,8 +81,31 @@
 			<div id="dialog-config" class="hide">
 				<div id="create_form" class="form-horizontal">
 					<div class="form-group">
-						<label class="col-sm-2 control-label no-padding-right" for="" >*&nbsp;Project No.：</label>
-				        <input id="add_project_no" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
+						<label class="col-sm-2 control-label">*&nbsp;Project No.：</label>
+						<div class="col-sm-2">
+							<input id="add_project_no" type="text" class="input-medium" style="height: 30px;width:80%;" ></input>
+						</div>						
+						<label class="col-sm-2 control-label no-padding-right " for="" >*&nbsp;Testing Type：</label>
+						<div class="col-sm-2">
+							<select id="testing_type_value" class="input-medium" style="height: 30px;width:80%" ></select>
+						</div>					
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label no-padding-right" for="" >*&nbsp;Initiated By：</label>
+						<div class="col-sm-2">
+							<input id="initiated" type="text" class="input-medium" style="height: 30px;width:80%;" ></input>
+						</div>						
+						<label class="col-sm-2 control-label no-padding-right " for="" >*&nbsp;Approved By：</label>
+						<div class="col-sm-2">
+							<input id="approved" type="text" class="input-medium" style="height: 30px;width:80%;" ></input>
+						</div>				
+					</div>
+					<div class="form-group">
+					    	
+						<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Remark：</label>
+						<div class="col-sm-6">
+							<textarea class="input-xlarge" style="width: 100%" id="remarks" rows="1"></textarea>
+						</div>
 					</div>
 					<div class="form-group" id="importDiv">					
 						<label class="col-sm-2 control-label no-padding-right" for="">*&nbsp;Template：</label>
@@ -87,52 +115,35 @@
 							</div>
 							<div class="col-sm-4">
 									<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
-									<a href="../docs/keyPartsDetail.xlsx">Download the pilot template</a>
+									<a href="../docs/testingTemplate.xls">Download Template</a>
 								</div>							
 							</form>
 						</div>									
 					</div>
 					<div class="form-group">					
 						<div class="col-sm-12">			
-							<table class="table table-striped table-bordered table-hover" style="width: 900px;font-size:12px;" id="keyPartsTable">
+							<table class="table table-striped table-bordered table-hover" style="width: 850px;font-size:12px;" id="tplDetailTable">
 							</table>
 						</div>
 					</div>
-					
-			</div>
-		</div>
-		
-		<div id="dialog-config-view" class="hide">
-				<div id="create_form" class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-2 control-label no-padding-right">&nbsp;Project No.：</label>
-						<label id="order_view" class="col-sm-4  no-padding-left"  style="margin-left:15px;"></label>
-					</div>
-					<div class="form-group">					
-						<div class="col-sm-12">			
-							<table class="table table-striped table-bordered table-hover" style="width: 850px;font-size:12px;" id="keyPartsTable_view">
-							</table>
-						</div>
-					</div>
-					
-			</div>
-		</div>
-			</div>
+			     </div>
+		      </div>
+		   </div>
 			<!-- /.main-container -->
 		</div>
 	</div>
 	<script src="../js/datePicker/WdatePicker.js"></script>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
-	<script src="../assets/js/jquery.gritter.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
+	<script src="../assets/js/jquery.gritter.min.js"></script>
 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script src="../assets/js/dataTables.rowGroup.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
 	<script src="../assets/js/ace/elements.fileinput.js"></script>
-	<script src="../js/quality/orderKeyParts.js"></script>
+	<script src="../js/quality/productRecordTestingTpl.js"></script>
 </body>
 
 </html>

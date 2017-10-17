@@ -39,4 +39,19 @@ public interface IQualityDao {
 	public String queryInspectionRecordMaxVersion(String project_id);
 	public int deleteInspectionRecordTemplate(Map<String, Object> condMap);
 	public List<Map<String, String>> getPrdRcdOrderTplDetailList(Map<String, Object> map);
+	public List<Map<String, Object>> getPrdRcdTestingTplList(Map<String, Object> keyParts);
+	int getPrdRcdTestingTplCount(Map<String, Object> condMap);
+	public int saveTestingTemplateHead(Map<String, Object> map);
+	public int saveTestingTemplateItem(Map<String, Object> map);
+	public int deleteTestingTemplateByHeader(int header_id);
+	public int updateTestingTemplateHeader(Map<String, Object> keyParts);
+	Map<String, Object> queryTestingTemplateHeader(Map<String, Object> condMap);
+	public List<Map<String, String>> getTestingTemplateDetailByHeader(Map<String, Object> map);
+	public int deleteKeyPartsDetails(Map<String, Object> map);
+	public List<Map<String, String>> getKeyPartsTraceList(Map<String, Object> conditionMap);	
+	public int getKeyPartsTraceCount(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getBusNumberDetailList(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getBusNumberTemplateList(Map<String, Object> conditionMap);	
+	public int saveKeyParts(List<Map<String, String>> list);
+	public int updateKeyParts(List<Map<String, String>> list);
 }

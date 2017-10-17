@@ -262,7 +262,21 @@ public class SettingServiceImpl implements ISettingService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+	@Override
+	public String checkWorkshop(Map<String, Object> queryMap,String type) {
+		String result="";
+		List<BmsBaseWorkshop> datalist=settingDao.getWorkshopList(queryMap);
+		for(BmsBaseWorkshop workshop : datalist){
+			if(type.equals("Code")){
+				result+=workshop.getWorkshopCode()+",";
+			}
+			if(type.equals("Name")){
+				result+=workshop.getWorkshopName()+",";
+			}
+		}
+		
+		return result;
+	}
 	//线别
 	@Override
 	public Map<String, Object> getLineList(Map<String, Object> queryMap) {
@@ -299,7 +313,7 @@ public class SettingServiceImpl implements ISettingService {
 	public Map<String, Object> getStationList(Map<String, Object> queryMap) {
 		Map<String,Object> result=new HashMap<String,Object>();
 		int totalCount=0;
-		List<BmsBaseStation> datalist=settingDao.getStationList(queryMap);
+		List<Map<String,Object>> datalist=settingDao.getStationList(queryMap);
 		totalCount=settingDao.getStationTotalCount(queryMap);
 		result.put("recordsTotal", totalCount);
 		result.put("recordsFiltered", totalCount);
@@ -327,13 +341,28 @@ public class SettingServiceImpl implements ISettingService {
 			settingDao.deleteStation(ids);
 		}		
 	}
-	
+	//验证工位[type:工位代码或工位名称]
+	@Override
+	public String checkStation(Map<String, Object> queryMap,String type) {
+        String result="";
+		List<Map<String,Object>> datalist=settingDao.getStationList(queryMap);
+		for(Map<String,Object> station : datalist){
+			if(type.equals("Code")){
+				result+=station.get("station_code")+",";
+			}
+			if(type.equals("Name")){
+				result+=station.get("station_name")+",";
+			}
+			
+		}
+		return result;
+	}
 	//工序
 	@Override
 	public Map<String, Object> getProcessList(Map<String, Object> queryMap) {
 		Map<String,Object> result=new HashMap<String,Object>();
 		int totalCount=0;
-		List<BmsBaseProcess> datalist=settingDao.getProcessList(queryMap);
+		List<Map<String,Object>> datalist=settingDao.getProcessList(queryMap);
 		totalCount=settingDao.getProcessTotalCount(queryMap);
 		result.put("recordsTotal", totalCount);
 		result.put("recordsFiltered", totalCount);
@@ -360,6 +389,22 @@ public class SettingServiceImpl implements ISettingService {
 		if(ids.size()>0){
 			settingDao.deleteProcess(ids);
 		}		
+	}
+	//验证工序
+	@Override
+	public String checkProcess(Map<String, Object> queryMap,String type) {
+		String result="";
+		List<Map<String,Object>> datalist=settingDao.getProcessList(queryMap);
+		for(Map<String,Object> process : datalist){
+			if(type.equals("Code")){
+				result+=process.get("station_code")+",";
+			}
+			if(type.equals("Name")){
+				result+=process.get("station_name")+",";
+			}
+		}
+		
+		return result;
 	}
 	@Override
 	public Map<String, Object> getStationConfigList(Map<String, Object> condMap) {

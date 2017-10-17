@@ -24,12 +24,12 @@ $(document).ready(function(){
     });
 	ajaxQuery();
 
-//	$('#nav-search-input').bind('keydown', function(event) {
-//		if (event.keyCode == "13") {
-//			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
-//			return false;
-//		}
-//	})
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	})
 	$("#btn_upload").click (function () {
 		$(".divLoading").addClass("fade in").show();
 		$("#uploadForm").ajaxSubmit({
@@ -191,7 +191,7 @@ function importVinInfo(row){
 			var datalist=response.data;
 			$.each(datalist,function(index,value){
 				var tr=$("<tr/>");
-				$("<td style='text-align:center;'/>").html(index).appendTo(tr);
+				$("<td style='text-align:center;'/>").html(index+1).appendTo(tr);
 				$("<td style='text-align:center;'/>").html(value.bus_number).appendTo(tr);
 				$("<td style='text-align:center;'/>").html(value.VIN).appendTo(tr);
 				$("#tableVinImport tbody").append(tr);

@@ -20,4 +20,12 @@ public interface IQualityService {
 	public void getProjectByNo(Map<String, Object> condMap, ModelMap model);
 	void saveInspectionRecordTemplate(Map<String, Object> keyParts);
 	void getPrdRcdOrderTplDetailList(HashMap<String, Object> condMap, ModelMap model);
+	public void getPrdRcdTestingTplList(Map<String, Object> condMap, ModelMap model);
+	public void saveTestingTemplate(Map<String, Object> testing);
+	public void getTestingTemplateByHeader(Map<String, Object> condMap, ModelMap model);
+	public void getKeyPartsTraceList(Map<String, Object> conditionMap, ModelMap model);
+	public void getBusNumberDetailList(Map<String, Object> conditionMap, ModelMap model);
+	public void getBusNumberTemplateList(Map<String, Object> conditionMap, ModelMap model);
+	public int updateKeyParts(List<Map<String,Object>> list);
+
 }

@@ -59,6 +59,7 @@ public interface ISettingService {
 	public void updateWorkshop(BmsBaseWorkshop workshop);
 	public void deleteWorkshop(List ids);
 	public int checkDeleteWorkshop(List ids);
+	public String checkWorkshop(Map<String, Object> queryMap,String type);
 	//线别
 	public Map<String, Object> getLineList(Map<String,Object> queryMap);
 	//public int getLineTotalCount(Map<String,Object> queryMap);
@@ -73,13 +74,14 @@ public interface ISettingService {
 	public int addStation(BmsBaseStation station);
 	public void updateStation(BmsBaseStation station);
 	public void deleteStation(List ids);
-	
+	public String checkStation(Map<String, Object> queryMap,String type);
 	//工序
 	public Map<String, Object> getProcessList(Map<String,Object> queryMap);
 	//public int getProcessTotalCount(Map<String,Object> queryMap);
 	public int addProcess(BmsBaseProcess process);
 	public void updateProcess(BmsBaseProcess process);
 	public void deleteProcess(List ids);
+	public String checkProcess(Map<String, Object> queryMap,String type);
 	public List<Map<String,Object>> getStationListNoLine(Map<String, Object> condMap);
 	public List<Map<String,Object>> getStationConfigDetailList(Map<String, Object> condMap);
 	public List<Map<String,Object>> getStationListByFactory(Map<String, Object> condMap);

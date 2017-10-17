@@ -64,9 +64,8 @@
 		select distinct(t.version) version,p.id,p.project_no,
 		CONCAT(p.project_no,' ',p.project_name,p.bus_type,'  ',p.quantity,' ',' Bus') AS order_desc,
 		p.bus_type,u.username editor,t.edit_date
-		from BMS_NA_PROJECT p
-		left join BMS_NA_PROJECT_TRACE_TEMPLATE t on p.id=t.project_id
-<!-- 		left join BMS_NA_BASE_BUS_TYPE bt on bt.id=p.bus_type -->
+		from BMS_NA_PROJECT_TRACE_TEMPLATE t
+		left join BMS_NA_PROJECT p on p.id=t.project_id
 		left join BMS_NA_BASE_USER u on u.id=t.editor_id
 		where 1=1
 		<if test="project_no !=null and project_no !=''">
@@ -79,24 +78,17 @@
 		<if test="start !=null">
 			limit #{start},#{length}
 		</if>
-		
 	</select>
 	
 	<select id="getOrderKeyPartsTemplateCount" parameterType="Map" resultType="int">
-		select count(DISTINCT CONCAT(IFNULL(version,''), p.id) as count from BMS_NA_PROJECT p
-		left join BMS_NA_PROJECT_TRACE_TEMPLATE t on p.id=t.project_id
-<!-- 		left join BMS_NA_BASE_BUS_TYPE bt on bt.id=p.bus_type -->
-		left join BMS_NA_BASE_USER u on u.id=t.editor_id
+		select COUNT(distinct(CONCAT(t.version,'-', p.id)))  from BMS_NA_PROJECT_TRACE_TEMPLATE t
+		left join BMS_NA_PROJECT p on p.id=t.project_id
 		where 1=1
 		<if test="project_no !=null and project_no !=''">
 			and p.project_no=#{project_no}
 		</if>
 		<if test="bus_type !=null and bus_type !='All'">
 			and p.bus_type=#{bus_type}
-		</if>
-			order by p.project_no desc
-		<if test="start !=null">
-			limit #{start},#{length}
 		</if>
 	</select>
 	
@@ -115,16 +107,16 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_PROJECT_TRACE_TEMPLATE 
-		(project_id,version,sap_material,parts_name,byd_pn,vendor,workshop,station,editor_id,edit_date)
+		(project_id,version,SAP_material,parts_name,BYD_NO,vendor,workshop,station,editor_id,edit_date)
 		values
 		<foreach collection="list" item="detail" index="index" separator=",">
-			(#{detail.project_id},#{detail.version},#{detail.sap_material},#{detail.parts_name},#{detail.byd_pn},
+			(#{detail.project_id},#{detail.version},#{detail.SAP_material},#{detail.parts_name},#{detail.BYD_NO},
 			#{detail.vendor},#{detail.workshop},#{detail.station},#{detail.editor_id},#{detail.edit_date})
 		</foreach>		
 	</insert>
 	
-	<delete id="deleteKeyPartsByHeader" parameterType="int">
-		delete from BMS_QM_KEY_PARTS_TEMPLATE_DETAILS where key_components_template_id=#{header_id}
+	<delete id="deleteKeyPartsDetails" parameterType="Map">
+		delete from BMS_NA_PROJECT_TRACE_TEMPLATE where project_id=#{project_id} and version=#{version}
 	</delete>
 	
 	<select id="queryKeyPartsList" parameterType="Map" resultType="Map">
@@ -142,7 +134,7 @@
      	</foreach>
      </select>
      <select id="getKeyPartsList" parameterType="Map" resultType="Map">
-		select d.item_no,d.sap_material,d.parts_name,d.byd_pn,d.vendor,d.workshop,d.station
+		select d.item_no,d.SAP_material,d.parts_name,d.BYD_NO,d.vendor,d.workshop,d.station
 		from BMS_NA_PROJECT_TRACE_TEMPLATE d
 		where d.project_id=#{project_id} and d.version=#{version}
 	</select>
@@ -177,10 +169,6 @@
 		<if test="bus_type !=null and bus_type !='All'">
 			and p.bus_type=#{bus_type}
 		</if>
-			order by p.project_no desc
-		<if test="start !=null">
-			limit #{start},#{length}
-		</if>
 	</select>
 	<select id="getProjectByNo" parameterType="Map" resultType="Map">
 		select * from BMS_NA_PROJECT p where 1=1 and p.project_no=#{project_no}
@@ -208,4 +196,195 @@
 		select * from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
 		where d.project_id=#{project_id} and d.version=#{version}
 	</select>
+	<select id="getPrdRcdTestingTplList" parameterType="Map" resultType="Map">
+		select p.id,p.project_no,h.project_id,h.id header_id,h.test_type_value,h.initiated,h.approved,h.remarks,h.editor_id,h.edit_date,
+		CONCAT(p.project_no,' ',p.project_name,p.bus_type,'  ',p.quantity,' ',' Bus') AS order_desc,
+		p.bus_type,u.username editor,h.edit_date
+		from BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD h
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+<!-- 		left join BMS_NA_BASE_KEY k on k.value=h.test_type_value -->
+		left join BMS_NA_BASE_USER u on u.id=h.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="test_type_value !=null and test_type_value !=''">
+			and h.test_type_value=#{test_type_value}
+		</if>
+			order by p.project_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	
+	<select id="getPrdRcdTestingTplCount" parameterType="Map" resultType="int">
+		select count(1) from BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD h
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="test_type_value !=null and test_type_value !=''">
+			and h.test_type_value=#{test_type_value}
+		</if>
+	</select>
+	<insert id="saveTestingTemplateHead" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD 
+		(project_id,test_type_value,initiated,approved,remarks,editor_id,edit_date)
+		values (#{project_id},#{test_type_value},#{initiated},#{approved}
+		,#{remarks},#{editor_id},#{edit_date})
+	</insert>
+	<insert id="saveTestingTemplateItem" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_PROJECT_TESTING_TEMPLATE_DETAIL 
+		(testing_template_head_id,item_no,inspection_item,specification_standard)
+		values
+		<foreach collection="list" item="detail" index="index" separator=",">
+			(#{testing_template_head_id},#{detail.item_no},#{detail.inspection_item},#{detail.specification_standard})
+		</foreach>		
+	</insert>
+	<delete id="deleteTestingTemplateByHeader" parameterType="int">
+		delete from BMS_NA_PROJECT_TESTING_TEMPLATE_DETAIL where testing_template_head_id=#{testing_template_head_id}
+	</delete>
+	<update id='updateTestingTemplateHeader' parameterType="Map">
+		update BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD set editor_id=#{editor_id},edit_date=#{edit_date},
+		initiated=#{initiated},approved=#{approved},remarks=#{remarks}
+		where project_id=#{project_id} and test_type_value=#{test_type_value}
+	</update>
+	
+	<select id="queryTestingTemplateHeader" parameterType="Map" resultType="Map">
+		select * from BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD h where 1=1
+		<if test="project_id !=null and project_id !=''">
+			and h.project_id=#{project_id}
+		</if>
+		<if test="testing_type !=null and testing_type !=''">
+			and h.testing_type_value=#{testing_type}
+		</if>
+	</select>
+	<select id="getTestingTemplateDetailByHeader" parameterType="Map" resultType="Map">
+		select * from BMS_NA_PROJECT_TESTING_TEMPLATE_DETAIL h where 1=1
+		<if test="header_id !=null and header_id !=''">
+			and h.testing_template_head_id=#{header_id}
+		</if>
+	</select>
+	<select id="getInspectionRecordlList" parameterType="Map" resultType="Map">
+		select * from BMS_NA_BUS_INSPECTION_RECORD h
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		left join BMS_NA_BASE_USER u on u.id=h.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="test_type_value !=null and test_type_value !=''">
+			and h.test_type_value=#{test_type_value}
+		</if>
+			order by p.project_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	
+	<select id="getInspectionRecordCount" parameterType="Map" resultType="int">
+		select count(1) from BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD h
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="test_type_value !=null and test_type_value !=''">
+			and h.test_type_value=#{test_type_value}
+		</if>
+	</select>
+	<select id="getKeyPartsTraceList" parameterType="Map" resultType="Map">
+		select distinct(h.bus_number) bus_number,p.project_name,f.factory_name plant,
+		t.id template_id,p.id project_id,h.trace_template_id,u.username editor
+	    from BMS_NA_BUS_TRACE h
+	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t  on t.id=h.trace_template_id
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		left join BMS_NA_BASE_FACTORY f on f.id=h.production_plant_id
+		left join BMS_NA_BASE_USER u on u.id=h.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+			order by p.project_no desc
+		<if test="start !=null">
+			limit #{start},#{length}
+		</if>
+	</select>
+	
+	<select id="getKeyPartsTraceCount" parameterType="Map" resultType="int">
+		select count(1) from BMS_NA_BUS_TRACE h
+	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t  on t.id=h.trace_template_id
+		left join BMS_NA_PROJECT p on p.id=h.project_id
+		left join BMS_NA_BASE_FACTORY f on f.id=h.production_plant_id
+		left join BMS_NA_BASE_USER u on u.id=h.editor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="bus_type !=null and bus_type !='All'">
+			and p.bus_type=#{bus_type}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+	</select>
+	<select id="getBusNumberDetailList" parameterType="Map" resultType="Map">
+		select t.* from BMS_NA_BUS_TRACE t where 1=1 and t.bus_number=#{bus_number}
+	</select>
+	<select id="getBusNumberTemplateList" parameterType="Map" resultType="Map">
+		select t.bus_number,h.SAP_material,
+		h.parts_name,h.vendor,h.workshop,h.station ,t.batch
+	    from BMS_NA_PROJECT_TRACE_TEMPLATE h
+	    left join BMS_NA_BUS_TRACE t on h.id=t.trace_template_id and t.bus_number=#{bus_number}
+		where h.version=(select max(version) from
+		 BMS_NA_PROJECT_TRACE_TEMPLATE t1 where t1.project_id=#{project_id})
+	</select>
+	<insert id="saveKeyParts" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_BUS_TRACE 
+		(project_id,trace_template_id,production_plant_id,bus_number,item_no,SAP_material,
+		parts_name,vendor,workshop,station,batch,editor_id,edit_date)
+		values
+		<foreach collection="list" item="detail" index="index" separator=",">
+			(#{detail.project_id},#{detail.trace_template_id},#{detail.production_plant_id},
+			#{detail.bus_number},#{detail.item_no},#{detail.SAP_material},
+		    #{detail.parts_name},#{detail.vendor},#{detail.workshop},#{detail.station},
+		    #{detail.batch},#{detail.editor_id},#{detail.edit_date})
+		</foreach>		
+	</insert>
+	<update id="updateKeyParts" parameterType="Map">
+		<foreach collection="vinList" index="index" item="item" separator=",">
+			update BMS_NA_BUS_TRACE set batch=#{detail.batch} where id=#{detail.trace_id}
+		</foreach>
+	</update>
 </mapper>

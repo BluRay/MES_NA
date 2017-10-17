@@ -73,24 +73,27 @@ public class QualityServiceImpl implements IQualityService {
 	public void saveKeyPartsDetail(Map<String, Object> keyParts) {
 		String parts_detail=(String)keyParts.get("parts_detail");
 		String project_id=keyParts.get("project_id").toString();
+		String version=keyParts.get("version")!=null ? keyParts.get("version").toString() : "";
 		String editor_id=keyParts.get("editor_id").toString();
 		String edit_date=(String)keyParts.get("edit_date");
-		String version=qualityDao.queryKeyPartsMaxVersion(project_id);
 		List detail_list=new ArrayList();
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-		if(version==null){
-			version ="V"+ df.format(new Date())+"01";
-		}else{
-			String monthyear=version.substring(1, 9);
-			if(monthyear.equals(df.format(new Date()).toString())){
-				String versionStr=version.substring(version.length()-2, version.length());
-				int versionNo=Integer.parseInt(versionStr)+1;
-				version ="V"+ df.format(new Date())+"0"+versionNo;
-			}else{
-				version ="V"+ df.format(new Date())+"01";
-			}    
-		}
 		JSONArray jsa=new JSONArray();
+		if(version.equals("")){
+			version=qualityDao.queryKeyPartsMaxVersion(project_id);
+			if(version==null){
+				version ="V"+ df.format(new Date())+"01";
+			}else{
+				String monthyear=version.substring(1, 9);
+				if(monthyear.equals(df.format(new Date()).toString())){
+					String versionStr=version.substring(version.length()-2, version.length());
+					int versionNo=Integer.parseInt(versionStr)+1;
+					version ="V"+ df.format(new Date())+"0"+versionNo;
+				}else{
+					version ="V"+ df.format(new Date())+"01";
+				}    
+			}
+		}
 		if(parts_detail.contains("[")){
 			jsa=JSONArray.fromObject(parts_detail);
 		}
@@ -104,7 +107,13 @@ public class QualityServiceImpl implements IQualityService {
 			detail.put("edit_date", edit_date);
 			detail_list.add(detail);
 		}
-		qualityDao.saveKeyPartsDetails(detail_list);
+		if(keyParts.get("version")==null){
+			qualityDao.saveKeyPartsDetails(detail_list);
+		}else{
+			Map<String,Object> map=new HashMap<String,Object>();
+			qualityDao.deleteKeyPartsDetails(keyParts);
+			qualityDao.saveKeyPartsDetails(detail_list);
+		}
 	}
 	@Override
 	public void getKeyPartsList(HashMap<String, Object> condMap, ModelMap model) {
@@ -192,5 +201,75 @@ public class QualityServiceImpl implements IQualityService {
 	@Override
 	public void getPrdRcdOrderTplDetailList(HashMap<String, Object> condMap, ModelMap model) {
 		model.put("data", qualityDao.getPrdRcdOrderTplDetailList(condMap));		
+	}
+	@Override
+	public void getPrdRcdTestingTplList(Map<String, Object> condMap, ModelMap model) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist=qualityDao.getPrdRcdTestingTplList(condMap);
+		totalCount=qualityDao.getPrdRcdTestingTplCount(condMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", condMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+
+	}
+	@Override
+	@Transactional
+	public void saveTestingTemplate(Map<String, Object> testing) {
+		List detailList=(List) testing.get("detail");
+		Object header_id=testing.get("header_id");
+		Map<String,Object> smap=new HashMap<String,Object>();
+		smap.put("list", detailList);
+		if(detailList.size()>0){
+			if(header_id==null){ // 此版本不存在，先保存HEAD表，在保存ITEM表
+				qualityDao.saveTestingTemplateHead(testing);
+			    header_id=(int) testing.get("id");	
+			    smap.put("testing_template_head_id", header_id);
+			    qualityDao.saveTestingTemplateItem(smap);
+			}else{
+				qualityDao.updateTestingTemplateHeader(testing); // 更新header
+				qualityDao.deleteTestingTemplateByHeader(Integer.parseInt(header_id.toString())); //根据header_id删除ITEM表记录
+				smap.put("testing_template_head_id", header_id);
+				qualityDao.saveTestingTemplateItem(smap); // 保存到ITEM表		
+			}
+	    }
+	}
+	public void getTestingTemplateByHeader(Map<String, Object> condMap, ModelMap model){
+		model.put("data", qualityDao.getTestingTemplateDetailByHeader(condMap));
+	}
+	@Override
+	public void getKeyPartsTraceList(Map conditionMap, ModelMap model) {
+		int totalCount=0;
+		List<Map<String, String>> datalist=qualityDao.getKeyPartsTraceList(conditionMap);
+		totalCount=qualityDao.getKeyPartsTraceCount(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	public void getBusNumberDetailList(Map<String, Object> condMap, ModelMap model){
+		model.put("data", qualityDao.getBusNumberDetailList(condMap));
+	}
+	public void getBusNumberTemplateList(Map<String, Object> condMap, ModelMap model){
+		model.put("data", qualityDao.getBusNumberTemplateList(condMap));
+	}
+	public int updateKeyParts(List<Map<String,Object>> list){
+		int result=0;
+		List addlist=new ArrayList<>();
+		List updatelist=new ArrayList<>();
+		for(Map map : list){
+			if("".equals((String)map.get("trace_id"))){
+				addlist.add(map);			
+			}else{
+				updatelist.add(map);			
+			}
+		}
+		result=qualityDao.saveKeyParts(addlist);
+		result=qualityDao.updateKeyParts(updatelist);
+		return result;
 	}
 }

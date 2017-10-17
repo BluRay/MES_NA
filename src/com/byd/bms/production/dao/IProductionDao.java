@@ -52,6 +52,24 @@ public interface IProductionDao {
 	void batchInsertItemBus(List<Map<String, Object>> item_bus_list);
 
 	void batchInsertMaterial(List<Map<String, Object>> item_material_list);
+
+	List<Map<String, Object>> queryEcnItemList(Map<String, Object> condMap);
+
+	int queryEcnItemCount(Map<String, Object> condMap);
+
+	List<Map<String, Object>> queryItemListByEcn(@Param(value = "ecn_id")String ecn_id);
+
+	List<Map<String, Object>> queryEcnMaterialByItem(@Param(value = "ecn_item_id")String ecn_item_id);
+
+	void updateEcnHead(Map<String, Object> condMap);
+
+	void batchUpdateEcnItems(List<Map<String, Object>> item_list);
+
+	void deleteMaterialByItem(@Param(value = "ecn_item_id")String ecn_item_id);
+
+	void deleteEcnBusByItem(String ecn_item_id);
+
+	void deleteEcnItem(String ecn_item_id);
 	
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
@@ -76,5 +94,11 @@ public interface IProductionDao {
 	public List<Map<String, Object>> getExceptionList(Map<String,Object> conditionMap);
 	public int getExceptionCount(Map<String,Object> conditionMap);
 	public int measuresAbnormity(Map<String,Object> conditionMap);
+
+
+
+
+
+
 
 }

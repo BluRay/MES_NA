@@ -73,26 +73,24 @@
 
 			<div id="dialog-config" class="hide">
 				<div class="form-group">
-				<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Project No.：</label>
-				<input id="order" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
+				<label class="col-sm-2 control-label no-padding-right" for="" >*&nbsp;Project No.：</label>
+				<input id="add_project_no" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
 			</div>
-			<div class="form-group">					
+			<div class="form-group" id="importDiv">					
 				<label class="col-sm-2 control-label no-padding-right" for="">*&nbsp;Template：</label>
-				<div class="col-sm-9">
-					<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
-						<div class="col-sm-4">
-							<input id="file" style="margin-left:-20px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" type="file"> 				
-						</div>
-						<div class="col-sm-4">
-							<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
-							<a href="../docs/inspection.xlsx">Download template</a>
-						</div>							
-					</form>
-				</div>									
+				<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
+					<div class="col-sm-4" style="margin-left:-10px;">
+						<input id="file" style="margin-left:0px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" type="file"> 				
+					</div>
+					<div class="col-sm-4">
+						<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+						<a href="../docs/inspection.xlsx">Download template</a>
+					</div>							
+				</form>
 			</div>
 			<div class="form-group">					
 				<div class="col-sm-12">			
-					<table class="table table-striped table-bordered table-hover" style="width: 860px;font-size:12px;" id="tplDetailTable">
+					<table class="table table-striped table-bordered table-hover" style="width: 1000px;font-size:12px;" id="tplDetailTable">
 					</table>
 				</div>
 			</div>
@@ -110,12 +108,13 @@
 			<!-- /.main-container -->
 		</div>
 	</div>
-	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
+	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script src="../assets/js/dataTables.rowGroup.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
+	<script src="../assets/js/jquery.gritter.min.js"></script>
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
 	<script src="../assets/js/ace/elements.fileinput.js"></script>

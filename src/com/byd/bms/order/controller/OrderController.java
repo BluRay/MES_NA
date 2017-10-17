@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.byd.bms.order.model.BmsOrder;
 import com.byd.bms.order.service.IOrderService;
+import com.byd.bms.setting.service.ISettingService;
 import com.byd.bms.util.ExcelModel;
 import com.byd.bms.util.ExcelTool;
 import com.byd.bms.util.controller.BaseController;
@@ -47,7 +48,8 @@ public class OrderController extends BaseController{
 	static Logger logger = Logger.getLogger(OrderController.class.getName());
 	@Autowired
 	protected IOrderService orderService;
-	
+	@Autowired
+	protected ISettingService settingService;
 	@RequestMapping("/update")
 	public ModelAndView maintain(){ 
 		mv.setViewName("order/maintain");
@@ -323,7 +325,9 @@ public class OrderController extends BaseController{
 
 		ExcelTool excelTool = new ExcelTool();
 		excelTool.readExcel(is, excelModel);
-
+		Map<String,Object> queryMap=new HashMap<String,Object>();
+		queryMap.put("length", -1);
+		String stationStr=settingService.checkStation(queryMap,"Code");
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
 		for (Object[] data : excelModel.getData()) {
 			int line=6; // 模板从第6行开始是bom数据
@@ -332,44 +336,48 @@ public class OrderController extends BaseController{
             if(data[0] != null && !data[0].toString().equals("")){
             	infomap.put("item_no",data[0].toString().trim());
             }else{
-            	errorMessage="Line "+line+": Item不能为空;";
+            	errorMessage="Line "+line+": Item cannot be null";
             }
             if(data[1] != null && !data[1].toString().equals("")){
             	infomap.put("SAP_material",data[1].toString().trim());
             }else{
-            	errorMessage+="SAP不能为空;";
+            	errorMessage+="SAP Material cannot be null;";
             }
 			infomap.put("BYD_P/N", data[2] == null ? null : data[2].toString().trim());
 			if(data[3] != null && !data[3].toString().equals("")){
 				infomap.put("part_name",data[3].toString().trim());
             }else{
-            	errorMessage+="Part Name不能为空;";
+            	errorMessage+="Part Name cannot be null;";
             }
 			infomap.put("specification", data[4] == null ? null : data[4].toString().trim());
 			if(data[5] != null && !data[5].toString().equals("")){
 				infomap.put("unit",data[5].toString().trim());
             }else{
-            	errorMessage+="Unit不能为空;";
+            	errorMessage+="Unit cannot be null;;";
             }
 			if(data[6] != null && !data[6].toString().equals("")){
 				infomap.put("quantity",data[6].toString().trim());
 				boolean isNumber=isNumber(data[6].toString().trim());
 				if(!isNumber){
-					errorMessage+="Quantity必须是数字;";
+					errorMessage+="Quantity must be Number";
 				}
             }else{
-            	errorMessage+="Quantity不能为空;";
+            	errorMessage+="Quantity cannot be null;";
             }
 			infomap.put("en_description", data[7] == null ? null : data[7].toString().trim());
 			if(data[8] != null && !data[8].toString().equals("")){
 				infomap.put("vendor",data[8].toString().trim());
             }else{
-            	errorMessage+="Vendor不能为空;";
+            	errorMessage+="Vendor cannot be null;";
             }
 			if(data[9] != null && !data[9].toString().equals("")){
+				int index=stationStr.indexOf(data[9].toString().trim());
+				if(index<0){
+					infomap.put("error", "Station Code annot be found");
+				}
 				infomap.put("station_code",data[9].toString().trim());
             }else{
-            	errorMessage+="Station Code不能为空;";
+            	errorMessage+="Station Code cannot be Null;";
             }
 			infomap.put("note", data[10] == null ? null : data[10].toString().trim());
 			infomap.put("error", errorMessage);
