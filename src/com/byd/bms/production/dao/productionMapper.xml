@@ -298,6 +298,54 @@
 		left join BMS_NA_BASE_FACTORY f on f.id=pb.production_plant_id
 		where i.id=#{ecn_item_id}
 	</select>
+	
+	<select id="queryMinEcnConfirmDate" parameterType="String" resultType="String">
+		select ifnull(signed_time_first,"") from BMS_NA_ECN_ITEM
+		where id=#{ecn_item_id}
+	</select>
+	
+	<update id="updateEcnItem" parameterType="Map">
+		update BMS_NA_ECN_ITEM 
+		<trim prefix="set" suffixOverrides=",">
+		  	<if test="signed_time_first !=null and signed_time_first !=''">
+				signed_time_first=#{signed_time_first},
+			</if>
+			<if test="status !=null and status !=''">
+				status=#{status},
+			</if>
+			<if test="finished_time !=null and finished_time !=''">
+				finished_time=#{finished_time},
+			</if>
+		</trim>
+		where id=#{ecn_item_id}
+	</update>
+	
+	<update id="batchUpdateEcnBus" parameterType="List">
+		<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+			update BMS_NA_ECN_ITEM_BUS 
+			<trim prefix="set" suffixOverrides=",">
+		  	<if test="item.confirmed_date !=null and item.confirmed_date !=''">
+				confirmed_date=#{item.confirmed_date},
+			</if>
+			<if test="item.production_people !=null and item.production_people !=''">
+				production_people=#{item.production_people},
+			</if>
+			<if test="item.qc !=null and item.qc !=''">
+				qc=#{item.qc},
+			</if>
+			<if test="item.qc_date !=null and item.qc_date !=''">
+				qc_date=#{item.qc_date},
+			</if>
+		</trim>
+		where ecn_item_id=#{item.ecn_item_id} and bus_number=#{item.bus_number}	
+		
+		</foreach>
+	</update>
+	
+	<select id="queryUnQCBusCount" parameterType="String" resultType="int">
+		select count(id) from BMS_NA_ECN_ITEM_BUS where ecn_item_id=#{ecn_item_id} 
+		and (qc_date&lt;=0 or qc_date is null)
+	</select>
 <!-- ########################### xiong jianwu end#############################-->	
 
 	<select id="getVinTotalCount" parameterType="Map" resultType="int">

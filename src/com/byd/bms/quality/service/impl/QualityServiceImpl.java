@@ -287,4 +287,28 @@ public class QualityServiceImpl implements IQualityService {
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap) {
 		return qualityDao.getLocationList(conditionMap);
 	}
+	@Override
+	public int addPunch(Map<String, Object> conditionMap) {
+		return qualityDao.addPunch(conditionMap);
+	}
+	@Override
+	public Map<String, Object> getPunchList(Map<String, Object> conditionMap) {
+		int totalCount=0;
+		List<Map<String,String>> datalist = qualityDao.getPunchList(conditionMap);
+		totalCount = qualityDao.getPunchListCount(conditionMap);
+		Map<String, Object> result = new HashMap<String,Object>();
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
+	@Override
+	public List<Map<String, String>> getPunchInfoByid(Map<String, Object> conditionMap) {
+		return qualityDao.getPunchList(conditionMap);
+	}
+	@Override
+	public int editPunch(Map<String, Object> conditionMap) {
+		return qualityDao.editPunchList(conditionMap);
+	}
 }

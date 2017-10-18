@@ -34,7 +34,7 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">Index</a></li>
+							href="/MES/index">Index</a></li>
 						<li><a href="#">Manufacturing</a></li>
 						<li><a href="#">ECN Update</a></li>
 					</ul>
@@ -84,7 +84,7 @@
 					<div class="row">
 					<div class="col-xs-12">
 						<table id="tableResult"
-							class="table table-striped table-bordered table-hover" style="font-size: 12px; width:1200px;overflow-x:auto ">
+							class="table table-striped table-bordered table-hover" style="font-size: 12px; width:1800px;overflow-x:auto ">
 						</table>	
 					</div>
 					</div>
@@ -196,7 +196,7 @@
 											<tr>
 											<td style="width: 130px;"></td>
 											<td colspan=3>
-												<table class="material_table table table-striped table-bordered">
+												<table class="material_table table table-striped table-bordered" style="font-size: 12px;">
 												</table>
 											</td>
 											</tr>									

@@ -119,7 +119,7 @@ function ajaxQuery(){
 		searching: false,
 		autoWidth:false,
 		destroy: true,
-		scrollY: $(window).height()-245,
+		scrollY: $(window).height()-240,
 		scrollX: true,
 		/*scrollCollapse: true,*/
 		pageLength: 20,
@@ -127,16 +127,7 @@ function ajaxQuery(){
 		lengthChange:false,
 		orderMulti:false,
 		language: {
-			emptyTable:"Sorry,There's no records searched！",
-			info:"Total _TOTAL_ records,page _PAGE_ to _PAGES_ pages",
-			infoEmpty:"",
-			paginate: {
-			  first:"first page",
-		      previous: "previous page",
-		      next:"next page",
-		      last:"last page",
-		      loadingRecords: "Hold on please,processing...",		     
-			}
+
 		},
 		ajax:function (data, callback, settings) {
 			var param ={

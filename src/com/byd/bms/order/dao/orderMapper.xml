@@ -43,6 +43,9 @@
 		<if test="orderNo !=null and orderNo !=''">
 			and o.project_no like CONCAT('%',#{orderNo},'%')   
 		</if>
+		<if test="orderId !=null and orderId !=''">
+			and o.id = #{orderId} 
+		</if>
 		<if test="orderName !=null and orderName !=''">
 			and o.project_name like CONCAT('%',#{orderName},'%')   
 		</if>
@@ -53,7 +56,7 @@
 			and o.project_date like concat(#{actYear},'%') 
 		</if>
 		<if test="factory !=null and factory !=''">
-			and find_in_set(o.production_plant,#{factory} )
+			and find_in_set(o.production_plant_id,#{factory} )
 		</if>
 	</select>
 	

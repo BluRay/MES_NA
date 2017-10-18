@@ -30,13 +30,21 @@ function ajaxQuery(){
 //            leftColumns: 3,
 //            rightColumns:3
 //        },
+		dom: 'Bfrtip',
+		lengthMenu: [
+		             [ 20, 30, 50, -1 ],
+		             [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
+		         ],
+	    buttons: [
+	        {extend:'pageLength',/*text:'显示行'*/}
+	    ],
         rowsGroup:[0,1,2,3,4,5,6,7],
 		paiging:true,
 		ordering:false,
 		searching: false,
 		autoWidth:false,
 		destroy: true,
-		scrollY: $(window).height()-250,
+		scrollY: $(window).height()-240,
 		scrollX: $(window).width(),
 		/*scrollCollapse: true,*/
 		pageLength: 20,
@@ -110,6 +118,9 @@ function ajaxQuery(){
 		        ],
 		
 	});
+	$("#tableResult_info").addClass('col-xs-6');
+	$("#tableResult_paginate").addClass('col-xs-6');
+	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
 }
 
 

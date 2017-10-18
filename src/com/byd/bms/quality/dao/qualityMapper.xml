@@ -412,4 +412,67 @@
 		SELECT * FROM BMS_NA_MAIN_LOCATION
 	</select>
 	
+	<insert id="addPunch" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO BMS_NA_BUS_PUNCH_LIST
+		(plant, bus_number, workshop, source_workshop, main_location_id, main_location,
+		orientation, problem_description, defect_codes_id, defect_codes, responsible_leader,
+		qc_inspector, date_found)		
+		VALUES(#{plant},#{bus_number},#{workshop},#{src_workshop},#{main_location_id},#{main_location},
+		#{Orientation},#{ProblemDescription},#{defect_codes_id},#{defect_codes},#{responsible_leader},
+		#{qc_inspector},#{date_found})
+	</insert>
+	<select id="getPunchList" parameterType="Map" resultType="Map">
+		SELECT * FROM BMS_NA_BUS_PUNCH_LIST WHERE 1=1
+		<if test="id !=null and id !=''">
+			and id = #{id}
+		</if>
+		<if test="plant !=null and plant !=''">
+			and plant = #{plant}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and workshop = #{workshop}
+		</if>
+		<if test="status == 1">
+			and quality_initials IS NULL
+		</if>
+		<if test="status == 2">
+			and quality_initials IS NOT NULL
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and bus_number = #{bus_number}
+		</if>
+		<if test="offset!=null">
+			LIMIT #{start} ,#{length} 
+		</if>
+	</select>
+	<select id="getPunchListCount" parameterType="Map" resultType="int">
+		SELECT COUNT(id) FROM BMS_NA_BUS_PUNCH_LIST WHERE 1=1
+		<if test="plant !=null and plant !=''">
+			and plant = #{plant}
+		</if>
+		<if test="workshop !=null and workshop !=''">
+			and workshop = #{workshop}
+		</if>
+		<if test="status == 1">
+			and quality_initials IS NULL
+		</if>
+		<if test="status == 2">
+			and quality_initials IS NOT NULL
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and bus_number = #{bus_number}
+		</if>
+	</select>
+	<update id='editPunchList' parameterType="Map">
+	UPDATE BMS_NA_BUS_PUNCH_LIST
+	SET plant=#{plant}, bus_number=#{bus_number}, workshop=#{workshop}, source_workshop=#{src_workshop}, main_location_id=#{main_location_id},
+	main_location=#{main_location}, orientation=#{orientation}, problem_description=#{problem_description}, defect_codes_id=#{defect_codes_id}, 
+	defect_codes=#{defect_codes},responsible_leader=#{responsible_leader}, qc_inspector=#{qc_inspector} 
+	WHERE id=#{id}
+	</update>
+	
 </mapper>

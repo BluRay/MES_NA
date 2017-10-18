@@ -7,6 +7,8 @@
 		<title>Punch List</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link rel="stylesheet" href="../assets/css/fixedColumns.bootstrap.min.css" />
+		<link rel="stylesheet" href="../assets/css/fixedColumns.dataTables.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.custom.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
@@ -51,8 +53,6 @@
 								<td>&nbsp;<select id="search_workshop" class="input-small" style="height: 30px;width:100px"></select></td>
 								<td>&nbsp;Status : &nbsp;</td>
 								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:60px"><option value="0">All</option><option value="1">Processing</option><option value="2">Closed</option></select></td>
-								<td>&nbsp;Project : &nbsp;</td>
-								<td>&nbsp;<input id="search_project" placeholder="Project..." style="height:30px;width:100px" type="text"></td>
 								<td>&nbsp;BusNo : &nbsp;</td>
 								<td>&nbsp;<input id="search_busno" placeholder="Bus No..." style="height: 30px;width:100px" type="text"></td>
 								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
@@ -104,31 +104,30 @@
 				<form>
 					<table>
 					<tr style="height:40px">
-						<td align="right" style="width:200px">Plant：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_plant" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_workshop" class="form-control" style="width:150px" /><input type="text" id="edit_id" class="form-control" style="width:150px;display:none" /></td>
+						<td align="right" style="width:100px">BusNumber：</td><td colspan="3"><input type="text" id="edit_busNumber" placeholder="BusNumber..." class="form-control" style="width:250px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:200px">Line：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_line" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalStation：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalStation" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">Plant：</td><td style="width:150px"><select id="edit_plant" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><select id="edit_workshop" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:200px">BusNumber：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_busnumber" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalCause" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">Source Workshop：</td><td style="width:150px"><select id="edit_src_workshop" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:100px">Location：</td><td style="width:150px"><select id="edit_location" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right">OpenDate：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_opendate" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:100px">Orientation：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Orientation..." id="edit_orientation" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" disabled="disabled" id="edit_detailed_reason" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:100px">ProblemDescription：</td><td colspan="3"><input type="text" id="edit_problemDescription" placeholder="ProblemDescription..." class="form-control" style="width:400px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Responsible Department：</td><td colspan="3" style="width:150px"><select id="edit_responsibleDepartment" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:100px">Defect Codes：</td><td colspan="3"><select id="edit_defectcodes" class="form-control" style="width:200px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Measures：</td><td colspan="3" style="width:150px"><input type="text" id="edit_measures" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:100px">Responsible Leader：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Responsible Leader..." id="edit_responsibleleader" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Measures Time：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Measures Time..." id="edit_measuresTime" onClick="WdatePicker({el:'edit_measuresTime',dateFmt:'yyyy-MM-dd HH:mm'});" /></td>
+						<td align="right" style="width:100px">QC inspector：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="QC inspector..." id="edit_QCinspector" /></td>
 					</tr>
 					
 					</table>

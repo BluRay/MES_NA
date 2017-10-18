@@ -100,7 +100,7 @@ $(document).ready(function() {
  */
 function initPage(){
 	//文件控件初始化
-/*	$('.material_upload').ace_file_input({
+	$('.material_upload').ace_file_input({
 		no_file:'Please Choose xls File...',
 		btn_choose:'Choose File',
 		btn_change:'Change File',
@@ -110,7 +110,7 @@ function initPage(){
 		allowExt: ['xls','XLS'],
 	}).on('file.error.ace', function(event, info) {
 		alert("Please Choose xls File!");
-    });*/
+    });
 	
 	getOrderNoSelect("#new_project","#orderId",function(obj){
 		var bus_list=[];
@@ -358,7 +358,7 @@ function getStationSelect(factory){
 		success:function(response){
 			var option_str="";
 			$.each(response.data,function(i,station){
-				option_str+="<option value='"+station.station_code+"'>"+station.station_code+"</option>";
+				option_str+="<option value='"+(station.station_code+" "+station.station_name)+"'>"+station.station_code+"</option>";
 			})
 			$(".work_station").append(option_str);
 		}

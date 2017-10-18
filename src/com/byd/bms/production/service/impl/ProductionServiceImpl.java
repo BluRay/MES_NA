@@ -7,8 +7,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -488,6 +491,100 @@ public class ProductionServiceImpl implements IProductionService {
 	public void getEcnBusList(String ecn_item_id, ModelMap model) {
 		List<Map<String, Object>> bus_list=productionDao.queryEcnBusList(ecn_item_id);
 		model.put("data", bus_list);		
+	}
+
+	@Override
+	@Transactional
+	public void confirmEcnItem(List<Map<String, Object>> bus_list,
+			ModelMap model) {
+		String ecn_item_id="";
+		if(bus_list.get(0).get("ecn_item_id")!=null){
+			ecn_item_id=bus_list.get(0).get("ecn_item_id").toString();
+		}
+		//查询ecn item 第一台车的技改确认日期signed_time_first
+		String min_confirm_date=productionDao.queryMinEcnConfirmDate(ecn_item_id);
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		try{
+			for(Map<String,Object> bus:bus_list){
+				
+				if(min_confirm_date.equals("")){
+					min_confirm_date=bus.get("confirmed_date").toString();
+				}
+				Date d_compare=df.parse(bus.get("confirmed_date").toString());
+				Date d_min=df.parse(min_confirm_date);
+				if(d_min.getTime()>=d_compare.getTime()){
+					min_confirm_date=bus.get("confirmed_date").toString();
+				}	
+			}
+			
+			/**
+			 * 更新BMS_NA_ECN_ITEM status为2（processing），以及字段signed_time_first
+			 */
+			Map<String,Object> condMap=new HashMap<String,Object>();
+			condMap.put("ecn_item_id", ecn_item_id);
+			condMap.put("status", "2");
+			condMap.put("signed_time_first",min_confirm_date);
+			productionDao.updateEcnItem(condMap);
+			
+			/**
+			 * 更新BMS_NA_ECN_ITEM_BUS表信息
+			 */
+			productionDao.batchUpdateEcnBus(bus_list);
+			
+			model.put("success", true);
+			model.put("message", "Succeed!");
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			model.put("success", false);
+			model.put("message", "Failed!");
+			throw new RuntimeException(e.getCause());
+		}
+			
+	}
+
+	@Transactional
+	@Override
+	public void confirmEcnItem_QC(List<Map<String, Object>> bus_list,
+			ModelMap model) {
+		try{
+			String ecn_item_id="";
+			if(bus_list.get(0).get("ecn_item_id")!=null){
+				ecn_item_id=bus_list.get(0).get("ecn_item_id").toString();
+			}
+			String qc_date="";
+			if(bus_list.get(0).get("qc_date")!=null){
+				qc_date=bus_list.get(0).get("qc_date").toString();
+			}
+			/**
+			 * 更新BMS_NA_ECN_ITEM_BUS表信息
+			 */
+			productionDao.batchUpdateEcnBus(bus_list);
+			
+			/**
+			 * 查询是否ecn_itme_id对应的ECN ITEM 是否都全部技改QC确认了，
+			 * 是则更新BMS_NA_ECN_ITEM status为3（finished），以及字段finished_time
+			 */
+			int un_qc_count=productionDao.queryUnQCBusCount(ecn_item_id);
+			if(un_qc_count==0){
+				Map<String,Object> condMap=new HashMap<String,Object>();
+				condMap.put("ecn_item_id", ecn_item_id);
+				condMap.put("status", "3");
+				condMap.put("finished_time",qc_date);
+				
+				productionDao.updateEcnItem(condMap);
+			}
+			
+			
+			model.put("success", true);
+			model.put("message", "Succeed!");
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			model.put("success", false);
+			model.put("message", "Failed!");
+			throw new RuntimeException(e.getCause());
+		}	
+		
 	}
 
 	/*****************************xiong jianwu end  *****************************/

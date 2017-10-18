@@ -108,7 +108,58 @@ public class QualityController extends BaseController {
 		map.put("defect_codes",request.getParameter("defect_codes").toString());
 		map.put("responsible_leader",request.getParameter("responsible_leader").toString());
 		map.put("qc_inspector",request.getParameter("qc_inspector").toString());
-		
+		map.put("date_found",curTime);
+		int result = qualityService.addPunch(map);
+		initModel(true,"success",result);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/getPunchList")
+	@ResponseBody
+	public ModelMap getPunchList(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("draw",request.getParameter("draw").toString());
+		map.put("plant",request.getParameter("plant").toString());
+		map.put("workshop",request.getParameter("workshop").toString());
+		map.put("status",request.getParameter("status").toString());
+		map.put("bus_number",request.getParameter("bus_number").toString());
+		Map<String,Object> result = qualityService.getPunchList(map);
+		model.addAllAttributes(result);
+		return model;
+	}
+	
+	@RequestMapping("/getPunchInfoByid")
+	@ResponseBody
+	public ModelMap getPunchInfoByid(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id",request.getParameter("id").toString());
+		List<Map<String, String>> datalist = qualityService.getPunchInfoByid(map);
+		initModel(true,"success",datalist);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/editPunch")
+	@ResponseBody
+	public ModelMap editPunch(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id",request.getParameter("id").toString());
+		map.put("plant",request.getParameter("plant").toString());
+		map.put("workshop",request.getParameter("workshop").toString());
+		map.put("bus_number",request.getParameter("bus_number").toString());
+		map.put("src_workshop",request.getParameter("src_workshop").toString());
+		map.put("main_location_id",request.getParameter("main_location_id").toString());
+		map.put("main_location",request.getParameter("main_location").toString());
+		map.put("orientation",request.getParameter("Orientation").toString());
+		map.put("problem_description",request.getParameter("ProblemDescription").toString());
+		map.put("defect_codes_id",request.getParameter("defect_codes_id").toString());
+		map.put("defect_codes",request.getParameter("defect_codes").toString());
+		map.put("responsible_leader",request.getParameter("responsible_leader").toString());
+		map.put("qc_inspector",request.getParameter("qc_inspector").toString());
+		int result = qualityService.editPunch(map);
+		initModel(true,"success",result);
+		model = mv.getModelMap();
 		return model;
 	}
 	

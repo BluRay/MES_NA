@@ -1,6 +1,6 @@
 var pageSize=1;
 var table;
-var table_height = $(window).height()-250;
+var table_height = $(window).height()-270;
 $(document).ready(function () {	
 	initPage();
 	
@@ -301,10 +301,6 @@ function ajaxQuery(){
 		destroy: true,sScrollY: table_height,scrollX: "100%",orderMulti:false,
 		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
 		language: {
-			emptyTable:"抱歉，未查询到数据！",
-			info:"共计 _TOTAL_ 条，当前第 _PAGE_ 页 共 _PAGES_ 页",
-			infoEmpty:"",
-			paginate: { first:"首页",previous: "上一页",next:"下一页",last:"尾页",loadingRecords: "请稍等,加载中..."}
 		},
 		ajax:function (data, callback, settings) {
 			var param ={

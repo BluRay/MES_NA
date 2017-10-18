@@ -17,6 +17,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <link rel="stylesheet" href="<%=basePath%>/assets/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" href="<%=basePath%>/assets/css/jquery-ui.min.css" />
 <link rel="stylesheet" href="<%=basePath%>/assets/css/jquery.gritter.css" /> 
+<link rel="stylesheet" href="../assets/css/buttons.dataTables.css" /> 
 
 </head>
 <body class="no-skin" style="font-family: 'Microsoft YaHei';">
@@ -99,6 +100,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/assets/js/ace/elements.onpage-help.js"></script>
 	<script src="<%=basePath%>/assets/js/ace/ace.onpage-help.js"></script>
 	<script src="<%=basePath%>/assets/js/bootstrap3-typeahead.js"></script>
+	<script src="<%=basePath%>/assets/js/jszip.min.js"></script>
+	<script src="<%=basePath%>/assets/js/dataTables.buttons.js"></script>
+	<script src="<%=basePath%>/assets/js/buttons.colVis.js"></script>
+    <script src="<%=basePath%>/assets/js/buttons.html5.js"></script>
 	<script src="<%=basePath%>/js/jsrender.min.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/tableExport.js"></script>

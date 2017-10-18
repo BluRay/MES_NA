@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="../assets/css/jquery-ui.custom.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
 		<link rel="stylesheet" href="../css/printable.css" type="text/css" media="print">
+		<link rel="stylesheet" href="../assets/css/buttons.dataTables.css" /> 
 		<style type="text/css" media="screen">
 	        .printable{
 	            display: none;

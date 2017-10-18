@@ -104,6 +104,16 @@ function ajaxQuery(){
 //            rightColumns:3
 //        },
        // rowsGroup:[0,1,2,3,4,5],
+		dom: 'Bfrtip',
+		lengthMenu: [
+		             [ 20, 50,100, -1 ],
+		             [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
+		         ],
+	    buttons: [
+	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
+	        {extend:'pageLength',/*text:'显示行'*/}
+	       
+	    ],
 		paiging:true,
 		ordering:false,
 		searching: false,
@@ -170,6 +180,9 @@ function ajaxQuery(){
         ],
 		
 	});
+	$("#tableResult_info").addClass('col-xs-6');
+	$("#tableResult_paginate").addClass('col-xs-6');
+	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
 }
 
 function importVinInfo(row){

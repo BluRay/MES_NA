@@ -30,5 +30,9 @@ public interface IQualityService {
 	
 	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
+	public int addPunch(Map<String, Object> conditionMap);
+	public Map<String, Object> getPunchList(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getPunchInfoByid(Map<String, Object> conditionMap);
+	public int editPunch(Map<String, Object> conditionMap);
 
 }

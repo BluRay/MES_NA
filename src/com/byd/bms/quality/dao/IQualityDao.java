@@ -57,4 +57,9 @@ public interface IQualityDao {
 	
 	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
+	public int addPunch(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getPunchList(Map<String, Object> conditionMap);
+	public int getPunchListCount(Map<String, Object> conditionMap);
+	public int editPunchList(Map<String, Object> conditionMap);
+	
 }

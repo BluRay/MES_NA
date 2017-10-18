@@ -25,6 +25,10 @@ $(document).ready(function () {
 	$("#btnAdd").on('click', function(e) {
 		getDefectCode();
 		getLocationList();
+		$("#new_busNumber").val("");
+		$("#new_orientation").val("");
+		$("#new_problemDescription").val("");
+		$("#new_responsibleleader").val("");
 		e.preventDefault();
 		$("#dialog-add").removeClass('hide').dialog({
 			resizable: false,
@@ -49,41 +53,6 @@ $(document).ready(function () {
 		});
 	});
 	
-	function getDefectCode(){
-		$("#new_defectcodes").empty();
-		$.ajax({
-			url : "getDefectCode",
-			dataType : "json",
-			data : {},
-			async : false,
-			error : function(response) {alert(response.message)},
-			success : function(response) {
-				var strs ="";
-				$.each(response, function(index, value) {
-					strs += "<option value=" + value.id + ">" + value.defect_code + " " + value.defect_name + "</option>";
-				});
-				$("#new_defectcodes").append(strs);
-			}
-		});
-	}
-	function getLocationList(){
-		$("#new_location").empty();
-		$.ajax({
-			url : "getLocationList",
-			dataType : "json",
-			data : {},
-			async : false,
-			error : function(response) {alert(response.message)},
-			success : function(response) {
-				var strs ="";
-				$.each(response, function(index, value) {
-					strs += "<option value=" + value.id + ">" + value.main_location + "</option>";
-				});
-				$("#new_location").append(strs);
-			}
-		});
-	}
-	
 	function btnAddConfirm(){	
 		//数据验证
 		if($('#new_busNumber').val() == ""){
@@ -101,7 +70,7 @@ $(document).ready(function () {
             	"factory" : $('#new_plant :selected').text(),
             	"workshop" : $('#new_workshop :selected').text(),
             	"bus_number" : $('#new_busNumber').val(),
-            	"src_workshop" : $('#new_src_workshop:selected').text(),
+            	"src_workshop" : $('#new_src_workshop :selected').text(),
             	"main_location_id" : $('#new_location').val(),
             	"main_location" : $('#new_location :selected').text(),
             	"Orientation" : $('#new_orientation').val(),
@@ -148,13 +117,19 @@ $(document).ready(function () {
 			getAllNewWorkshopSelect();
 		}
 	});
+	$("#edit_plant").change(function(){
+		$("#edit_workshop").empty();
+		if($("#edit_plant").val() !=''){
+			getAllEditWorkshopSelect();
+		}
+	});
 	
 	function getFactorySelect() {
 		$.ajax({
 			url : "/MES/common/getFactorySelectAuth",
 			dataType : "json",
 			data : {
-				function_url:'production/exception'
+				function_url:'quality/punchList'
 			},
 			async : false,
 			error : function(response) {
@@ -163,6 +138,7 @@ $(document).ready(function () {
 			success : function(response) {
 				getSelects_noall(response.data, "", "#search_factory");
 				getSelects_noall(response.data, "", "#new_plant");
+				getSelects_noall(response.data, "", "#edit_plant");
 				getAllWorkshopSelect();
 			}
 		});
@@ -189,7 +165,7 @@ function getAllWorkshopSelect() {
 		dataType : "json",
 		data : {
 				factory:$("#search_factory :selected").text(),
-				function_url:'production/measureAbnormity'
+				function_url:'quality/punchList'
 			},
 		async : false,
 		error : function(response) {
@@ -204,12 +180,13 @@ function getAllWorkshopSelect() {
 }
 function getAllNewWorkshopSelect() {
 	$("#exec_workshop").empty();
+	$("#new_src_workshop").empty();
 	$.ajax({
 		url : "/MES/common/getWorkshopSelectAuth",
 		dataType : "json",
 		data : {
 				factory:$("#new_plant :selected").text(),
-				function_url:'production/measureAbnormity'
+				function_url:'quality/punchList'
 			},
 		async : false,
 		error : function(response) {
@@ -218,6 +195,27 @@ function getAllNewWorkshopSelect() {
 		success : function(response) {
 			getSelects(response.data, "", "#new_workshop",null,"id");
 			getSelects(response.data, "", "#new_src_workshop",null,"id");
+		}
+	});
+}
+
+function getAllEditWorkshopSelect() {
+	$("#edit_workshop").empty();
+	$("#edit_src_workshop").empty();
+	$.ajax({
+		url : "/MES/common/getWorkshopSelectAuth",
+		dataType : "json",
+		data : {
+				factory:$("#edit_plant :selected").text(),
+				function_url:'quality/punchList'
+			},
+		async : false,
+		error : function(response) {
+			alert(response.message)
+		},
+		success : function(response) {
+			getSelects(response.data, "", "#edit_workshop",null,"id");
+			getSelects(response.data, "", "#edit_src_workshop",null,"id");
 		}
 	});
 }
@@ -238,22 +236,17 @@ function ajaxQuery(){
 		serverSide: true,paiging:true,ordering:false,searching: false,bAutoWidth:false,
 		destroy: true,sScrollY: table_height,scrollX: "100%",orderMulti:false,
 		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
-		language: {
-			emptyTable:"抱歉，未查询到数据！",
-			info:"共计 _TOTAL_ 条，当前第 _PAGE_ 页 共 _PAGES_ 页",
-			infoEmpty:"",
-			paginate: { first:"首页",previous: "上一页",next:"下一页",last:"尾页",loadingRecords: "请稍等,加载中..."}
-		},
+		fixedColumns:   {
+            leftColumns: 0,
+            rightColumns:1
+        },
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
 				"plant":$('#search_factory :selected').text(),
 				"workshop":$('#search_workshop :selected').text(),
-				"line":$('#search_line :selected').text(),
-				"bus_number":$("#search_busno").val(),
-				"status":$("#search_status").val(),
-				"start_time":$("#start_time").val(),
-				"end_time":$("#end_time").val()
+				"status":$('#search_status').val(),
+				"bus_number":$("#search_busno").val()
 			};
             param.length = data.length;					//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;					//开始的记录序号
@@ -261,21 +254,17 @@ function ajaxQuery(){
 
             $.ajax({
                 type: "post",
-                url: "getExceptionList",
+                url: "getPunchList",
                 cache: false,  //禁用缓存
                 data: param,  //传入组装的参数
                 dataType: "json",
                 success: function (result) {
-                    //console.log(result);
                 	//封装返回数据
                     var returnData = {};
                     returnData.draw = data.draw;						//这里直接自行返回了draw计数器,应该由后台返回
                     returnData.recordsTotal = result.recordsTotal;		//返回数据全部记录
                     returnData.recordsFiltered = result.recordsTotal;	//后台不实现过滤功能，每次查询均视作全部结果
                     returnData.data = result.data;						//返回的数据列表
-                    //console.log(returnData);
-                    //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
-                    //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
                     callback(returnData);
                 }
             });
@@ -283,53 +272,56 @@ function ajaxQuery(){
 		columns: [
 		            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
 		            {"title":"Workshop","class":"center","data":"workshop","defaultContent": ""},
-		            {"title":"Line","class":"center","data":"line","defaultContent": ""},
-		            {"title":"Abnormal Station","class":"center","data":"abnormal_station","defaultContent": ""},
-		            {"title":"Bus Number","class":"center","data":"bus_number","defaultContent": ""},
-		            {"title":"Abnormal Cause","class":"center","data":"abnormal_cause","defaultContent": ""},
-		            {"title":"Detailed Reason","class":"center","data":"detailed_reason","defaultContent": ""},
-		            {"title":"Open Date","class":"center","data":"open_date","defaultContent": ""},
-		            {"title":"Status","class":"center","data":"open_date","defaultContent": "",
-		            	"render": function ( data, type, row ) {
-		            		var status = "Processing"
-		            		if(row['responsible_department_id']==''){
-		            			status = "Closed"
-		            		}
-		            		return status;
-		            	}
-		            },
+		            {"title":"Bus_Number","class":"center","data":"bus_number","defaultContent": ""},
+		            {"title":"SourceWorkshop","class":"center","data":"source_workshop","defaultContent": ""},
+		            {"title":"Location","class":"center","data":"main_location","defaultContent": ""},
+		            {"title":"Orientation","class":"center","data":"orientation","defaultContent": ""},
+		            {"title":"ProblemDescription","class":"center","data":"problem_description","defaultContent": ""},
+		            {"title":"DefectCodes","class":"center","data":"defect_codes","defaultContent": ""},
+		            {"title":"ResponsibleLeader","class":"center","data":"responsible_leader","defaultContent": ""},
+		            {"title":"QC_Inspector","class":"center","data":"qc_inspector","defaultContent": ""},
+		            {"title":"DateFound","class":"center","data":"date_found","defaultContent": ""},
+		            {"title":"LeadInitials","class":"center","data":"lead_initials","defaultContent": ""},
+		            {"title":"LeadInitialsDate","class":"center","data":"lead_initials_date","defaultContent": ""},
+		            {"title":"QualityInitials","class":"center","data":"quality_initials","defaultContent": ""},
+		            {"title":"QualityInitialsDate","class":"center","data":"quality_initials_date","defaultContent": ""},
 		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
-		            		if(row['responsible_department_id']!=''){
-		                    return "<i class=\"glyphicon glyphicon-edit bigger-130 showbus\" title=\"处理\" onclick='editPause(" +
-		                    row['id'] + ",\"" + row['plant'] + "\",\"" + row['workshop'] + "\",\"" + row['line'] + "\",\"" + row['abnormal_station'] + "\",\"" + 
-		                    row['bus_number'] + "\",\"" + row['abnormal_cause'] + "\",\"" + row['detailed_reason'].replace(/\r/ig, "").replace(/\n/ig, "") + "\",\"" + 
-		                    row['open_date'] + "\")' style='color:blue;cursor: pointer;'></i>&nbsp;";
-		            		}else{
-		            			return "";
-		            		}
+		                    return "<i class=\"glyphicon glyphicon-edit bigger-130 showbus\" title=\"Show Detail\" onclick=\"editPunsh("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;";
 		                },
 		            }
 		          ],
 	});
 }
 
-function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_cause,detailed_reason,open_date){
-	$("#edit_plant").val(plant);
-	$("#edit_workshop").val(workshop);
-	$("#edit_id").val(id);
-	$("#edit_line").val(line);
-	$("#edit_abnormalStation").val(abnormal_station);
-	$("#edit_busnumber").val(bus_number);
-	$("#edit_abnormalCause").val(abnormal_cause);
-	$("#edit_opendate").val(open_date);
-	$("#edit_detailed_reason").val(detailed_reason);
-	$("#edit_measures").val("");
-	$("#measure_date").val("");
+function editPunsh(id){
+	getDefectCode();
+	getLocationList();
+	$.ajax({
+		url : "getPunchInfoByid",
+		dataType : "json",
+		data : {
+	    	"id": id
+		},
+		success : function(response) {
+			console.log('-->' + response.data[0].plant);
+			$("#edit_plant option:contains('"+response.data[0].plant+"')").attr('selected', true);
+			$("#edit_busNumber").val(response.data[0].bus_number);
+			$("#edit_orientation").val(response.data[0].orientation);
+			$("#edit_problemDescription").val(response.data[0].problem_description);
+			$("#edit_defectcodes").val(response.data[0].defect_codes_id);
+			$("#edit_responsibleleader").val(response.data[0].responsible_leader);
+			$("#edit_QCinspector").val(response.data[0].qc_inspector);
+			$("#edit_location").val(response.data[0].main_location_id);
+			getAllEditWorkshopSelect();
+			$("#edit_workshop option:contains('"+response.data[0].workshop+"')").attr('selected', true);
+			$("#edit_src_workshop option:contains('"+response.data[0].source_workshop+"')").attr('selected', true);			
+		}
+	});
 	
 	$("#dialog-edit").removeClass('hide').dialog({
 		resizable: false,
-		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Abnormity</h4></div>',
+		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Edit Punch</h4></div>',
 		title_html: true,
 		width:'800px',
 		modal: true,
@@ -339,7 +331,7 @@ function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_c
 					click: function() {$( this ).dialog( "close" );} 
 				},
 				{
-					text: "Add",
+					text: "Save",
 					id:"btn_ok",
 					"class" : "btn btn-success btn-minier",
 					click: function() {
@@ -352,33 +344,69 @@ function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_c
 }
 
 function btnEditConfirm(id){
-	if($("#edit_measuresTime").val()==""){
-		alert(Warn['P_measureAbnormity_01']);
-		$("#edit_measuresTime").focus();
-		return false;
-	}
-	if($("#measures").val()==""){
-		alert(Warn['P_measureAbnormity_02']);
-		$("#measures").focus();
-		return false;
-	}
-	
 	$.ajax({
 		type : "get",
 		dataType : "json",
 		async : false,
-		url : "measuresAbnormity",
+		url : "editPunch",
 		data : {
 			"id" : id,
-			"responsible_department_id": $("#edit_responsibleDepartment").val(),
-			"responsible_department" : $('#edit_responsibleDepartment :selected').text(),
-			"measures" : $("#edit_measures").val(),
-			"measure_date" : $("#edit_measuresTime").val(),
+			"plant": $('#edit_plant :selected').text(),
+			"workshop": $('#edit_workshop :selected').text(),
+			"bus_number" : $("#edit_busNumber").val(),
+			"src_workshop" : $('#edit_src_workshop :selected').text(),
+			"main_location_id" : $("#edit_location").val(),
+			"main_location" : $("#edit_location :selected").text(),
+			"Orientation" : $("#edit_orientation").val(),
+			"ProblemDescription" : $("#edit_problemDescription").val(),
+			"defect_codes_id" : $("#edit_defectcodes").val(),
+			"defect_codes" : $("#edit_defectcodes :selected").text(),
+			"responsible_leader" : $("#edit_responsibleleader").val(),
+			"qc_inspector" : $("#edit_QCinspector").val(),
 		},
 		success : function(response) {
 			fadeMessageAlert(null,"SUCCESS","gritter-info");
         	$("#dialog-edit").dialog( "close" );
     		ajaxQuery();
+		}
+	});
+}
+
+function getDefectCode(){
+	$("#new_defectcodes").empty();
+	$("#edit_defectcodes").empty();
+	$.ajax({
+		url : "getDefectCode",
+		dataType : "json",
+		data : {},
+		async : false,
+		error : function(response) {alert(response.message)},
+		success : function(response) {
+			var strs ="";
+			$.each(response, function(index, value) {
+				strs += "<option value=" + value.id + ">" + value.defect_code + " " + value.defect_name + "</option>";
+			});
+			$("#new_defectcodes").append(strs);
+			$("#edit_defectcodes").append(strs);
+		}
+	});
+}
+function getLocationList(){
+	$("#new_location").empty();
+	$("#edit_location").empty();
+	$.ajax({
+		url : "getLocationList",
+		dataType : "json",
+		data : {},
+		async : false,
+		error : function(response) {alert(response.message)},
+		success : function(response) {
+			var strs ="";
+			$.each(response, function(index, value) {
+				strs += "<option value=" + value.id + ">" + value.main_location + "</option>";
+			});
+			$("#new_location").append(strs);
+			$("#edit_location").append(strs);
 		}
 	});
 }

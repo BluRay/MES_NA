@@ -596,6 +596,60 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
+	/**
+	 * 技改跟进
+	 * @return
+	 */
+	@RequestMapping("/confirmEcnItem")
+	@ResponseBody
+	public ModelMap confirmEcnItem(){
+		model.clear();
+		String ecn_item_id=request.getParameter("ecn_item_id");
+		String bus_list_str=request.getParameter("bus_list");
+		JSONArray bus_arr=JSONArray.fromObject(bus_list_str);
+		Iterator it_bus=bus_arr.iterator();
+		List<Map<String,Object>> bus_list=new ArrayList<Map<String,Object>>();
+		
+		while(it_bus.hasNext()){
+			JSONObject jso=(JSONObject) it_bus.next();
+			Map<String,Object> bus=(Map<String, Object>) JSONObject.toBean(jso, Map.class);
+			bus.put("ecn_item_id", ecn_item_id);
+			bus_list.add(bus);
+		}
+		
+		productionService.confirmEcnItem(bus_list,model);
+		return model;
+	}
+	
+	/**
+	 * 技改跟进QC
+	 * @return
+	 */
+	@RequestMapping("/confirmEcnItem_QC")
+	@ResponseBody
+	public ModelMap confirmEcnItem_QC(){
+		model.clear();
+		String ecn_item_id=request.getParameter("ecn_item_id");
+		String bus_list_str=request.getParameter("bus_list");
+		JSONArray bus_arr=JSONArray.fromObject(bus_list_str);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		
+		Iterator it_bus=bus_arr.iterator();
+		List<Map<String,Object>> bus_list=new ArrayList<Map<String,Object>>();
+		
+		while(it_bus.hasNext()){
+			JSONObject jso=(JSONObject) it_bus.next();
+			Map<String,Object> bus=(Map<String, Object>) JSONObject.toBean(jso, Map.class);
+			bus.put("ecn_item_id", ecn_item_id);
+			bus_list.add(bus);
+			bus.put("qc_date", curTime);
+		}
+		
+		productionService.confirmEcnItem_QC(bus_list, model);
+		return model;
+	}
+	
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")

@@ -72,6 +72,14 @@ public interface IProductionDao {
 	void deleteEcnItem(String ecn_item_id);
 	
 	List<Map<String,Object>> queryEcnBusList(@Param(value = "ecn_item_id")String ecn_item_id);
+
+	String queryMinEcnConfirmDate(String ecn_item_id);
+
+	void updateEcnItem(Map<String, Object> condMap);
+
+	void batchUpdateEcnBus(List<Map<String, Object>> bus_list);
+
+	int queryUnQCBusCount(String ecn_item_id);
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);
@@ -95,6 +103,10 @@ public interface IProductionDao {
 	public List<Map<String, Object>> getExceptionList(Map<String,Object> conditionMap);
 	public int getExceptionCount(Map<String,Object> conditionMap);
 	public int measuresAbnormity(Map<String,Object> conditionMap);
+
+
+
+
 
 
 
