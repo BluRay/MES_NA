@@ -256,16 +256,20 @@ function ajaxQuery(){
 		            {"title":"QualityInitialsDate","class":"center","data":"quality_initials_date","defaultContent": ""},
 		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
-		                    return "<i class=\"glyphicon glyphicon-edit bigger-130 showbus\" title=\"EditPunch\" onclick=\"editPunsh("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		            		if(typeof(row.lead_initials) == "undefined"){
+		            			return "<i class=\"glyphicon glyphicon-check bigger-130 \" title=\"LeadInitials\" onclick=\"leadInitials("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;";
+		            		}else{
+		            			return "<i class=\"glyphicon glyphicon-edit bigger-130 \" title=\"QualityInitials\" onclick=\"qualityInitials("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		            		}
+		                    //return "<i class=\"glyphicon glyphicon-check bigger-130 \" title=\"LeadInitials\" onclick=\"leadInitials("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;" + 
+		                    //"<i class=\"glyphicon glyphicon-edit bigger-130 \" title=\"QualityInitials\" onclick=\"qualityInitials("+row.id+")\" style='color:blue;cursor: pointer;'></i>&nbsp;";
 		                },
 		            }
 		          ],
 	});
 }
 
-function editPunsh(id){
-	getDefectCode();
-	getLocationList();
+function leadInitials(id){
 	$.ajax({
 		url : "getPunchInfoByid",
 		dataType : "json",
@@ -274,23 +278,22 @@ function editPunsh(id){
 		},
 		success : function(response) {
 			//console.log('-->' + response.data[0].plant);
-			$("#edit_plant option:contains('"+response.data[0].plant+"')").attr('selected', true);
-			$("#edit_busNumber").val(response.data[0].bus_number);
-			$("#edit_orientation").val(response.data[0].orientation);
-			$("#edit_problemDescription").val(response.data[0].problem_description);
-			$("#edit_defectcodes").val(response.data[0].defect_codes_id);
-			$("#edit_responsibleleader").val(response.data[0].responsible_leader);
-			$("#edit_QCinspector").val(response.data[0].qc_inspector);
-			$("#edit_location").val(response.data[0].main_location_id);
-			getAllEditWorkshopSelect();
-			$("#edit_workshop option:contains('"+response.data[0].workshop+"')").attr('selected', true);
-			$("#edit_src_workshop option:contains('"+response.data[0].source_workshop+"')").attr('selected', true);			
+			$("#lead_busNumber").val(response.data[0].bus_number);
+			$("#lead_plant").val(response.data[0].plant);
+			$("#lead_workshop").val(response.data[0].workshop);
+			$("#lead_src_workshop").val(response.data[0].source_workshop);
+			$("#lead_location").val(response.data[0].main_location);
+			$("#lead_orientation").val(response.data[0].orientation);
+			$("#lead_problemDescription").val(response.data[0].problem_description);
+			$("#lead_defectcodes").val(response.data[0].defect_codes);
+			$("#lead_responsibleleader").val(response.data[0].responsible_leader);		
+			$("#lead_QCinspector").val(response.data[0].qc_inspector);	
 		}
 	});
 	
-	$("#dialog-edit").removeClass('hide').dialog({
+	$("#dialog-lead").removeClass('hide').dialog({
 		resizable: false,
-		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Edit Punch</h4></div>',
+		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> LeadInitials</h4></div>',
 		title_html: true,
 		width:'800px',
 		modal: true,
@@ -304,38 +307,84 @@ function editPunsh(id){
 					id:"btn_ok",
 					"class" : "btn btn-success btn-minier",
 					click: function() {
-						btnEditConfirm(id);
+						btnLeadConfirm(id);
 					} 
 				}
 			]
 	});
+}
+function qualityInitials(id){
+	$.ajax({
+		url : "getPunchInfoByid",
+		dataType : "json",
+		data : {
+	    	"id": id
+		},
+		success : function(response) {
+			$("#qc_busNumber").val(response.data[0].bus_number);
+			$("#qc_plant").val(response.data[0].plant);
+			$("#qc_workshop").val(response.data[0].workshop);
+			$("#qc_src_workshop").val(response.data[0].source_workshop);
+			$("#qc_location").val(response.data[0].main_location);
+			$("#qc_orientation").val(response.data[0].orientation);
+			$("#qc_problemDescription").val(response.data[0].problem_description);
+			$("#qc_defectcodes").val(response.data[0].defect_codes);
+			$("#qc_responsibleleader").val(response.data[0].responsible_leader);		
+			$("#qc_QCinspector").val(response.data[0].qc_inspector);	
+		}
+	});
 	
+	$("#dialog-qc").removeClass('hide').dialog({
+		resizable: false,
+		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> QualityInitials</h4></div>',
+		title_html: true,
+		width:'800px',
+		modal: true,
+		buttons: [{
+					text: "Close",
+					"class" : "btn btn-minier",
+					click: function() {$( this ).dialog( "close" );} 
+				},
+				{
+					text: "Save",
+					id:"btn_ok",
+					"class" : "btn btn-success btn-minier",
+					click: function() {
+						btnQcConfirm(id);
+					} 
+				}
+			]
+	});
 }
 
-function btnEditConfirm(id){
+function btnLeadConfirm(id){
 	$.ajax({
 		type : "get",
 		dataType : "json",
 		async : false,
-		url : "editPunch",
+		url : "leadInitialsPunch",
 		data : {
-			"id" : id,
-			"plant": $('#edit_plant :selected').text(),
-			"workshop": $('#edit_workshop :selected').text(),
-			"bus_number" : $("#edit_busNumber").val(),
-			"src_workshop" : $('#edit_src_workshop :selected').text(),
-			"main_location_id" : $("#edit_location").val(),
-			"main_location" : $("#edit_location :selected").text(),
-			"Orientation" : $("#edit_orientation").val(),
-			"ProblemDescription" : $("#edit_problemDescription").val(),
-			"defect_codes_id" : $("#edit_defectcodes").val(),
-			"defect_codes" : $("#edit_defectcodes :selected").text(),
-			"responsible_leader" : $("#edit_responsibleleader").val(),
-			"qc_inspector" : $("#edit_QCinspector").val(),
+			"id" : id
 		},
 		success : function(response) {
 			fadeMessageAlert(null,"SUCCESS","gritter-info");
-        	$("#dialog-edit").dialog( "close" );
+        	$("#dialog-lead").dialog( "close" );
+    		ajaxQuery();
+		}
+	});
+}
+function btnQcConfirm(id){
+	$.ajax({
+		type : "get",
+		dataType : "json",
+		async : false,
+		url : "qcInitialsPunch",
+		data : {
+			"id" : id
+		},
+		success : function(response) {
+			fadeMessageAlert(null,"SUCCESS","gritter-info");
+        	$("#dialog-qc").dialog( "close" );
     		ajaxQuery();
 		}
 	});

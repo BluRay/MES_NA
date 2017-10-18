@@ -27,6 +27,10 @@ public interface IQualityService {
 	public void getBusNumberDetailList(Map<String, Object> conditionMap, ModelMap model);
 	public void getBusNumberTemplateList(Map<String, Object> conditionMap, ModelMap model);
 	public int updateKeyParts(List<Map<String,Object>> list);
+	public void getInspectionRecordList(Map<String, Object> conditionMap, ModelMap model);
+	public int saveInspectionRecord(Map<String, Object> map);
+	public void getInspectionRecordDetail(Map<String, Object> conditionMap, ModelMap model);
+	public int updateInspectionRecord(List list);
 	
 	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
@@ -34,5 +38,7 @@ public interface IQualityService {
 	public Map<String, Object> getPunchList(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getPunchInfoByid(Map<String, Object> conditionMap);
 	public int editPunch(Map<String, Object> conditionMap);
+	public int leadInitialsPunch(Map<String, Object> conditionMap);
+	public int qcInitialsPunch(Map<String, Object> conditionMap);
 
 }

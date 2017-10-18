@@ -193,8 +193,15 @@
 		delete from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE where project_id=#{project_id} and version=#{version}
 	</delete>
 	<select id="getPrdRcdOrderTplDetailList" parameterType="Map" resultType="Map">
-		select * from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
-		where d.project_id=#{project_id} and d.version=#{version}
+		select d.* from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
+		where d.project_id=#{project_id}
+		<if test="version !=null and version !=''">
+		   and d.version=#{version}
+		</if>
+		<if test="version ==null">
+		   and d.version=(select max(version) from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE
+		   where project_id=#{project_id})
+		</if>
 	</select>
 	<select id="getPrdRcdTestingTplList" parameterType="Map" resultType="Map">
 		select p.id,p.project_no,h.project_id,h.id header_id,h.test_type_value,h.initiated,h.approved,h.remarks,h.editor_id,h.edit_date,
@@ -280,45 +287,11 @@
 			and h.testing_template_head_id=#{header_id}
 		</if>
 	</select>
-	<select id="getInspectionRecordlList" parameterType="Map" resultType="Map">
-		select * from BMS_NA_BUS_INSPECTION_RECORD h
-		left join BMS_NA_PROJECT p on p.id=h.project_id
-		left join BMS_NA_BASE_USER u on u.id=h.editor_id
-		where 1=1
-		<if test="project_no !=null and project_no !=''">
-			and p.project_no=#{project_no}
-		</if>
-		<if test="bus_type !=null and bus_type !='All'">
-			and p.bus_type=#{bus_type}
-		</if>
-		<if test="test_type_value !=null and test_type_value !=''">
-			and h.test_type_value=#{test_type_value}
-		</if>
-			order by p.project_no desc
-		<if test="start !=null">
-			limit #{start},#{length}
-		</if>
-	</select>
-	
-	<select id="getInspectionRecordCount" parameterType="Map" resultType="int">
-		select count(1) from BMS_NA_PROJECT_TESTING_TEMPLATE_HEAD h
-		left join BMS_NA_PROJECT p on p.id=h.project_id
-		where 1=1
-		<if test="project_no !=null and project_no !=''">
-			and p.project_no=#{project_no}
-		</if>
-		<if test="bus_type !=null and bus_type !='All'">
-			and p.bus_type=#{bus_type}
-		</if>
-		<if test="test_type_value !=null and test_type_value !=''">
-			and h.test_type_value=#{test_type_value}
-		</if>
-	</select>
 	<select id="getKeyPartsTraceList" parameterType="Map" resultType="Map">
 		select h.bus_number bus_number,concat(p.project_no,' ',p.project_name) project_name,f.factory_name plant,
 		f.id production_plant_id,p.id project_id,u.username editor,h.supervisor_date
 	    from BMS_NA_BUS_TRACE h
-	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t  on t.id=h.trace_template_id
+	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t on t.id=h.trace_template_id
 		left join BMS_NA_PROJECT p on p.id=h.project_id
 		left join BMS_NA_BASE_FACTORY f on f.id=h.production_plant_id
 		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
@@ -339,7 +312,7 @@
 	</select>
 	
 	<select id="getKeyPartsTraceCount" parameterType="Map" resultType="int">
-		select count(1) from BMS_NA_BUS_TRACE h
+		select count(distinct(h.bus_number)) from BMS_NA_BUS_TRACE h
 	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t  on t.id=h.trace_template_id
 		left join BMS_NA_PROJECT p on p.id=h.project_id
 		left join BMS_NA_BASE_FACTORY f on f.id=h.production_plant_id
@@ -402,6 +375,87 @@
 			  ,editor_id=#{item.editor_id},edit_date=#{item.edit_date}
 			</if>
 			 where id=#{item.trace_id}
+		</foreach>
+	</update>
+	<select id="getInspectionRecordList" parameterType="Map" resultType="Map">
+		select h.bus_number bus_number,concat(p.project_no,' ',p.project_name) project_name,f.factory_name plant,
+		f.id production_plant_id,p.id project_id,u.username supervisor,h.supervisor_date,
+		qc_sign,qc_sign_date
+	    from BMS_NA_BUS_INSPECTION_RECORD h
+        left join BMS_NA_PROJECT_BUS b on b.bus_number=h.bus_number
+		left join BMS_NA_PROJECT p on p.id=b.project_id
+		left join BMS_NA_BASE_FACTORY f on f.id=b.production_plant_id
+		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="plant !=null and plant !=''">
+			and p.production_plant_id=#{plant}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+			group by h.bus_number order by p.project_no desc
+		<if test="start !=null and length!=-1">
+			limit #{start},#{length}
+		</if>
+	</select>
+	
+	<select id="getInspectionRecordCount" parameterType="Map" resultType="int">
+		select count(distinct(h.bus_number))
+	    from BMS_NA_BUS_INSPECTION_RECORD h
+        left join BMS_NA_PROJECT_BUS b on b.bus_number=h.bus_number
+		left join BMS_NA_PROJECT p on p.id=b.project_id
+		left join BMS_NA_BASE_FACTORY f on f.id=b.production_plant_id
+		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
+		where 1=1
+		<if test="project_no !=null and project_no !=''">
+			and p.project_no=#{project_no}
+		</if>
+		<if test="plant !=null and plant !=''">
+			and p.production_plant_id=#{plant}
+		</if>
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+	</select>
+	<insert id="saveInspectionRecord" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into BMS_NA_BUS_INSPECTION_RECORD 
+		(bus_number,workshop,station,process_name,inspection_item,
+		specification_and_standard,supervisor_id,supervisor_date,editor_id,edit_date)
+		values (#{bus_number},#{workshop},#{station},
+			#{process_name},#{inspection_item},#{specification_and_standard},#{editor_id},
+		    #{edit_date},#{editor_id},#{edit_date})
+	</insert>
+	<select id="getInspectionRecordDetail" parameterType="Map" resultType="Map">
+		select h.id,bus_number,workshop,station,process_name,inspection_item,
+		specification_and_standard,self_inspection,qc_inspection,
+		concat(self_sign,' ',self_sign_date) self_str,concat(qc_sign,' ',qc_sign_date) qc_str,
+		u.username supervisor,h.supervisor_date,remark
+	    from BMS_NA_BUS_INSPECTION_RECORD h
+		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
+		where 1=1
+		<if test="bus_number !=null and bus_number !=''">
+			and h.bus_number=#{bus_number}
+		</if>
+	</select>
+	<update id="updateInspectionRecord" parameterType="List">
+		<foreach collection="list" index="index" item="item" separator=";">
+			update BMS_NA_BUS_INSPECTION_RECORD set
+			<if test="item.type !=null and item.type =='self'">
+			   self_sign=#{item.user_name},self_sign_date=#{item.edit_date},
+			   self_inspection=#{item.self_inspection},remark=concat(ifnull(remark,''),' ',#{item.remark})
+			</if>
+			<if test="item.type !=null and item.type =='qc'">
+			   qc_sign=#{item.user_name},qc_sign_date=#{item.edit_date},
+			   qc_inspection=#{item.qc_inspection},remark=concat(ifnull(remark,''),' ',#{item.remark})
+			</if>
+			 where id=#{item.id}
 		</foreach>
 	</update>
 	
@@ -472,6 +526,16 @@
 	SET plant=#{plant}, bus_number=#{bus_number}, workshop=#{workshop}, source_workshop=#{src_workshop}, main_location_id=#{main_location_id},
 	main_location=#{main_location}, orientation=#{orientation}, problem_description=#{problem_description}, defect_codes_id=#{defect_codes_id}, 
 	defect_codes=#{defect_codes},responsible_leader=#{responsible_leader}, qc_inspector=#{qc_inspector} 
+	WHERE id=#{id}
+	</update>
+	<update id='leadInitialsPunch' parameterType="Map">
+	UPDATE BMS_NA_BUS_PUNCH_LIST
+	SET lead_initials=#{lead_initials}, lead_initials_date=#{lead_initials_date}
+	WHERE id=#{id}
+	</update>
+	<update id='qcInitialsPunch' parameterType="Map">
+	UPDATE BMS_NA_BUS_PUNCH_LIST
+	SET quality_initials=#{quality_initials}, quality_initials_date=#{quality_initials_date}
 	WHERE id=#{id}
 	</update>
 	

@@ -278,7 +278,32 @@ public class QualityServiceImpl implements IQualityService {
 		
 		return result;
 	}
-	
+	@Override
+	public void getInspectionRecordList(
+			Map<String, Object> conditionMap, ModelMap model) {
+		List<Map<String,Object>> datalist= qualityDao.getInspectionRecordList(conditionMap);
+		int totalCount= qualityDao.getInspectionRecordCount(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	public int saveInspectionRecord(Map<String, Object> map){
+		return qualityDao.saveInspectionRecord(map);
+	}
+	@Override
+	public void getInspectionRecordDetail(Map<String,Object> conditionMap,ModelMap model) {
+		List<Map<String,Object>> datalist= qualityDao.getInspectionRecordDetail(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	public int updateInspectionRecord(List list){
+		return qualityDao.updateInspectionRecord(list);
+	}
+
 	@Override
 	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap) {
 		return qualityDao.getDefectCode(conditionMap);
@@ -310,5 +335,13 @@ public class QualityServiceImpl implements IQualityService {
 	@Override
 	public int editPunch(Map<String, Object> conditionMap) {
 		return qualityDao.editPunchList(conditionMap);
+	}
+	@Override
+	public int leadInitialsPunch(Map<String, Object> conditionMap) {
+		return qualityDao.leadInitialsPunch(conditionMap);
+	}
+	@Override
+	public int qcInitialsPunch(Map<String, Object> conditionMap) {
+		return qualityDao.qcInitialsPunch(conditionMap);
 	}
 }

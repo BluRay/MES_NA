@@ -376,7 +376,7 @@
 			and p.project_no=#{project_no} 
 		</if>
 		<if test="bus_number !=null and bus_number !=''">
-			and b.bus_number like CONCAT(#{bus_number},'%')   
+			and b.bus_number=#{bus_number}  
 		</if>
 		<if test="print_flag !=null and print_flag !=''">
 		    <if test="print_flag ==1">
@@ -387,7 +387,7 @@
 			</if> 
 		</if>
 		ORDER BY b.id DESC
-		<if test="start !=null and length !='-1' ">
+		<if test="start !=null and length !=-1 ">
 			LIMIT #{start} ,#{length} 
 		</if>			
 	</select>

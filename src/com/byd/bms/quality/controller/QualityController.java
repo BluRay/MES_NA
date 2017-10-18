@@ -62,14 +62,20 @@ public class QualityController extends BaseController {
         return mv;  
     }
 	
-	//========================yk start=================================//
+	//========================yk start=========================================================//
 	
-	/************START punchList AddBy Yangke 171013******************************/
+	/************START punchList&punchInitials AddBy Yangke 171013******************************/
 	@RequestMapping("/punchList")
 	public ModelAndView punchList(){
 		mv.setViewName("quality/punchList");
         return mv;  
     }
+	@RequestMapping("/punchInitials")
+	public ModelAndView punchInitials(){
+		mv.setViewName("quality/punchInitials");
+        return mv;  
+    }
+	
 	@RequestMapping("/getDefectCode")
 	@ResponseBody
 	public ModelMap getDefectCode(){
@@ -163,8 +169,39 @@ public class QualityController extends BaseController {
 		return model;
 	}
 	
+	@RequestMapping("/leadInitialsPunch")
+	@ResponseBody
+	public ModelMap leadInitialsPunch(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		String lead_initials=session.getAttribute("display_name").toString();
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id",request.getParameter("id").toString());
+		map.put("lead_initials",lead_initials);
+		map.put("lead_initials_date",curTime);
+		int result = qualityService.leadInitialsPunch(map);
+		initModel(true,"success",result);
+		model = mv.getModelMap();
+		return model;
+	}
 	
-	/************END punchList****************************************************/
+	@RequestMapping("/qcInitialsPunch")
+	@ResponseBody
+	public ModelMap qcInitialsPunch(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		String quality_initials=session.getAttribute("display_name").toString();
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id",request.getParameter("id").toString());
+		map.put("quality_initials",quality_initials);
+		map.put("quality_initials_date",curTime);
+		int result = qualityService.qcInitialsPunch(map);
+		initModel(true,"success",result);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	/************END punchList&punchInitials ****************************************************/
 	
 	@RequestMapping("addFaultLib")
 	@ResponseBody
@@ -699,7 +736,7 @@ public class QualityController extends BaseController {
 		condMap.put("project_no", project_no);
 		condMap.put("bus_number",bus_number);
 		condMap.put("plant",plant);
-		qualityService.getPrdRcdOrderTplList(condMap,model);
+		qualityService.getInspectionRecordList(condMap,model);
 		return model;
 	}
 	/* 零部件跟踪页面 */
@@ -794,6 +831,83 @@ public class QualityController extends BaseController {
 			initModel(true,"",null);
 		}catch(Exception e){
 			initModel(false,"",null);
+		}
+		return mv.getModelMap();
+	}
+	
+	@RequestMapping("/saveInspectionRecord")
+	@ResponseBody
+	public ModelMap saveInspectionRecord(){
+		model=new ModelMap();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		int userid=(int) session.getAttribute("user_id");
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String bus_number=request.getParameter("bus_number");
+		String workshop=request.getParameter("workshop");
+		String station=request.getParameter("station");
+		String process=request.getParameter("process");
+		String inspection_item=request.getParameter("inspection_item");
+		String specification_and_standard=request.getParameter("specification_and_standard");
+		String memo=request.getParameter("memo");
+		condMap.put("bus_number",bus_number);
+		condMap.put("workshop",workshop);
+		condMap.put("station",station);
+		condMap.put("process_name",process);
+		condMap.put("inspection_item",inspection_item);
+		condMap.put("specification_and_standard",specification_and_standard);
+		condMap.put("memo",memo);
+		condMap.put("inspection_item",inspection_item);
+		condMap.put("memo",memo);
+		condMap.put("editor_id",userid);
+		condMap.put("edit_date",curTime);
+		int result=qualityService.saveInspectionRecord(condMap);
+		if(result>0){
+			initModel(true,"",null);
+		}else{
+			initModel(false,"",null);
+		}
+		return mv.getModelMap();
+	}
+	
+	@RequestMapping("/getInspectionRecordDetail")
+	@ResponseBody
+	public ModelMap getInspectionRecordDetail(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String bus_number=request.getParameter("bus_number");
+		condMap.put("bus_number",bus_number);
+		qualityService.getInspectionRecordDetail(condMap,model);
+		return model;
+	}
+	
+	@RequestMapping("updateInspectionRecord")
+	@ResponseBody
+	public ModelMap updateInspectionRecord(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String user_name=(String) session.getAttribute("user_name");
+		JSONArray add_arr=JSONArray.fromObject(request.getParameter("list"));
+		Iterator it=add_arr.iterator();
+		List<Map<String,Object>> detail=new ArrayList<Map<String,Object>>();
+		while(it.hasNext()){
+			JSONObject jel=(JSONObject) it.next();
+			Map<String,Object> bean=(Map<String, Object>) JSONObject.toBean(jel, Map.class);
+			bean.put("user_name", user_name);
+			bean.put("edit_date", curTime);
+			detail.add(bean);
+		}
+		try{
+			int result=qualityService.updateInspectionRecord(detail);
+			if(result>0){
+				initModel(true,"",null);
+			}else{
+				initModel(false,"",null);
+			}
+			
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false,""+e.getMessage(),null);
 		}
 		return mv.getModelMap();
 	}
