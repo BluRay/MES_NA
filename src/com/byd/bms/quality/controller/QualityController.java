@@ -70,6 +70,47 @@ public class QualityController extends BaseController {
 		mv.setViewName("quality/punchList");
         return mv;  
     }
+	@RequestMapping("/getDefectCode")
+	@ResponseBody
+	public ModelMap getDefectCode(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Map<String, String>> result = qualityService.getDefectCode(map);
+		mv.clear();
+		mv.getModelMap().addAllAttributes(result);
+		model = mv.getModelMap();
+		return model;
+	}
+	@RequestMapping("/getLocationList")
+	@ResponseBody
+	public ModelMap getLocationList(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Map<String, String>> result = qualityService.getLocationList(map);
+		mv.clear();
+		mv.getModelMap().addAllAttributes(result);
+		model = mv.getModelMap();
+		return model;
+	}
+	@RequestMapping("/addPunch")
+	@ResponseBody
+	public ModelMap addPunch(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curTime = df.format(new Date());
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("plant",request.getParameter("factory").toString());
+		map.put("workshop",request.getParameter("workshop").toString());
+		map.put("bus_number",request.getParameter("bus_number").toString());
+		map.put("src_workshop",request.getParameter("src_workshop").toString());
+		map.put("main_location_id",request.getParameter("main_location_id").toString());
+		map.put("main_location",request.getParameter("main_location").toString());
+		map.put("Orientation",request.getParameter("Orientation").toString());
+		map.put("ProblemDescription",request.getParameter("ProblemDescription").toString());
+		map.put("defect_codes_id",request.getParameter("defect_codes_id").toString());
+		map.put("defect_codes",request.getParameter("defect_codes").toString());
+		map.put("responsible_leader",request.getParameter("responsible_leader").toString());
+		map.put("qc_inspector",request.getParameter("qc_inspector").toString());
+		
+		return model;
+	}
 	
 	
 	/************END punchList****************************************************/
@@ -643,7 +684,11 @@ public class QualityController extends BaseController {
 		model=new ModelMap();;
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		String bus_number=request.getParameter("bus_number");
+		String workshop=request.getParameter("workshop");
+		String station=request.getParameter("station");
 		condMap.put("bus_number",bus_number);
+		condMap.put("workshop",workshop);
+		condMap.put("station",station);
 		qualityService.getBusNumberDetailList(condMap,model);
 		return model;
 	}
@@ -675,7 +720,8 @@ public class QualityController extends BaseController {
 		while(it.hasNext()){
 			JSONObject el=(JSONObject) it.next();	
 			Map<String,Object> map=new HashMap<String,Object>();
-			map.put("trace_id", el.get("trace_id"));
+			int trace_id=el.get("trace_id")!=null ? Integer.parseInt(el.get("trace_id").toString()) : 0;
+			map.put("trace_id", trace_id);
 			map.put("batch", el.get("batch"));
 			map.put("bus_number", el.get("bus_number"));
 			map.put("SAP_material",el.get("SAP_material"));
@@ -686,6 +732,7 @@ public class QualityController extends BaseController {
 			map.put("trace_template_id",el.get("trace_template_id"));
 			map.put("project_id",el.get("project_id"));
 			map.put("production_plant_id",el.get("production_plant_id"));
+			map.put("type",el.get("type"));
 			map.put("edit_date",curTime);
 			map.put("editor_id",userid);
 			list.add(map);
@@ -693,9 +740,9 @@ public class QualityController extends BaseController {
 		//调用service保存数据
 		try{
 			int result=qualityService.updateKeyParts(list);
-			initModel(true,"保存成功！",null);
+			initModel(true,"",null);
 		}catch(Exception e){
-			initModel(false,"保存失败!",null);
+			initModel(false,"",null);
 		}
 		return mv.getModelMap();
 	}

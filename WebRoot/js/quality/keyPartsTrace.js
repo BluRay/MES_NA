@@ -107,7 +107,7 @@ function ajaxQuery(){
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
             {"title":"Project No.","class":"center","data":"project_name","defaultContent": ""},
             {"title":"Production Supervisor","class":"center","data":"editor","defaultContent": ""},
-            {"title":"Production Supervisor Date","class":"center","data":"edit_date","defaultContent": ""},
+            {"title":"Production Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},
             {"title":"","class":"center","data":"","render":function(data,type,row){
             	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;" 
             	}
@@ -181,7 +181,7 @@ function showInfoPage(json){
 	        }},
 			{"title":"SAP No.","class":"center","data":"SAP_material","defaultContent": ""},
 			{"title":"Parts Name","class":"center","data":"parts_name","defaultContent": ""},
-			{"title":"Vendor","class":"center","data":"Vendor","defaultContent": ""},
+			{"title":"Vendor","class":"center","data":"vendor","defaultContent": ""},
 			{"title":"Workshop","class":"center","data":"workshop","defaultContent": ""},
 			{"title":"Station","class":"center","data":"station","defaultContent": ""},
 			{"title":"Batch/Serial Number","class":"center","data":"batch","defaultContent": ""},
@@ -239,7 +239,7 @@ function showEditPage(json){
     							ajaxEdit(json); 
     						} 
     					}
-        					]
+        			]
                 
         			});
                 	//封装返回数据
@@ -275,12 +275,12 @@ function ajaxEdit(json){
 
 	var trs=$("#tableDataDetail tbody").children("tr");
 	var arr=[];
-	var busNumber=$("#busNumber").text();
+	var busNumber=$("#bus_number").text();
 	var production_plant_id=json.production_plant_id;
 	var project_id=json.project_id;
 	$.each(trs,function(index,tr){
 		var tds=$(tr).children("td");
-		var SAP_materail=tds.eq(1).text();
+		var SAP_material=tds.eq(1).text();
 		var parts_name=tds.eq(2).text();
 		var vendor=tds.eq(3).text();
 		var workshop=tds.eq(4).text();
@@ -292,7 +292,7 @@ function ajaxEdit(json){
 		obj.trace_template_id=template_id;
 		obj.trace_id=trace_id;
 		obj.batch=batch;
-		obj.SAP_materail=SAP_materail;
+		obj.SAP_material=SAP_material;
 		obj.parts_name=parts_name;
 		obj.vendor=vendor;
 		obj.workshop=workshop;
@@ -300,6 +300,7 @@ function ajaxEdit(json){
 		obj.bus_number=busNumber;
 		obj.project_id=project_id;
 		obj.production_plant_id=production_plant_id;
+		obj.type="audit";// 审核操作
 		arr.push(obj);
 	});
     console.log("param",JSON.stringify(arr));

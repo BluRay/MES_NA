@@ -93,8 +93,17 @@ function ajaxQuery(){
 		            {"title":"Editor","class":"center","data": "username","defaultContent": ""},
 		            {"title":"Edit Date","class":"center","data": "bom_edit_date","defaultContent": ""},
 		            {"title":"","class":"center","data":null,"render":function(data,type,row){
-		                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"Display\" onclick=\"javascript:window.location = ('showBomInfo?version="+row['version']+"&projectNo="+row['project_no']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;"+
-		                  "&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" onclick=\"javascript:window.location = ('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;";
+		            	var dcn=row.DCN!=undefined ? row.DCN : "";
+		            	var document_no=row.document_no!=undefined ? row.document_no : "";
+		            	var version=row.document_no!=undefined ? row.version : "";
+		                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"Display\" " +
+		                		"onclick=\"javascript:window.location = " +
+		                		"('showBomInfo?version="+version+"&projectNo="+row['project_no']+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
+		                				"style='color:blue;cursor: pointer;'></i>&nbsp;"+
+		                  "&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" " +
+		                  "onclick=\"javascript:window.location = " +
+		                  "('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"&version="+version+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
+		                  		"style='color:blue;cursor: pointer;'></i>&nbsp;";
 		            	return str;
 		                },
 		            }

@@ -315,13 +315,13 @@
 		</if>
 	</select>
 	<select id="getKeyPartsTraceList" parameterType="Map" resultType="Map">
-		select distinct(h.bus_number) bus_number,p.project_name,f.factory_name plant,
-		t.id template_id,p.id project_id,h.trace_template_id,u.username editor
+		select h.bus_number bus_number,concat(p.project_no,' ',p.project_name) project_name,f.factory_name plant,
+		f.id production_plant_id,p.id project_id,u.username editor,h.supervisor_date
 	    from BMS_NA_BUS_TRACE h
 	    left join BMS_NA_PROJECT_TRACE_TEMPLATE t  on t.id=h.trace_template_id
 		left join BMS_NA_PROJECT p on p.id=h.project_id
 		left join BMS_NA_BASE_FACTORY f on f.id=h.production_plant_id
-		left join BMS_NA_BASE_USER u on u.id=h.editor_id
+		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
 		where 1=1
 		<if test="project_no !=null and project_no !=''">
 			and p.project_no=#{project_no}
@@ -332,7 +332,7 @@
 		<if test="bus_number !=null and bus_number !=''">
 			and h.bus_number=#{bus_number}
 		</if>
-			order by p.project_no desc
+			group by h.bus_number order by p.project_no desc
 		<if test="start !=null">
 			limit #{start},#{length}
 		</if>
@@ -357,13 +357,22 @@
 	</select>
 	<select id="getBusNumberDetailList" parameterType="Map" resultType="Map">
 		select t.* from BMS_NA_BUS_TRACE t where 1=1 and t.bus_number=#{bus_number}
+		<if test="plant !=null and plant !=''">
+			and t.production_plant_id=#{plant}
+		</if>
+		<if test="workshop !=null and workshop !='All'">
+			and t.workshop=#{workshop}
+		</if>
+		<if test="station !=null and station !=''">
+			and t.station=#{station}
+		</if>
 	</select>
 	<select id="getBusNumberTemplateList" parameterType="Map" resultType="Map">
-		select t.bus_number,h.SAP_material,
+		select t.bus_number,h.SAP_material,t.id trace_id,h.id template_id,
 		h.parts_name,h.vendor,h.workshop,h.station ,t.batch
 	    from BMS_NA_PROJECT_TRACE_TEMPLATE h
 	    left join BMS_NA_BUS_TRACE t on h.id=t.trace_template_id and t.bus_number=#{bus_number}
-		where h.version=(select max(version) from
+		where h.project_id=#{project_id} and h.version=(select max(version) from
 		 BMS_NA_PROJECT_TRACE_TEMPLATE t1 where t1.project_id=#{project_id})
 	</select>
 	<insert id="saveKeyParts" parameterType="Map" useGeneratedKeys="true" keyProperty="id" >
@@ -382,9 +391,25 @@
 		    #{detail.batch},#{detail.editor_id},#{detail.edit_date})
 		</foreach>		
 	</insert>
-	<update id="updateKeyParts" parameterType="Map">
-		<foreach collection="vinList" index="index" item="item" separator=",">
-			update BMS_NA_BUS_TRACE set batch=#{detail.batch} where id=#{detail.trace_id}
+	<update id="updateKeyParts" parameterType="List">
+		<foreach collection="list" index="index" item="item" separator=";">
+			update BMS_NA_BUS_TRACE set batch=#{item.batch}
+			<if test="item.type !=null and item.type =='audit'">
+			  ,supervisor_id=#{item.editor_id},supervisor_date=#{item.edit_date},
+			  editor_id=#{item.editor_id},edit_date=#{item.edit_date}
+			</if>
+			<if test="item.type !=null and item.type =='modify'">
+			  ,editor_id=#{item.editor_id},edit_date=#{item.edit_date}
+			</if>
+			 where id=#{item.trace_id}
 		</foreach>
 	</update>
+	
+	<select id="getDefectCode" parameterType="Map" resultType="Map">
+		SELECT * FROM BMS_NA_DEFECT_CODE
+	</select>
+	<select id="getLocationList" parameterType="Map" resultType="Map">
+		SELECT * FROM BMS_NA_MAIN_LOCATION
+	</select>
+	
 </mapper>

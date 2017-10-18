@@ -24,7 +24,7 @@
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
-						<li><a href="#">Quality</a></li>
+						<li><a href="#">Production</a></li>
 						<li class="active">Bus Trace</li>
 					</ul><!-- /.breadcrumb -->
 
@@ -44,18 +44,17 @@
 					<div class="well">
 						<table>
 							<tr>
-								<td>Bus Type：</td>
-								<td><select name="" id="search_bus_type" class="input-small carType"></select></td>
-								<td>&nbsp;Project No.：</td>
-								<td><input id="search_project_no"  style="width:90px" type="text" ></td>
-								
-<!-- 								<td>&nbsp;Plant：</td> -->
-<!-- 								<td><select id="search_factory" class="form-control" style="width:100px"></select></td> -->
 								<td>&nbsp;Bus No.：</td>
 								<td><input id="search_busNumber"  style="width:150px" type="text" > </td>
+								<td>&nbsp;Plant：</td>
+								<td><select name="" id="search_plant" class="input-small"></select></td>
+								<td>&nbsp;Workshop：</td>
+								<td><select name="" id="search_workshop" class="input-small"></select></td>
+								<td>&nbsp;Station：</td>
+								<td><select name="" id="search_station" class="input-small"></select></td>
 								<td>
-								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="查询" style="margin-left: 10px;"></input>
-<!-- 								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="新增" style="margin-left: 2px;"></input> -->
+								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="Search" style="margin-left: 10px;"></input>
+								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="Save" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
 						</table>	
@@ -64,12 +63,7 @@
 					</table>
 					</div>
 			</div><!-- /.main-content -->
-			
 			<div id="dialog-edit" class="hide" style="align:center;width:900px;height:600px">
-				<div class="form-group">
-						<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Bus No.：</label>
-						<label id="bus_number" class="col-sm-4  no-padding-left"  style="margin-left:15px;"></label>
-					</div>
 				<div class = "div-dialog">
 					<form id="form_edit">
 						<table id="tableDataDetail" class="table table-striped table-bordered table-hover dataTable no-footer"
@@ -99,5 +93,5 @@
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script type="text/javascript" src="../js/jsrender.min.js"></script>
-	<script type="text/javascript" src="../js/quality/keyPartsTrace.js"></script>
+	<script type="text/javascript" src="../js/production/busTrace.js"></script>
 </html>

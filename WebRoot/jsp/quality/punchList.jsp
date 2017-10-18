@@ -69,22 +69,30 @@
 				<form>
 					<table>
 					<tr style="height:40px">
+						<td align="right" style="width:100px">BusNumber：</td><td colspan="3"><input type="text" id="new_busNumber" placeholder="BusNumber..." class="form-control" style="width:250px" /></td>
+					</tr>
+					<tr style="height:40px">
 						<td align="right" style="width:100px">Plant：</td><td style="width:150px"><select id="new_plant" class="form-control" style="width:150px"></select></td>
 						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><select id="new_workshop" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Line：</td><td style="width:150px"><select id="new_line" class="form-control" style="width:150px"></select></td>
-						<td align="right" style="width:100px">AbnormalStation：</td><td style="width:150px"><select id="new_abnormalStation" class="form-control" style="width:120px"></select></td>
+						<td align="right" style="width:100px">Source Workshop：</td><td style="width:150px"><select id="new_src_workshop" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:100px">Location：</td><td style="width:150px"><select id="new_location" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">BusNumber：</td><td style="width:150px"><input type="text" id="new_busNumber" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><select id="new_abnormal_cause" class="form-control" style="width:120px"></select></td>
+						<td align="right" style="width:100px">Orientation：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Orientation..." id="new_orientation" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">OpenDate：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Open Date..." id="new_opendate" onClick="WdatePicker({el:'new_opendate',dateFmt:'yyyy-MM-dd'});" /></td>
+						<td align="right" style="width:100px">ProblemDescription：</td><td colspan="3"><input type="text" id="new_problemDescription" placeholder="ProblemDescription..." class="form-control" style="width:400px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" id="new_detailed_reason" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:100px">Defect Codes：</td><td colspan="3"><select id="new_defectcodes" class="form-control" style="width:200px"></select></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">Responsible Leader：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Responsible Leader..." id="new_responsibleleader" /></td>
+					</tr>
+					<tr style="height:40px">
+						<td align="right" style="width:100px">QC inspector：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="QC inspector..." id="new_QCinspector" /></td>
 					</tr>
 					
 					</table>

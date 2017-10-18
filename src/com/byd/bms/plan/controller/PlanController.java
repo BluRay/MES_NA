@@ -191,7 +191,7 @@ public class PlanController extends BaseController{
 		if (request.getParameter("version") != null) conditionMap.put("version", version);
 		if (request.getParameter("factory_id") != null) conditionMap.put("factory_id", factory_id);
 		if (request.getParameter("factory_name") != null) conditionMap.put("factory_name", factory_name);
-		if (request.getParameter("order_no") != null) conditionMap.put("order_no", order_no);
+		if (request.getParameter("order_no") != null) conditionMap.put("project_no", order_no);
 		if (request.getParameter("plan_month") != null) conditionMap.put("plan_month", plan_month);
 		
 		List<PlanMasterPlan> datalist = planService.showPlanMasterList(conditionMap);

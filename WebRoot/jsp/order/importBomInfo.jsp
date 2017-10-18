@@ -60,17 +60,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<td>*Document No.：</td>
 							<td>
 							<input type="text" style="height: 30px;"
-								class="input-medium revise"  id="documentNo" />
+								class="input-medium revise" value="${document_no}"  id="documentNo" />
 							</td>
 <!-- 						</tr> -->
 <!-- 						<tr> -->
 							<td>*Version：</td>
 							<td>
-								<input class="input-medium revise" style="height: 30px;" id="version" type="text">
+								<input class="input-medium revise" value="${version}" style="height: 30px;" id="version" type="text">
 							</td>
 							<td>*DCN：</td>
 							<td>
-							    <input class="input-medium revise" style="height: 30px;" id="dcn" type="text">
+							    <input class="input-medium revise" value="${dcn}" style="height: 30px;" id="dcn" type="text">
 							</td>
 						</tr>
 						<tr>

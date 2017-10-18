@@ -754,4 +754,27 @@ public class CommonController extends BaseController {
 		return model;
 	}
 	
+	/**
+	 * @author xiong.jianwu
+	 * 查询用户的权限列表
+	 * @return
+	 */
+	@RequestMapping("/validateUserAuth")
+	@ResponseBody
+	public ModelMap validateUserAuth(){
+		model.clear();
+		String staff_number=request.getParameter("staff_number");
+		String url=request.getParameter("url");
+		List<String> datalist=commonService.getRoleAuthority(staff_number);
+		if(datalist==null){
+			datalist=new ArrayList<String>();
+		}
+		if(datalist.contains(url)){
+			model.put("success", true);
+		}else
+			model.put("success", false);
+		
+		
+		return model;
+	}
 }

@@ -27,5 +27,8 @@ public interface IQualityService {
 	public void getBusNumberDetailList(Map<String, Object> conditionMap, ModelMap model);
 	public void getBusNumberTemplateList(Map<String, Object> conditionMap, ModelMap model);
 	public int updateKeyParts(List<Map<String,Object>> list);
+	
+	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
 
 }

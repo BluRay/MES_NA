@@ -55,7 +55,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<tr>
 							<td>Project No：</td>
 							<td><input type="text" style="height: 30px;"
-								class="input-medium revise"  value="${projectNo }" id="search_project_no" /></td>
+								class="input-medium revise"  value="${projectNo }" id="search_project_no" readonly="readonly"/>
+							    <input type="hidden" value="${version}" id="search_version"/>
+							</td>
+								
 							<td>SAP No.：</td>
 							<td>
 								<input type="text" style="height: 30px;"

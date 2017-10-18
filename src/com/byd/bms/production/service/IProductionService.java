@@ -35,6 +35,9 @@ public interface IProductionService {
 
 	@Transactional
 	public void deleteEcnItem(String ecn_item_id, ModelMap model);
+	
+	public void getEcnBusList(String ecn_item_id, ModelMap model);
+	
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
     public Map<String, Object> getVinList(Map<String, Object> conditionMap);
@@ -52,8 +55,5 @@ public interface IProductionService {
 	public int insertAbnormity(Map<String, Object> conditionMap);
 	public Map<String,Object> getExceptionList(Map<String,Object> queryMap);
 	public int measuresAbnormity(Map<String, Object> conditionMap);
-
-
-
 
 }

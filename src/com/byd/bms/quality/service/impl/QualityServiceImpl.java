@@ -262,14 +262,29 @@ public class QualityServiceImpl implements IQualityService {
 		List addlist=new ArrayList<>();
 		List updatelist=new ArrayList<>();
 		for(Map map : list){
-			if("".equals((String)map.get("trace_id"))){
+			int trace_id=Integer.parseInt(map.get("trace_id").toString());
+			if(trace_id==0){
 				addlist.add(map);			
 			}else{
 				updatelist.add(map);			
 			}
 		}
-		result=qualityDao.saveKeyParts(addlist);
-		result=qualityDao.updateKeyParts(updatelist);
+		if(addlist.size()>0){
+			result=qualityDao.saveKeyParts(addlist);
+		}
+		if(updatelist.size()>0){
+			result=qualityDao.updateKeyParts(updatelist);
+		}
+		
 		return result;
+	}
+	
+	@Override
+	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap) {
+		return qualityDao.getDefectCode(conditionMap);
+	}
+	@Override
+	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap) {
+		return qualityDao.getLocationList(conditionMap);
 	}
 }

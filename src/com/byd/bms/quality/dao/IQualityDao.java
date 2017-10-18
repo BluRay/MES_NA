@@ -54,4 +54,7 @@ public interface IQualityDao {
 	public List<Map<String, String>> getBusNumberTemplateList(Map<String, Object> conditionMap);	
 	public int saveKeyParts(List<Map<String, String>> list);
 	public int updateKeyParts(List<Map<String, String>> list);
+	
+	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
 }

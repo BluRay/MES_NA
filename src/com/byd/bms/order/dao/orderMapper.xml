@@ -193,7 +193,7 @@
 	
 	<!-- 海外 MES系统 start -->
 	<select id="getProjectBomList" parameterType="Map" resultType="Map">
-		SELECT p.*,f.factory_name plant,h.DCN,h.version,u.username,h.edit_date bom_edit_date FROM BMS_NA_PROJECT p			
+		SELECT p.*,f.factory_name plant,h.DCN,h.document_no,h.version,u.username,h.edit_date bom_edit_date FROM BMS_NA_PROJECT p			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD h ON h.project_id = p.id
 		LEFT JOIN BMS_NA_BASE_FACTORY f ON p.production_plant_id = f.id
 		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
@@ -272,13 +272,13 @@
 		SELECT d.* FROM BMS_NA_PROJECT_BOM_ITEM d
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		and h.version=#{version}  <!--(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)-->
 		where p.project_no=#{projectNo}  
 		<if test="sapNo !=null and sapNo !=''">
 			and d.SAP_material = #{sapNo} 
 		</if>
 		<if test="stationCode !=null and stationCode !=''">
-			and p.station_code = #{stationCode} 
+			and d.station_code = #{stationCode} 
 		</if>
 		ORDER BY d.id 
 		<if test="start !=null and length !='-1' ">
@@ -290,22 +290,24 @@
 		SELECT count(1) FROM BMS_NA_PROJECT_BOM_ITEM d			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		and h.version=(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		and h.version=#{version} <!--(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)  -->
 		where p.project_no=#{projectNo}  
 		<if test="sapNo !=null and sapNo !=''">
 			and d.SAP_material = #{sapNo} 
 		</if>
 		<if test="stationCode !=null and stationCode !=''">
-			and p.station_code = #{stationCode} 
+			and d.station_code = #{stationCode} 
 		</if>
 		<if test="version !=null and version !=''">
 			and h.version = #{version} 
 		</if>
 	</select>
 	<select id="getMaxVersion" parameterType="Map" resultType="Map">
+		<![CDATA[
 		SELECT h.* FROM BMS_NA_PROJECT_BOM_HEAD h
 		 LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		where p.project_no=#{projectNo} order by id desc LIMIT 0 ,2 		
+		where p.project_no=#{projectNo} and h.version<=#{version} order by id desc LIMIT 0 ,2 		
+	    ]]>  
 	</select>
 	<select id="getBomCompareList" parameterType="Map" resultType="Map">
         select SAP_material,GROUP_CONCAT(version) as version,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note 
@@ -316,13 +318,13 @@
 				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
 				where p.project_no=#{projectNo} and h.version in ('${currentVersion}','${prevVersion}')
+		    <if test="sapNo !=null and sapNo !=''">
+				and d.SAP_material = #{sapNo} 
+			</if>
+			<if test="stationCode !=null and stationCode !=''">
+				and d.station_code = #{stationCode} 
+			</if>
 		) t where 1=1
-		<if test="sapNo !=null and sapNo !=''">
-			and d.SAP_mateiral = #{sapNo} 
-		</if>
-		<if test="stationCode !=null and stationCode !=''">
-			and d.station_code = #{stationCode} 
-		</if>
 		GROUP BY SAP_material,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
 	</select>
 	<select id="getBomCompareDiffList" parameterType="Map" resultType="Map">
@@ -335,13 +337,13 @@
 				LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 				LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
 				where p.project_no=#{projectNo} and h.version in ('${currentVersion}','${prevVersion}')
+			<if test="sapNo !=null and sapNo !=''">
+				and d.SAP_material = #{sapNo} 
+			</if>
+			<if test="stationCode !=null and stationCode !=''">
+				and d.station_code = #{stationCode} 
+			</if>
 		) t where 1=1
-		<if test="sapNo !=null and sapNo !=''">
-			and d.SAP_mateiral = #{sapNo} 
-		</if>
-		<if test="stationCode !=null and stationCode !=''">
-			and d.station_code = #{stationCode} 
-		</if>
 		GROUP BY SAP_material,item_no,BYD_NO,part_name,specification,unit,quantity,en_description,vendor,station_code,note order by CAST(item_no AS SIGNED)
 	   ) t1 where t1.version in ('current','prev') 
 	</select>

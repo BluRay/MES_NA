@@ -210,7 +210,7 @@
 	
 	<select id="queryEcnItemList" parameterType="Map" resultType="Map">
 		select h.id ecn_id,h.project_id,h.project,p.project_name,h.ecn_no,h.pictures,h.design_people,i.status,p.production_plant factory,
-		i.id ecn_item_id,i.item_no,i.items,i.problem_details,i.work_station,i.signed_time_first,i.finished_time_first,
+		i.id ecn_item_id,i.item_no,i.items,i.problem_details,i.work_station,i.signed_time_first,i.finished_time,
 		(select group_concat(b.bus_number) from BMS_NA_ECN_ITEM_BUS b where b.ecn_item_id=i.id) as bus_list
 		from BMS_NA_ECN_HEAD h
 		left join BMS_NA_ECN_ITEM i on h.id=i.ecn_id
@@ -290,6 +290,14 @@
 		delete from BMS_NA_ECN_ITEM where id=#{ecn_item_id}
 	</delete>
 	
+	<select id="queryEcnBusList" parameterType="String" resultType="Map">
+		select b.bus_number,i.work_station,b.confirmed_date,b.qc_date,b.production_people,b.qc,pb.production_plant_id,f.factory_name plant
+		from BMS_NA_ECN_ITEM_BUS b
+		left join BMS_NA_ECN_ITEM i on b.ecn_item_id=i.id
+		left join BMS_NA_PROJECT_BUS pb on pb.bus_number=b.bus_number
+		left join BMS_NA_BASE_FACTORY f on f.id=pb.production_plant_id
+		where i.id=#{ecn_item_id}
+	</select>
 <!-- ########################### xiong jianwu end#############################-->	
 
 	<select id="getVinTotalCount" parameterType="Map" resultType="int">

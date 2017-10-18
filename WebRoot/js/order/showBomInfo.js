@@ -7,7 +7,14 @@ $(document).ready(function(){
 		getOrderNoSelect("#search_project_no","#orderId");
 	}
 	$("#btnQuery").on("click",function(){
-		ajaxQuery();
+		var type=$('input:radio:checked').val();
+    	if(type=='0'){
+    		ajaxQuery(); // 查询当前版本
+    	}else if(type=='1'){
+    		ajaxCompareQuery(); // 与前一版本比较
+    	}else if(type=='2'){
+    		ajaxCompareQuery('difference');  // 显示两版本不同数据
+    	}
 	}); 
 	
 	ajaxQuery();
@@ -47,6 +54,7 @@ function ajaxQuery(){
         url: "getBomItemList",
         cache: false,  //禁用缓存
         data: {
+        	"version":$("#search_version").val(),
         	"sapNo":$("#search_sap_no").val(),
 			"projectNo":$("#search_project_no").val(),
 			"stationCode":$("#search_station_code").val()
@@ -115,6 +123,7 @@ function ajaxCompareQuery(type){
         url: "getBomCompareList",
         cache: false,  //禁用缓存
         data: {
+        	"version":$("#search_version").val(),
         	"sapNo":$("#search_sap_no").val(),
 			"projectNo":$("#search_project_no").val(),
 			"stationCode":$("#search_station_code").val(),

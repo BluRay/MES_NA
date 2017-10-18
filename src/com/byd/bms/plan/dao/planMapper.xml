@@ -19,10 +19,11 @@
 	</insert>
 	<select id="getPlanMasterIndex" parameterType="Map" resultType="Map">
 		SELECT DISTINCT
-		m.version,p.project_no,m.month,p.production_plant AS factory_name,u.display_name,m.edit_date AS create_date FROM
+		m.version,m.flag,p.project_no,m.month,p.production_plant AS factory_name,u.display_name,m.edit_date AS create_date FROM
 		BMS_NA_PROJECT_MASTER_PLAN m
 		LEFT JOIN BMS_NA_PROJECT p ON m.project_id = p.id
 		LEFT JOIN BMS_NA_BASE_USER u ON m.editor_id = u.staff_number
+		WHERE 1=1
 		<if test="production_plant != ''">
 			and p.production_plant = #{production_plant}
 		</if>

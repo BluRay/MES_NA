@@ -583,6 +583,19 @@ public class ProductionController extends BaseController {
 		return mv;
 	}
 	
+	/**
+	 * 技改任务BUS列表查询
+	 * @return
+	 */
+	@RequestMapping("/getEcnBusList")
+	@ResponseBody
+	public ModelMap getEcnBusList(){
+		model.clear();
+		String ecn_item_id=request.getParameter("ecn_item_id");
+		productionService.getEcnBusList(ecn_item_id,model);
+		return model;
+	}
+	
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")
@@ -693,7 +706,11 @@ public class ProductionController extends BaseController {
 		model.addAllAttributes(result);
 		return model;
 	}
-	
+	@RequestMapping("/busTrace")
+	public ModelAndView busTrace(){
+		mv.setViewName("production/busTrace");
+		return mv;
+	}
 	/*****************Start Abnormity 生产异常反馈 生产异常处理 AddBy:Yangke 171010************************************************************/
 	@RequestMapping("/abnormity")
 	public ModelAndView abnormity(){

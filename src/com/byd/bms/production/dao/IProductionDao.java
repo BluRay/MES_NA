@@ -71,6 +71,7 @@ public interface IProductionDao {
 
 	void deleteEcnItem(String ecn_item_id);
 	
+	List<Map<String,Object>> queryEcnBusList(@Param(value = "ecn_item_id")String ecn_item_id);
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);

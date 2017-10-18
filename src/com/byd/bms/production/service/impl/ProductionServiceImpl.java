@@ -484,6 +484,12 @@ public class ProductionServiceImpl implements IProductionService {
 		
 	}
 
+	@Override
+	public void getEcnBusList(String ecn_item_id, ModelMap model) {
+		List<Map<String, Object>> bus_list=productionDao.queryEcnBusList(ecn_item_id);
+		model.put("data", bus_list);		
+	}
+
 	/*****************************xiong jianwu end  *****************************/
 	@Override
 	public Map<String, Object> getBusNumberList(Map<String, Object> conditionMap) {

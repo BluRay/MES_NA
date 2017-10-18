@@ -23,12 +23,14 @@ $(document).ready(function () {
 	});
 	
 	$("#btnAdd").on('click', function(e) {
+		getDefectCode();
+		getLocationList();
 		e.preventDefault();
 		$("#dialog-add").removeClass('hide').dialog({
 			resizable: false,
-			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Abnormity</h4></div>',
+			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Punch</h4></div>',
 			title_html: true,
-			width:'550px',
+			width:'600px',
 			modal: true,
 			buttons: [{
 						text: "Close",
@@ -47,6 +49,41 @@ $(document).ready(function () {
 		});
 	});
 	
+	function getDefectCode(){
+		$("#new_defectcodes").empty();
+		$.ajax({
+			url : "getDefectCode",
+			dataType : "json",
+			data : {},
+			async : false,
+			error : function(response) {alert(response.message)},
+			success : function(response) {
+				var strs ="";
+				$.each(response, function(index, value) {
+					strs += "<option value=" + value.id + ">" + value.defect_code + " " + value.defect_name + "</option>";
+				});
+				$("#new_defectcodes").append(strs);
+			}
+		});
+	}
+	function getLocationList(){
+		$("#new_location").empty();
+		$.ajax({
+			url : "getLocationList",
+			dataType : "json",
+			data : {},
+			async : false,
+			error : function(response) {alert(response.message)},
+			success : function(response) {
+				var strs ="";
+				$.each(response, function(index, value) {
+					strs += "<option value=" + value.id + ">" + value.main_location + "</option>";
+				});
+				$("#new_location").append(strs);
+			}
+		});
+	}
+	
 	function btnAddConfirm(){	
 		//数据验证
 		if($('#new_busNumber').val() == ""){
@@ -54,22 +91,25 @@ $(document).ready(function () {
 			$('#new_busNumber').focus();
 			return false;
 		}
-
+		console.log($('#new_defectcodes :selected').text());
+		var defectcodes = $('#new_defectcodes :selected').text();
         $.ajax({
             type: "get",
             dataType: "json",
-            url : "enterException",
+            url : "addPunch",
             data: {
             	"factory" : $('#new_plant :selected').text(),
             	"workshop" : $('#new_workshop :selected').text(),
-            	"line" : $('#new_line :selected').text(),
-            	"process" : $('#new_abnormalStation').val(),
-            	"process_name" : $('#new_abnormalStation:selected').text(),
-                "bus_list":$('#new_busNumber').val(),
-                "reason_type_id":$('#new_abnormal_cause :selected').attr("keyvalue")||"0",
-            	"reason_type" : $('#new_abnormal_cause :selected').text(),
-                "start_time":$('#new_opendate').val(),
-                "detailed_reasons":$('#new_detailed_reason').val()
+            	"bus_number" : $('#new_busNumber').val(),
+            	"src_workshop" : $('#new_src_workshop:selected').text(),
+            	"main_location_id" : $('#new_location').val(),
+            	"main_location" : $('#new_location :selected').text(),
+            	"Orientation" : $('#new_orientation').val(),
+            	"ProblemDescription" : $('#new_problemDescription').val(),
+            	"defect_codes_id" : $('#new_defectcodes').val(),
+            	"defect_codes" : defectcodes,
+            	"responsible_leader" : $('#new_responsibleleader').val(),
+            	"qc_inspector" : $('#new_QCinspector').val(),
             },
             success: function(response){
             	fadeMessageAlert(null,"SUCCESS","gritter-info");
@@ -100,37 +140,14 @@ $(document).ready(function () {
 		$("#search_workshop").empty();
 		if($("#search_factory").val() !=''){
 			getAllWorkshopSelect();
-			getAllLineSelect();
-			//getAllProcessSelect();
 		}
 	});
 	$("#new_plant").change(function(){
 		$("#new_workshop").empty();
 		if($("#new_plant").val() !=''){
 			getAllNewWorkshopSelect();
-			getAllNewLineSelect();
-			getAllNewProcessSelect();
 		}
 	});
-	$("#search_workshop").change(function(){
-		$("#search_line").empty();
-		if($("#search_workshop").val() !=''){
-			getAllLineSelect();
-		}
-	});
-	$("#new_workshop").change(function(){
-		$("#new_line").empty();
-		if($("#new_workshop").val() !=''){
-			getAllNewLineSelect();
-		}
-	});
-	$("#new_line").change(function(){
-		$("#new_abnormalStation").empty();
-		if($("#new_line").val() !=''){
-			getAllNewProcessSelect();
-		}
-	});
-	
 	
 	function getFactorySelect() {
 		$.ajax({
@@ -147,7 +164,6 @@ $(document).ready(function () {
 				getSelects_noall(response.data, "", "#search_factory");
 				getSelects_noall(response.data, "", "#new_plant");
 				getAllWorkshopSelect();
-				getAllLineSelect();
 			}
 		});
 	}
@@ -182,6 +198,7 @@ function getAllWorkshopSelect() {
 		success : function(response) {
 			getSelects(response.data, "", "#search_workshop",null,"id");
 			getSelects(response.data, "", "#new_workshop",null,"id");
+			getSelects(response.data, "", "#new_src_workshop",null,"id");
 		}
 	});
 }
@@ -200,86 +217,7 @@ function getAllNewWorkshopSelect() {
 		},
 		success : function(response) {
 			getSelects(response.data, "", "#new_workshop",null,"id");
-		}
-	});
-}
-
-function getAllLineSelect() {
-	$("#exec_line").empty();
-	$.ajax({
-		url : "/MES/common/getLineSelectAuth",
-		dataType : "json",
-		data : {
-				factory:$("#search_factory :selected").text(),
-				workshop:$("#search_workshop :selected").text()
-			},
-		async : false,
-		error : function(response) {
-			alert(response.message)
-		},
-		success : function(response) {
-			line_selects_data=response.data;
-			getSelects(response.data, "", "#search_line",null,"name");
-			getSelects(response.data, "", "#new_line",null,"name");
-		}
-	});
-}
-function getAllNewLineSelect() {
-	$("#exec_line").empty();
-	$.ajax({
-		url : "/MES/common/getLineSelectAuth",
-		dataType : "json",
-		data : {
-				factory:$("#new_plant :selected").text(),
-				workshop:$("#new_workshop :selected").text()
-			},
-		async : false,
-		error : function(response) {
-			alert(response.message)
-		},
-		success : function(response) {
-			line_selects_data=response.data;
-			getSelects(response.data, "", "#new_line",null,"name"); 
-		}
-	});
-}
-function getAllNewProcessSelect(order_type) {
-	order_type=order_type||'标准订单';
-	$("#exec_process").empty();
-	$.ajax({
-		url : "getProcessMonitorSelect",
-		dataType : "json",
-		data : {
-			factory:$("#new_plant :selected").text(),
-			workshop:$("#new_workshop :selected").text(),
-			line:$("#new_line").val(),
-			order_type:order_type
-			},
-		async : false,
-		error : function(response) {
-			alert(response.message)
-		},
-		success : function(response) {
-			var strs = "";
-		    $("#new_abnormalStation").html("");
-		    var process_id_default="";
-		    var process_name_default="";   
-		    $.each(response.data, function(index, value) {
-		    	if (index == 0) {
-		    		process_id_default=value.id;
-			    	process_name_default=value.process_name;
-		    	}
-		    	
-		    	if(getQueryString("process_id")==value.id){
-		    	 	process_id_default=value.id;
-			    	process_name_default=value.process_name;
-		    	}
-		    	strs += "<option value=" + value.id + " process='"+value.process_name+"' plan_node='"+(value.plan_node_name||"")
-		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.process_code + "</option>";
-		    });
-		    $("#new_abnormalStation").append(strs);
-		    $("#new_abnormalStation").val(process_id_default+"");
-		    $("#new_abnormalStation").val(process_name_default);
+			getSelects(response.data, "", "#new_src_workshop",null,"id");
 		}
 	});
 }

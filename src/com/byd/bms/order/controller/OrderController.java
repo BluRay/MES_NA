@@ -289,6 +289,12 @@ public class OrderController extends BaseController{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("projectId",request.getParameter("projectId"));
 	    map.put("projectNo",request.getParameter("projectNo"));
+	    String version=request.getParameter("version");
+	    String dcn=request.getParameter("dcn");
+	    String document_no=request.getParameter("document_no");
+	    map.put("version",version);
+	    map.put("dcn",dcn);
+	    map.put("document_no",document_no);
 		mv.getModelMap().addAllAttributes(map);
         return mv;  
     } 
@@ -445,6 +451,7 @@ public class OrderController extends BaseController{
 		map.put("projectNo",request.getParameter("projectNo"));
 	    map.put("version",request.getParameter("version"));
 	    map.put("dcn",request.getParameter("dcn"));
+	    map.put("document_no",request.getParameter("document_no"));
 		mv.getModelMap().addAllAttributes(map);
         return mv;  
     } 
@@ -457,15 +464,17 @@ public class OrderController extends BaseController{
 		int start=Integer.parseInt(request.getParameter("start")!=null ? request.getParameter("start") : "0");
 		int length=Integer.parseInt(request.getParameter("length")!=null ? request.getParameter("length") : "-1");//每一页数据条数
 		String projectNo=request.getParameter("projectNo");//订单编号
+		String version=request.getParameter("version");
 		String sapNo=request.getParameter("sapNo");
 		String stationCode=request.getParameter("stationCode");
-		String plant=request.getParameter("plant");//工厂
+		String plant=request.getParameter("plant");
 		condMap.put("draw", draw);
 		condMap.put("start", start);
 		condMap.put("length", length);
 		condMap.put("projectNo", projectNo);
 		condMap.put("stationCode",stationCode);
 		condMap.put("plant", plant);
+		condMap.put("version", version);
 		condMap.put("sapNo", sapNo);
 		Map<String,Object> result=orderService.getBomItemList(condMap);
 		model.addAllAttributes(result);
@@ -481,6 +490,7 @@ public class OrderController extends BaseController{
 //		int length=Integer.parseInt(request.getParameter("length"));//每一页数据条数
 		String projectNo=request.getParameter("projectNo");
 		String sapNo=request.getParameter("sapNo");
+		String version=request.getParameter("version");
 		String stationCode=request.getParameter("stationCode");
 		String compareType=request.getParameter("compareType");
 //		condMap.put("draw", draw);
@@ -489,6 +499,7 @@ public class OrderController extends BaseController{
 		condMap.put("projectNo", projectNo);
 		condMap.put("stationCode",stationCode);
 		condMap.put("sapNo", sapNo);
+		condMap.put("version", version);
 		condMap.put("compareType", compareType);
 		Map<String,Object> result=orderService.getBomCompareList(condMap);
 		model.addAllAttributes(result);
