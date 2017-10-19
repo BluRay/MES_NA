@@ -6,7 +6,7 @@ $(document).ready(function() {
 			//初始化页面
 			initPage();
 			
-			$(".ui-sortable").bind('sortstop', function(event, ui) { 
+/*			$(".ui-sortable").bind('sortstop', function(event, ui) { 
 				//alert(ui.item.context.clientWidth);
 				var widget=$(ui.item[0]).find(".widget-body");
 				//alert(widget.attr("id"))
@@ -20,7 +20,7 @@ $(document).ready(function() {
 				if(chart_id=='chart3'){
 					chart3.setSize(ui.item.context.clientWidth-20,190)
 				}
-			});
+			});*/
 			
 			setInterval(function () {										
 				ajaxGetOrderChartData();		
@@ -30,13 +30,13 @@ $(document).ready(function() {
 			
 			setInterval(function () {
 				drawFactoryDailyChart();
-				drawFactoryException();			
+				//drawFactoryException();			
 			},1000*60*10);
 			
 		$("#search_factory").change(function(){
 			drawFactoryDailyChart();
 			drawFactoryOrderChart();
-			drawFactoryException();
+			//drawFactoryException();
 		})
 		
 		//$('.factory_act_order').eq(0).siblings().hide();
@@ -74,10 +74,10 @@ $(document).ready(function() {
 	
 	function initPage(){
 	getFactorySelect("","","#search_factory",null,"id");
-	//ajaxGetOrderChartData();	
-	//drawFactoryOrderChart();
-	//drawOutputChart();
-	//drawFactoryDailyChart();
+	ajaxGetOrderChartData();	
+	drawFactoryOrderChart();
+	drawOutputChart();
+	drawFactoryDailyChart();
 	//drawFactoryException();
 	//drawStaffCountChart();
 	
@@ -142,6 +142,7 @@ $(document).ready(function() {
 				{
 			            enabled: false
 			    },
+			    width: 300,
 				title : null,
 				chart : {
 					type : 'bar',
@@ -158,7 +159,7 @@ $(document).ready(function() {
 					enabled:false
 				},
 				xAxis : {
-					categories : [ '未开始', '在制', '已完成','交车' ]
+					categories : [ 'Not started', 'In line', 'Outgoing','Delivery' ]
 				},
 				yAxis : {
 					title:{
@@ -199,7 +200,7 @@ $(document).ready(function() {
 				},
 				series : [ {
 					type : 'bar',
-					data : bar_series
+					data : bar_series,					
 				}, {
 					type : 'pie',
 					center:['80%','40%'],
@@ -208,7 +209,7 @@ $(document).ready(function() {
 		                enabled: true,
 		                format: '{y} %',
 		                color:'black',
-		               inside:true
+		               inside:false
 		            },
 					data : pie_series
 				} ],
@@ -226,7 +227,8 @@ $(document).ready(function() {
 
 function drawOutputChart(){
 	var series=[];
-	var factory_data_list=[];
+	var factory_data_list=[];	
+	
 	$.ajax({
 		url:'common/getIndexOutputData',
 		type:'get',
@@ -238,6 +240,17 @@ function drawOutputChart(){
 		success:function(response){
 			series=response.series;
 			factory_data_list=response.factory_data;
+			var quarter_1=0;
+			var quarter_2=0;
+			var quarter_3=0;
+			var quarter_4=0;
+			$.each(series,function(i,serie){
+				var data=serie.data;
+				quarter_1+=Number(data[0])+Number(data[1])+Number(data[2]);
+				quarter_2+=Number(data[3])+Number(data[4])+Number(data[5]);
+				quarter_3+=Number(data[6])+Number(data[7])+Number(data[8]);
+				quarter_4+=Number(data[9])+Number(data[10])+Number(data[11]);
+			})
 			
 			chart2=Highcharts.chart("container2",
 					{
@@ -248,14 +261,13 @@ function drawOutputChart(){
 					    title:{
 					    	text:null
 					    },
-		/*			    subtitle : {
-							text: '<b>一季度：</b><span style="color: green">20</sapn>'+'   <b>二季度：</b><span style="color: green">30  </span>'+
-							'<b>三季度：</b><span style="color: green">50  </span><b>四季度：</b><span style="color: green">50  </span>'+
-							'<b>年度：</b><span style="color: green">150</span>'
-						},*/
+					    subtitle : {
+							text: '<b>first quarter：</b><span style="color: green">'+quarter_1+'</sapn>'+'   <b>second quarter：</b><span style="color: green">'+quarter_2+'</span>'+
+							'   <b>third quater：</b><span style="color: green">'+quarter_3+'</span>   <b>fourth quarter：</b><span style="color: green">'+quarter_4+'</span>'
+						},
 						chart : {
 							type : 'column',
-							height : 190					
+							height : 200					
 						},
 						colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'],
 						 legend: {
@@ -274,7 +286,7 @@ function drawOutputChart(){
 								whiteSpace:'inherit'
 							},
 							formatter: function () {
-				                var s= '<b>' + this.x + '月</b><br/>' 
+				                var s= '' 
 				                var total=0;
 				                $.each(this.points, function () {
 				                    s += '<b>' + this.series.name + '</b>: ' +
@@ -370,19 +382,19 @@ function drawOutputChart(){
 				var assembly_percent=0;
 				
 				$.each(response.data,function(i,data){
-					if(data.key_name=='焊装上线'){
+					if(data.key_name=='welding_online'){
 						welding_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						welding_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='涂装上线'){
+					if(data.key_name=='painting_online'){
 						painting_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						painting_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='底盘上线'){
+					if(data.key_name=='chassis_online'){
 						chassis_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						chassis_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='总装下线'){
+					if(data.key_name=='assembly_offline'){
 						assembly_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						assembly_percent=data.finished_qty/data.plan_qty||0
 					}

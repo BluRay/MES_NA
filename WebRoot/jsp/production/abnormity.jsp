@@ -49,11 +49,10 @@
 								<form id="form" class="well form-search">
 									<label><b>Bus No.：</b></label>
 									<input class="input-medium" style="height: 30px;" placeholder="Bus No...." id="vinText" type="text"> 
-									<input class="btn btn-sm btn-primary" disabled="disabled" id="btnSubmit" value="确定" type="button"> 
-									<input class="btn btn-sm" id="reset" value="清空" type="button">
+									<input class="btn btn-sm" id="reset" value="Reset" type="button">
 									<input id="currentNode" name="currentNode" value="485" type="hidden">
-									<span class="help-inline" id="vinHint">请输入车号后回车</span>
-
+									<span class="help-inline" id="vinHint">Scanning bus number</span>
+									<input class="btn btn-sm btn-primary"  style="margin-left: 150px;" disabled="disabled" id="btnSubmit" value="Save" type="button"> 
 									<div class="help-inline" id="carInfo" style="display: inline-block;">
 										<span class="label label-info" rel="tooltip" title="VIN" id="infoVIN"></span> 
 										<span class="label label-info" rel="tooltip" title="Project" id="infoOrder"></span> 
@@ -72,11 +71,11 @@
 							<div class="widget-box" style="opacity: 1;">
 								<div class="widget-body">
 									<div class="widget-main" style="padding: 6px;">
-										<div style="height: 140px" class="accordion-inner" id="TodayMiddlePlanDiv">
-											<table id="TodayWaxPlanTable" style="width: 900px" class="table-condensed">
+										<div style="" class="accordion-inner" id="TodayMiddlePlanDiv">
+											<table id="TodayWaxPlanTable" style="width: 100%" class="table-condensed">
 												<tr>
 													<td align="left">&nbsp;Abnormal Bus No.</td>
-													<td colspan="5" align="left"><input type="text" name="tags" style="width:500px" id="form-field-tags" value="" /></td>
+													<td colspan="5" align="left"><input type="text" name="tags"   id="form-field-tags" value="" /></td>
 												</tr>
 												<tr>
 													<td align="left">&nbsp;Plant:</td>
@@ -90,7 +89,7 @@
 													<td><select name="exec_factory" id="exec_factory" class="input-small"></select></td>
 													<td><select name="exec_workshop" id="exec_workshop" class="input-small"></select></td>
 													<td><select name="exec_line" id="exec_line" class="input-small"></select></td>
-													<td><select name="exec_process" id="exec_process" class="input-small"></select></td>
+													<td><select name="exec_process" id="exec_process"  style="width: 250px;" class="input-small"></select></td>
 													<td><select name="exec_user" id="exec_user" class="input-small"> <option value="<%=session.getAttribute("user_id")%>"><%=session.getAttribute("display_name")%></option></select></td>
 													<td width="35%" align="left"></td>
 												</tr>
@@ -108,11 +107,11 @@
 							<div class=" widget-box col-xs-12" style="opacity: 1;padding: 10px;" >
 								<div class="widget-body" style="margin-left: -10px;">
 									<div class="widget-main" style="padding: 6px;">
-										<div style="height: 250px;" class="accordion-inner" id="TodayMiddlePlanDiv">
-											<table id="TodayWaxPlanTable2" style="width: 100%; margin-bottom: 0px" class="table table-condensed">
+										<div style="" class="accordion-inner" id="TodayMiddlePlanDiv">
+											<table id="TodayWaxPlanTable2" style="width: 100%; " class="table table-condensed">
 												<thead>
 													<tr>
-														<td align="left">Abnormal Cause:</td>
+														<td align="left" style="padding-left: -20px;">Abnormal Cause:</td>
 														<td class="">Open Date:</td>
 														<td width="30%"></td><td width="30%"></td>
 													</tr>
@@ -123,7 +122,7 @@
 													</tr>
 											</table>
 											
-											<div style="padding-top:10px;margin-left:15px;"><span style="color:#707070">Detailed Reasons：</span><textarea style="width:100%" class="input-xlarge" id="detailed_reasons" rows="2"></textarea></div>
+											<div style="margin-left:15px;"><span style="color:#707070">Detailed Reasons：</span><textarea style="width:100%" class="input-xlarge" id="detailed_reasons" rows="2"></textarea></div>
 										</div>									
 									</div>
 								</div>

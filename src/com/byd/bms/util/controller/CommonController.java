@@ -3,6 +3,7 @@ package com.byd.bms.util.controller;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -400,8 +401,16 @@ public class CommonController extends BaseController {
 		model=new ModelMap();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		String query_date = df.format(new Date());
+	/*	Calendar c=Calendar.getInstance();
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		String start_date=df.format(c.getTime());
+		c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		String end_date=df.format(c.getTime());*/
+		
 		Map<String,Object> condMap=new HashMap<String,Object>();
-		condMap.put("query_date", query_date);
+		condMap.put("start_date", query_date);
+		condMap.put("end_date", query_date);
 		condMap.put("factory_id", request.getParameter("factory_id"));
 		commonService.getIndexFactoryDailyData(condMap,model);
 		return model;

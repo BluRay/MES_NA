@@ -104,7 +104,7 @@ public interface IProductionDao {
 	public int getExceptionCount(Map<String,Object> conditionMap);
 	public int measuresAbnormity(Map<String,Object> conditionMap);
 
-
+	public int getStationSquence(Map<String,Object> conditionMap);
 
 
 

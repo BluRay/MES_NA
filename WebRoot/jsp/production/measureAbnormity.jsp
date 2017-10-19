@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.custom.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
+		<link rel="stylesheet" href="../assets/css/buttons.dataTables.css" /> 
 	</head>
 	<body class="no-skin" style="font-family: 'Microsoft YaHei';">
 		<!-- 头 -->
@@ -57,7 +58,7 @@
 							</tr>
 							<tr>
 								<td>Status : &nbsp;</td>
-								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:120px"><option value="0">All</option><option value="1">Processing</option><option value="2">Closed</option></select></td>
+								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:120px"><option value="0">All</option><option value="1">Open</option><option value="2">Closed</option></select></td>
 								<td>&nbsp;OpenDate : &nbsp;</td>
 								<td colspan="3">&nbsp;<input type="text" class="input-medium" placeholder="Chouse Open Date..." id="start_time" onClick="WdatePicker({el:'start_time',dateFmt:'yyyy-MM-dd'});" /> - <input type="text" class="input-medium" placeholder="Chouse Open Date..." id="end_time" onClick="WdatePicker({el:'end_time',dateFmt:'yyyy-MM-dd'});" /></td>
 							
@@ -66,31 +67,31 @@
 							</tr>
 						</table>
 					</div>
-					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
+					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;width: 1800px;">
 					</table>
 					</div>
 			</div><!-- /.main-content -->
 			
-			<div id="dialog-add" class="hide" style="align:center;width:700px;height:500px">
+			<div id="dialog-add" class="hide" style="align:center;width:900px;height:600px">
 				<form>
 					<table>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Plant：</td><td style="width:150px"><select id="new_plant" class="form-control" style="width:150px"></select></td>
-						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><select id="new_workshop" class="form-control" style="width:120px"></select></td>
+						<td align="right" style="width:120px">Plant：</td><td style="width:150px"><select id="new_plant" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:120px">Workshop：</td><td style="width:150px"><select id="new_workshop" class="form-control" style="width:120px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Line：</td><td style="width:150px"><select id="new_line" class="form-control" style="width:150px"></select></td>
-						<td align="right" style="width:100px">AbnormalStation：</td><td style="width:150px"><select id="new_abnormalStation" class="form-control" style="width:120px"></select></td>
+						<td align="right" style="width:120px">Line：</td><td style="width:150px"><select id="new_line" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:130px">Abnormal Station：</td><td style="width:250px"><select id="new_abnormalStation" class="form-control" style="width:250px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">BusNumber：</td><td style="width:150px"><input type="text" id="new_busNumber" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><select id="new_abnormal_cause" class="form-control" style="width:120px"></select></td>
+						<td align="right" style="width:120px">Bus Number：</td><td style="width:150px"><input type="text" id="new_busNumber" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:120px">Abnormal Cause：</td><td style="width:250px"><select id="new_abnormal_cause" class="form-control" style="width:250px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">OpenDate：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Open Date..." id="new_opendate" onClick="WdatePicker({el:'new_opendate',dateFmt:'yyyy-MM-dd'});" /></td>
+						<td align="right" style="width:120px">Open Date：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Open Date..." id="new_opendate" onClick="WdatePicker({el:'new_opendate',dateFmt:'yyyy-MM-dd HH:mm'});" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" id="new_detailed_reason" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:120px">Detailed Reason：</td><td colspan="3" style="width:150px"><textarea rows="3" id="new_detailed_reason" class="form-control" style="width:520px" ></textarea></td>
 					</tr>
 					
 					</table>
@@ -103,30 +104,30 @@
 					<table>
 					<tr style="height:40px">
 						<td align="right" style="width:200px">Plant：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_plant" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_workshop" class="form-control" style="width:150px" /><input type="text" id="edit_id" class="form-control" style="width:150px;display:none" /></td>
+						<td align="right" style="width:200px">Workshop：</td><td style="width:200px"><input type="text" disabled="disabled" id="edit_workshop" class="form-control" style="width:200px" /><input type="text" id="edit_id" class="form-control" style="width:200px;display:none" /></td>
 					</tr>
 					<tr style="height:40px">
 						<td align="right" style="width:200px">Line：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_line" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalStation：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalStation" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:180px">Abnormal Station：</td><td style="width:180px"><input type="text" disabled="disabled" id="edit_abnormalStation" class="form-control" style="width:200px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:200px">BusNumber：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_busnumber" class="form-control" style="width:150px" /></td>
-						<td align="right" style="width:100px">AbnormalCause：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalCause" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:200px">Bus Number：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_busnumber" class="form-control" style="width:150px" /></td>
+						<td align="right" style="width:150px">Abnormal Cause：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_abnormalCause" class="form-control" style="width:200px" /></td>
 					</tr>
 					<tr style="height:40px">
 						<td align="right">OpenDate：</td><td style="width:150px"><input type="text" disabled="disabled" id="edit_opendate" class="form-control" style="width:150px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Detailed_Reason：</td><td colspan="3" style="width:150px"><input type="text" disabled="disabled" id="edit_detailed_reason" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:150px">Detailed Reason：</td><td colspan="3" style="width:150px"><textarea rows="2" disabled="disabled" id="edit_detailed_reason" class="form-control" style="width:400px" ></textarea></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Responsible Department：</td><td colspan="3" style="width:150px"><select id="edit_responsibleDepartment" class="form-control" style="width:150px"></select></td>
+						<td align="right" style="width:150px">Responsible Department：</td><td colspan="3" style="width:150px"><select id="edit_responsibleDepartment" class="form-control" style="width:150px"></select></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Measures：</td><td colspan="3" style="width:150px"><input type="text" id="edit_measures" class="form-control" style="width:300px" /></td>
+						<td align="right" style="width:150px">Measures：</td><td colspan="2" style="width:150px"><textarea rows="3"  id="edit_measures" class="form-control" style="width:400px" > </textarea></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Measures Time：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Measures Time..." id="edit_measuresTime" onClick="WdatePicker({el:'edit_measuresTime',dateFmt:'yyyy-MM-dd HH:mm'});" /></td>
+						<td align="right" style="width:150px">Measures Time：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Measures Time..." id="edit_measuresTime" onClick="WdatePicker({el:'edit_measuresTime',dateFmt:'yyyy-MM-dd HH:mm'});" /></td>
 					</tr>
 					
 					</table>
@@ -149,6 +150,10 @@
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
+	<script src="../assets/js/jszip.min.js"></script>
+	<script src="../assets/js/dataTables.buttons.js"></script>
+	<script src="../assets/js/buttons.colVis.js"></script>
+    <script src="../assets/js/buttons.html5.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/jquery.form.js"></script>
 	<script type="text/javascript" src="../js/production/measureAbnormity.js"></script>

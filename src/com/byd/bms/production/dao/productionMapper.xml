@@ -484,12 +484,12 @@
 		AND E.line LIKE CONCAT('%',#{line},'%')
 		</if>
 		<if test="bus_number !='' and bus_number !=null">
-		AND E.bus_number=#{bus_number}
+		AND E.bus_number LIKE CONCAT('%',#{bus_number},'%') 
 		</if>
-		<if test="status == '1'">
+		<if test="status == '1' or status == 1">
 		AND E.measure_date IS NULL
 		</if>
-		<if test="status == '2'">
+		<if test="status == '2' or status == 2">
 		AND E.measure_date IS NOT NULL
 		</if>
 		<if test="start_time !='' and start_time !=null">
@@ -537,6 +537,11 @@
 		update BMS_NA_PRODUCTION_ABNORMITY SET responsible_department_id =#{responsible_department_id},responsible_department = #{responsible_department},measures = #{measures},measure_date=#{measure_date}
 		where id=#{id}
 	</update>
+	
+	<select id="getStationSquence" parameterType="Map" resultType="int">
+		SELECT R.sequence+0 FROM BMS_NA_BASE_SCAN_RULE R WHERE R.factory = #{factory_name} AND R.workshop = #{workshop_name} 
+		AND R.station_name = #{station_name}
+	</select>
 	
 	
 </mapper>

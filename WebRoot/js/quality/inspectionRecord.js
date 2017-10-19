@@ -52,10 +52,9 @@ $(document).ready(function(){
 		}
 		getAllstationSelect();
 		getAllProcessSelect();
-		getAllInspectionItemSelect();
 	});
 	
-	$("#bus_number").blur(function(e){
+	$("#bus_number").change(function(e){
 		if($("#bus_number").val()==''){
 			return false;
 		}
@@ -73,6 +72,10 @@ $(document).ready(function(){
 					plant=detail[0].plant;
 					project_id=detail[0].project_id;
 					getWorkshopSelect('',detail[0].plant,"","#workshop","All","id");
+					getAllInspectionItemSelect(project_id);
+				}else{
+					$("#bus_number").focus();
+					alert(Warn['P_common_01']);
 				}
 			}
 		})
@@ -81,7 +84,42 @@ $(document).ready(function(){
 	$("#btnQuery").click(function(){
 		ajaxQuery();
 	})
-	
+	$('body').on('keydown', ".self_inspection",function(e){
+		if (e.keyCode == "13") {
+			$(e.target).parent("td").parent("tr").next().children().eq(4).find(".self_inspection").focus();
+		}
+		if (e.keyCode == "38") { // 向上
+			$(e.target).parent("td").parent("tr").prev().children().eq(4).find(".self_inspection").focus();
+		}
+		if (e.keyCode == "40") { // 向下
+			$(e.target).parent("td").parent("tr").next().children().eq(4).find(".self_inspection").focus();
+		}
+	});
+	$('body').on('keydown', ".qc_inspection",function(e){
+		if (e.keyCode == "13") {
+			$(e.target).parent("td").parent("tr").next().children().eq(5).find(".qc_inspection").focus();
+		}
+		if (e.keyCode == "38") { // 向上
+			$(e.target).parent("td").parent("tr").prev().children().eq(5).find(".qc_inspection").focus();
+		}
+		if (e.keyCode == "40") { // 向下
+			$(e.target).parent("td").parent("tr").next().children().eq(5).find(".qc_inspection").focus();
+		}
+	});
+	$('body').on('keydown', ".remark",function(e){
+		if (e.keyCode == "13") {
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".qc_inspection").focus();
+		}
+		if (e.keyCode == "38") { // 向上
+			$(e.target).parent("td").parent("tr").prev().children().eq(6).find(".qc_inspection").focus();
+		}
+		if (e.keyCode == "40") { // 向下
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".qc_inspection").focus();
+		}
+	});
+	$("#inspection_item").change(function(){
+		$("#specification_and_standard").val($(this).val());
+	});
 });
 
 function initPage(){
@@ -91,103 +129,80 @@ function initPage(){
 	getFactorySelect("quality/inspectionRecord",'',"#search_plant","All",'id');
 }
 
-function drawTplDetailTable(tableId,data,editable){
+function ajaxQuery(){
+	var plant=$("#search_plant").val();
+	var bus_number=$("#search_bus_number").val();
+	var project_no=$("#search_project_no").val();
 	
-	tb_detail=$(tableId).dataTable({
-		paiging:false,
-		 keys: true,
+	var tb=$("#tableResult").DataTable({
+		serverSide: true,
+		paiging:true,
 		ordering:false,
 		searching: false,
-		autoWidth:false,
+		bAutoWidth:false,
 		destroy: true,
-		paginate:false,
-		rowsGroup:[0],
-		sScrollY: 310,
+		sScrollY: $(window).height()-250,
 		scrollX: true,
-		scrollCollapse: false,
+		/*scrollCollapse: true,*/
+		pageLength: 20,
+		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		info:false,
 		language: {
 		},
-		data:data||{},
+		ajax:function (data, callback, settings) {
+			var param ={
+				"draw":1,
+				"bus_number":bus_number,
+				"plant":plant,
+				"project_no":project_no
+			};
+            param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
+            param.start = data.start;//开始的记录序号
+            param.page = (data.start / data.length)+1;//当前页码
+
+            $.ajax({
+                type: "post",
+                url: "getInspectionRecordList",
+                cache: false,  //禁用缓存
+                data: param,  //传入组装的参数
+                dataType: "json",
+                success: function (result) {
+                	//封装返回数据
+                    var returnData = {};
+                    returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
+                    returnData.recordsTotal = result.recordsTotal;//返回数据全部记录
+                    returnData.recordsFiltered = result.recordsTotal;//后台不实现过滤功能，每次查询均视作全部结果
+                    returnData.data = result.data;//返回的数据列表
+                    callback(returnData);
+                }
+            });
+		},
 		columns: [
-            {"title":"Station","class":"center","data":"station","defaultContent": ""},
-            {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
-            {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-            {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
-            {"title":"Self Inspection","class":"center","data": "self_inspection","defaultContent": ""},
-            {"title":"Sign & Date","class":"center","data": "self_str","defaultContent": ""},
-            {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
-            {"title":"Sign & Date","class":"center","data": "qc_str","defaultContent": ""},
-            {"title":"Remark","class":"center","data": "remark","defaultContent": ""},
-        ]	
+            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
+            {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
+            {"title":"Project No.","class":"center","data": "project_name","defaultContent": ""},
+            {"title":"Production Supervisor","class":"center","data":"supervisor","defaultContent": ""},		            
+            {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},		    
+            {"title":"QC Supervisor","class":"center","data":"qc_sign","defaultContent": ""},		
+            {"title":"QC Supervisor Date","class":"center","qc_sign_date": "editor","defaultContent": ""},
+            {"title":"QC Inspection","class":"center","data":null,"render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"qc\");' style='color:green;cursor: pointer;'></i>";
+               },
+            },
+            {"title":"Self Inspection","class":"center","data":null,"render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"self\");' style='color:green;cursor: pointer;'></i>";
+               },
+            },
+            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
+               },
+            }
+        ],
 	});
-	var head_width=$("#tableDetail_wrapper").width();
-	if(head_width>0){
-		$("#tableDetail_wrapper .dataTables_scrollHead").css("width",head_width-17);
-	}
-}
-function editDetailTable(tableId,data,type){
-	var columns=[
-             {"title":"Station","class":"center","data":"station","defaultContent": ""},
-             {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
-             {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-             {"title":"Specification And Standard","class":"center","width":"15%","data": "specification_and_standard","defaultContent": ""},
-             {"title":"Self Inspection","class":"center","data": "self_inspection","render": function(data,type,row){
-             	return "<input style='border:0;width:100px;text-align:center' class='self_inspection' " +
- 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
-             }},
-             {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
-             {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
-             	return "<input style='border:0;width:100px;text-align:center' class='remark' " +
- 				" value='"+(data!=undefined ? data : '')+"'/>";
-             }},
-         ];
-	if(type=='qc'){
-		columns=[
-	             {"title":"Station","class":"center","data":"station","defaultContent": ""},
-	             {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
-	             {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-	             {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
-	             {"title":"Self Inspection","class":"center","data": "self_inspection","defaultContent": ""},
-	             {"title":"QC Inspection","class":"center","data": "qc_inspection","render": function(data,type,row){
-		             	return "<input style='border:0;width:100px;text-align:center' class='qc_inspection' " +
-		 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
-		             }},
-	             {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
-	             	return "<input style='border:0;width:100px;text-align:center' class='remark' " +
-	 				" value='"+(data!=undefined ? data : '')+"'/>";
-	             }}
-	         ];
-	}
 	
-	tb_detail=$(tableId).dataTable({
-		paiging:false,
-		 keys: true,
-		ordering:false,
-		searching: false,
-		autoWidth:false,
-		destroy: true,
-		paginate:false,
-		rowsGroup:[0],
-		sScrollY: 310,
-		scrollX: true,
-		scrollCollapse: false,
-		lengthChange:false,
-		orderMulti:false,
-		info:false,
-		language: {
-		},
-		data:data||{},
-		columns: columns
-	});
-	var head_width=$("#tableDetail_wrapper").width();
-	if(head_width>0){
-		$("#tableDetail_wrapper .dataTables_scrollHead").css("width",head_width-17);
-	}
-    
 }
+
 /**
  * 查询成品记录表模板明细
  */
@@ -279,7 +294,7 @@ function ajaxUpdate(type){
 			obj.self_inspection=self_inspection;
 			obj.id=id;
 			obj.remark=remark;
-			obj.type="self";
+			obj.type=type;
 			arr.push(obj);
 		}
 		if(type=='qc'){
@@ -290,7 +305,7 @@ function ajaxUpdate(type){
 			obj.qc_inspection=qc_inspection;
 			obj.id=id;
 			obj.remark=remark;
-			obj.type="qc";
+			obj.type=type;
 			arr.push(obj);
 		}
 	});
@@ -321,79 +336,6 @@ function ajaxUpdate(type){
 	})	
 }
 
-function ajaxQuery(){
-	var plant=$("#search_plant").val();
-	var bus_number=$("#search_bus_number").val();
-	var project_no=$("#search_project_no").val();
-	
-	var tb=$("#tableResult").DataTable({
-		serverSide: true,
-		paiging:true,
-		ordering:false,
-		searching: false,
-		bAutoWidth:false,
-		destroy: true,
-		sScrollY: $(window).height()-250,
-		scrollX: true,
-		/*scrollCollapse: true,*/
-		pageLength: 20,
-		pagingType:"full_numbers",
-		lengthChange:false,
-		orderMulti:false,
-		language: {
-		},
-		ajax:function (data, callback, settings) {
-			var param ={
-				"draw":1,
-				"bus_number":bus_number,
-				"plant":plant,
-				"project_no":project_no
-			};
-            param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
-            param.start = data.start;//开始的记录序号
-            param.page = (data.start / data.length)+1;//当前页码
-
-            $.ajax({
-                type: "post",
-                url: "getInspectionRecordList",
-                cache: false,  //禁用缓存
-                data: param,  //传入组装的参数
-                dataType: "json",
-                success: function (result) {
-                	//封装返回数据
-                    var returnData = {};
-                    returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
-                    returnData.recordsTotal = result.recordsTotal;//返回数据全部记录
-                    returnData.recordsFiltered = result.recordsTotal;//后台不实现过滤功能，每次查询均视作全部结果
-                    returnData.data = result.data;//返回的数据列表
-                    callback(returnData);
-                }
-            });
-		},
-		columns: [
-            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
-            {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
-            {"title":"Project No.","class":"center","data": "project_name","defaultContent": ""},
-            {"title":"Production Supervisor","class":"center","data":"supervisor","defaultContent": ""},		            
-            {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},		    
-            {"title":"QC Supervisor","class":"center","data":"qc_sign","defaultContent": ""},		
-            {"title":"QC Supervisor Date","class":"center","qc_sign_date": "editor","defaultContent": ""},
-            {"title":"QC Inspection","class":"center","data":null,"render":function(data,type,row){
-            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"qc\");' style='color:green;cursor: pointer;'></i>";
-               },
-            },
-            {"title":"Self Inspection","class":"center","data":null,"render":function(data,type,row){
-            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"self\");' style='color:green;cursor: pointer;'></i>";
-               },
-            },
-            {"title":"","class":"center","data":null,"render":function(data,type,row){
-            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
-               },
-            }
-        ],
-	});
-	
-}
 
 function showInfoPage(row){
 	var detail_list=getBusNumberDetail(row.bus_number);
@@ -456,6 +398,103 @@ function showEditPage(row,type){
 	editDetailTable("#tableDetail",detail_list,type);
 	$(".divLoading").hide();
 }
+function drawTplDetailTable(tableId,data,editable){
+	
+	var tb_detail=$(tableId).dataTable({
+		paiging:false,
+		 keys: true,
+		ordering:false,
+		searching: false,
+		autoWidth:false,
+		destroy: true,
+		paginate:false,
+		rowsGroup:[0],
+		sScrollY: 310,
+		scrollX: true,
+		scrollCollapse: false,
+		lengthChange:false,
+		orderMulti:false,
+		info:false,
+		language: {
+		},
+		data:data||{},
+		columns: [
+            {"title":"Station","class":"center","data":"station","defaultContent": ""},
+            {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
+            {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
+            {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
+            {"title":"Self Inspection","class":"center","data": "self_inspection","defaultContent": ""},
+            {"title":"Sign & Date","class":"center","data": "self_str","defaultContent": ""},
+            {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
+            {"title":"Sign & Date","class":"center","data": "qc_str","defaultContent": ""},
+            {"title":"Remark","class":"center","data": "remark","defaultContent": ""},
+        ]	
+	});
+	var head_width=$("#tableDetail_wrapper").width();
+	if(head_width>0){
+		$("#tableDetail_wrapper .dataTables_scrollHead").css("width",head_width-17);
+	}
+}
+function editDetailTable(tableId,data,type){
+	var columns=[
+             {"title":"Station","class":"center","data":"station","defaultContent": ""},
+             {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
+             {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
+             {"title":"Specification And Standard","class":"center","width":"15%","data": "specification_and_standard","defaultContent": ""},
+             {"title":"Self Inspection","class":"center","data": "self_inspection","render": function(data,type,row){
+             	return "<input style='width:120px;text-align:center' class='self_inspection' " +
+ 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
+             }},
+             {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
+             {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
+             	return "<input style='width:120px;text-align:center' class='remark' " +
+ 				" value='"+(data!=undefined ? data : '')+"'/>";
+             }},
+         ];
+	if(type=='qc'){
+		columns=[
+	             {"title":"Station","class":"center","data":"station","defaultContent": ""},
+	             {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
+	             {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
+	             {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
+	             {"title":"Self Inspection","class":"center","data": "self_inspection","defaultContent": ""},
+	             {"title":"QC Inspection","class":"center","data": "qc_inspection","render": function(data,type,row){
+		             	return "<input style='width:120px;text-align:center' class='qc_inspection' " +
+		 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
+		             }},
+	             {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
+	             	return "<input style='width:120px;text-align:center' class='remark' " +
+	 				" value='"+(data!=undefined ? data : '')+"'/>";
+	             }}
+	         ];
+	}
+	
+	tb_detail=$(tableId).dataTable({
+		paiging:false,
+		 keys: true,
+		ordering:false,
+		searching: false,
+		autoWidth:false,
+		destroy: true,
+		paginate:false,
+		rowsGroup:[0],
+		sScrollY: 310,
+		scrollX: true,
+		scrollCollapse: false,
+		lengthChange:false,
+		orderMulti:false,
+		info:false,
+		language: {
+		},
+		data:data||{},
+		columns: columns
+	});
+	var head_width=$("#tableDetail_wrapper").width();
+	if(head_width>0){
+		$("#tableDetail_wrapper .dataTables_scrollHead").css("width",head_width-17);
+	}
+    
+}
 function getAllstationSelect() {
 	$.ajax({
 		url : "../setting/getStationList",
@@ -507,7 +546,7 @@ function getAllProcessSelect() {
 		}
 	});
 }
-function getAllInspectionItemSelect() {
+function getAllInspectionItemSelect(project_id) {
 	$.ajax({
 		url : "getPrdRcdOrderTplDetailList",
 		dataType : "json",

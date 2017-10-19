@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>Inspection Record</title>
+<title>Testing Record</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />	
@@ -33,7 +33,7 @@
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
 							href="/BMS/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
-						<li><a href="#">Inspection Record</a></li>
+						<li><a href="#">Testing Record</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -51,24 +51,25 @@
 					<form id="form" class="well form-search">
 						<table>
 							<tr>
-								<td>Plant：</td>
+								<td>Bus Type.：</td>
 								<td>
-									<select name="" id="search_plant" class="input-medium carType" style="height: 30px;width:100px;" ></select>
+									<select id="search_bus_type" class="input-medium carType" style="height: 30px;width:100px;" ></select>
 								</td>
+								<td>Bus No.：</td>
+								<td>
+                                    <input id="search_bus_number" class="input-medium" style="height: 30px;width:120px;" />										</td>
 								<td>Project No.：</td>
 								<td>
-									<input id="search_project_no" class="input-medium" style="height: 30px;width:120px;" />
-				
+									<input id="search_project_no" class="input-medium" style="height: 30px;width:120px;" />		
 								</td>	
-								<td>Bus No.：</td>
-								<td><input style="height: 30px;width:160px;" type="text" class="input-medium revise" placeholder="" id="search_bus_number" /></td> 	
-								
+								<td>Testing Type：</td>
+								<td>
+								    <select id="search_test_type_value" class="input-medium carType" style="height: 30px;width:100px;" ></select>
 								<td>
 								    <input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="Search" style="margin-left: 10px;"></input>						
 									<input type="button" class="btn btn-sm btn-success" id="btnAdd" value="Add" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
-
 						</table>
 					</form>
 						
@@ -84,18 +85,12 @@
 				    <div class="form-group">
 						<label class="col-sm-2 control-label">*&nbsp;Bus No.：</label>
 <!-- 						<div class="col-sm-2"> -->
-						    <label id="show_bus_number" class="col-sm-3 control-label"></label>
+						<label id="show_bus_number" class="col-sm-3 control-label"></label>
 <!-- 							<input id="show_bus_number" type="text" class="input-medium" style="height: 30px;width:80%;" readonly="readonly"></input> -->
-<!-- 						</div>						 -->
-						<label class="col-sm-2 control-label no-padding-right " for="" >*&nbsp;Plant：</label>
-<!-- 						<div class="col-sm-2"> -->
-						    <label id="show_plant" class="col-sm-3 control-label"></label>
-<!-- 							<input id="show_plant" type="text" class="input-medium" style="height: 30px;width:80%;" readonly="readonly" ></input> -->
-<!-- 						</div>					 -->
 					</div>
 					<div class="row" style="margin-top:20px;">
 						<div class="col-xs-12" id="scroll_div" >
-							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:1050px;overflow:auto;text-align:center" >
+							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:900px;overflow:auto;text-align:center" >
 							</table>	
 						</div>
 					</div>
@@ -112,39 +107,15 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Workshop:</label>
+						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Testing Type:</label>
 						<div class="col-sm-9">
-							<select class="input-medium" id="workshop" ></select>
+							<select class="input-medium" id="testing_type_value" ></select>
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Work Station:</label>
-						<div class="col-sm-9">
-							<select class="input-medium" id="station" ></select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Process：</label>
-						<div class="col-sm-9">
-							<select class="input-medium" id="process" ></select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Inspection Item:</label>
-						<div class="col-sm-9">
-							<select class="input-medium" id="inspection_item" ></select>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right">*Specification Standard:</label>
-						<div class="col-sm-9">
-							<textarea class="input-xlarge" style="width: 355px" id="specification_and_standard" rows="2" readonly="readonly"></textarea>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right">Remark:</label>
-						<div class="col-sm-9">
-							<textarea class="input-xlarge" style="width: 355px" id="remark" rows="2"></textarea>
+					<div class="row" style="margin-top:20px;">
+						<div class="col-xs-12" id="scroll_div" >
+							<table id="tableAddDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:755px;overflow:auto;text-align:center" >
+							</table>	
 						</div>
 					</div>
 				</form>
@@ -165,6 +136,6 @@
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
 	<script src="../js/alertMessage.js"></script>
-	<script src="../js/quality/inspectionRecord.js"></script>
+	<script src="../js/quality/testingRecord.js"></script>
 </body>
 </html>

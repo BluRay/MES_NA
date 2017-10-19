@@ -51,7 +51,7 @@ $(document).ready(function () {
 	function ajaxEnter(){	
 		//数据验证
 		if($('#reason_type').val() == ""){
-			alert("请选择异常类别！");
+			alert("Abnormal Cause can't be blank！");
 			$("#btnSubmit").removeAttr("disabled");
 			return false;
 		}
@@ -61,14 +61,14 @@ $(document).ready(function () {
             dataType: "json",
             url : "enterException",
             data: {
-            	"factory" : $('#exec_factory :selected').text(),
-            	"workshop" : $('#exec_workshop :selected').text(),
-            	"line" : $('#exec_line :selected').text(),
-            	"process" : ($('#exec_processname').val()=="")?0:$('#exec_processname').val(),
-            	"process_name" : $('#exec_processname:selected').text(),
+            	"factory" : $('#exec_factory option:selected').text(),
+            	"workshop" : $('#exec_workshop option:selected').text(),
+            	"line" : $('#exec_line option:selected').text(),
+            	"process" : $("#exec_process").val(),
+            	"process_name" : $('#exec_process option:selected').text(),
                 "bus_list":$('#form-field-tags').val(),
-                "reason_type_id":$('#reason_type :selected').attr("keyvalue")||"0",
-            	"reason_type" : $('#reason_type :selected').text(),
+                "reason_type_id":$('#reason_type option:selected').attr("keyvalue")||"0",
+            	"reason_type" : $('#reason_type option:selected').text(),
                 "start_time":$('#start_time').val(),
                 "detailed_reasons":$('#detailed_reasons').val(),                
                 "editor_id":$('#exec_user').val(),
@@ -91,7 +91,7 @@ $(document).ready(function () {
             },
             success: function(response){
                 if(response.businfo == null){
-                	alert("没有对应车号的车辆信息！");
+                	alert("Wrong bus number！");
                 }else{
                 	toggleVinHint(false);
                 	var bus = response.businfo;
@@ -101,7 +101,7 @@ $(document).ready(function () {
             		$("#infoLine").html(bus.line);
             		$("#infoProcess").html(bus.process_name);
             		$("#infoOrder").html(bus.order_desc);
-            		$("#infoStatus").html(bus.status=='0'?'正常':'冻结');
+            		$("#infoStatus").html(bus.status=='0'?'Normal':'Freeze');
             		$("#btnSubmit").removeAttr("disabled");
                     
             		var $tag_obj = $('#form-field-tags').data('tag');
@@ -275,19 +275,18 @@ function getAllProcessSelect(order_type) {
 		    $.each(response.data, function(index, value) {
 		    	if (index == 0) {
 		    		process_id_default=value.id;
-			    	process_name_default=value.process_name;
+			    	process_name_default=value.station_name;
 		    	}
 		    	
 		    	if(getQueryString("process_id")==value.id){
 		    	 	process_id_default=value.id;
-			    	process_name_default=value.process_name;
+			    	process_name_default=value.station_name;
 		    	}
-		    	strs += "<option value=" + value.id + " process='"+value.station_name+"' plan_node='"+(value.plan_node_name||"")
-		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.station_code + "</option>";
+		    	strs += "<option value=" + value.id + " process='"+value.station_code+"  "+value.station_name+"' plan_node='"+(value.plan_node_name||"")
+		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.station_code+"  "+value.station_name + "</option>";
 		    });
 		    $("#exec_process").append(strs);
 		    $("#exec_process").val(process_id_default+"");
-		    $("#exec_processname").val(process_name_default);
 		}
 	});
 }

@@ -21,7 +21,16 @@ var Warn={
 
     /********Start Yangke***********************/
     'P_measureAbnormity_01'	: '处理日期不能为空！',
-    'P_measureAbnormity_02'	: 'measures 不能为空！'
+    'P_measureAbnormity_02'	: 'measures 不能为空！',
     	
     /********End  Yangke***********************/
+    	
+	/********Start TangJin***********************/
+    'P_common_01'	: '车号不存在！',
+    'P_common_02'	: '车号不能为空！',
+    'P_common_03'	: '保存成功！',
+    'P_common_04'	: '保存失败！',
+    'P_testingRecord_03':'检测类型不能为空',
+    	
+    /********End  TangJin***********************/
 }

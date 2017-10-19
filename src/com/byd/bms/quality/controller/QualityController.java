@@ -599,10 +599,11 @@ public class QualityController extends BaseController {
 	public ModelMap getPrdRcdTestingTplList(){
 		model=new ModelMap();
 		Map<String,Object> condMap=new HashMap<String,Object>();
-		int draw=Integer.parseInt(request.getParameter("draw"));
-		int start=Integer.parseInt(request.getParameter("start"));
-		int length=Integer.parseInt(request.getParameter("length"));
+		int draw=request.getParameter("draw")!=null ? Integer.parseInt(request.getParameter("draw")):1;
+		int start=request.getParameter("start")!=null ? Integer.parseInt(request.getParameter("start")) :0;
+		int length=request.getParameter("length") !=null ? Integer.parseInt(request.getParameter("length")) : -1;
 		String project_no=request.getParameter("project_no");
+		String project_id=request.getParameter("project_id");
 		String bus_type=request.getParameter("bus_type");
 		String test_type_value=request.getParameter("test_type_value");
 		condMap.put("draw", draw);
@@ -611,6 +612,7 @@ public class QualityController extends BaseController {
 		condMap.put("project_no", project_no);
 		condMap.put("bus_type",bus_type);
 		condMap.put("test_type_value",test_type_value);
+		condMap.put("project_id",project_id);
 		qualityService.getPrdRcdTestingTplList(condMap,model);
 		return model;
 	}
@@ -703,8 +705,12 @@ public class QualityController extends BaseController {
 	public ModelMap getTestingTemplateDetailList(){
 		model=new ModelMap();
 		String header_id=request.getParameter("header_id");
+		String project_id=request.getParameter("project_id");
+		String test_type_value=request.getParameter("test_type_value");
 		HashMap<String, Object> condMap =new HashMap<String,Object>();
 		condMap.put("header_id", header_id);
+		condMap.put("project_id", project_id);
+		condMap.put("test_type_value", test_type_value);
 		qualityService.getTestingTemplateByHeader(condMap,model);
 		
 		return model;
@@ -899,6 +905,114 @@ public class QualityController extends BaseController {
 		}
 		try{
 			int result=qualityService.updateInspectionRecord(detail);
+			if(result>0){
+				initModel(true,"",null);
+			}else{
+				initModel(false,"",null);
+			}
+			
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false,""+e.getMessage(),null);
+		}
+		return mv.getModelMap();
+	}
+	/* 检测记录页面 */
+	@RequestMapping("/testingRecord")
+	public ModelAndView testingRecord(){ 
+		mv.setViewName("quality/testingRecord");
+        return mv;  
+    } 
+	@RequestMapping("/getTestingRecordList")
+	@ResponseBody
+	public ModelMap getTestingRecordList(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		int draw=Integer.parseInt(request.getParameter("draw"));
+		int start=Integer.parseInt(request.getParameter("start"));
+		int length=Integer.parseInt(request.getParameter("length"));
+		String project_no=request.getParameter("project_no");
+		String bus_type=request.getParameter("bus_type");
+		String test_type_value=request.getParameter("test_type_value");
+		String bus_number=request.getParameter("bus_number");
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("project_no", project_no);
+		condMap.put("bus_type",bus_type);
+		condMap.put("bus_number",bus_number);
+		condMap.put("test_type_value",test_type_value);
+		qualityService.getTestingRecordList(condMap,model);
+		return model;
+	}
+	@RequestMapping("saveTestingRecord")
+	@ResponseBody
+	public ModelMap saveTestingRecord(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String user_name=(String) session.getAttribute("user_name");
+		int user_id=(int) session.getAttribute("user_id");
+		JSONArray add_arr=JSONArray.fromObject(request.getParameter("list"));
+		String bus_number=request.getParameter("bus_number");
+		String test_type_value=request.getParameter("test_type_value");
+		Iterator it=add_arr.iterator();
+		Map<String,Object> map=new HashMap<String,Object>();
+		List<Map<String,Object>> detail=new ArrayList<Map<String,Object>>();
+		while(it.hasNext()){
+			JSONObject jel=(JSONObject) it.next();
+			Map<String,Object> bean=(Map<String, Object>) JSONObject.toBean(jel, Map.class);
+			detail.add(bean);
+		}
+		map.put("detail", detail);
+		map.put("bus_number", bus_number);
+		map.put("test_type_value", test_type_value);
+		map.put("edit_date", curTime);
+		map.put("editor_id", user_id);
+		map.put("user_name", user_name);
+		try{
+			int result=qualityService.saveTestingRecord(map);
+			if(result>0){
+				initModel(true,"",null);
+			}else{
+				initModel(false,"",null);
+			}
+			
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			initModel(false,""+e.getMessage(),null);
+		}
+		return mv.getModelMap();
+	}
+	@RequestMapping("/getTestingRecordDetailList")
+	@ResponseBody
+	public ModelMap getTestingRecordDetailList(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String bus_number=request.getParameter("bus_number");
+		String test_type_value=request.getParameter("test_type_value");
+		condMap.put("test_type_value", test_type_value);
+		condMap.put("bus_number", bus_number);
+		qualityService.getTestingRecordDetailList(condMap,model);
+		return model;
+	}
+	@RequestMapping("updateTestingRecord")
+	@ResponseBody
+	public ModelMap updateTestingRecord(){
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String user_name=(String) session.getAttribute("user_name");
+		JSONArray add_arr=JSONArray.fromObject(request.getParameter("list"));
+		Iterator it=add_arr.iterator();
+		List<Map<String,String>> detail=new ArrayList<Map<String,String>>();
+		while(it.hasNext()){
+			JSONObject jel=(JSONObject) it.next();
+			Map<String,String> bean=(Map<String, String>) JSONObject.toBean(jel, Map.class);
+			bean.put("user_name", user_name);
+			bean.put("edit_date", curTime);
+			detail.add(bean);
+		}
+		try{
+			int result=qualityService.updateTestingRecord(detail);
 			if(result>0){
 				initModel(true,"",null);
 			}else{

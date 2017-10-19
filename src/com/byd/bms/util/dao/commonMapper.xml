@@ -311,89 +311,79 @@
 	<select id="queryIndexOrderData" parameterType="String" resultType="Map">
 		select * from
 		(select count(b.bus_number) warehouse_qty
-		from BMS_NA_OR_ORDER o
-		left join BMS_NA_PLAN_BUS b on b.order_id=o.id and b.warehousing_date>0
-		where o.productive_year=#{actYear}) a,
+		from BMS_NA_PROJECT o
+		left join BMS_NA_PROJECT_BUS b on b.project_id=o.id and b.outgoing>0
+		where o.project_date like concat(#{actYear},'%')) a,
 		(select (a.order_qty-b.start_qty) as unstart_qty from
-		(select sum(o.order_qty) order_qty from BMS_NA_OR_ORDER o where o.productive_year=#{actYear} and o.order_type !='KD件') a,
-		(select count(b.bus_number) start_qty from BMS_NA_PLAN_BUS b 
-		where b.welding_online_date>0 and substring_index(substring_index(b.bus_number,'-',3),'-',-1) =#{actYear}) b) b,
-		(select count(b.bus_number) producting_qty
-		from BMS_NA_OR_ORDER o
-		left join BMS_NA_PLAN_BUS b on b.order_id=o.id and b.welding_online_date>0 and b.warehousing_date&lt;=0
-		where o.productive_year=#{actYear}) c,
+		(select sum(o.quantity) order_qty from BMS_NA_PROJECT o ) a,
+		(select count(b.bus_number) start_qty from BMS_NA_PROJECT_BUS b 
+		where b.welding_online>0 ) b) b,
+		(select count(b.bus_number) producting_qty from BMS_NA_PROJECT o
+		left join BMS_NA_PROJECT_BUS b on b.project_id=o.id and b.welding_online>0 and b.outgoing&lt;=0
+		) c,
 		(select count(b.bus_number) dispatch_qty
-		from BMS_NA_OR_ORDER o
-		left join BMS_NA_PLAN_BUS b on b.order_id=o.id and b.dispatch_date>0
-		where o.productive_year=#{actYear}) d
+		from BMS_NA_PROJECT o
+		left join BMS_NA_PROJECT_BUS b on b.project_id=o.id and b.delivery>0
+		where o.project_date like concat(#{actYear},'%')) d
 	</select>
 	
 	<select id="queryIndexFactoryDailyData" parameterType="Map" resultType="Map">
 		select a.*,ifnull(b.finished_qty,0) finished_qty from 
 		(select sum(p.plan_qty) plan_qty,k.key_name
-		from BMS_NA_PLAN_PRODUCTION_PLAN p
+		from BMS_NA_PROJECT_PRODUCTION_PLAN p
 		left join BMS_NA_BASE_KEY k on p.plan_code_value=k.value and k.key_code='PLAN_CODE'
-		where p.factory_id=#{factory_id} and p.plan_date=#{query_date} and k.key_name in('焊装上线','涂装上线','底盘上线','总装下线')
+		where p.plant_id=#{factory_id} and p.plan_date>=#{start_date} and p.plan_date&lt;=#{end_date}
+		and k.key_name in('welding_online','painting_online','chassis_online','assembly_offline')
 		group by k.key_name) a
 		left join
-		(select count(b.id) finished_qty,'焊装上线' key_name
-		from BMS_NA_PLAN_BUS b
-		where b.factory_id=#{factory_id} and b.welding_online_date like concat('%',#{query_date},'%')
+		(select count(b.id) finished_qty,'welding_online' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.production_plant_id=#{factory_id} and b.welding_online_report >=#{start_date} and b.welding_online_report&lt;=#{end_date}
 		union
-		select count(b.id) finished_qty,'涂装上线' key_name
-		from BMS_NA_PLAN_BUS b
-		where b.factory_id=#{factory_id} and b.painting_online_date like concat('%',#{query_date},'%')
+		select count(b.id) finished_qty,'painting_online' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.production_plant_id=#{factory_id} and b.painting_online_report >=#{start_date} and b.painting_online_report&lt;=#{end_date}
 		union
-		select count(b.id) finished_qty,'底盘上线' key_name
-		from BMS_NA_PLAN_BUS b
-		where b.factory_id=#{factory_id} and b.chassis_online_date like concat('%',#{query_date},'%')
+		select count(b.id) finished_qty,'chassis_online' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.production_plant_id=#{factory_id} and b.chassis_online_report >=#{start_date} and b.chassis_online_report&lt;=#{end_date}
 		union
-		select count(b.id) finished_qty,'总装下线' key_name
-		from BMS_NA_PLAN_BUS b
-		where b.factory_id=#{factory_id} and b.assembly_offline_date like concat('%',#{query_date},'%')
+		select count(b.id) finished_qty,'assembly_offline' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.production_plant_id=#{factory_id} and b.assembly_offline_report >=#{start_date} and b.assembly_offline_report&lt;=#{end_date}
 		) b on b.key_name=a.key_name
 	</select>
 	
 	<select id="queryIndexFactoryPrdOrdData" parameterType="String" resultType="Map">
-		select tmp.order_desc,round(sum(tmp.finished_qty)/sum(tmp.production_qty)*100,2) as order_rate,
-		group_concat('{"factory_name":"',tmp.factory_name,'","factory_rate":"',round(tmp.finished_qty/tmp.production_qty*100,2),'"}') factory_rate_list
+		select tmp.order_desc,round(sum(tmp.finished_qty)/sum(tmp.quantity)*100,2) order_rate,
+		group_concat('{"factory_name":"',tmp.production_plant,'","factory_rate":"',round(tmp.finished_qty/tmp.quantity*100,2),'"}') factory_rate_list
 		from(
-		select count(distinct b.bus_number) finished_qty,fo.production_qty,fo.order_id,f.factory_name,concat(o.order_name,t.bus_type_code,' ',o.order_qty,'台') order_desc
-		from BMS_NA_OR_FACTORY_ORDER fo
-		left join BMS_NA_OR_ORDER o on fo.order_id=o.id
-		left join BMS_NA_BASE_BUS_TYPE t on t.id=o.bus_type_id
-		left join BMS_NA_PLAN_BUS b on fo.order_id=b.order_id and fo.factory_id=b.factory_id and b.warehousing_date>0
-		left join BMS_NA_BASE_FACTORY f on f.id=fo.factory_id
-		where  fo.order_id in(
-		select order_id from
-		(select count(distinct b.id) finished_qty,fo.production_qty,fo.order_id
-		from BMS_NA_OR_FACTORY_ORDER fo
-		left join BMS_NA_PLAN_BUS b on fo.order_id=b.order_id and fo.factory_id=b.factory_id and b.warehousing_date>0
-		where  fo.factory_id=#{factory_id}
-		group by fo.order_id,fo.factory_id) tmp
-		where tmp.finished_qty&lt;tmp.production_qty
-		) and fo.status in ('0','1')
-		group by fo.order_id,fo.factory_id
-		order by fo.order_id) tmp
-		group by tmp.order_id
+		select  concat(p.project_name,' ',p.quantity,'bus') order_desc,count(b.bus_number) finished_qty,p.quantity,p.production_plant,p.id project_id
+		from BMS_NA_PROJECT p
+		left join BMS_NA_PROJECT_BUS b on b.project_id=p.id and b.outgoing>0
+		where p.production_plant_id=#{factory_id}
+		group by p.id,p.production_plant_id
+		) tmp 
+		group by tmp.project_id
 	</select>
 	
 	<select id="queryIndexOutputData_Bustype" parameterType="String" resultType="Map">
 		select group_concat(a.month,':',a.finished_qty order by a.month separator ',') month_count,a.bus_type
-		from(select count(b.bus_number) finished_qty,substr(b.bus_number,1,2) bus_type,cast(substr(substring_index(b.warehousing_date,'-',2),-2) as signed) month
-		from BMS_NA_PLAN_BUS b
-		where  b.warehousing_date like concat(#{actYear},'%')
-		group by substr(b.bus_number,1,2),substr(substring_index(b.warehousing_date,'-',2),-2)) a
+		from(select count(b.bus_number) finished_qty,p.bus_type,cast(substr(substring_index(b.outgoing,'-',2),-2) as signed) month
+		from BMS_NA_PROJECT_BUS b
+		left join BMS_NA_PROJECT p on b.project_id=p.id
+		where  b.outgoing like concat(#{actYear},'%')
+		group by substr(b.bus_number,1,2),substr(substring_index(b.outgoing,'-',2),-2)) a
 		group by a.bus_type
 	</select>
 	
 	<select id="queryIndexOutputData_Factory" parameterType="String" resultType="Map">
 		select group_concat(a.factory_name,':',a.finished_qty order by a.month separator ',') factory_count,a.month
-		from(select count(b.bus_number) finished_qty,f.factory_name,cast(substr(substring_index(b.warehousing_date,'-',2),-2) as signed) month
-		from BMS_NA_PLAN_BUS b
-		left join BMS_NA_BASE_FACTORY f on f.id=b.factory_id
-		where  b.warehousing_date like concat(#{actYear},'%')
-		group by b.factory_id,substr(substring_index(b.warehousing_date,'-',2),-2)) a
+		from(select count(b.bus_number) finished_qty,f.factory_name,cast(substr(substring_index(b.outgoing,'-',2),-2) as signed) month
+		from BMS_NA_PROJECT_BUS b
+		left join BMS_NA_BASE_FACTORY f on f.id=b.production_plant_id
+		where  b.outgoing like concat(#{actYear},'%')
+		group by b.production_plant_id,substr(substring_index(b.outgoing,'-',2),-2)) a
 		group by a.month
 	</select>
 	

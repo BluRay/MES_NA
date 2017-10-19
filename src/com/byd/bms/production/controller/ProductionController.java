@@ -884,7 +884,21 @@ public class ProductionController extends BaseController {
 	@RequestMapping("/getMaterialRequirement")
 	@ResponseBody
 	public ModelMap getMaterialRequirement(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory_name", request.getParameter("factory_name"));
+		condMap.put("factory_id", request.getParameter("factory_id"));
+		condMap.put("workshop_name", request.getParameter("workshop_name"));
+		condMap.put("workshop_id", request.getParameter("workshop_id"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("station", request.getParameter("station"));
+		condMap.put("station_name", request.getParameter("station_name"));
+		condMap.put("station_id", request.getParameter("station_id"));
+		condMap.put("bus_number", request.getParameter("bus_number"));
 		
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		datalist = productionService.getMaterialRequirement(condMap);
+		initModel(true,"success",datalist);
+		model = mv.getModelMap();
 		return model;
 	}
 	

@@ -7,13 +7,6 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.byd.bms.quality.model.BmsBaseQCStdRecord;
-import com.byd.bms.quality.model.MaterialExceptionLogs;
-import com.byd.bms.quality.model.ProblemImproveBean;
-import com.byd.bms.quality.model.ProcessFaultBean;
-import com.byd.bms.quality.model.QualityTargetBean;
-import com.byd.bms.quality.model.StdFaultLibBean;
-
 @Repository(value="qualityDao")
 public interface IQualityDao {
 	public int insertFaultLib(Map<String, Object> faultLib);
@@ -65,7 +58,14 @@ public interface IQualityDao {
 	public List<Map<String, String>> getPunchList(Map<String, Object> conditionMap);
 	public int getPunchListCount(Map<String, Object> conditionMap);
 	public int editPunchList(Map<String, Object> conditionMap);
+
+	public List<Map<String, Object>> getTestingRecordList(Map<String, Object> conditionMap);	
+	public int getTestingRecordCount(Map<String, Object> conditionMap);
+	int saveTestingRecord(Map<String, Object> map);
+	public List<Map<String, Object>> getTestingRecordDetailList(Map<String, Object> conditionMap);
+	public int updateTestingRecord(List<Map<String, String>> list);
+
 	public int leadInitialsPunch(Map<String, Object> conditionMap);
 	public int qcInitialsPunch(Map<String, Object> conditionMap);
-	
+
 }

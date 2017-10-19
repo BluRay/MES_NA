@@ -20,12 +20,6 @@ import org.springframework.ui.ModelMap;
 import com.byd.bms.order.dao.IOrderDao;
 import com.byd.bms.quality.dao.IQualityDao;
 import com.byd.bms.quality.service.IQualityService;
-import com.byd.bms.quality.model.BmsBaseQCStdRecord;
-import com.byd.bms.quality.model.MaterialExceptionLogs;
-import com.byd.bms.quality.model.ProblemImproveBean;
-import com.byd.bms.quality.model.ProcessFaultBean;
-import com.byd.bms.quality.model.QualityTargetBean;
-import com.byd.bms.quality.model.StdFaultLibBean;
 import com.byd.bms.util.DataSource;
 @Service
 @DataSource("dataSourceMaster")
@@ -257,6 +251,7 @@ public class QualityServiceImpl implements IQualityService {
 	public void getBusNumberTemplateList(Map<String, Object> condMap, ModelMap model){
 		model.put("data", qualityDao.getBusNumberTemplateList(condMap));
 	}
+	@Transactional
 	public int updateKeyParts(List<Map<String,Object>> list){
 		int result=0;
 		List addlist=new ArrayList<>();
@@ -336,6 +331,32 @@ public class QualityServiceImpl implements IQualityService {
 	public int editPunch(Map<String, Object> conditionMap) {
 		return qualityDao.editPunchList(conditionMap);
 	}
+
+	@Override
+	public void getTestingRecordList(Map<String, Object> conditionMap,ModelMap model) {
+		List<Map<String,Object>> datalist= qualityDao.getTestingRecordList(conditionMap);
+		int totalCount= qualityDao.getTestingRecordCount(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	@Transactional
+	public int saveTestingRecord(Map<String, Object> map){
+		return qualityDao.saveTestingRecord(map);
+	}
+	public void getTestingRecordDetailList(Map<String, Object> conditionMap,ModelMap model){
+		List<Map<String,Object>> datalist= qualityDao.getTestingRecordDetailList(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	public int updateTestingRecord(List<Map<String, String>> list){
+		return qualityDao.updateTestingRecord(list);
+	}
+
 	@Override
 	public int leadInitialsPunch(Map<String, Object> conditionMap) {
 		return qualityDao.leadInitialsPunch(conditionMap);

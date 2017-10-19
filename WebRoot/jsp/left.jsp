@@ -290,7 +290,7 @@ function traverseTree(node,parentli,two){
 	<div id="sidebar" class="sidebar                  responsive sidebar-fixed sidebar-scroll">
 				
 
-				<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+			<!-- 	<div class="sidebar-shortcuts" id="sidebar-shortcuts">
 					<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
 						<button class="btn btn-success">
 							<i class="ace-icon fa fa-signal"></i>
@@ -300,7 +300,7 @@ function traverseTree(node,parentli,two){
 							<i class="ace-icon fa fa-pencil"></i>
 						</button>
 
-						<!-- #section:basics/sidebar.layout.shortcuts -->
+						#section:basics/sidebar.layout.shortcuts
 						<button class="btn btn-warning">
 							<i class="ace-icon fa fa-users"></i>
 						</button>
@@ -309,7 +309,7 @@ function traverseTree(node,parentli,two){
 							<i class="ace-icon fa fa-cogs"></i>
 						</button>
 
-						<!-- /section:basics/sidebar.layout.shortcuts -->
+						/section:basics/sidebar.layout.shortcuts
 					</div>
 
 					<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
@@ -321,7 +321,7 @@ function traverseTree(node,parentli,two){
 
 						<span class="btn btn-danger"></span>
 					</div>
-				</div><!-- /.sidebar-shortcuts -->
+				</div> --><!-- /.sidebar-shortcuts -->
 
 				<ul class="nav nav-list">
 					<li class="">

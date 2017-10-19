@@ -107,7 +107,7 @@ function ajaxQuery(){
 		},
 		columns: [
 		            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
-		            {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
+		            {"title":"Project Name","width":"200","class":"center","data":"project_name","defaultContent": ""},
 		            {"title":"Delivery Date","class":"center","data":"delivery_date","defaultContent": ""},
 		            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
 		            {"title":"Customer","class":"center","data":"customer","defaultContent":""},

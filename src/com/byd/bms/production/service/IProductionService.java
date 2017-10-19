@@ -60,6 +60,8 @@ public interface IProductionService {
 	public int insertAbnormity(Map<String, Object> conditionMap);
 	public Map<String,Object> getExceptionList(Map<String,Object> queryMap);
 	public int measuresAbnormity(Map<String, Object> conditionMap);
+	
+	public List<Map<String,Object>> getMaterialRequirement(Map<String, Object> condMap);
 
 
 }

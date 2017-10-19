@@ -415,7 +415,7 @@ public class CommonServiceImpl implements ICommonService {
 		List<Map<String,Object>> datalist_f=new ArrayList<Map<String,Object>>();
 		datalist=commonDao.queryIndexOutputData_Bustype(actYear);
 		datalist_f=commonDao.queryIndexOutputData_Factory(actYear);
-		String[] factory_data={"","","","","","","","","","","",""};
+		String[] factory_data={"0","0","0","0","0","0","0","0","0","0","0","0"};
 		List<Map<String,Object>> series=new ArrayList<Map<String,Object>>();
 		for(Map<String,Object> m :datalist){
 			int[] a= {0,0,0,0,0,0,0,0,0,0,0,0};

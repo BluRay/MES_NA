@@ -3,10 +3,6 @@
  */
 package com.byd.bms.production.service.impl;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,20 +12,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.util.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
-
-import com.byd.bms.production.controller.ProductionController;
 import com.byd.bms.production.dao.IProductionDao;
 import com.byd.bms.production.service.IProductionService;
 import com.byd.bms.util.DataSource;
@@ -645,5 +634,38 @@ public class ProductionServiceImpl implements IProductionService {
 	@Override
 	public int measuresAbnormity(Map<String, Object> conditionMap) {
 		return productionDao.measuresAbnormity(conditionMap);
+	}
+
+	@Override
+	public List<Map<String, Object>> getMaterialRequirement(Map<String, Object> condMap) {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String curDate = df.format(new Date());
+		condMap.put("curDate", curDate);
+		int station_seq = 0;
+		station_seq = productionDao.getStationSquence(condMap);
+		logger.info("-->station_seq = " + station_seq);
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		if(station_seq == 1){//焊装第一个节点 取计划数量
+			String bus_number = condMap.get("bus_number").toString();
+			if(bus_number.equals("")){
+				//01 获取计划列表
+				
+				//02 循环获取车号及Project
+				
+				//03 获取BOM
+				
+			}else{
+				//01 获取车号对应的Project
+				
+				//02 获取BOM
+				
+			}
+			
+			
+		}else{//其他节点 取上一节点扫描车辆信息
+			
+		}
+		
+		return datalist;
 	}
 }

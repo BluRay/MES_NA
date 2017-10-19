@@ -28,7 +28,7 @@ $(document).ready(function () {
 			resizable: false,
 			title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Abnormity</h4></div>',
 			title_html: true,
-			width:'550px',
+			width:'720px',
 			modal: true,
 			buttons: [{
 						text: "Close",
@@ -60,14 +60,14 @@ $(document).ready(function () {
             dataType: "json",
             url : "enterException",
             data: {
-            	"factory" : $('#new_plant :selected').text(),
-            	"workshop" : $('#new_workshop :selected').text(),
-            	"line" : $('#new_line :selected').text(),
+            	"factory" : $('#new_plant option:selected').text(),
+            	"workshop" : $('#new_workshop option:selected').text(),
+            	"line" : $('#new_line option:selected').text(),
             	"process" : $('#new_abnormalStation').val(),
-            	"process_name" : $('#new_abnormalStation:selected').text(),
+            	"process_name" : $('#new_abnormalStation option:selected').text(),
                 "bus_list":$('#new_busNumber').val(),
-                "reason_type_id":$('#new_abnormal_cause :selected').attr("keyvalue")||"0",
-            	"reason_type" : $('#new_abnormal_cause :selected').text(),
+                "reason_type_id":$('#new_abnormal_cause option:selected').attr("keyvalue")||"0",
+            	"reason_type" : $('#new_abnormal_cause option:selected').text(),
                 "start_time":$('#new_opendate').val(),
                 "detailed_reasons":$('#new_detailed_reason').val()
             },
@@ -122,6 +122,7 @@ $(document).ready(function () {
 		$("#new_line").empty();
 		if($("#new_workshop").val() !=''){
 			getAllNewLineSelect();
+			getAllNewProcessSelect();
 		}
 	});
 	$("#new_line").change(function(){
@@ -147,7 +148,6 @@ $(document).ready(function () {
 				getSelects_noall(response.data, "", "#search_factory");
 				getSelects_noall(response.data, "", "#new_plant");
 				getAllWorkshopSelect();
-				getAllLineSelect();
 			}
 		});
 	}
@@ -182,6 +182,7 @@ function getAllWorkshopSelect() {
 		success : function(response) {
 			getSelects(response.data, "", "#search_workshop",null,"id");
 			getSelects(response.data, "", "#new_workshop",null,"id");
+			getAllLineSelect();
 		}
 	});
 }
@@ -221,6 +222,7 @@ function getAllLineSelect() {
 			line_selects_data=response.data;
 			getSelects(response.data, "", "#search_line",null,"name");
 			getSelects(response.data, "", "#new_line",null,"name");
+			getAllNewProcessSelect();
 		}
 	});
 }
@@ -244,8 +246,8 @@ function getAllNewLineSelect() {
 	});
 }
 function getAllNewProcessSelect(order_type) {
-	order_type=order_type||'标准订单';
-	$("#exec_process").empty();
+	order_type=order_type||'Standard order';
+	$("#new_abnormalStation").empty();
 	$.ajax({
 		url : "getProcessMonitorSelect",
 		dataType : "json",
@@ -267,19 +269,18 @@ function getAllNewProcessSelect(order_type) {
 		    $.each(response.data, function(index, value) {
 		    	if (index == 0) {
 		    		process_id_default=value.id;
-			    	process_name_default=value.process_name;
+			    	process_name_default=value.station_code+"  "+value.station_name;
 		    	}
 		    	
 		    	if(getQueryString("process_id")==value.id){
 		    	 	process_id_default=value.id;
-			    	process_name_default=value.process_name;
+			    	process_name_default=value.station_code+"  "+value.station_name;
 		    	}
-		    	strs += "<option value=" + value.id + " process='"+value.process_name+"' plan_node='"+(value.plan_node_name||"")
-		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.process_code + "</option>";
+		    	strs += "<option value=" + value.id + " process='"+value.station_code+"  "+value.station_name+"' plan_node='"+(value.plan_node_name||"")
+		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.station_code+"  "+value.station_name + "</option>";
 		    });
 		    $("#new_abnormalStation").append(strs);
-		    $("#new_abnormalStation").val(process_id_default+"");
-		    $("#new_abnormalStation").val(process_name_default);
+		    $("#new_abnormalStation").val(process_id_default);
 		}
 	});
 }
@@ -297,9 +298,24 @@ function toggleVinHint (showVinHint) {
 
 function ajaxQuery(){
 	$("#tableData").dataTable({
-		serverSide: true,paiging:true,ordering:false,searching: false,bAutoWidth:false,
+		serverSide: true,
+		fixedColumns:   {
+            leftColumns: 0,
+            rightColumns:1
+        },
+		dom: 'Bfrtip',
+		lengthMenu: [
+		             [ 20, 30, 50, -1 ],
+		             [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
+		         ],
+	    buttons: [
+	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"export excel\"></i>'},
+	        {extend:'pageLength',/*text:'显示行'*/}
+	       
+	    ],
+		paiging:true,ordering:false,searching: false,bAutoWidth:false,
 		destroy: true,sScrollY: table_height,scrollX: "100%",orderMulti:false,
-		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
+		pageLength: 20,pagingType:"full_numbers",lengthChange:false,
 		language: {
 		},
 		ajax:function (data, callback, settings) {
@@ -347,22 +363,25 @@ function ajaxQuery(){
 		            {"title":"Abnormal Cause","class":"center","data":"abnormal_cause","defaultContent": ""},
 		            {"title":"Detailed Reason","class":"center","data":"detailed_reason","defaultContent": ""},
 		            {"title":"Open Date","class":"center","data":"open_date","defaultContent": ""},
+		            {"title":"Responsible Department","width":"200","class":"center","data":"responsible_department","defaultContent": ""},
+		            {"title":"measures","class":"center","width":"300","data":"measures","defaultContent": ""},
+		            {"title":"Measures Time","class":"center","data":"measure_date","defaultContent": ""},
 		            {"title":"Status","class":"center","data":"open_date","defaultContent": "",
 		            	"render": function ( data, type, row ) {
-		            		var status = "Processing"
-		            		if(row['responsible_department_id']==''){
+		            		var status = "Open"
+		            		if(undefined!=row['responsible_department_id'] && row['responsible_department_id']!=''){
 		            			status = "Closed"
 		            		}
 		            		return status;
 		            	}
 		            },
-		            {"title":"Operation","class":"center","data": null,"id":"staff_number",
+		            {"title":"","width":"50","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
-		            		if(row['responsible_department_id']!=''){
-		                    return "<i class=\"glyphicon glyphicon-edit bigger-130 showbus\" title=\"处理\" onclick='editPause(" +
+		            		if(undefined==row['responsible_department_id'] || row['responsible_department_id']==''){
+		                    return "<i class=\"ace-icon glyphicon glyphicon-ok bigger-130\" title=\"处理\" onclick='editPause(" +
 		                    row['id'] + ",\"" + row['plant'] + "\",\"" + row['workshop'] + "\",\"" + row['line'] + "\",\"" + row['abnormal_station'] + "\",\"" + 
 		                    row['bus_number'] + "\",\"" + row['abnormal_cause'] + "\",\"" + row['detailed_reason'].replace(/\r/ig, "").replace(/\n/ig, "") + "\",\"" + 
-		                    row['open_date'] + "\")' style='color:blue;cursor: pointer;'></i>&nbsp;";
+		                    row['open_date'] + "\")' style='color:blue;cursor: pointer;'></i>";
 		            		}else{
 		            			return "";
 		            		}
@@ -370,9 +389,13 @@ function ajaxQuery(){
 		            }
 		          ],
 	});
+	$("#tableData_info").addClass('col-xs-6');
+	$("#tableData_paginate").addClass('col-xs-6');
+	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
 }
 
 function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_cause,detailed_reason,open_date){
+	getKeysSelect("RESPONSIBLE_UNITS", "", "#edit_responsibleDepartment");
 	$("#edit_plant").val(plant);
 	$("#edit_workshop").val(workshop);
 	$("#edit_id").val(id);
@@ -383,7 +406,7 @@ function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_c
 	$("#edit_opendate").val(open_date);
 	$("#edit_detailed_reason").val(detailed_reason);
 	$("#edit_measures").val("");
-	$("#measure_date").val("");
+	$("#edit_measuresTime").val("");
 	
 	$("#dialog-edit").removeClass('hide').dialog({
 		resizable: false,
@@ -429,7 +452,7 @@ function btnEditConfirm(id){
 		data : {
 			"id" : id,
 			"responsible_department_id": $("#edit_responsibleDepartment").val(),
-			"responsible_department" : $('#edit_responsibleDepartment :selected').text(),
+			"responsible_department" : $('#edit_responsibleDepartment option:selected').text(),
 			"measures" : $("#edit_measures").val(),
 			"measure_date" : $("#edit_measuresTime").val(),
 		},

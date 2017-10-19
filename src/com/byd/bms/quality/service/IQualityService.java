@@ -38,6 +38,12 @@ public interface IQualityService {
 	public Map<String, Object> getPunchList(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getPunchInfoByid(Map<String, Object> conditionMap);
 	public int editPunch(Map<String, Object> conditionMap);
+
+	public void getTestingRecordList(Map<String, Object> conditionMap,ModelMap model);
+	public int saveTestingRecord(Map<String, Object> map);
+	public void getTestingRecordDetailList(Map<String, Object> conditionMap,ModelMap model);
+	public int updateTestingRecord(List<Map<String, String>> list);
+
 	public int leadInitialsPunch(Map<String, Object> conditionMap);
 	public int qcInitialsPunch(Map<String, Object> conditionMap);
 

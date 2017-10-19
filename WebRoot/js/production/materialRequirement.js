@@ -163,8 +163,13 @@ function ajaxQuery(){
 	    data: {
 	    	"factory_id": $('#search_factory').val(),
 	    	"factory_name": $("#search_factory :selected").text(),
-	    	"plan_month": $('#search_plan_month').val(),
-	    	"order_no": $('#search_order_no').val()
+	    	"workshop_id": $('#search_workshop').val(),
+	    	"workshop_name": $("#search_workshop :selected").text(),
+	    	"line": $('#search_line').val(),
+	    	"station_id": $('#search_station').val(),
+	    	"station_name": $("#search_station :selected").attr('process'),
+	    	"station": $("#search_station :selected").text(),
+	    	"bus_number": $('#search_busno').val()
 	    },
 	    success:function(response){
 	    	
