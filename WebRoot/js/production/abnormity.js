@@ -251,7 +251,7 @@ function getAllLineSelect() {
 }
 
 function getAllProcessSelect(order_type) {
-	order_type=order_type||'标准订单';
+	order_type=order_type||'Standard order';
 	$("#exec_process").empty();
 	$.ajax({
 		url : "getProcessMonitorSelect",
@@ -282,8 +282,8 @@ function getAllProcessSelect(order_type) {
 		    	 	process_id_default=value.id;
 			    	process_name_default=value.process_name;
 		    	}
-		    	strs += "<option value=" + value.id + " process='"+value.process_name+"' plan_node='"+(value.plan_node_name||"")
-		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.process_code + "</option>";
+		    	strs += "<option value=" + value.id + " process='"+value.station_name+"' plan_node='"+(value.plan_node_name||"")
+		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.station_code + "</option>";
 		    });
 		    $("#exec_process").append(strs);
 		    $("#exec_process").val(process_id_default+"");

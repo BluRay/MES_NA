@@ -873,5 +873,21 @@ public class ProductionController extends BaseController {
 	
 	
 	/*****************End Abnormity 生产异常反馈************************************************************/
+
+	/*****************Start Material Requirement 物料需求 AddBy:Yangke 171019******************************/
+	@RequestMapping("/materialRequirement")
+	public ModelAndView materialRequirement(){
+		mv.setViewName("production/materialRequirement");
+		return mv;
+	}
+	
+	@RequestMapping("/getMaterialRequirement")
+	@ResponseBody
+	public ModelMap getMaterialRequirement(){
+		
+		return model;
+	}
+	
+	/*****************End   Material Requirement 物料需求 ****************************************************/
 	
 }
