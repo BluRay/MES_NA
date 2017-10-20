@@ -64,16 +64,18 @@
 					</div>
 					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 					<thead><tr>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px"><input type='checkbox' id='selectAll' onclick='selectAll()'/></th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Station</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">SAPmaterial</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BYD_NO</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Specification</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="100px">Specification</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Quantity</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Unit</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">LineQuantity</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Distribution</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Vendor</th>
 						</tr>
 					</thead>

@@ -209,7 +209,7 @@
 				<div class="col-xs-12 col-sm-7 widget-container-col ui-sortable" >
 					<div class="widget-box ui-sortable-handle" >
 								<div class="widget-header">
-									<h5 class="widget-title">yield：</h5>
+									<h5 class="widget-title">Yield：</h5>
 									<div class="widget-toolbar">
 										<a href="#" data-action="fullscreen" class="orange2" >
 											<i class="ace-icon fa fa-expand"></i>

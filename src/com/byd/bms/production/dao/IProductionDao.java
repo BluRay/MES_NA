@@ -105,10 +105,11 @@ public interface IProductionDao {
 	public int measuresAbnormity(Map<String,Object> conditionMap);
 
 	public int getStationSquence(Map<String,Object> conditionMap);
-
-
-
-
+	public List<Map<String, Object>> getMatReqProjectQty(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getBusNumberProject(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getBomListByProject(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getLastStationInfo(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getStationBusNumberProject(Map<String,Object> conditionMap);
 
 
 

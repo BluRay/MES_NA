@@ -645,25 +645,56 @@ public class ProductionServiceImpl implements IProductionService {
 		station_seq = productionDao.getStationSquence(condMap);
 		logger.info("-->station_seq = " + station_seq);
 		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		String station = condMap.get("station").toString() + " " + condMap.get("station_name").toString();
 		if(station_seq == 1){//焊装第一个节点 取计划数量
 			String bus_number = condMap.get("bus_number").toString();
-			if(bus_number.equals("")){
-				//01 获取计划列表
-				
-				//02 循环获取车号及Project
-				
+			//01 获取计划列表
+			List<Map<String, Object>> projectQtyList = productionDao.getMatReqProjectQty(condMap);				
+			//02 循环获取车号及Project
+			for(int i=0;i<projectQtyList.size();i++){
+				logger.info("-->projectQtyList " + i + " project_id = " + projectQtyList.get(i).get("project_id"));
+				Map<String,Object> condMapBus=new HashMap<String,Object>();
+				condMapBus.put("project_id", projectQtyList.get(i).get("project_id"));
+				condMapBus.put("bus_number", bus_number);
+				condMapBus.put("planQty", projectQtyList.get(i).get("plan_qty"));
+				List<Map<String, Object>> busProjectList = productionDao.getBusNumberProject(condMapBus);
 				//03 获取BOM
-				
-			}else{
-				//01 获取车号对应的Project
-				
-				//02 获取BOM
-				
+				for(int j=0;j<busProjectList.size();j++){
+					logger.info("--->busProjectList " + j + " bus_number = " + busProjectList.get(j).get("bus_number") 
+							+ " project_id = " + busProjectList.get(j).get("project_id"));
+					Map<String,Object> condMapBom=new HashMap<String,Object>();
+					condMapBom.put("project_id", busProjectList.get(j).get("project_id"));
+					condMapBom.put("bus_number", busProjectList.get(j).get("bus_number"));
+					condMapBom.put("station", station);
+					List<Map<String, Object>> busBomList = productionDao.getBomListByProject(condMapBom);
+					//04 查询当前车辆线边物料并汇总
+					
+					
+					datalist.addAll(busBomList);
+				}
 			}
 			
-			
 		}else{//其他节点 取上一节点扫描车辆信息
-			
+			//01 查询上一节点信息
+			condMap.put("sequence", station_seq-1);
+			List<Map<String, Object>> lastStation = productionDao.getLastStationInfo(condMap);
+			logger.info("-->lastStation = " + lastStation.get(0).get("station_name"));
+			condMap.put("last_station_name", lastStation.get(0).get("station_name"));
+			//02 获取上一节点已下线 当前节点未上线 的车辆
+			List<Map<String, Object>> busProjectList = productionDao.getStationBusNumberProject(condMap);
+			//03 获取BOM
+			for(int i=0;i<busProjectList.size();i++){
+				logger.info("--->busProjectList " + i + " bus_number = " + busProjectList.get(i).get("bus_number") 
+						+ " project_id = " + busProjectList.get(i).get("project_id"));
+				Map<String,Object> condMapBom=new HashMap<String,Object>();
+				condMapBom.put("project_id", busProjectList.get(i).get("project_id"));
+				condMapBom.put("bus_number", busProjectList.get(i).get("bus_number"));
+				condMapBom.put("station", station);
+				List<Map<String, Object>> busBomList = productionDao.getBomListByProject(condMapBom);
+				datalist.addAll(busBomList);
+				
+				//04 查询当前车辆线边物料并汇总
+			}
 		}
 		
 		return datalist;

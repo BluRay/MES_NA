@@ -101,7 +101,7 @@ $(document).ready(function () {
 			data : {
 				factory:$("#search_factory :selected").text(),
 				workshop:$("#search_workshop :selected").text(),
-				line:"I",
+				line:$("#search_line").val(),
 				order_type:order_type
 				},
 			async : false,
@@ -172,7 +172,25 @@ function ajaxQuery(){
 	    	"bus_number": $('#search_busno').val()
 	    },
 	    success:function(response){
-	    	
+	    	$("#tableData tbody").html("");
+	    	$.each(response.data,function (index,value) {
+	    		var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html("<input id='data_"+index+"' type='checkbox'/>").appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.item_no).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.station).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.bus_number).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.SAP_material).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.BYD_NO).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.specification).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.quantity).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html("0").appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' type='text'/>").appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    	
+		    	
+		    	$("#tableData tbody").append(tr);
+	    	})
 	    }
 	});
 }
