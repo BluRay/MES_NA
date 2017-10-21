@@ -66,15 +66,14 @@
 									<input type="button" class="btn btn-sm btn-success" id="btnAdd" value="Add" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
-
 						</table>
 					</form>
 						
 					<div class="row">
-					<div class="col-xs-12" id="scroll_div">
-						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;" >
-						</table>	
-					</div>
+						<div class="col-xs-12" id="scroll_div">
+							<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;" >
+							</table>	
+						</div>
 					</div>
 				</div>
 
@@ -101,8 +100,7 @@
 						</div>				
 					</div>
 					<div class="form-group">
-					    	
-						<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Remark：</label>
+					    <label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Remark：</label>
 						<div class="col-sm-6">
 							<textarea class="input-xlarge" style="width: 100%" id="remarks" rows="1"></textarea>
 						</div>
@@ -127,21 +125,19 @@
 						</div>
 					</div>
 			     </div>
-		      </div>
-		   </div>
-			<!-- /.main-container -->
-		</div>
+	      </div>
+	   </div>
+		<!-- /.main-container -->
 	</div>
-	<script src="../js/datePicker/WdatePicker.js"></script>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
 	<script src="../assets/js/jquery.gritter.min.js"></script>
-	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script src="../assets/js/dataTables.rowGroup.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
+	<script src="../js/alertMessage.js"></script>
 	<script src="../assets/js/ace/elements.fileinput.js"></script>
 	<script src="../js/quality/productRecordTestingTpl.js"></script>
 </body>

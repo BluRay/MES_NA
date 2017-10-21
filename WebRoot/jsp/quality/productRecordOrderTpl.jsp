@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>Inspection record template</title>
+<title>Inspection Record Template</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />	
@@ -32,7 +32,7 @@
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
 							href="/BMS/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
-						<li><a href="#">Inspection record template</a></li>
+						<li><a href="#">Inspection Record Template</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -45,7 +45,6 @@
 					</div>
 					<!-- /.nav-search -->
 				</div>
-
 				<div class="page-content">
 					<form id="form" class="well form-search">
 						<table>
@@ -62,49 +61,37 @@
 							</tr>
 						</table>
 					</form>
-						
 					<div class="row">
-					<div class="col-xs-12" id="scroll_div">
-						<table id="tableResult" class="table table-striped table-bordered table-hover " style="font-size: 12px;" >
-						</table>	
-					</div>
+						<div class="col-xs-12" id="scroll_div">
+							<table id="tableResult" class="table table-striped table-bordered table-hover " style="font-size: 12px;" >
+							</table>	
+						</div>
 					</div>
 				</div>
 
-			<div id="dialog-config" class="hide">
-				<div class="form-group">
-				<label class="col-sm-2 control-label no-padding-right" for="" >*&nbsp;Project No.：</label>
-				<input id="add_project_no" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
-			</div>
-			<div class="form-group" id="importDiv">					
-				<label class="col-sm-2 control-label no-padding-right" for="">*&nbsp;Template：</label>
-				<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
-					<div class="col-sm-4" style="margin-left:-10px;">
-						<input id="file" style="margin-left:0px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" type="file"> 				
-					</div>
-					<div class="col-sm-4">
-						<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
-						<a href="../docs/inspection.xlsx">Download template</a>
-					</div>							
-				</form>
-			</div>
-			<div class="form-group">					
-				<div class="col-sm-12">			
-					<table class="table table-striped table-bordered table-hover" style="width: 1000px;font-size:12px;" id="tplDetailTable">
-					</table>
+				<div id="dialog-config" class="hide">
+					<div class="form-group">
+					<label class="col-sm-2 control-label no-padding-right" for="" >*&nbsp;Project No.：</label>
+					<input id="add_project_no" type="text" class="input-medium" style="height: 30px;width:20%;" ></input>
 				</div>
+				<div class="form-group" id="importDiv">					
+					<label class="col-sm-2 control-label no-padding-right" for="">*&nbsp;Template：</label>
+					<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
+						<div class="col-sm-4" style="margin-left:-10px;">
+							<input id="file" style="margin-left:0px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" type="file"> 				
+						</div>
+						<div class="col-sm-4">
+							<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+							<a href="../docs/inspection.xlsx">Download template</a>
+						</div>							
+					</form>
+				</div>
+
+				<table class="table table-striped table-bordered table-hover" style="width: 955px;font-size:12px;" id="tplDetailTable">
+				</table>
+
 			</div>
-		</div>
-		
-		<div id="dialog-editTplTable" class="hide">
-			<div class="form-group">					
-					<div class="col-sm-12">	
-						<textarea rows="2"  class="input-xlarge"  style="width:100%" id="edit_content"></textarea>
-					</div>
-			</div>			
-		</div>
-		
-		</div>
+			</div>
 			<!-- /.main-container -->
 		</div>
 	</div>
@@ -118,6 +105,7 @@
 	<script src="../js/jquery.form.js"></script>	
 	<script src="../js/common.js"></script>
 	<script src="../assets/js/ace/elements.fileinput.js"></script>
+	<script src="../js/alertMessage.js"></script>
 	<script src="../js/quality/productRecordOrderTpl.js"></script>
 </body>
 

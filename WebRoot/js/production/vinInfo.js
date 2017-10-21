@@ -1,7 +1,6 @@
 var pageSize=1;
 var cur_year="";
 var dt;
-
 $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
 	getFactorySelect("production/vinInfo",'',"#search_factory","All",'id');
@@ -10,17 +9,15 @@ $(document).ready(function(){
 		ajaxQuery();
 	}); 
 	$('#file').ace_file_input({
-		no_file:'...',
-		btn_choose:'Browse',
-		btn_change:'Browse',
-		width:"150px",
+		no_file:'Please Choose xls File...',
+		btn_choose:'Choose File',
+		btn_change:'Change File',
 		droppable:false,
 		onchange:null,
 		thumbnail:false, //| true | large
-		//allowExt: ['pdf','PDF'],
+		allowExt: ['xlsx','xls'],
 	}).on('file.error.ace', function(event, info) {
-		//alert("请上传正确的文件!");
-		return false;
+		alert("Please Choose xls File!");
     });
 	ajaxQuery();
 
@@ -31,6 +28,10 @@ $(document).ready(function(){
 		}
 	})
 	$("#btn_upload").click (function () {
+		if($("#file").val()==''){
+			alert(Warn['P_common_07']);
+			return false;
+		}
 		$(".divLoading").addClass("fade in").show();
 		$("#uploadForm").ajaxSubmit({
 			url:"uploadProjectVinInfo",
@@ -48,9 +49,19 @@ $(document).ready(function(){
 			            {"title":"No.","class":"center","data":"no","defaultContent": ""},
 			            {"title":"Bus No.","class":"center","data": "bus_number","defaultContent": ""},
 			            {"title":"VIN","class":"center","data": "vin","defaultContent": ""},
-			            {"title":"","class":"center","data": "error","defaultContent": ""}
+			            {"title":"","class":"center","data": "error","defaultContent": "","render":function(data,type,row){
+			            	var desc="";
+			            	if(data!=''){
+			            		var messageArr=data.split(";");
+			            		for(var i=0;i<messageArr.length;i++){
+			            			if(messageArr[i]!=''){
+			            			    desc+=Warn[messageArr[i]]+";";
+			            			}
+			            		}
+			            	}
+			            	return desc;
+			            }}
 			        ];
-
 					$("#tableVinImport").DataTable({
 						paiging:false,
 						ordering:false,
@@ -78,41 +89,30 @@ $(document).ready(function(){
 			                },
 			            ],
 			            buttons: [
-			          	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
-			          	    ],
+		          	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"excel\"></i>'},
+		          	    ],
 						data:datalist,
 						columns:columns
 					});
-
-				}else{
-					
-				}
-//				var head_width=$(".dataTables_scrollHead").width();
-//                $(".dataTables_scrollHead").css("width",head_width-10);
+				}else{}
 				$(".divLoading").hide();
 			}			
 		});
+		$(".save").show();
 	});
 });
-
 
 function ajaxQuery(){
 	dt=$("#tableResult").DataTable({
 		serverSide: true,
-//		fixedColumns:   {
-//            leftColumns: 3,
-//            rightColumns:3
-//        },
-       // rowsGroup:[0,1,2,3,4,5],
 		dom: 'Bfrtip',
 		lengthMenu: [
-		             [ 20, 50,100, -1 ],
-		             [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
-		         ],
+	        [ 20, 50,100, -1 ],
+	        [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
+	    ],
 	    buttons: [
-	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
-	        {extend:'pageLength',/*text:'显示行'*/}
-	       
+	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"excel\"></i>'},
+	        {extend:'pageLength',/*text:'显示行'*/}      
 	    ],
 		paiging:true,
 		ordering:false,
@@ -121,14 +121,10 @@ function ajaxQuery(){
 		destroy: true,
 		scrollY: $(window).height()-250,
 		scrollX: $(window).width(),
-		/*scrollCollapse: true,*/
 		pageLength: 20,
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {
-			
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
@@ -139,7 +135,6 @@ function ajaxQuery(){
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;//开始的记录序号
             param.page = (data.start / data.length)+1;//当前页码
-
             $.ajax({
                 type: "post",
                 url: "getProjectBusNumberList",
@@ -156,7 +151,6 @@ function ajaxQuery(){
                     callback(returnData);
                 }
             });
-		
 		},
 		columns: [
             {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
@@ -172,13 +166,11 @@ function ajaxQuery(){
             {"title":"Editor","class":"center","data": "username","defaultContent": ""},
             {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
             {"title":"VIN","class":"center","data":null,"render":function(data,type,row){
-                //var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"查看详情\" onclick=\"showVinInfo('"+row['id']+"')\" style='color:blue;cursor: pointer;'></i>&nbsp;"+
                 var  str="&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" onclick='importVinInfo("+JSON.stringify(row)+")' style='color:blue;cursor: pointer;'></i>&nbsp;";
             	return str;
                 },
             }
         ],
-		
 	});
 	$("#tableResult_info").addClass('col-xs-6');
 	$("#tableResult_paginate").addClass('col-xs-6');
@@ -187,90 +179,105 @@ function ajaxQuery(){
 
 function importVinInfo(row){
 	var project_id=row.id;
-	$("#project_no").text(row.project_no+" "+row.project_name+" "+row.quantity +" Bus");
-//	if($.fn.dataTable.isDataTable("#tableVinImport")){
-//		$('#tableVinImport').DataTable().destroy();
-//		$('#tableVinImport').empty();
-//	}
-	$("#tableVinImport tbody").html("");
-	$.ajax({
-		url: "getVinListByProject",
-		dataType: "json",
-		data: {"project_id" : project_id},
-		async: false,
-		error: function () {},
-		success: function (response) {
-			$("#project_id").val(project_id);
-			var datalist=response.data;
-			$.each(datalist,function(index,value){
-				var tr=$("<tr/>");
-				$("<td style='text-align:center;'/>").html(index+1).appendTo(tr);
-				$("<td style='text-align:center;'/>").html(value.bus_number).appendTo(tr);
-				$("<td style='text-align:center;'/>").html(value.VIN).appendTo(tr);
-				$("#tableVinImport tbody").append(tr);
-			});
-			var dialog = $("#dialog-import").removeClass('hide').dialog({
-				width:700,
-				height:580,
-				modal: true,
-				title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import VIN </h4></div>",
-				title_html: true,
-				buttons: [ 
-					{
-						text: "Close",
-						"class" : "btn btn-minier",
-						click: function() {
-							$("#project_id").val("");
-							$( this ).dialog( "close" ); 
-						} 
-					},
-					{
-						text: "Save",
-						"class" : "btn btn-primary btn-minier",
-						click: function() {
-							save();
-						} 
-					},
-				]
-			});
-
+	$("#project_no").text("  "+row.project_no+" "+row.project_name);
+	if($.fn.dataTable.isDataTable("#tableVinImport")){
+		$('#tableVinImport').DataTable().destroy();
+		$('#tableVinImport').empty();
+	}
+	var dt=$("#tableVinImport").DataTable({
+		serverSide: true,
+		dom: 'Bfrtip',
+	    buttons: [
+	        {extend:'excelHtml5',title:row.project_no,className:'btn btn-sm btn-success black vinDetail',text:'Download Template'},
+	    ],
+	    paiging:false,
+		ordering:false,
+		searching: false,
+		autoWidth:false,
+		destroy: true,
+		paginate:false,
+		sScrollY: 310,
+		scrollX: true,
+		scrollCollapse: false,
+		lengthChange:false,
+		orderMulti:false,
+		info:false,
+		language: {
 		},
-		complete:function (response){
-        	//$(".divLoading").hide();
-		}
-	})
+		ajax:function (data, callback, settings) {
+			var param ={
+				 "project_id" : project_id
+			};
+            $.ajax({
+                type: "post",
+                url: "getVinListByProject",
+                data: param,  //传入组装的参数
+                dataType: "json",
+                success: function (result) {
+                    var returnData = {};
+                    returnData.data = result.data;//返回的数据列表
+                    callback(returnData);
+                }
+            });
+		},
+		columns: [
+            {"title":"No.","class":"center","data":"","defaultContent": "","render":function(data,type,row,meta){
+				return meta.row + meta.settings._iDisplayStart + 1;
+	        }},
+            {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
+            {"title":"VIN","class":"center","data": "VIN","defaultContent": ""}
+        ],
+	});
+	$(".vinDetail").parent().css("margin-top","-40px").css("margin-left","-225px");
+	$(".vinDetail").css("margin-top","-40px").css("margin-left","-225px").find("a").css("border","0px");
+	var dialog = $("#dialog-import").removeClass('hide').dialog({
+		width:700,
+		height:580,
+		modal: true,
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import VIN </h4></div>",
+		title_html: true,
+		buttons: [ 
+			{
+				text: "Close",
+				"class" : "btn btn-minier",
+				click: function() {
+					$("#project_id").val("");
+					$( this ).dialog( "close" ); 
+				} 
+			},
+			{
+				text: "Save",
+				"class" : "btn btn-primary btn-minier save",
+				click: function() {
+					save(project_id);
+				} 
+			},
+		]
+	});
+	$(".save").hide();
 }
-function downloadTemplate(){
-	//$("#tableVinImport thead").children("tr").children("th").eq(0).html("No.").css("height","0px");
-	//$("#tableVinImport thead").children("tr").children("th").eq(1).html("Bus No.").css("height","0px");
-	//$("#tableVinImport thead").children("tr").children("th").eq(2).html("VIN").css("height","0px");
-	$("#tableVinImport").tableExport({
-		type:'xlsx',fileName:'vin',worksheetName:'vin',
-		//excelstyles:['border-bottom', 'border-top', 'border-left', 'border-right']
-		});
-}
-function save() {
+
+function save(project_id) {
 	var save_flag=true;
 	var trs=$("#tableVinImport tbody").find("tr");
 	if(trs.length==0){
 		save_flag=false;
-		alert("没有可保存的数据");
+		alert(Warn['P_common_05']);
 		return false;
 	}
-	var project_id=$("#project_id").val();
+	//var project_id=$("#project_id").val();
 	var addList=[];
 	$.each(trs,function(i,tr){
 		var tds=$(tr).children("td");
 		var error = $(tds).eq(3).html();
-		if(error!=''){
+		if(error!='' && error!=undefined){
 			var item_no = $(tds).eq(0).html();
 			save_flag=false;
-			alert(item_no+"行 数据存在异常，请修改后在导入");
+			alert(item_no+Warn['P_common_06']);
 			return false;
 		}
 		var bus_number = $(tds).eq(1).html();
 		var vin = $(tds).eq(2).html();
-		
 		var vinArr={};
 		vinArr.bus_number=bus_number;
 		vinArr.vin=vin;
@@ -288,16 +295,15 @@ function save() {
 			},
 			success:function(response){
 	            if(response.success){
-	            	
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+Warn['P_common_03']+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }else{
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+Warn['P_common_04']+"！</h5>",
 						class_name: 'gritter-info'
 					});
 	            }
@@ -305,5 +311,3 @@ function save() {
 		});
 	}
 }
-
-

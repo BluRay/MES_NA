@@ -3,18 +3,16 @@ $(document).ready(function () {
 	initPage();
 	function initPage(){
 		getBusNumberSelect('#search_bus_number');
-//		getBusNumberSelect('#nav-search-input');
 		getOrderNoSelect("#search_project_no","#orderId");
 		getFactorySelect("production/printBusNumber",'',"#search_plant","All",'id');
-//		getFactorySelect("production/printVin",'',"#vin_factory",null,'id');
 	};
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
-	})
+	});
 	
 	$("#btnQuery").click (function () {
 		ajaxQuery();
@@ -51,7 +49,6 @@ $(document).ready(function () {
 		var printhtml="";
 		var flag=true;
 		$("#tableResult tbody :checkbox").each(function(){
-			
 			if($(this).prop("checked")){
 				if($(this).parents("tr").children().eq(4).text()==''){
 					flag=false;
@@ -70,11 +67,11 @@ $(document).ready(function () {
 			}
 		});
 		if(flag==false){
-			alert("请先导入VIN号在打印");
+			alert(Warn['P_printBusNumber_01']);
 			return false;
 		}
 		if(printhtml==""){
-			alert("请选择一条记录");
+			alert(Warn['P_printBusNumber_02']);
 			return false;
 		}
 		$("#printarea").append(printhtml);
@@ -91,17 +88,13 @@ $(document).ready(function () {
 			 if(printFlag){
 				 window.print();
 			 }else{
-				 alert("VIN为空，请先绑定车号和VIN!");
+				 alert(Warn['P_printBusNumber_02']);
 			 }
-						       				
-			},0);
+		},0);
 	});
 	$(document).on('change', '.selectAll',function(){
 	    $('#table tbody :checkbox').prop("checked",this.checked); 
 	}); 
-
-
-
 });
 
 function ajaxQuery(){
@@ -110,13 +103,12 @@ function ajaxQuery(){
 		serverSide: true,
 		dom: 'Bfrtip',
 		lengthMenu: [
-		             [ 20, 50,100, -1 ],
-		             [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
-		         ],
+            [ 20, 50,100, -1 ],
+            [ 'Show 20 rows', 'Show 30 rows', 'Show 50 rows', 'Show all rows' ]
+        ],
 	    buttons: [
 	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
 	        {extend:'pageLength',/*text:'显示行'*/}
-	       
 	    ],
 		paiging:true,
 		ordering:false,
@@ -184,174 +176,6 @@ function ajaxQuery(){
 	$("#tableResult_paginate").addClass('col-xs-6');
 	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
 }
-
-
-//----------START bootstrap initTable ----------
-//function initTable() {
-//    $table.bootstrapTable({
-//        height: getHeight(),
-//        url:'showBusNumberList',
-//        striped:false,
-//        paginationVAlign:'bottom',
-//        searchOnEnterKey:true,
-//        fixedColumns: false,				//冻结列
-//        fixedNumber: 0,		//冻结列数
-//        queryParams:function(params) {
-//        	params["plant"] = $("#search_plant").val(); 
-//        	params["project_no"] = $("#search_project_no").val(); 
-//        	params["bus_number"] = $("#search_bus_number").val();
-//        	return params;
-//        },
-//        columns: [
-//        [
-//			{
-//				field: 'id',title: "&nbsp;<input type='checkbox' class='selectAll'/>&nbsp;",align: 'center',valign: 'middle',align: 'center',
-//			    sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//			    cellStyle:function cellStyle(value, row, index, field) {
-//				return {css: {"padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
-//				},
-//			    formatter:function(value, row, index){
-//	        		return "<input type='checkbox' value='"+value+"'>";
-//	        	 }
-//			},
-//            {
-//            	field: 'factory_name',title: '&nbsp;&nbsp;Plant&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: true,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//	        	return {css: {"padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
-//	        	}
-//            },{
-//            	field: 'project_no',title: '&nbsp;&nbsp;Project No.&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"13px"}};
-//    	        	}
-//            },{
-//            	field: 'bus_number',title: '&nbsp;&nbsp;Bus No.&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"13px"}};
-//    	        	}
-//            },{
-//            	field: 'vin',title: '&nbsp;&nbsp;VIN&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//    	        	return {css: {"padding-left": "1px", "padding-right": "1px","font-size":"13px"}};
-//    	        	},
-////    	        formatter:function(value, row, index){
-////    	        	var bus_number = (row.bus_number===null)?"":row.bus_number;
-////	        		return "<input id='bus_number_"+index+"' class='bus_number' style='font-size: 12px;color: #333333;border:0;width:100%' value='"+bus_number+"' old_val='"+bus_number+"' vin='"+row.vin+"'>";
-////	        	 }
-//            },{
-//            	field: 'print_flag',title: '&nbsp;&nbsp;Number of Prints&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"13px"}};
-//    	        	}
-//            },{
-//            	field: 'print_date',title: '&nbsp;&nbsp;Print Date&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
-//                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-//                cellStyle:function cellStyle(value, row, index, field) {
-//    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"13px"}};
-//    	        	}
-//            }
-////            ,{
-////            	field: 'print_sign',title: '&nbsp;打印标志&nbsp;',align: 'center',valign: 'middle',align: 'center',
-////                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-////                cellStyle:function cellStyle(value, row, index, field) {
-////    	        	return {css: {"padding-left": "1px", "padding-right": "1px","font-size":"13px"}};
-////    	        	},
-////	        	formatter:function(value, row, index){
-////	        		return (value == "1")?"已打印":"未打印";
-////	        	}
-////            }
-//        ]
-//    ]
-//    });
-//    $table.on('load-success.bs.table',function(){
-//    	$("#btnQuery").removeAttr("disabled");
-//    });
-//    $table.on('page-change.bs.table',function(){
-//    	$("#btnQuery").attr("disabled","disabled");
-//    });
-//    $(window).resize(function () {
-//        $table.bootstrapTable('resetView', {height: getHeight()});
-//    });
-//    function getHeight() {return $(window).height()-45;}
-//    function getWidth() {return $(window).width()-220;}
-//}
-////----------END bootstrap initTable ----------
-//
-////----------START Bootstrap Script ----------
-//var scripts = [
-//        '../js/bootstrap-table.js','../js/bootstrap-table-fixed-columns.js',
-//        '../js/bootstrap-table-export.js','../js/tableExport.js',
-//        '../js/bootstrap-table-editable.js','../js/bootstrap-editable.js'
-//    ],
-//    eachSeries = function (arr, iterator, callback) {
-//    	//console.log("---->arr.length=" + arr.length);
-//        callback = callback || function () {};
-//        if (!arr.length) {return callback();}
-//        var completed = 0;
-//        var iterate = function () {
-//            iterator(arr[completed], function (err) {
-//                if (err) {callback(err);callback = function () {};}
-//                else {completed += 1;if (completed >= arr.length) {callback(null);}else {iterate();}}
-//            });
-//        };
-//        iterate();
-//    };
-//    function getIdSelections() {
-//        return $.map($table.bootstrapTable('getSelections'), function (row) {return row.id});
-//    }
-//    function responseHandler(res) {
-//        $.each(res.rows, function (i, row) {row.state = $.inArray(row.id, selections) !== -1;});return res;
-//    }
-//    function detailFormatter(index, row) {
-//        var html = [];
-//        $.each(row, function (key, value) {html.push('<p><b>' + key + ':</b> ' + value + '</p>');});
-//        return html.join('');
-//    }
-//    function operateFormatter(value, row, index) {
-//        return ['<a class="remove" href="javascript:void(0)" title="Remove">','<i class="glyphicon glyphicon-remove"></i>','</a>'].join('');
-//    }
-//    window.operateEvents = {
-//        'click .like': function (e, value, row, index) {alert('You click like action, row: ' + JSON.stringify(row));},
-//        'click .remove': function (e, value, row, index) {ajaxDel(row.id);}
-//    };
-//    function totalTextFormatter(data) {return 'Total';}
-//    function totalNameFormatter(data) {return data.length;}
-//    function totalPriceFormatter(data) {
-//        var total = 0;
-//        $.each(data, function (i, row) {total += +(row.price.substring(1));});
-//        return '$' + total;
-//    }
-//    function getScript(url, callback) {
-//        var head = document.getElementsByTagName('head')[0];
-//        var script = document.createElement('script');
-//        script.src = url;
-//        var done = false;
-//        script.onload = script.onreadystatechange = function() {
-//            if (!done && (!this.readyState ||this.readyState == 'loaded' || this.readyState == 'complete')) {
-//                done = true;
-//                if (callback)
-//                	callback();
-//                	script.onload = script.onreadystatechange = null;
-//            }
-//        };
-//        head.appendChild(script);
-//        return undefined;
-//    } 
-  //复选框全选或反选
-//    function selectAll() {
-//    	//alert($("#selectAll").prop("checked"));
-//        if ( $("#table thead tr").find("#selectAll").prop("checked")) {
-//            $("#table tbody :checkbox").prop("checked", true);
-//        } else {
-//            $("#table tbody :checkbox").prop("checked", false);
-//        }
-//    }
-    
   //复选框全选或反选
 function selectAll() {
     if ($("#selectAll").prop("checked")) {

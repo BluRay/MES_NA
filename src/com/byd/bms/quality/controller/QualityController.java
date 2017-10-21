@@ -344,10 +344,9 @@ public class QualityController extends BaseController {
         String stationStr=settingService.checkStation(queryMap, "Name");
         String workshopStr=settingService.checkWorkshop(queryMap, "Name");
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
-		int i=1;
 		for (Object[] data : excelModel.getData()) {
 			Map<String, String> infomap = new HashMap<String, String>();
-
+			String errorMessage="";
 			infomap.put("item_no", data[0] == null ? null : data[0].toString().trim());
 			infomap.put("SAP_material", data[1] == null ? null : data[1].toString().trim());
 			infomap.put("parts_name", data[2] == null ? null : data[2].toString().trim());
@@ -356,29 +355,28 @@ public class QualityController extends BaseController {
 			if(data[5] != null && !data[5].toString().trim().equals("")){
 				int index=workshopStr.indexOf(data[5].toString().trim());
 				if(index<0){
-					infomap.put("error", "Workshop cannot be found");
+					errorMessage="P_common_10;";
 				}
 			}else{
-				infomap.put("error", "Workshop cannot be Null");
+				errorMessage="P_common_11;";
 			}
 			infomap.put("workshop", data[5] == null ? null : data[5].toString().trim());
 			if(data[6] != null && !data[6].toString().trim().equals("")){
 				int index=stationStr.indexOf(data[6].toString().trim());
 				if(index<0){
-					infomap.put("error", "Station cannot be found");
+					errorMessage+="P_common_12;";
 				}
 			}else{
-				infomap.put("error", "Station cannot be Null");
+				errorMessage+="P_common_13;";
 			}
 			infomap.put("station", data[6] == null ? null : data[6].toString().trim());
-			
+			infomap.put("error", errorMessage);
 			addList.add(infomap);
-			i++;
 		}
-		initModel(true,"Success！",addList);
+		initModel(true,"",addList);
 		
 		}catch(Exception e){
-			initModel(false,"Failure！"+e.getMessage(),null);
+			initModel(false,e.getMessage(),null);
 		}
 		return mv.getModelMap();
 	}
@@ -495,28 +493,29 @@ public class QualityController extends BaseController {
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
 		for (Object[] data : excelModel.getData()) {
 			Map<String, String> infomap = new HashMap<String, String>();
-
+            String errorMessage="";
 			infomap.put("item_no", data[0] == null ? null : data[0].toString().trim());
 			if(data[1] != null && !data[1].toString().trim().equals("")){
 				int index=stationStr.indexOf(data[1].toString().trim());
 				if(index<0){
-					infomap.put("error", "Station cannot be found");
+					errorMessage= "P_common_12;";
 				}
 			}else{
-				infomap.put("error", "Station cannot be Null");
+				errorMessage= "P_common_13;";
 			}
 			infomap.put("station", data[1] == null ? null : data[1].toString().trim());
 			if(data[2] != null && !data[2].toString().trim().equals("")){
 				int index=processStr.indexOf(data[1].toString().trim());
 				if(index<0){
-					infomap.put("error", "Process Name cannot be found");
+					errorMessage+= "P_common_14;";
 				}
 			}else{
-				infomap.put("error", "Process Name cannot be Null");
+				errorMessage+= "P_common_15;";
 			}
 			infomap.put("process_name", data[2] == null ? null : data[2].toString().trim());
 			infomap.put("inspection_item", data[3] == null ? null : data[3].toString().trim());
 			infomap.put("specification_and_standard", data[4] == null ? null : data[4].toString().trim());
+			infomap.put("error", errorMessage);
 			addList.add(infomap);
 		}
 		initModel(true,"Success！",addList);

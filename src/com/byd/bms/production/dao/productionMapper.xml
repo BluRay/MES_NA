@@ -18,8 +18,8 @@
 		<if test="project_id !=null and project_id !=''">
 			and b.project_id like CONCAT(#{project_id},'%')   
 		</if>
-		ORDER BY b.bus_number DESC
-		<if test="start !=null and length !='-1' ">
+		ORDER BY b.id
+		<if test="start !=null and length !=-1 ">
 			LIMIT #{start} ,#{length} 
 		</if>			
 	</select>
@@ -386,7 +386,7 @@
 			   and IFNULL(b.print_flag,0)=#{print_flag}  
 			</if> 
 		</if>
-		ORDER BY b.id DESC
+		ORDER BY p.id desc,b.id asc
 		<if test="start !=null and length !=-1 ">
 			LIMIT #{start} ,#{length} 
 		</if>			

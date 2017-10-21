@@ -7,7 +7,7 @@ $(document).ready(function(){
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
@@ -45,7 +45,7 @@ $(document).ready(function(){
 					"class" : "btn btn-primary btn-minier",
 					click: function() {
 						if($("#add_project_no").val()==""){
-							alert("Project No. cannot be null !");
+							alert(Warn['P_common_08']);
 							$("#add_project_no").focus();
 							return ;
 						}
@@ -60,7 +60,7 @@ $(document).ready(function(){
 				            success: function (result) {
 				            	var data=result.data;
 				            	if(data==null){
-				            		alert("Project No. cannot be Found");
+				            		alert(Warn['P_common_09']);
 				            		$("#add_project_no").focus();
 				            		return ;
 				            	}else{
@@ -69,14 +69,13 @@ $(document).ready(function(){
 				            	}
 				            }
 				        });
-						//$( this ).dialog( "close" ); 
 					} 
 				}
 			]
 		});
 	});
 	$("#btn_upload").click (function () {
-		$(".divLoading").addClass("fade in").show();
+		//$(".divLoading").addClass("fade in").show();
 		$("#uploadForm").ajaxSubmit({
 			url:"uploadTestingTemplateFile",
 			type: "post",
@@ -107,26 +106,13 @@ $(document).ready(function(){
 						lengthChange:false,
 						orderMulti:false,
 						info:false,
-						language: {
-							
-						},
 						aoColumnDefs : [
-//			                {
-//			                "aTargets" :[5],
-//			                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
-//			                	if($(nTd).text()!=''){
-//			                		//数据格式错误 整行用红色字体标示
-//			                		$(nTd).parent().css('color', '#ff0000');
-//				                	$(nTd).css('color', '#ff0000').css('font-weight', 'bold').css('width','200px');
-//			                	}
-//			                }   
-//			                },
 			            ],
 						data:datalist,
 						columns:columns
 					});
 				}
-				$(".divLoading").hide();
+				//$(".divLoading").hide();
 			}			
 		});
 	});
@@ -141,17 +127,15 @@ function initPage(){
 	getOrderNoSelect("#add_project_no","#orderId");
 	ajaxQuery();
 	$('#file').ace_file_input({
-		no_file:'...',
-		btn_choose:'Browse',
-		btn_change:'Browse',
-		width:"150px",
+		no_file:'Please Choose xls File...',
+		btn_choose:'Choose File',
+		btn_change:'Change File',
 		droppable:false,
 		onchange:null,
 		thumbnail:false, //| true | large
-		//allowExt: ['pdf','PDF'],
+		allowExt: ['xlsx','xls'],
 	}).on('file.error.ace', function(event, info) {
-		//alert("请上传正确的文件!");
-		return false;
+		alert("Please Choose xls File!");
     });
 }
 
@@ -170,8 +154,6 @@ function ajaxQuery(){
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
@@ -225,12 +207,12 @@ function save(project_id,header_id) {
 	var trs=$("#tplDetailTable tbody").find("tr");
 	if(trs.length==0){
 		save_flag=false;
-		alert("没有可保存的数据");
+		alert(Warn['P_common_05']);
 		return false;
 	}
 	var testing_type_value=$("#testing_type_value :selected").attr('keyvalue');
 	if(testing_type_value=='' || testing_type_value==undefined){
-		alert("Testing Type cannot be null");
+		alert(Warn['P_testingRecord_03']);
 		return false;
 	}
 	var addList=[];
@@ -265,13 +247,13 @@ function save(project_id,header_id) {
 	            	$( "#dialog-config" ).dialog("close");
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+alert(Warn['P_common_03'])+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }else{
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+alert(Warn['P_common_04'])+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }
@@ -305,7 +287,6 @@ function drawTplDetailTable(tableId,data,editable){
 	        {"title":"Specification And Standard","class":"center","data":"specification_standard","defaultContent": ""}	            	          
 	    ]	
 	});
-	
 }
 
 function showEditPage(row){
@@ -338,7 +319,7 @@ function showEditPage(row){
 				"class" : "btn btn-primary btn-minier",
 				click: function() {
 					if($("#add_project_no").val()==""){
-						alert("Project No. cannot be null !");
+						alert(Warn['P_common_08']);
 						$("#add_project_no").focus();
 						return ;
 					}
@@ -354,7 +335,7 @@ function showEditPage(row){
 			            	var data=result.data;
 			            	var project_id=data.id;
 			            	if(data==null){
-			            		alert("Project No. cannot be Found");
+			            		alert(Warn['P_common_09']);
 			            		$("#add_project_no").focus();
 			            		return ;
 			            	}else{
@@ -421,10 +402,8 @@ function convert(value) {
     var readValue="";
     var changeValue="";
     $("#search_testing_type_value option").map(function(){
-  
         readValue=$(this).attr("keyvalue");
         changeValue=$(this).text();
-
         if(readValue==value){
         	returnValue=changeValue;
         	return false;

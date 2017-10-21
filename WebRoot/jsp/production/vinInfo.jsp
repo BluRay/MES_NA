@@ -54,7 +54,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<div id="form" class="well form-search">
 					<table>
 						<tr>
-							<td>Project No：</td>
+							<td>Project No.：</td>
 							<td><input type="text" style="height: 30px;"
 								class="input-medium revise"  value="" id="search_project_no" /></td>
 							<td>Status：</td>
@@ -91,35 +91,35 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<div id="create_form" class="form-horizontal">
 						<div class="form-group">
 							<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;*Project No.：</label>
-							<label id="project_no" class="col-sm-4  no-padding-left"  style="margin-left:15px;"></label>
+							<label id="project_no" class="col-sm-4  no-padding-left"  style="margin-left:20px;"></label>
 						    <input type="hidden" id="project_id" value=''>
 						</div>
 						<div class="form-group">					
-							<label class="col-sm-2 control-label no-padding-right no-padding-right" for="editOrderCode">*&nbsp;VIN：</label>
+							<label class="col-sm-2 control-label no-padding-right">*&nbsp;VIN：</label>
 							<div class="col-sm-9">
 								<form id="uploadForm" action="" enctype="multipart/form-data" method="post">
-									<div class="col-sm-4">
-										<input id="file" style="margin-left: -10px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" accept=".xlsx" type="file">&nbsp;&nbsp;				
+									<div class="col-sm-6">
+										<input id="file" style="margin-left:0px;padding:0px 0px;font-size: 12px" class="btn btn-info btn-small" name="file" accept=".xlsx" type="file">&nbsp;&nbsp;				
 									</div>
-									<div class="col-sm-4">
-										&nbsp;<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+									<div class="col-sm-3">
+										&nbsp;<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px;width:60px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
 									</div>
-									<div class="col-sm-4">
-										&nbsp;<a onclick="downloadTemplate()" style="cursor:pointer;">Download template</a>
-									</div>								
+<!-- 									<div class="col-sm-4"> -->
+<!-- 										&nbsp;<a onclick="downloadTemplate()" style="cursor:pointer;">Download template</a> -->
+<!-- 									</div>								 -->
 								</form>
 							</div>									
 						</div>
-						<table id="tableVinImport" style="font-size: 12px;width:655px" class="table table-bordered table-striped">
-			                <thead>
-			                    <tr>
-			                        <th style="text-align:center;">No.</th>
-			                        <th style="text-align:center;">Bus No.</th>
-			                        <th style="text-align:center;">VIN</th>
-			                    </tr>
-			                </thead>
-			                <tbody>
-			                </tbody>
+						<table id="tableVinImport" style="font-size: 12px;width:655px;" class="table table-bordered table-striped">
+<!-- 			                <thead> -->
+<!-- 			                    <tr> -->
+<!-- 			                        <th style="text-align:center;">No.</th> -->
+<!-- 			                        <th style="text-align:center;">Bus No.</th> -->
+<!-- 			                        <th style="text-align:center;">VIN</th> -->
+<!-- 			                    </tr> -->
+<!-- 			                </thead> -->
+<!-- 			                <tbody> -->
+<!-- 			                </tbody> -->
 			            </table>
 					</div>
 				</div>
@@ -127,13 +127,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		</div>
 	</div>	
 	</div>
-	<script src="<%=basePath%>/js/datePicker/WdatePicker.js"></script>
 	<script src="<%=basePath%>/assets/js/jquery-ui.min.js"></script>
 	<script src="<%=basePath%>/assets/js/jquery.gritter.min.js"></script>
 	<script src="<%=basePath%>/assets/js/jquery.dataTables.min.js"></script>
 	<script src="<%=basePath%>/assets/js/jquery.dataTables.bootstrap.js"></script>
-	<script src="<%=basePath%>/assets/js/dataTables.fixedColumns.min.js"></script>
-	<script src="<%=basePath%>/assets/js/dataTables.rowGroup.js"></script>
+<%-- 	<script src="<%=basePath%>/assets/js/dataTables.fixedColumns.min.js"></script> --%>
+<%-- 	<script src="<%=basePath%>/assets/js/dataTables.rowGroup.js"></script> --%>
 	<script src="<%=basePath%>/assets/js/ace/elements.onpage-help.js"></script>
 	<script src="<%=basePath%>/assets/js/ace/ace.onpage-help.js"></script>
 	<script src="<%=basePath%>/assets/js/bootstrap3-typeahead.js"></script>
@@ -144,12 +143,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="../assets/js/buttons.html5.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/jquery.form.js"></script>
-	<script src="<%=basePath%>/js/xlsx.core.min.js"></script>
+<%-- 	<script src="<%=basePath%>/js/xlsx.core.min.js"></script> --%>
 <%-- 	<script src="<%=basePath%>/js/xlsx.js"></script> --%>
 <%-- 	<script src="<%=basePath%>/js/jszip.js"></script> --%>
-	<script src="<%=basePath%>/js/FileSaver.js"></script>
+<%-- 	<script src="<%=basePath%>/js/FileSaver.js"></script> --%>
 	<script src="<%=basePath%>/js/tableExport.js"></script>
 	<script src="<%=basePath%>/assets/js/ace/elements.fileinput.js"></script>
+	<script src="../js/alertMessage.js"></script>
     <script src="<%=basePath%>/js/production/vinInfo.js"></script>
 </body>
 

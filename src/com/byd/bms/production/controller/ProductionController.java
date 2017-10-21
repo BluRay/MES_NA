@@ -160,15 +160,15 @@ public class ProductionController extends BaseController {
             		}
             	}
             	if(check==false){
-            		errorMessage+="Bus No. is not exsist;";
+            		errorMessage+="P_common_01;";
             	}
             }else{
-            	errorMessage+="Bus No. cannot be null;";
+            	errorMessage+="P_common_02;";
             }
             if(data[2] != null && !data[2].toString().equals("")){
             	infomap.put("vin",data[2].toString().trim());
             }else{
-            	errorMessage+="VIN cannot be null;";
+            	errorMessage+="P_vinInfo_01;";
             }
 			infomap.put("error", errorMessage);
 			addList.add(infomap);
@@ -672,9 +672,9 @@ public class ProductionController extends BaseController {
 		try{
 			int result=productionService.batchUpdateVin(vin_list);
 			if(result>0){
-				initModel(true,"保存成功！",vin_list);
+				initModel(true,"",vin_list);
 			}else{
-				initModel(false,"保存失败！",null);
+				initModel(false,"",null);
 			}
 			
 		}catch(Exception e){

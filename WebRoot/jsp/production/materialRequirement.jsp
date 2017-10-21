@@ -66,17 +66,17 @@
 					<thead><tr>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px"><input type='checkbox' id='selectAll' onclick='selectAll()'/></th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Station</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="100px">Station</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">SAPmaterial</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BYD_NO</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">SAPmaterial</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">BYD_NO</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="100px">Specification</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Quantity</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Unit</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">LineQuantity</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Distribution</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">Vendor</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="160px">Specification</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">LineQuantity</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
 						</tr>
 					</thead>
 					<tbody></tbody>

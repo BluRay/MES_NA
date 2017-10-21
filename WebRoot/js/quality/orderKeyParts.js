@@ -5,10 +5,9 @@ $(document).ready(function(){
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 
-
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	});
@@ -16,7 +15,11 @@ $(document).ready(function(){
 		$("#search_project_no").attr("order_id","");
 	});
 	$("#btn_upload").click (function () {
-		$(".divLoading").addClass("fade in").show();
+		if($("#file").val()==''){
+			alert(Warn['P_common_07']);
+			return false;
+		}
+		//$(".divLoading").addClass("fade in").show();
 		$("#uploadForm").ajaxSubmit({
 			url:"uploadKeyPartsFile",
 			type: "post",
@@ -36,9 +39,19 @@ $(document).ready(function(){
 			            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
 			            {"title":"Workshop","class":"center","data": "workshop","defaultContent": ""},
 			            {"title":"Station","class":"center","data": "station","defaultContent": ""},
-			            {"title":"","class":"center","data": "error","defaultContent": ""}
+			            {"title":"","class":"center","data": "error","defaultContent": "","render":function(data,type,row){
+			            	var desc="";
+			            	if(data!=''){
+			            		var messageArr=data.split(";");
+			            		for(var i=0;i<messageArr.length;i++){
+			            			if(messageArr[i]!=''){
+			            			    desc+=Warn[messageArr[i]]+";";
+			            			}
+			            		}
+			            	}
+			            	return desc;
+			            }}
 			        ];
-
 					$("#keyPartsTable").DataTable({
 						paiging:false,
 						ordering:false,
@@ -52,9 +65,6 @@ $(document).ready(function(){
 						lengthChange:false,
 						orderMulti:false,
 						info:false,
-						language: {
-							
-						},
 						aoColumnDefs : [
 			                {
 				                "aTargets" :[7],
@@ -71,7 +81,6 @@ $(document).ready(function(){
 						columns:columns
 					});
 				}
-				$(".divLoading").hide();
 			}			
 		});
 	});
@@ -87,7 +96,7 @@ $(document).ready(function(){
 			width:970,
 			height:550,
 			modal: true,
-			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Bus Trace template</h4></div>",
+			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Bus Trace Template</h4></div>",
 			title_html: true,
 			buttons: [ 
 				{
@@ -102,7 +111,7 @@ $(document).ready(function(){
 					"class" : "btn btn-primary btn-minier",
 					click: function() {
 						if($("#add_project_no").val()==""){
-							alert("Project No. cannot be Null");
+							alert(Warn['P_common_08']);
 							$("#add_project_no").focus();
 							return;
 						}
@@ -114,10 +123,10 @@ $(document).ready(function(){
 				            	"project_no": $("#add_project_no").val()
 				            },  //传入组装的参数
 				            dataType: "json",
-				            success: function (result) {
+				            success: function (result){
 				            	var data=result.data;
 				            	if(data==null){
-				            		alert("Project No. cannot be Found");
+				            		alert(Warn['P_common_09']);
 				            		$("#add_project_no").focus();
 				            		return false;
 				            	}else{
@@ -132,7 +141,6 @@ $(document).ready(function(){
 		});
 	});
 })
-
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
 	getBusTypeSelect('','#search_bus_type','All','id');
@@ -140,23 +148,18 @@ function initPage(){
 	getOrderNoSelect("#add_project_no","#orderId");
 	ajaxQuery();
 	$('#file').ace_file_input({
-		no_file:'...',
-		btn_choose:'Browse',
-		btn_change:'Browse',
-		width:"150px",
+		no_file:'Please Choose xls File...',
+		btn_choose:'Choose File',
+		btn_change:'Change File',
 		droppable:false,
 		onchange:null,
 		thumbnail:false, //| true | large
-		//allowExt: ['pdf','PDF'],
+		allowExt: ['xlsx','xls'],
 	}).on('file.error.ace', function(event, info) {
-		//alert("请上传正确的文件!");
-		return false;
+		alert("Please Choose xls File!");
     });
 }
-
-
 function ajaxQuery(){
-
 	$("#tableResult").DataTable({
 		serverSide: true,
 		rowsGroup:[0,1],
@@ -171,8 +174,6 @@ function ajaxQuery(){
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {	
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 					"draw":1,
@@ -182,7 +183,6 @@ function ajaxQuery(){
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;//开始的记录序号
             param.page = (data.start / data.length)+1;//当前页码
-
             $.ajax({
                 type: "post",
                 url: "getProjectKeyPartsTemplateList",
@@ -216,7 +216,6 @@ function ajaxQuery(){
         ]
 	});
 }
-
 function showEditPage(row){
 	if($.fn.dataTable.isDataTable("#keyPartsTable")){
 		$('#keyPartsTable').DataTable().destroy();
@@ -230,7 +229,7 @@ function showEditPage(row){
 		width:1100,
 		height:550,
 		modal: true,
-		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import Bus traceTemplate </h4></div>",
+		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import Bus Trace Template </h4></div>",
 		title_html: true,
 		buttons: [ 
 			{
@@ -250,13 +249,12 @@ function showEditPage(row){
 		]
 	});
 }
-
 function save(project_id,version) {
 	var save_flag=true;
 	var trs=$("#keyPartsTable tbody").find("tr");
 	if(trs.length==0){
 		save_flag=false;
-		alert("没有可保存的数据");
+		alert(Warn['P_common_05']);
 		return false;
 	}
 	var addList=[];
@@ -266,7 +264,7 @@ function save(project_id,version) {
 		if(error!=''){
 			var item_no = $(tds).eq(0).html();
 			save_flag=false;
-			alert("Item:"+item_no+" 数据存在异常，请修改后在导入");
+			alert(item_no+Warn['P_common_06']);
 			return false;
 		}
 		var item_no = $(tds).eq(0).html();
@@ -302,13 +300,13 @@ function save(project_id,version) {
 	            	$( "#dialog-config" ).dialog( "close" );
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+Warn['P_common_03']+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }else{
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+response.message+"！</h5>",
+						text: "<h5>"+Warn['P_common_04']+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }
@@ -316,7 +314,6 @@ function save(project_id,version) {
 		});
 	}
 }
-
 function showInfoPage(row){
 	$("#order_view").html(row.order_desc);
 	var project_id=row.id;
@@ -334,8 +331,6 @@ function showInfoPage(row){
         	drawKeyPartsTable("#keyPartsTable_view",response.data);
         }
 	});
-	
-	//show dialog
 	var dialog = $( "#dialog-config-view" ).removeClass('hide').dialog({
 		width:970,
 		height:550,
@@ -343,7 +338,6 @@ function showInfoPage(row){
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Display Bus Trace Template</h4></div>",
 		title_html: true,
 		buttons: [ 
-			
 			{
 				text: "Close",
 				"class" : "btn btn-primary btn-minier",
@@ -362,14 +356,11 @@ function drawKeyPartsTable(tableId,data){
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
-		//sScrollY: $(window).height()-250,
 		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		language: {
-		},
 		columnDefs: [{
             "searchable": false,
             "orderable": false,
@@ -386,4 +377,3 @@ function drawKeyPartsTable(tableId,data){
         ]	
 	});
 }
-
