@@ -709,5 +709,10 @@ public class ProductionServiceImpl implements IProductionService {
 	public int getLineDisCount(Map<String, Object> conditionMap) {
 		return productionDao.getLineDisCount(conditionMap);
 	}
+
+	@Override
+	public int insertLineDistribution(Map<String, Object> conditionMap) {
+		return productionDao.insertLineDistribution(conditionMap);
+	}
 	
 }

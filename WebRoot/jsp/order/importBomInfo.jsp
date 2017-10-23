@@ -10,7 +10,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>Import BOM</title>
+<title>Import Bom</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <link rel="stylesheet" href="<%=basePath%>/assets/css/fixedColumns.bootstrap.min.css" />
@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
 						href="/MES/index">index</a></li>
-					<li class="active">Import BOM</li>
+					<li class="active">Import Bom</li>
 				</ul>
 				<!-- /.breadcrumb -->
 
@@ -79,21 +79,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							    <form id="uploadForm" action="#" enctype="multipart/form-data" method="post">
 									<table>
 										<tr>
-											<td width="150px"><input id="file" type="file" name="file" accept="*.xlsx"/></td>
-											<td><input id="btn_upload" style="margin-left:5px;" type="button" class="btn btn-sm btn-primary" value="Import"/></td>
+											<td width="240px"><input id="file" type="file" name="file" accept="*.xlsx"/></td>
+											<td></td>
 										</tr>
 									</table>
 						        </form>
 							</td>
-							<td><a href="../docs/bom.xlsx">Download the pilot template</a></td>
-							<td></td>
-							<td><input type="button"
-								class="btn btn-sm btn-primary btnSave" id="btnSave" value="Save"
-								style="margin-right: 2px;"></input>&nbsp;&nbsp;
+<!-- 							<td></td> -->
+							<td>
+							<input id="btn_upload" style="margin-top: 5px;margin-left:2px;" 
+							    type="button" class="btn btn-sm btn-primary" value="Import"/>&nbsp;&nbsp;
 							<input type="button"
-							    class="btn btn-sm btn-primary btnSave" id="btnBack" value="Back"
-							    style="margin-right: 2px;"></input>
+								class="btn btn-sm btn-success btnSave" id="btnSave" value="Save"
+								style="margin-top: 5px;margin-right: 2px"></input>&nbsp;&nbsp;
+							<input type="button"
+							    class="btn btn-sm btn-info" id="btnBack" value="Back"
+							    style="margin-top: 5px;margin-right: 2px;"></input>&nbsp;&nbsp;
 							</td>
+							<td colspan=2><a href="../docs/bom.xlsx">&nbsp;&nbsp;Download the pilot template</a></td>
 						</tr>
 					</table>
 				</div>
@@ -138,6 +141,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/js/tableExport.js"></script>
 	<script src="<%=basePath%>/js/jquery.form.js"></script>
 	<script src="<%=basePath%>/assets/js/ace/elements.fileinput.js"></script>
+    <script src="<%=basePath%>/js/alertMessage.js"></script>
     <script src="<%=basePath%>/js/order/importBomInfo.js"></script>
 </body>
 

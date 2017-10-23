@@ -23,10 +23,9 @@ $(document).ready(function(){
 		}
 		$("#add_project_no").removeAttr("readonly");
 		$("#add_project_no").val("");
-		$("#file").val("");
 		$("#importDiv").show();
 		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-			width:1000,
+			width:947,
 			height:550,
 			modal: true,
 			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection Record Template</h4></div>",
@@ -125,19 +124,22 @@ $(document).ready(function(){
 			                {
 			                "aTargets" :[5],
 			                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
-			                	if($(nTd).text()!=''){
-			                		//数据格式错误 整行用红色字体标示
-			                		$(nTd).parent().css('color', '#ff0000');
-				                	$(nTd).css('color', '#ff0000').css('font-weight', 'bold').css('width','200px');
-			                	}
-			                }   
+				                	if($(nTd).text()!=''){
+				                		//数据格式错误 整行用红色字体标示
+				                		$(nTd).parent().css('color', '#ff0000');
+					                	$(nTd).css('color', '#ff0000').css('font-weight', 'bold').css('width','200px');
+				                	}
+			                    }   
 			                },
 			            ],
 						data:datalist,
 						columns:columns
 					});
 				}
-			}			
+			},
+			complete:function(){
+				$(".remove").click();
+			}				
 		});
 	});
 })
@@ -283,8 +285,7 @@ function save(project_id,version) {
 	}
 }
 
-function drawTplDetailTable(tableId,data,editable){
-	editable=editable||false;
+function drawTplDetailTable(tableId,data){
 	var tb=$(tableId).DataTable({
 		paiging:false,
 		 keys: true,
@@ -294,23 +295,23 @@ function drawTplDetailTable(tableId,data,editable){
 		destroy: true,
 		paginate:false,
 		//rowsGroup:[0],
-		/*//sScrollY: $(window).height()-250,
-		scrollX: true,*/
+		sScrollY: $(window).height()-280,
+		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
 		data:data||{},
 		columns: [
-            {"title":"No.","class":"center","data":"","width":"35px","defaultContent": ""
+            {"title":"No.","class":"center","data":"","width":"45px","defaultContent": ""
             	,"render":function(data,type,row,meta){
 				return (meta.row + meta.settings._iDisplayStart) + 1; // 序号值
 	        }
             },
-            {"title":"Station","class":"center","data":"station","defaultContent": ""},
-            {"title":"Process Name","class":"center","data": "process_name","defaultContent": ""},
-            {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},		
-            {"title":"Specification And Standard","class":"center","data":"specification_and_standard","defaultContent": ""}	            	          
+            {"title":"Station","class":"center","width":"120px","data":"station","defaultContent": ""},
+            {"title":"Process Name","class":"center","width":"120px","data": "process_name","defaultContent": ""},
+            {"title":"Inspection Item","class":"center","width":"155px","data":"inspection_item","defaultContent": ""},		
+            {"title":"Specification And Standard","class":"center","width":"465px","data":"specification_and_standard","defaultContent": ""}	            	          
        ]	
 	});
 	
@@ -326,7 +327,7 @@ function showEditPage(row){
 	$("#add_project_no").attr("readonly","readonly");
 	$("#add_project_no").val(row.project_no);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-		width:1000,
+		width:947,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Inspection Record Template</h4></div>",
@@ -381,10 +382,10 @@ function showInfoPage(row){
 		$('#tplDetailTable').empty();
 	}
 	var detail_list=getTplDetailByHeader(row.id,row.version)
-	drawTplDetailTable("#tplDetailTable",detail_list,false);
+	drawTplDetailTable("#tplDetailTable",detail_list);
 	$("#importDiv").hide();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-		width:1000,
+		width:947,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Display Inspection Record Template</h4></div>",

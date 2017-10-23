@@ -111,8 +111,7 @@ public interface IProductionDao {
 	public List<Map<String, Object>> getLastStationInfo(Map<String,Object> conditionMap);
 	public List<Map<String, Object>> getStationBusNumberProject(Map<String,Object> conditionMap);
 	public int getLineDisCount(Map<String,Object> conditionMap);
-
-
+	public int insertLineDistribution(Map<String,Object> conditionMap);
 
 
 }

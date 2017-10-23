@@ -94,9 +94,12 @@ $(document).ready(function(){
 						data:datalist,
 						columns:columns
 					});
-				}else{}
+				}
 				$(".divLoading").hide();
-			}			
+			},
+			complete:function(){
+				$(".remove").click();
+			}	
 		});
 		$(".save").show();
 	});

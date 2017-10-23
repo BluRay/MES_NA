@@ -100,7 +100,7 @@ $(document).ready(function(){
 						searching: false,
 						autoWidth:false,
 						paginate:false,
-						sScrollY: $(window).height()-380,
+						sScrollY: $(window).height()-420,
 //						scrollX: true,
 						scrollCollapse: true,
 						lengthChange:false,
@@ -113,7 +113,10 @@ $(document).ready(function(){
 					});
 				}
 				//$(".divLoading").hide();
-			}			
+			},
+			complete:function(){
+				$(".remove").click();
+			}				
 		});
 	});
 })
@@ -262,29 +265,25 @@ function save(project_id,header_id) {
 	}
 }
 
-function drawTplDetailTable(tableId,data,editable){
-	editable=editable||false;
+function drawTplDetailTable(tableId,data){
 	var tb=$(tableId).DataTable({
 		paiging:false,
-		keys: true,
 		ordering:false,
 		searching: false,
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
-		//sScrollY: $(window).height()-340,
-		//scrollX: true,
+		sScrollY: 225,
+		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		language: {
-		},
 		data:data||{},
 		columns: [
-	        {"title":"Item No.","class":"center","data":"item_no","width":"30px","defaultContent": ""},
-	        {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},		
-	        {"title":"Specification And Standard","class":"center","data":"specification_standard","defaultContent": ""}	            	          
+	        {"title":"Item No.","class":"center","data":"item_no","width":"65px","defaultContent": ""},
+	        {"title":"Inspection Item","class":"center","data":"inspection_item","width":"155px","defaultContent": ""},		
+	        {"title":"Specification And Standard","class":"center","data":"specification_standard","width":"550px","defaultContent": ""}	            	          
 	    ]	
 	});
 }
@@ -360,7 +359,7 @@ function showInfoPage(row){
 	$("#testing_type_value").find("option[keyvalue='"+row.test_type_value+"']").attr("selected",true);
 	$("#remarks").val(row.remarks);
 	var detail_list=getTplDetailByHeader(row.header_id);
-	drawTplDetailTable("#tplDetailTable",detail_list,false);
+	drawTplDetailTable("#tplDetailTable",detail_list);
 	$("#importDiv").hide();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,

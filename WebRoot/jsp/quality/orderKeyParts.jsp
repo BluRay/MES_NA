@@ -31,7 +31,7 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">Index</a></li>
+							href="/MES/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
 						<li><a href="#">Bus Trace Template</a></li>
 					</ul>
@@ -84,7 +84,7 @@
 										<input id="file" style="font-size: 12px;width:60px" class="btn btn-info btn-small" name="file" type="file"> 				
 									</div>
 									<div class="col-sm-4">
-										<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
+										<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px;width:60px" class="btn btn-primary" value="Import" type="button"> 
 										<a href="../docs/busTraceTemplate.xlsx">Download the pilot template</a>
 									</div>							
 								</form>
@@ -106,7 +106,7 @@
 						</div>
 						<div class="form-group">					
 							<div class="col-sm-12">			
-								<table class="table table-striped table-bordered table-hover" style="width: 850px;font-size:12px;" id="keyPartsTable_view">
+								<table class="table table-striped table-bordered table-hover" style="width: 852px;font-size:12px;" id="keyPartsTable_view">
 								</table>
 							</div>
 						</div>

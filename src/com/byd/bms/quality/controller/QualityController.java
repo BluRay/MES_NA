@@ -353,7 +353,7 @@ public class QualityController extends BaseController {
 			infomap.put("BYD_NO", data[3] == null ? null : data[3].toString().trim());
 			infomap.put("vendor", data[4] == null ? null : data[4].toString().trim());
 			if(data[5] != null && !data[5].toString().trim().equals("")){
-				int index=workshopStr.indexOf(data[5].toString().trim());
+				int index=workshopStr.indexOf("_"+data[5].toString().trim()+";");
 				if(index<0){
 					errorMessage="P_common_10;";
 				}
@@ -362,7 +362,7 @@ public class QualityController extends BaseController {
 			}
 			infomap.put("workshop", data[5] == null ? null : data[5].toString().trim());
 			if(data[6] != null && !data[6].toString().trim().equals("")){
-				int index=stationStr.indexOf(data[6].toString().trim());
+				int index=stationStr.indexOf("_"+data[6].toString().trim()+";");
 				if(index<0){
 					errorMessage+="P_common_12;";
 				}
@@ -496,7 +496,7 @@ public class QualityController extends BaseController {
             String errorMessage="";
 			infomap.put("item_no", data[0] == null ? null : data[0].toString().trim());
 			if(data[1] != null && !data[1].toString().trim().equals("")){
-				int index=stationStr.indexOf(data[1].toString().trim());
+				int index=stationStr.indexOf("_"+data[1].toString().trim()+";");
 				if(index<0){
 					errorMessage= "P_common_12;";
 				}
@@ -505,7 +505,7 @@ public class QualityController extends BaseController {
 			}
 			infomap.put("station", data[1] == null ? null : data[1].toString().trim());
 			if(data[2] != null && !data[2].toString().trim().equals("")){
-				int index=processStr.indexOf(data[1].toString().trim());
+				int index=processStr.indexOf("_"+data[1].toString().trim()+";");
 				if(index<0){
 					errorMessage+= "P_common_14;";
 				}
@@ -518,10 +518,10 @@ public class QualityController extends BaseController {
 			infomap.put("error", errorMessage);
 			addList.add(infomap);
 		}
-		initModel(true,"Success！",addList);
+		initModel(true,"",addList);
 		
 		}catch(Exception e){
-			initModel(false,"Failure！"+e.getMessage(),null);
+			initModel(false,""+e.getMessage(),null);
 		}
 		return mv.getModelMap();
 	}

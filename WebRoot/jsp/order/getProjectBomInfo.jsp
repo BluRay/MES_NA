@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
-						href="/BMS/index">index</a></li>
+						href="/MES/index">index</a></li>
 					<li class="active">BOM</li>
 				</ul>
 				<!-- /.breadcrumb -->
@@ -82,7 +82,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 				<div class="row"  >
 					<div class="col-xs-12"  style="width:100%">
-						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;" >
+						<table id="tableResult" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1600px;overflow-x:auto;padding-right: 20px;table-layout:fixed">
 						</table>
 					</div>
 				</div>

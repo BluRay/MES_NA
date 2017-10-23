@@ -33,7 +33,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
-						href="/BMS/index">index</a></li>
+						href="/MES/index">index</a></li>
 					<li class="active">Project Bom</li>
 					<li class="active">Bom Display</li>
 				</ul>
@@ -72,7 +72,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								class="btn btn-sm btn-primary btnQuery" id="btnQuery" value="Search"
 								style="margin-left: 2px;"></input>
 							    <input type="button"
-							    class="btn btn-sm btn-primary btnSave" id="btnBack" value="Back"
+							    class="btn btn-sm btn-info" id="btnBack" value="Back"
 							    style="margin-right: 2px;"></input>
 							</td>
 						</tr>
@@ -84,12 +84,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <!-- 							</td> -->
 <!-- 							<td colspan=2> -->
 								<label>
-									<input name="type" type="radio" value="1" />&nbsp;compare with the previous version
+									&nbsp;<input name="type" type="radio" value="1" />&nbsp;compare with the previous version
 								</label> 
 <!-- 							</td> -->
 <!-- 							<td colspan=2> -->
 								<label>
-									<input name="type" type="radio" value="2" />&nbsp;show the difference 
+									&nbsp;<input name="type" type="radio" value="2" />&nbsp;show the difference 
 								</label> 
 							</td>
 							
@@ -119,6 +119,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/js/jsrender.min.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/tableExport.js"></script>
+	<script src="<%=basePath%>/js/alertMessage.js"></script>
     <script src="<%=basePath%>/js/order/showBomInfo.js"></script>
 </body>
 

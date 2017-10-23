@@ -79,6 +79,7 @@
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="160px">Specification</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Dispatch</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">LineQuantity</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
@@ -130,7 +131,7 @@
 		</thead>
 		<tbody></tbody>
 		</table>
-		<h2>printarea</h2>
+		<h2 id="dis_no"></h2>
 	</div>
 	</body>
 	<script src="../js/datePicker/WdatePicker.js"></script>

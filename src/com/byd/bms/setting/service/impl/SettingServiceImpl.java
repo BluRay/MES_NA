@@ -268,10 +268,10 @@ public class SettingServiceImpl implements ISettingService {
 		List<BmsBaseWorkshop> datalist=settingDao.getWorkshopList(queryMap);
 		for(BmsBaseWorkshop workshop : datalist){
 			if(type.equals("Code")){
-				result+=workshop.getWorkshopCode()+",";
+				result+="_"+workshop.getWorkshopCode()+";";
 			}
 			if(type.equals("Name")){
-				result+=workshop.getWorkshopName()+",";
+				result+="_"+workshop.getWorkshopName()+";";
 			}
 		}
 		
@@ -348,10 +348,10 @@ public class SettingServiceImpl implements ISettingService {
 		List<Map<String,Object>> datalist=settingDao.getStationList(queryMap);
 		for(Map<String,Object> station : datalist){
 			if(type.equals("Code")){
-				result+=station.get("station_code")+",";
+				result+="_"+station.get("station_code")+";";
 			}
 			if(type.equals("Name")){
-				result+=station.get("station_name")+",";
+				result+="_"+station.get("station_name")+";";
 			}
 			
 		}
@@ -397,10 +397,10 @@ public class SettingServiceImpl implements ISettingService {
 		List<Map<String,Object>> datalist=settingDao.getProcessList(queryMap);
 		for(Map<String,Object> process : datalist){
 			if(type.equals("Code")){
-				result+=process.get("station_code")+",";
+				result+="_"+process.get("process_code")+";";
 			}
 			if(type.equals("Name")){
-				result+=process.get("station_name")+",";
+				result+="_"+process.get("process_name")+";";
 			}
 		}
 		

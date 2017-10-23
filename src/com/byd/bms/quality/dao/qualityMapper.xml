@@ -107,10 +107,10 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_PROJECT_TRACE_TEMPLATE 
-		(project_id,version,SAP_material,parts_name,BYD_NO,vendor,workshop,station,editor_id,edit_date)
+		(project_id,version,item_no,SAP_material,parts_name,BYD_NO,vendor,workshop,station,editor_id,edit_date)
 		values
 		<foreach collection="list" item="detail" index="index" separator=",">
-			(#{detail.project_id},#{detail.version},#{detail.SAP_material},#{detail.parts_name},#{detail.BYD_NO},
+			(#{detail.project_id},#{detail.version},#{detail.item_no},#{detail.SAP_material},#{detail.parts_name},#{detail.BYD_NO},
 			#{detail.vendor},#{detail.workshop},#{detail.station},#{detail.editor_id},#{detail.edit_date})
 		</foreach>		
 	</insert>

@@ -81,7 +81,10 @@ $(document).ready(function(){
 						columns:columns
 					});
 				}
-			}			
+			},
+			complete:function(){
+				$(".remove").click();
+			}				
 		});
 	});
 	$("#btnAdd").click(function(){
@@ -226,7 +229,7 @@ function showEditPage(row){
 	$("#add_project_no").attr("readonly","readonly");
 	$("#importDiv").show();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-		width:1100,
+		width:970,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Import Bus Trace Template </h4></div>",
@@ -332,7 +335,7 @@ function showInfoPage(row){
         }
 	});
 	var dialog = $( "#dialog-config-view" ).removeClass('hide').dialog({
-		width:970,
+		width:898,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Display Bus Trace Template</h4></div>",
@@ -356,6 +359,7 @@ function drawKeyPartsTable(tableId,data){
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
+		sScrollY: 325,
 		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,

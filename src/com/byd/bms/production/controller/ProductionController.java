@@ -644,6 +644,15 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
+	/**
+	 * Workshop View
+	 * @return
+	 */
+	@RequestMapping("/workshopView")
+	public ModelAndView workshopView(){
+		mv.setViewName("production/workshopView");
+		return mv;
+	}
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")
@@ -911,7 +920,7 @@ public class ProductionController extends BaseController {
 		int dis_count = productionService.getLineDisCount(condMap)+1;
 		String dis_no = dis_date +  String.format("%4d", dis_count).replace(" ", "0");
 		logger.info("-->dis_no = " + dis_no);
-		
+		int result = 0;
 		String conditions=request.getParameter("conditions");
 		JSONArray jsonArray=JSONArray.fromObject(conditions);
 		for(int i=0;i<jsonArray.size();i++){
@@ -919,11 +928,25 @@ public class ProductionController extends BaseController {
 			logger.info(object);
 			Map<String,Object> condMap2=new HashMap<String,Object>();
 			condMap2.put("dis_no", dis_no);
+			condMap2.put("create_user", userid);
+			condMap2.put("create_time", curTime);
+			condMap2.put("station_id", object.get("station_id"));
+			condMap2.put("station", object.get("station"));
+			condMap2.put("bus_number", object.get("bus_number"));
+			condMap2.put("sap_material", object.get("SAP_material"));
+			condMap2.put("byd_no", object.get("BYD_NO"));
+			condMap2.put("part_name", object.get("part_name"));
+			condMap2.put("specification", object.get("specification"));
+			condMap2.put("required_quantity", object.get("quantity"));
+			condMap2.put("dis_quantity", object.get("dis_num"));
+			condMap2.put("unit", object.get("unit"));
+			condMap2.put("vendor", object.get("vendor"));
 			//写入送货流水表[BMS_NA_LINE_DISTRIBUTION]
+			result += productionService.insertLineDistribution(condMap2);
+			
 		}
-		
-		
-		
+		initModel(true,dis_no,result);
+		model = mv.getModelMap();
 		return model;
 	}
 	

@@ -282,7 +282,7 @@ public class OrderServiceImpl implements IOrderService {
 		Map<String, Object> result=new HashMap<String,Object>();
 		List<Map<String, Object>> versionList=orderDao.getMaxVersion(condMap);
 		if(versionList.size()!=2){
-			result.put("error", "没有版本可供比较");
+			result.put("error", "P_showBomInfo_01");
 			return result;
 		}else{
 			String currentVersion=(String)versionList.get(0).get("version");

@@ -63,10 +63,15 @@ $(document).ready(function () {
 	    		$("<td style=\"text-align:center;\" />").html($("#des_" + tr_count).val()).appendTo(tr);
 	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].vendor).appendTo(tr);
 	    		query_data[tr_count].dis_num=$("#des_" + tr_count).val();
+	    		query_data[tr_count].station_id=$("#search_station").val();
 	    		$("#tableDataShow tbody").append(tr);
 			}
 			tr_count++;
 		});
+		if(req_arr.length == 0){
+			alert(Warn['P_materialRequirement_02']);
+			return false;
+		}
 		
 		if(vali_data == -1){
 			alert(Warn['P_materialRequirement_01']);
@@ -99,7 +104,7 @@ $(document).ready(function () {
 
 	function btnPrintConfirm(){
 		$("#dialog-print").dialog( "close" );
-		////window.print();
+		
 		var req_data = [];
 		for(var i=0;i<req_arr.length;i++){
 			req_data.push(query_data[req_arr[i]]);
@@ -116,7 +121,9 @@ $(document).ready(function () {
 				alert(response.message)
 			},
 			success : function(response) {
-				
+				$("#dis_no").html("Distribution No. " + response.message);
+				window.print();
+				ajaxQuery();
 			}
 		});
 		
@@ -286,9 +293,10 @@ function ajaxQuery(){
 		    	$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.specification).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.quantity).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.dis_qty).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html("0").appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' type='text'/>").appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' onkeyup=\"value=value.replace(/[^\\d]/g,'')\" type='text'/>").appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    	
 		    	
 		    	$("#tableData tbody").append(tr);
@@ -297,20 +305,13 @@ function ajaxQuery(){
 	});
 }
 
-function btnQcConfirm(id){
-	$.ajax({
-		type : "get",
-		dataType : "json",
-		async : false,
-		url : "qcInitialsPunch",
-		data : {
-			"id" : id
-		},
-		success : function(response) {
-			fadeMessageAlert(null,"SUCCESS","gritter-info");
-        	$("#dialog-qc").dialog( "close" );
-    		ajaxQuery();
-		}
-	});
+function selectAll(){
+	//$("#tableData tbody :checkbox").prop("checked", true);
+	console.log($("#selectAll").prop("checked"));
+	if ($("#selectAll").prop("checked") == true) {
+		check_All_unAll("#tableData", true);
+	} else {
+		check_All_unAll("#tableData", false);
+	}
 }
 

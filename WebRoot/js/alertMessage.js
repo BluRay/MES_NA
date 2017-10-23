@@ -24,6 +24,7 @@ var Warn={
     'P_measureAbnormity_02'	: 'measures 不能为空！',
     
     'P_materialRequirement_01'	: '发货数量不能为空！',
+    'P_materialRequirement_02'	: '请勾选需要发货的物料信息！',
     	
     /********End  Yangke***********************/
     	
@@ -45,7 +46,18 @@ var Warn={
     'P_common_15'   : '工序不能为空！',
     'P_importBomInfo_01':'Document No.不能为空',
     'P_importBomInfo_02':'Version不能为空',
-    'P_importBomInfo_03':'*DCN不能为空',
+    'P_importBomInfo_03':'DCN不能为空',
+    'P_importBomInfo_04':'项目编号不能为空',
+    'P_importBomInfo_05':'SAP物料不能为空',
+    'P_importBomInfo_06':'物料名称不能为空',
+    'P_importBomInfo_07':'物料描述不能为空',
+    'P_importBomInfo_08':'单位不能为空',
+    'P_importBomInfo_09':'数量不能为空',
+    'P_importBomInfo_10':'数量必须是数字',
+    'P_importBomInfo_11':'供应商名称不能为空',
+    'P_importBomInfo_12':'工序不能为空',
+    'P_importBomInfo_13':'工序未维护',
+    'P_showBomInfo_01':'没有前一版本可供比较',
     'P_vinInfo_01':'VIN不能为空',
     'P_printBusNumber_01':'请先导入VIN',
     'P_printBusNumber_02':'请先选择一条记录',

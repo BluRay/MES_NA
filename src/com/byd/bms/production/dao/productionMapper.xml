@@ -555,7 +555,11 @@
 		ORDER BY B.bus_number LIMIT ${planQty}
 	</select>
 	<select id="getBomListByProject" parameterType="Map" resultType="Map">
-	SELECT T.item_no,#{station} AS 'station',#{bus_number} AS 'bus_number',T.SAP_material,T.BYD_NO,T.part_name,T.specification,T.quantity,T.unit,T.vendor FROM BMS_NA_PROJECT_BOM_ITEM T 
+	SELECT T.item_no,#{station} AS 'station',#{bus_number} AS 'bus_number',T.SAP_material,T.BYD_NO,T.part_name,T.specification,T.quantity,T.unit,T.vendor, 
+	(SELECT IFNULL(SUM(D.dis_quantity),0) FROM BMS_NA_LINE_DISTRIBUTION D WHERE 
+	D.bus_number = #{bus_number} AND D.SAP_material = T.SAP_material) 
+	AS dis_qty
+	FROM BMS_NA_PROJECT_BOM_ITEM T 
 	WHERE T.bom_head_id = (SELECT H.id FROM BMS_NA_PROJECT_BOM_HEAD H WHERE H.project_id = #{project_id} ORDER BY H.version DESC LIMIT 1)
 	</select>
 	<select id="getLastStationInfo" parameterType="Map" resultType="Map">
@@ -572,6 +576,13 @@
 	<select id="getLineDisCount" parameterType="Map" resultType="int">
 		SELECT COUNT(DISTINCT(dis_no)) AS dis_count FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no LIKE CONCAT('%',#{dis_date},'%')
 	</select>
+	<insert id="insertLineDistribution" useGeneratedKeys="true" keyProperty="id" parameterType="Map">
+	INSERT INTO BMS_NA_LINE_DISTRIBUTION
+	(dis_no, station_id, station, bus_number, sap_material, byd_no, part_name, specification,
+	required_quantity, dis_quantity, unit, vendor, create_user, create_time)
+	VALUES(#{dis_no},#{station_id},#{station},#{bus_number},#{sap_material},#{byd_no},#{part_name},#{specification},
+	#{required_quantity},#{dis_quantity},#{unit},#{vendor},#{create_user},#{create_time})
+	</insert>
 	
 	
 </mapper>

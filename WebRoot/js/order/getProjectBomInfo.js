@@ -25,10 +25,10 @@ $(document).ready(function(){
 function ajaxQuery(){
 	dt=$("#tableResult").DataTable({
 		serverSide: true,
-//		fixedColumns:   {
-//            leftColumns: 1,
-//            rightColumns:2
-//        },
+		fixedColumns:   {
+            leftColumns: 2,
+            rightColumns:2
+        },
 		dom: 'Bfrtip',
 		lengthMenu: [
 		             [ 20, 30, 50, -1 ],
@@ -85,9 +85,9 @@ function ajaxQuery(){
             {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
             //{"title":"Year","class":"center","data":"product_year","defaultContent": ""},
             {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
-            {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
+            {"title":"Quantity","class":"center","data":"quantity","width":"75px","defaultContent": ""},
             {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
-            {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
+            {"title":"Status","class":"center","data":"project_status","width":"85px","render":function(data,type,row){
             	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
             },
             {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
@@ -95,8 +95,8 @@ function ajaxQuery(){
             {"title":"Version","class":"center","data": "version","defaultContent": ""},
             {"title":"DCN","class":"center","data": "DCN","defaultContent": ""},
             {"title":"Editor","class":"center","data": "username","defaultContent": ""},
-            {"title":"Edit Date","class":"center","data": "bom_edit_date","defaultContent": ""},
-            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            {"title":"Edit Date","class":"center","data": "bom_edit_date","width":"160px","defaultContent": ""},
+            {"title":"","class":"center","data":null,"width":"60px","render":function(data,type,row){
             	var dcn=row.DCN!=undefined ? row.DCN : "";
             	var document_no=row.document_no!=undefined ? row.document_no : "";
             	var version=row.document_no!=undefined ? row.version : "";
@@ -107,7 +107,7 @@ function ajaxQuery(){
             	return str;
                 },
             },
-            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            {"title":"","class":"center","data":null,"width":"60px","render":function(data,type,row){
             	var dcn=row.DCN!=undefined ? row.DCN : "";
             	var document_no=row.document_no!=undefined ? row.document_no : "";
             	var version=row.document_no!=undefined ? row.version : "";

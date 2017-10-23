@@ -5,6 +5,8 @@ $(document).ready(function(){
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
 		getOrderNoSelect("#search_project_no","#orderId");
+		$("input[name='type']:eq(0)").prop("checked",'checked'); 
+		ajaxQuery();
 	}
 	$("#btnQuery").on("click",function(){
 		var type=$('input:radio:checked').val();
@@ -17,7 +19,6 @@ $(document).ready(function(){
     	}
 	}); 
 	
-	ajaxQuery();
 	$(":radio").click(function(){
     	var type=$(this).val();
     	if(type=='0'){
@@ -43,11 +44,11 @@ function ajaxQuery(){
 		$('#tableResult').DataTable().destroy();
 		$('#tableResult').empty();
 	}
-	if($("#search_project_no").val()==''){
-		alert("Project No. cannot be null");
-		$("#search_project_no").focus();
-		return false;
-	}
+//	if($("#search_project_no").val()==''){
+//		alert("Project No. cannot be null");
+//		$("#search_project_no").focus();
+//		return false;
+//	}
 	$(".divLoading").addClass("fade in").show();
     $.ajax({
         type: "post",
@@ -99,8 +100,10 @@ function ajaxQuery(){
  						data:datalist,
  						columns:columns
  					});
- 				var head_width=$(".dataTables_scrollHead").width();
-                $(".dataTables_scrollHead").css("width",head_width-15);
+ 					if(datalist.length>0){
+ 						var head_width=$(".dataTables_scrollHead").width();
+ 			            $(".dataTables_scrollHead").css("width",head_width-15);
+ 					}
  				$(".divLoading").hide();
         }
 
@@ -112,11 +115,11 @@ function ajaxCompareQuery(type){
 		$('#tableResult').DataTable().destroy();
 		$('#tableResult').empty();
 	}
-	if($("#search_project_no").val()==''){
-		alert("Project No. cannot be null");
-		$("#search_project_no").focus();
-		return false;
-	}
+//	if($("#search_project_no").val()==''){
+//		alert("Project No. cannot be null");
+//		$("#search_project_no").focus();
+//		return false;
+//	}
 	$(".divLoading").addClass("fade in").show();
     $.ajax({
         type: "post",
@@ -131,84 +134,80 @@ function ajaxCompareQuery(type){
         },  //传入组装的参数
         dataType: "json",
         success: function (result) {
+        	var datalist=result.data;
         	$(".divLoading").hide();
         	if(result.error!='' && result.error!=undefined){
         		$.gritter.add({
 					title: 'Message：',
-					text: "<h5>"+result.error+"！</h5>",
+					text: "<h5>"+Warn['P_showBomInfo_01']+"</h5>",
 					class_name: 'gritter-info'
 				});
+        		datalist={};
         	}
-            var datalist=result.data;
+            
             var columns=[
-                        {"title":"","class":"center","width":"45px","data":"version","defaultContent": ""},
- 			            {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
- 			            {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
- 			            {"title":"BYD_P/N","class":"center","data":"BYD_NO","defaultContent": ""},
- 			            {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
- 			            {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
- 			            {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},
- 			            {"title":"Quantity","class":"center","width":"60px","data": "quantity","defaultContent": ""},
- 			            {"title":"English Description","class":"center","data": "en_description","defaultContent": ""},
- 			            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
- 			            {"title":"Station Code","class":"center","width":"80px","data": "station_code","defaultContent": ""},
- 			            {"title":"Note","class":"center","data": "note","defaultContent": ""},
- 			        ];
+                    {"title":"","class":"center","width":"45px","data":"version","defaultContent": ""},
+		            {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
+		            {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
+		            {"title":"BYD_P/N","class":"center","data":"BYD_NO","defaultContent": ""},
+		            {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
+		            {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
+		            {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},
+		            {"title":"Quantity","class":"center","width":"60px","data": "quantity","defaultContent": ""},
+		            {"title":"English Description","class":"center","data": "en_description","defaultContent": ""},
+		            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
+		            {"title":"Station Code","class":"center","width":"80px","data": "station_code","defaultContent": ""},
+		            {"title":"Note","class":"center","data": "note","defaultContent": ""},
+		        ];
 
- 					$("#tableResult").DataTable({
- 						paiging:false,
+				$("#tableResult").DataTable({
+					paiging:false,
 // 						fixedColumns:   { //固定列，行有错位现象
 // 				            leftColumns: 1,
 // 				            rightColumns:0
 // 				        },
- 						ordering:false,
- 						processing:true,
- 						searching: false,
- 						autoWidth:false,
- 						paginate:false,
- 						sScrollY: $(window).height()-250,
- 						scrollX: true,
- 						scrollCollapse: true,
- 						lengthChange:false,
- 						orderMulti:false,
- 						info:false,
- 						language: {
- 							processing: "",
- 							emptyTable:"",					     
- 							infoEmpty:"",
- 							zeroRecords:""
- 						},
- 						aoColumnDefs : [
- 			                {
- 			                "aTargets" :[0],
- 			                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
- 			                	if($(nTd).text()=='prev'){
- 			                		//数据格式错误 整行用红色字体标示
- 			                		$(nTd).text("-");
- 			                		$(nTd).parent().css('color', 'blue');
- 				                	$(nTd).css('font-weight', 'bold');
- 			                	}else if($(nTd).text()=='current'){
- 			                		//数据格式错误 整行用红色字体标示
- 			                		$(nTd).text("+");
- 			                		$(nTd).parent().css('color', 'red');
- 				                	$(nTd).css('font-weight', 'bold');
- 			                	}else{
- 			                		$(nTd).text("");
- 			                	}
- 			                }   
- 			                },
- 			            ],
- 						data:datalist,
- 						columns:columns
- 					});
- 				var head_width=$(".dataTables_scrollHead").width();
-                 $(".dataTables_scrollHead").css("width",head_width-15);
- 				$(".divLoading").hide();
+					ordering:false,
+					processing:true,
+					searching: false,
+					autoWidth:false,
+					paginate:false,
+					sScrollY: $(window).height()-250,
+					scrollX: true,
+					scrollCollapse: true,
+					lengthChange:false,
+					orderMulti:false,
+					info:false,
+					language: {
+					},
+					aoColumnDefs : [
+		                {
+		                "aTargets" :[0],
+		                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) { 
+		                	if($(nTd).text()=='prev'){
+		                		//数据格式错误 整行用红色字体标示
+		                		$(nTd).text("-");
+		                		$(nTd).parent().css('color', 'blue');
+			                	$(nTd).css('font-weight', 'bold');
+		                	}else if($(nTd).text()=='current'){
+		                		//数据格式错误 整行用红色字体标示
+		                		$(nTd).text("+");
+		                		$(nTd).parent().css('color', 'red');
+			                	$(nTd).css('font-weight', 'bold');
+		                	}else{
+		                		$(nTd).text("");
+		                	}
+		                }   
+		                },
+		            ],
+					data:datalist,
+					columns:columns
+				});
+				if(datalist.length>0){
+					var head_width=$(".dataTables_scrollHead").width();
+		            $(".dataTables_scrollHead").css("width",head_width-15);
+				}
+			
+			$(".divLoading").hide();
         }
-
     });
 }
-
-
-
-

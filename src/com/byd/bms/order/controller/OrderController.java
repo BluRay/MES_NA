@@ -306,7 +306,7 @@ public class OrderController extends BaseController{
 		try{
 		ExcelModel excelModel = new ExcelModel();
 		excelModel.setReadSheets(1);
-		excelModel.setStart(5);
+		excelModel.setStart(1);
 		Map<String, Integer> dataType = new HashMap<String, Integer>();
 		dataType.put("0", ExcelModel.CELL_TYPE_CANNULL);
 		dataType.put("1", ExcelModel.CELL_TYPE_CANNULL);
@@ -333,66 +333,67 @@ public class OrderController extends BaseController{
 		excelTool.readExcel(is, excelModel);
 		Map<String,Object> queryMap=new HashMap<String,Object>();
 		queryMap.put("length", -1);
-		String stationStr=settingService.checkStation(queryMap,"Code");
+		String processStr=settingService.checkProcess(queryMap,"Code");
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
 		for (Object[] data : excelModel.getData()) {
-			int line=6; // 模板从第6行开始是bom数据
+			int line=2; // 模板从第6行开始是bom数据
 			String errorMessage="";
 			Map<String, String> infomap = new HashMap<String, String>();
             if(data[0] != null && !data[0].toString().equals("")){
             	infomap.put("item_no",data[0].toString().trim());
             }else{
-            	errorMessage="Line "+line+": Item cannot be null";
+            	errorMessage="P_importBomInfo_04";
             }
             if(data[1] != null && !data[1].toString().equals("")){
             	infomap.put("SAP_material",data[1].toString().trim());
             }else{
-            	errorMessage+="SAP Material cannot be null;";
+            	errorMessage+="P_importBomInfo_05;";
             }
 			infomap.put("BYD_P/N", data[2] == null ? null : data[2].toString().trim());
 			if(data[3] != null && !data[3].toString().equals("")){
 				infomap.put("part_name",data[3].toString().trim());
             }else{
-            	errorMessage+="Part Name cannot be null;";
+            	errorMessage+="P_importBomInfo_06;";
             }
 			infomap.put("specification", data[4] == null ? null : data[4].toString().trim());
 			if(data[5] != null && !data[5].toString().equals("")){
 				infomap.put("unit",data[5].toString().trim());
             }else{
-            	errorMessage+="Unit cannot be null;;";
+            	errorMessage+="P_importBomInfo_08;";
             }
 			if(data[6] != null && !data[6].toString().equals("")){
 				infomap.put("quantity",data[6].toString().trim());
 				boolean isNumber=isNumber(data[6].toString().trim());
 				if(!isNumber){
-					errorMessage+="Quantity must be Number";
+					errorMessage+="P_importBomInfo_10;";
 				}
             }else{
-            	errorMessage+="Quantity cannot be null;";
+            	errorMessage+="P_importBomInfo_09;";
             }
 			infomap.put("en_description", data[7] == null ? null : data[7].toString().trim());
 			if(data[8] != null && !data[8].toString().equals("")){
 				infomap.put("vendor",data[8].toString().trim());
             }else{
-            	errorMessage+="Vendor cannot be null;";
+            	errorMessage+="P_importBomInfo_11;";
             }
 			if(data[9] != null && !data[9].toString().equals("")){
-				int index=stationStr.indexOf(data[9].toString().trim());
+				int index=processStr.indexOf("_"+data[9].toString().trim()+";");
 				if(index<0){
-					infomap.put("error", "Station Code annot be found");
+					errorMessage+= "P_importBomInfo_13;";
+				}else{
+					infomap.put("station_code",data[9].toString().trim());
 				}
-				infomap.put("station_code",data[9].toString().trim());
             }else{
-            	errorMessage+="Station Code cannot be Null;";
+            	errorMessage+="P_importBomInfo_12;";
             }
 			infomap.put("note", data[10] == null ? null : data[10].toString().trim());
 			infomap.put("error", errorMessage);
 			addList.add(infomap);
 			line++;
 		}
-		initModel(true,"导入成功！",addList);
+		initModel(true,"",addList);
 		}catch(Exception e){
-			initModel(false,"导入失败！",null);
+			initModel(false,"",null);
 		}
 		return mv.getModelMap();
 	}

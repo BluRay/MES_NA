@@ -5,17 +5,15 @@ var dt;
 $(document).ready(function(){
 	getBusNumberSelect('#nav-search-input');
 	$('#file').ace_file_input({
-		no_file:'...',
-		btn_choose:'Browse',
-		btn_change:'Browse',
-		width:"150px",
+		no_file:'Please Choose xls File...',
+		btn_choose:'Choose File',
+		btn_change:'Change File',
 		droppable:false,
 		onchange:null,
 		thumbnail:false, //| true | large
-		//allowExt: ['pdf','PDF'],
+		allowExt: ['xlsx','xls'],
 	}).on('file.error.ace', function(event, info) {
-		//alert("请上传正确的文件!");
-		return false;
+		alert("Please Choose xls File!");
     });
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
@@ -51,7 +49,18 @@ $(document).ready(function(){
 			            {"title":"Vendor","class":"center","data": "vendor","defaultContent": ""},
 			            {"title":"Station Code","class":"center","width":"100px","data": "station_code","defaultContent": ""},
 			            {"title":"Note","class":"center","data": "note","defaultContent": ""},
-			            {"title":"Message","class":"center","data": "error","defaultContent": ""}
+			            {"title":"","class":"center","data": "error","defaultContent": "","render":function(data,type,row){
+			            	var desc="";
+			            	if(data!=''){
+			            		var messageArr=data.split(";");
+			            		for(var i=0;i<messageArr.length;i++){
+			            			if(messageArr[i]!=''){
+			            			    desc+=Warn[messageArr[i]]+";";
+			            			}
+			            		}
+			            	}
+			            	return desc;
+			            }}
 			        ];
 					$("#tableResult").DataTable({
 						paiging:false,

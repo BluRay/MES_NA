@@ -64,4 +64,5 @@ public interface IProductionService {
 	public List<Map<String,Object>> getMaterialRequirement(Map<String, Object> condMap);
 	public int printMaterialRequirement(Map<String, Object> conditionMap);
 	public int getLineDisCount(Map<String,Object> conditionMap);
+	public int insertLineDistribution(Map<String,Object> conditionMap);
 }
