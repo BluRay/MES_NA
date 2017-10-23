@@ -139,20 +139,20 @@
 			select * from 
 			(SELECT #{list[0].factory_id} AS 'FACTORY',#{list[0].workshop_name} AS 'WORKSHOP') t 
 			JOIN
-			(SELECT COUNT(B.id) AS 'SUM' FROM BMS_PLAN_BUS B WHERE  
+			(SELECT COUNT(B.id) AS 'SUM' FROM BMS_NA_PROJECT_BUS B WHERE  
 			date_add(B.${list[0].workshop}, interval +410 MINUTE) >= CONCAT(#{list[0].startDate},' 00:00:00') AND
 			date_add(B.${list[0].workshop}, interval +410 MINUTE) &lt;= CONCAT(#{list[0].endDate},' 23:59:59') 
-			AND B.factory_id=#{list[0].factory_id}) ttt
+			AND B.production_plant_id=#{list[0].production_plant_id}) ttt
 			JOIN 
-			(SELECT factory_name FROM BMS_BASE_FACTORY WHERE id = #{list[0].factory_id}) f JOIN
-			(SELECT GROUP_CONCAT(S.memo) AS MEMO FROM BMS_PLAN_STOPLINE S WHERE S.factory_id = #{list[0].factory_id} AND
-			S.start_time >=CONCAT(#{list[0].startDate},' 00:00:00') AND S.start_time &lt;=CONCAT(#{list[0].endDate},' 23:59:59') 
-			AND S.workshop_id = #{list[0].workshop_id}) tt
-			JOIN 
+			(SELECT factory_name FROM BMS_NA_BASE_FACTORY WHERE id = #{list[0].production_plant_id}) f JOIN
+<!-- 			(SELECT GROUP_CONCAT(S.memo) AS MEMO FROM BMS_PLAN_STOPLINE S WHERE S.factory_id = #{list[0].factory_id} AND -->
+<!-- 			S.start_time >=CONCAT(#{list[0].startDate},' 00:00:00') AND S.start_time &lt;=CONCAT(#{list[0].endDate},' 23:59:59')  -->
+<!-- 			AND S.workshop_id = #{list[0].workshop_id}) tt -->
+<!-- 			JOIN  -->
 			<foreach collection="list" index="index" item="item" separator="JOIN" >
-					(SELECT COUNT(B.id) AS #{item.data} FROM BMS_PLAN_BUS B WHERE  
+					(SELECT COUNT(B.id) AS #{item.data} FROM BMS_NA_PROJECT_BUS B WHERE  
 					date_add(B.${item.workshop}, interval +410 MINUTE)  LIKE CONCAT('%',#{item.data},'%')
-					AND B.factory_id=#{item.factory_id}) t${index}
+					AND B.production_plant_id=#{item.production_plant_id}) t${index}
 			</foreach>
 	</select>
 	<select id="queryFactoryZzjOutputReportData" parameterType="List" resultType="Map">

@@ -211,8 +211,8 @@
 		<if test="plant !=null and plant !=''">
 			and find_in_set(p.production_plant_id ,#{plant} )
 		</if>
-			ORDER BY p.id,h.version DESC
-		<if test="start !=null and length !='-1' ">
+			ORDER BY p.id desc,h.version DESC
+		<if test="start !=null and length !=-1 ">
 			LIMIT #{start} ,#{length} 
 		</if>			
 	</select>
@@ -275,7 +275,12 @@
 		SELECT d.* FROM BMS_NA_PROJECT_BOM_ITEM d
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		and h.version=#{version}  <!--(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)-->
+		<if test="version !=null and sapNo !=''">
+			and h.version=#{version} 
+		</if> 
+		<if test="version !=null">
+			and h.version = (select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		</if>
 		where p.project_no=#{projectNo}  
 		<if test="sapNo !=null and sapNo !=''">
 			and d.SAP_material = #{sapNo} 
@@ -403,7 +408,7 @@
 		LEFT OUTER JOIN BMS_NA_PROJECT o ON b.project_id = o.id
 		LEFT OUTER JOIN BMS_NA_BASE_PROCESS p ON b.current_station = p.id
 		WHERE b.project_id = #{project_id} 
-		order by cast(reverse(substr(reverse(bus_number),1,instr(reverse(bus_number),'-')-1)) as signed)
+		order by b.id
 	</select>
 	<delete id="deleteUnProcessBus" parameterType="Map">
 		delete from BMS_NA_PROJECT_BUS where project_id=#{project_id} 

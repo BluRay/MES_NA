@@ -38,12 +38,23 @@ $(document).ready(function(){
 	$("#btnAdd").click (function () {
 		ajaxEdit();
 	});
+	$('body').on('keydown', ".batch",function(e){
+		if (e.keyCode == "13") {
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".batch").focus();
+		}
+		if (e.keyCode == "38") { // 向上
+			$(e.target).parent("td").parent("tr").prev().children().eq(6).find(".batch").focus();
+		}
+		if (e.keyCode == "40") { // 向下
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".batch").focus();
+		}
+	});
 });
 
 
 function showEditPage(){
 	if($("#search_busNumber").val()==''){
-		alert("Please Enter Bus No.");
+		alert(Warn['P_common_02']);
 		$("#search_busNumber").focus();
 		return false;
 	}
@@ -59,7 +70,8 @@ function showEditPage(){
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		sScrollY: table_height,sScrollX:true,
+		sScrollY: $(window).height()-240,
+		sScrollX:true,
 		language: {
 		},
 		ajax:function (data, callback, settings) {
@@ -89,11 +101,11 @@ function showEditPage(){
 	        }},
 			{"title":"SAP No.","class":"center","data":"SAP_material","defaultContent": ""},
 			{"title":"Parts Name","class":"center","data":"parts_name","defaultContent": ""},
-			{"title":"Vendor","class":"center","data":"Vendor","defaultContent": ""},
+			{"title":"Vendor","class":"center","data":"vendor","defaultContent": ""},
 			{"title":"Workshop","class":"center","data":"workshop","defaultContent": ""},
 			{"title":"Station","class":"center","data":"station","defaultContent": ""},
 			{"title":"Batch/Serial Number","class":"center","data":"batch","render":function(data,type,row){
-				return "<input style='border:0;width:100px;text-align:center' class='batch' " +
+				return "<input style='width:180px;text-align:center' class='batch' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' class='trace_id' " +
 				" value='"+(row.id!=undefined ? row.id : '')+"'/>";
 			}
@@ -122,18 +134,13 @@ function ajaxEdit(){
 		obj.trace_template_id=template_id;
 		obj.trace_id=trace_id;
 		obj.batch=batch;
-		//obj.SAP_material=SAP_material;
-		//obj.parts_name=parts_name;
-		//obj.vendor=vendor;
-		//obj.workshop=workshop;
-		//obj.station=station;
-		//obj.bus_number=busNumber;
-		//obj.project_id=project_id;
-		//obj.production_plant_id=production_plant_id;
 		obj.type="modify";
 		arr.push(obj);
 	});
-
+    if(arr.length==0){
+    	alert(Warn['P_common_05']);
+    	return false;
+    }
 	$.ajax({
 		type:"post",
 		url: "../quality/addKeyParts",
@@ -146,15 +153,15 @@ function ajaxEdit(){
 		success: function (response) {
 			if(response.success){
 		    	$.gritter.add({
-					title: 'Tip：',
-					text: '<h5>Success！</h5>',
+					title: 'Message：',
+					text: "<h5>"+Warn['P_common_03']+"</h5>",
 					class_name: 'gritter-info'
 				});
 		    	ajaxQuery();
 		    	}else{
 		    		$.gritter.add({
-						title: 'Tip：',
-						text: '<h5>Failure！</h5><br>',
+						title: 'Message：',
+						text: "<h5>"+Warn['P_common_04']+"</h5>",
 						class_name: 'gritter-info'
 					});
 		    	}

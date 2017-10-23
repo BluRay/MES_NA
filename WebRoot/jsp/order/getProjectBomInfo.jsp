@@ -107,6 +107,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script src="<%=basePath%>/js/jsrender.min.js"></script>
 	<script src="<%=basePath%>/js/common.js"></script>
 	<script src="<%=basePath%>/js/tableExport.js"></script>
+	<script src="<%=basePath%>/js/alertMessage.js"></script>
     <script src="<%=basePath%>/js/order/getProjectBomInfo.js"></script>
 </body>
 

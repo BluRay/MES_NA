@@ -234,7 +234,7 @@ public class QualityServiceImpl implements IQualityService {
 		model.put("data", qualityDao.getTestingTemplateDetailByHeader(condMap));
 	}
 	@Override
-	public void getKeyPartsTraceList(Map conditionMap, ModelMap model) {
+	public void getKeyPartsTraceList(Map<String, Object> conditionMap, ModelMap model) {
 		int totalCount=0;
 		List<Map<String, String>> datalist=qualityDao.getKeyPartsTraceList(conditionMap);
 		totalCount=qualityDao.getKeyPartsTraceCount(conditionMap);

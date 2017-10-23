@@ -699,4 +699,15 @@ public class ProductionServiceImpl implements IProductionService {
 		
 		return datalist;
 	}
+	
+	@Override
+	public int printMaterialRequirement(Map<String, Object> conditionMap) {
+		return 0;
+	}
+
+	@Override
+	public int getLineDisCount(Map<String, Object> conditionMap) {
+		return productionDao.getLineDisCount(conditionMap);
+	}
+	
 }

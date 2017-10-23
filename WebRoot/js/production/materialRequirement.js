@@ -1,6 +1,8 @@
 var pageSize=1;
 var table;
 var table_height = $(window).height()-250;
+var query_data;
+var req_arr = [];
 $(document).ready(function () {	
 	initPage();
 	
@@ -20,6 +22,105 @@ $(document).ready(function () {
 	$("#btnQuery").click(function () {
 		ajaxQuery();
 	});
+	
+	$(document).on('click', '#btnPrint',function(){
+		var tr_count = 0;
+		var vali_data = 0;
+		req_arr = [];
+		$("#tableDataPrint tbody").html("");
+		$("#tableData tbody :checkbox").each(function(){
+			if($(this).prop("checked")){
+				console.log("-->tableData checkbox " + tr_count + ":" + query_data[tr_count].item_no);
+				if($("#des_" + tr_count).val() == ""){
+					vali_data = -1;
+				}
+				var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].item_no).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].bus_number).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].SAP_material).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].part_name).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].unit).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html($("#des_" + tr_count).val()).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].vendor).appendTo(tr);
+	    		$("#tableDataPrint tbody").append(tr);
+				req_arr.push(tr_count);
+			}
+			tr_count++;
+		});
+
+		tr_count = 0;
+		$("#tableDataShow tbody").html("");
+		$("#tableData tbody :checkbox").each(function(){
+			if($(this).prop("checked")){
+				var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].item_no).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].bus_number).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].SAP_material).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].part_name).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].unit).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html($("#des_" + tr_count).val()).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(query_data[tr_count].vendor).appendTo(tr);
+	    		query_data[tr_count].dis_num=$("#des_" + tr_count).val();
+	    		$("#tableDataShow tbody").append(tr);
+			}
+			tr_count++;
+		});
+		
+		if(vali_data == -1){
+			alert(Warn['P_materialRequirement_01']);
+			return false;
+		}else{
+			$("#dialog-print").removeClass('hide').dialog({
+				resizable: false,
+				title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Distribution Info</h4></div>',
+				title_html: true,
+				width:'1200px',
+				modal: true,
+				buttons: [{
+							text: "Close",
+							"class" : "btn btn-minier",
+							click: function() {$( this ).dialog( "close" );} 
+						},
+						{
+							text: "Save",
+							id:"btn_ok",
+							"class" : "btn btn-success btn-minier",
+							click: function() {
+								btnPrintConfirm();
+							} 
+						}
+					]
+			});
+		}
+		
+	});
+
+	function btnPrintConfirm(){
+		$("#dialog-print").dialog( "close" );
+		////window.print();
+		var req_data = [];
+		for(var i=0;i<req_arr.length;i++){
+			req_data.push(query_data[req_arr[i]]);
+		}
+		console.log("req_data = ",req_data);
+		$.ajax({
+			url : "printMaterialRequirement",
+			dataType : "json",
+			data : {
+				conditions:JSON.stringify(req_data)
+			},
+			async : false,
+			error : function(response) {
+				alert(response.message)
+			},
+			success : function(response) {
+				
+			}
+		});
+		
+	}
 	
 	Array.prototype.remove = function(val) {  
 	    var index = this.indexOf(val);  
@@ -173,6 +274,7 @@ function ajaxQuery(){
 	    },
 	    success:function(response){
 	    	$("#tableData tbody").html("");
+	    	query_data = response.data;
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr/>");
 	    		$("<td style=\"text-align:center;\" />").html("<input id='data_"+index+"' type='checkbox'/>").appendTo(tr);
@@ -192,94 +294,6 @@ function ajaxQuery(){
 		    	$("#tableData tbody").append(tr);
 	    	})
 	    }
-	});
-}
-
-function leadInitials(id){
-	$.ajax({
-		url : "getPunchInfoByid",
-		dataType : "json",
-		data : {
-	    	"id": id
-		},
-		success : function(response) {
-			//console.log('-->' + response.data[0].plant);
-			$("#lead_busNumber").val(response.data[0].bus_number);
-			$("#lead_plant").val(response.data[0].plant);
-			$("#lead_workshop").val(response.data[0].workshop);
-			$("#lead_src_workshop").val(response.data[0].source_workshop);
-			$("#lead_location").val(response.data[0].main_location);
-			$("#lead_orientation").val(response.data[0].orientation);
-			$("#lead_problemDescription").val(response.data[0].problem_description);
-			$("#lead_defectcodes").val(response.data[0].defect_codes);
-			$("#lead_responsibleleader").val(response.data[0].responsible_leader);		
-			$("#lead_QCinspector").val(response.data[0].qc_inspector);	
-		}
-	});
-	
-	$("#dialog-lead").removeClass('hide').dialog({
-		resizable: false,
-		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> LeadInitials</h4></div>',
-		title_html: true,
-		width:'800px',
-		modal: true,
-		buttons: [{
-					text: "Close",
-					"class" : "btn btn-minier",
-					click: function() {$( this ).dialog( "close" );} 
-				},
-				{
-					text: "Save",
-					id:"btn_ok",
-					"class" : "btn btn-success btn-minier",
-					click: function() {
-						btnLeadConfirm(id);
-					} 
-				}
-			]
-	});
-}
-function qualityInitials(id){
-	$.ajax({
-		url : "getPunchInfoByid",
-		dataType : "json",
-		data : {
-	    	"id": id
-		},
-		success : function(response) {
-			$("#qc_busNumber").val(response.data[0].bus_number);
-			$("#qc_plant").val(response.data[0].plant);
-			$("#qc_workshop").val(response.data[0].workshop);
-			$("#qc_src_workshop").val(response.data[0].source_workshop);
-			$("#qc_location").val(response.data[0].main_location);
-			$("#qc_orientation").val(response.data[0].orientation);
-			$("#qc_problemDescription").val(response.data[0].problem_description);
-			$("#qc_defectcodes").val(response.data[0].defect_codes);
-			$("#qc_responsibleleader").val(response.data[0].responsible_leader);		
-			$("#qc_QCinspector").val(response.data[0].qc_inspector);	
-		}
-	});
-	
-	$("#dialog-qc").removeClass('hide').dialog({
-		resizable: false,
-		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> QualityInitials</h4></div>',
-		title_html: true,
-		width:'800px',
-		modal: true,
-		buttons: [{
-					text: "Close",
-					"class" : "btn btn-minier",
-					click: function() {$( this ).dialog( "close" );} 
-				},
-				{
-					text: "Save",
-					id:"btn_ok",
-					"class" : "btn btn-success btn-minier",
-					click: function() {
-						btnQcConfirm(id);
-					} 
-				}
-			]
 	});
 }
 

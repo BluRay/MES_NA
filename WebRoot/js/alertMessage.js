@@ -22,6 +22,8 @@ var Warn={
     /********Start Yangke***********************/
     'P_measureAbnormity_01'	: '处理日期不能为空！',
     'P_measureAbnormity_02'	: 'measures 不能为空！',
+    
+    'P_materialRequirement_01'	: '发货数量不能为空！',
     	
     /********End  Yangke***********************/
     	
@@ -41,10 +43,16 @@ var Warn={
     'P_common_13'   : '工位不能为空！',
     'P_common_14'   : '工序不存在！',
     'P_common_15'   : '工序不能为空！',
+    'P_importBomInfo_01':'Document No.不能为空',
+    'P_importBomInfo_02':'Version不能为空',
+    'P_importBomInfo_03':'*DCN不能为空',
     'P_vinInfo_01':'VIN不能为空',
     'P_printBusNumber_01':'请先导入VIN',
     'P_printBusNumber_02':'请先选择一条记录',
+    'P_inspectionRecord_01':'成品记录模板不能为空',
     'P_testingRecord_03':'检测类型不能为空',
-    	
+    'P_yieldReport_01':'请选择生产开始日期！',
+    'P_yieldReport_02':'请选择生产结束日期！',
+    'P_yieldReport_03':'请输入正确的日期区间，最长不能超过31天！',
     /********End  TangJin***********************/
 }

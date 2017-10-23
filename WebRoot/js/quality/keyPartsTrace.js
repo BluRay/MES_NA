@@ -3,65 +3,53 @@ var table;
 var table_height = $(window).height()-300;
 $(document).ready(function(){
 	initPage();
-	$("#breadcrumbs").resize(function() {
+	$("#breadcrumbs").resize(function(){
 		//ajaxQuery();
 	});
-	function initPage(){
-		getBusNumberSelect('#nav-search-input');
-		getBusNumberSelect('#search_busNumber');
-		getBusTypeSelect("","#search_bus_type","All","id");
-		getOrderNoSelect("#search_project_no","#orderId");
-		ajaxQuery();
-	}
-
+	
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
-	})
+	});
 	
 	$("#btnQuery").click (function () {
 		ajaxQuery();
 	});
-	
-	$('#search_factory').change(function(){ 
-		getWorkshopSelect("quality/keyPartsTrace",$("#search_factory :selected").text(),"","#search_workshop",null,"id");
-	});
-	$('#search_order').change(function(){ 
-		$("#search_config").html("");
-		if($(this).val()==""){
-			return false;
+	$('body').on('keydown', ".batch",function(e){
+		if (e.keyCode == "13") {
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".batch").focus();
 		}
-		$.ajax({
-			url: "/BMS/order/getOrderByNo",
-			dataType: "json",
-			data: {
-				"order_no":$(this).val()
-			},
-			async: false,
-			error: function () {},
-			success: function (response) {
-				if(response.data!=null && response.data!=undefined){
-					getOrderConfigSelect(response.data.id,"","#search_config","全部","id");
-				}
-			}
-		})
-		//getOrderConfigSelect("quality/keyPartsTrace",$("#search_factory :selected").text(),"","#search_workshop",null,"id");
+		if (e.keyCode == "38") { // 向上
+			$(e.target).parent("td").parent("tr").prev().children().eq(6).find(".batch").focus();
+		}
+		if (e.keyCode == "40") { // 向下
+			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".batch").focus();
+		}
 	});
 });
-
+function initPage(){
+	getBusNumberSelect('#nav-search-input');
+	getBusNumberSelect('#search_busNumber');
+	getBusTypeSelect("","#search_bus_type","All","id");
+	getOrderNoSelect("#search_project_no","#orderId");
+	//ajaxQuery();
+}
 function ajaxQuery(){
-	$("#tableData").dataTable({
+//	if($.fn.dataTable.isDataTable("#tableData")){
+//		$('#tableData').DataTable().destroy();
+//		$('#tableData').empty();
+//	}
+	var table=$("#tableData").dataTable({
 		serverSide: true,
 		paiging:true,
 		ordering:false,
 		searching: false,
-		autoWidth:false,
+		bAutoWidth:false,
 		destroy: true,
-		scrollY: $(window).height()-245,
+		sScrollY: $(window).height()-250,
 		scrollX: true,
-		/*scrollCollapse: true,*/
 		pageLength: 20,
 		pagingType:"full_numbers",
 		lengthChange:false,
@@ -71,16 +59,15 @@ function ajaxQuery(){
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
-				"factoryId":$("#search_factory").val(),
-				"bustypeId" : $("#search_bus_type").val(),
+				//"factoryId":$("#search_factory").val(),
+				"bustype" : $("#search_bus_type").find("option:selected").text(),
 				"busNumber" : $("#search_busNumber").val(),
-				"orderNo" : $("#search_order").val(),
-				"workshop" : $("#search_workshop").find("option:selected").text(),
+				"project_no" : $("#search_project_no").val(),
+			//	"workshop" : $("#search_workshop").find("option:selected").text()
 			};
-            param.length = data.length;					//页面显示记录条数，在页面显示每页显示多少项的时候
-            param.start = data.start;					//开始的记录序号
-            param.page = (data.start / data.length)+1;	//当前页码
-
+			param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
+            param.start = data.start;//开始的记录序号
+            param.page = (data.start / data.length)+1;//当前页码
             $.ajax({
                 type: "post",
                 url: "getKeyPartsTraceList",
@@ -88,16 +75,13 @@ function ajaxQuery(){
                 data: param,  //传入组装的参数
                 dataType: "json",
                 success: function (result) {
-                    //console.log(result);
+                	//alert(result.recordsTotal);
                 	//封装返回数据
-                    var returnData = {};
+                    var returnData ={};
                     returnData.draw = data.draw;						//这里直接自行返回了draw计数器,应该由后台返回
                     returnData.recordsTotal = result.recordsTotal;		//返回数据全部记录
                     returnData.recordsFiltered = result.recordsTotal;	//后台不实现过滤功能，每次查询均视作全部结果
                     returnData.data = result.data;						//返回的数据列表
-                    //console.log(returnData);
-                    //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
-                    //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
                     callback(returnData);
                 }
             });
@@ -106,19 +90,19 @@ function ajaxQuery(){
           	{"title":"Plant","class":"center","data":"plant","defaultContent": ""},
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
             {"title":"Project No.","class":"center","data":"project_name","defaultContent": ""},
-            {"title":"Production Supervisor","class":"center","data":"editor","defaultContent": ""},
-            {"title":"Production Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},
+            {"title":"Supervisor","class":"center","data":"editor","defaultContent": ""},
+            {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},
             {"title":"","class":"center","data":"","render":function(data,type,row){
-            	return "<i class=\"glyphicon glyphicon-search bigger-130 showbus\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;&nbsp;" 
+            	return "<i class=\"glyphicon glyphicon-search bigger-130\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;" 
             	}
-            },{"title":"","class":"center","data":"","render":function(data,type,row){
-            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
+            },
+            {"title":"","class":"center","data":"","render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-pencil bigger-130\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
             	}
             }
         ],
 	});
 }
-
 function showInfoPage(json){
 	$("#tableDataDetail").dataTable({
 		paiging:false,
@@ -133,15 +117,10 @@ function showInfoPage(json){
 		orderMulti:false,
 		info:false,
 		sScrollY: table_height,sScrollX:true,
-		language: {
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"bus_number":json.bus_number,
-			//	"workshop":json.workshop,
-			//	"key_components_template_id":json.key_components_template_id
-			};
-           
+			};       
             $.ajax({
                 type: "post",
                 url: "getBusNumberDetailList",
@@ -159,18 +138,15 @@ function showInfoPage(json){
         				height:600,
         				modal: true,
         				buttons: [{
-        							text: "Close",
-        							"class" : "btn btn-minier",
-        							click: function() {$( this ).dialog( "close" );} 
-        						},
-        					]
-                
+    							text: "Close",
+    							"class" : "btn btn-minier",
+    							click: function() {$( this ).dialog( "close" );} 
+    						},
+    					]
         			});
                 	//封装返回数据
                     var returnData = {};
                     returnData.data = result.data;						
-                    //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
-                    //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
                     callback(returnData);
                 }
             });
@@ -188,7 +164,6 @@ function showInfoPage(json){
        ],
 	});
 }
-
 function showEditPage(json){
 	$("#tableDataDetail").dataTable({
 		paiging:false,
@@ -203,14 +178,11 @@ function showEditPage(json){
 		orderMulti:false,
 		info:false,
 		sScrollY: table_height,sScrollX:true,
-		language: {
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"bus_number":json.bus_number,
 				"project_id":json.project_id
 			};
-           
             $.ajax({
                 type: "post",
                 url: "getBusNumberTemplateList",
@@ -227,26 +199,24 @@ function showEditPage(json){
         				width:1000,
         				height:600,
         				modal: true,
-        				buttons: [{
-        							text: "Close",
-        							"class" : "btn btn-minier",
-        							click: function() {$( this ).dialog( "close" );} 
-        						},
-        				        {
-    						text: "Save",
-    						"class" : "btn btn-primary btn-minier",
-    						click: function() {
-    							ajaxEdit(json); 
-    						} 
-    					}
-        			]
-                
+        				buttons: [
+    				        {
+    							text: "Close",
+    							"class" : "btn btn-minier",
+    							click: function() {$( this ).dialog( "close" );} 
+    						},
+    				        {
+	    						text: "Save",
+	    						"class" : "btn btn-primary btn-minier",
+	    						click: function() {
+	    							ajaxEdit(json); 
+	    						} 
+	    					}
+		        		]
         			});
                 	//封装返回数据
                     var returnData = {};
                     returnData.data = result.data;						
-                    //调用DataTables提供的callback方法，代表数据已封装完成并传回DataTables进行渲染
-                    //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
                     callback(returnData);
                 }
             });
@@ -265,14 +235,12 @@ function showEditPage(json){
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' class='trace_id' " +
 				" value='"+(row.trace_id!=undefined ? row.trace_id : '')+"'/><input type='hidden' class='template_id' " +
 							" value='"+row.template_id+"'/>";
+				}
 			}
-		}
 		],
 	});
 }
-
 function ajaxEdit(json){
-
 	var trs=$("#tableDataDetail tbody").children("tr");
 	var arr=[];
 	var busNumber=$("#bus_number").text();
@@ -303,8 +271,6 @@ function ajaxEdit(json){
 		obj.type="audit";// 审核操作
 		arr.push(obj);
 	});
-    console.log("param",JSON.stringify(arr));
-   // return false;
 	$.ajax({
 		type:"post",
 		url: "addKeyParts",
@@ -317,22 +283,19 @@ function ajaxEdit(json){
 		success: function (response) {
 			if(response.success){
 		    	$.gritter.add({
-					title: 'Tip：',
-					text: '<h5>Success！</h5>',
+					title: 'Message：',
+					text: "<h5>"+Warn['P_common_03']+"</h5>",
 					class_name: 'gritter-info'
 				});
 		    	ajaxQuery();
 		    	}else{
 		    		$.gritter.add({
-						title: 'Tip：',
-						text: '<h5>Failure！</h5><br>'+response.message,
+						title: 'Message：',
+						text: "<h5>"+Warn['P_common_04']+"</h5>",
 						class_name: 'gritter-info'
 					});
 		    	}
 			$( "#dialog-edit" ).dialog("close");
-			
 		}
-	})
-	
-;	
+	});	
 }

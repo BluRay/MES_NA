@@ -7,7 +7,7 @@ $(document).ready(function(){
 	
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
-		getFactorySelect("report/factoryOutputReport",'',"#search_factory","全部",'id');
+		getFactorySelect("report/yieldReport",'',"#search_factory","All",'id');
 		var now = new Date(); //当前日期
 		//var startDate=new Date(now.getTime()-6*24*3600*1000);
 		$("#search_index").val("0");
@@ -17,7 +17,7 @@ $(document).ready(function(){
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
@@ -43,12 +43,12 @@ $(document).ready(function(){
 	$("#btnQuery").click (function () {
 		dateArray = new Array(31);
 		if($("#start_date").val()==""){
-			alert("请选择生产开始日期！");
+			alert(Warn['P_yieldReport_01']);
 			$("#start_date").focus();
 			return false;
 		}
 		if($("#end_date").val()==""){
-			alert("请选择生产结束日期！");
+			alert(Warn['P_yieldReport_02']);
 			$("#end_date").focus();
 			return false;
 		}
@@ -56,17 +56,16 @@ $(document).ready(function(){
 		var end_date = StringToDate($('#end_date').val());
 		dateCount = DateDiff('d',start_date,end_date);
 		if(dateCount<0||dateCount>30){
-			alert("请输入正确的日期区间，最长不能超过31天！");
+			alert(Warn['P_yieldReport_03']);
 			return false;
 		}
 		searchDateArray="";
 		for(var i=0;i<=dateCount;i++){
 			searchDateArray += ChangeDateToString(start_date) + ',';
-			//$("#D"+(i+1)).html(start_date.getDate());
 			dateArray[i] = ChangeDateToString(start_date);
 			start_date = StringToDate(nextdate(start_date));
 		}
-		//factoryid_array
+
 		factoryids = $("#search_factory").val();
 		if(factoryids==""){
 			$("#search_factory option").each(function() {
@@ -74,7 +73,6 @@ $(document).ready(function(){
 				if(op!="") factoryids += (op + ",");
 			});
 		}
-		console.log('-->dateArray = ',dateArray);
 		eachSeries(scripts, getScript, initTable);
 		ajaxQuery();
 	});
@@ -83,7 +81,7 @@ $(document).ready(function(){
 
 function ajaxQuery(){
 	$("#btnQuery").prop("disabled","disabled");
-	$("#btnQuery").val("查询中...");
+	$("#btnQuery").val("Searching...");
 	$table.bootstrapTable('destroy');
 	$table.bootstrapTable('refresh', {url: 'showFactoryOutputReportData'});
 }
@@ -150,10 +148,10 @@ function initTable() {
 	var columnsArray = new Array(dateCount + 4);
 	
 	columnsArray[0] = {
-        	field: 'factory_name',title: '工厂',align: 'center',valign: 'middle',align: 'center',width:"100px",
+        	field: 'factory_name',title: 'Plant',align: 'center',valign: 'middle',align: 'center',width:"100px",
             sortable: false,visible: true,footerFormatter: totalTextFormatter,
             cellStyle:function cellStyle(value, row, index, field) {
-            	if(row.WORKSHOP == "汇总"){
+            	if(row.WORKSHOP == "Total"){
             		return {css: {"background-color":"darkcyan","padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
             	}else{
             		return {css: {"padding-left": "3px", "padding-right": "2px"}};
@@ -161,10 +159,10 @@ function initTable() {
         	}
         };
 	columnsArray[1] = {
-        	field: 'WORKSHOP',title: '车间',align: 'center',valign: 'middle',align: 'center',width:"100px",
+        	field: 'WORKSHOP',title: 'Workshop',align: 'center',valign: 'middle',align: 'center',width:"100px",
             sortable: false,visible: true,footerFormatter: totalTextFormatter,
             cellStyle:function cellStyle(value, row, index, field) {
-            	if(row.WORKSHOP == "汇总"){
+            	if(row.WORKSHOP == "Total"){
             		return {css: {"background-color":"darkcyan","padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
             	}else{
             		return {css: {"padding-left": "3px", "padding-right": "2px"}};
@@ -172,10 +170,10 @@ function initTable() {
             }
         };
 	columnsArray[2] = {
-        	field: 'SUM',title: '合计',align: 'center',valign: 'middle',align: 'center',width:"100px",
+        	field: 'SUM',title: 'Summary',align: 'center',valign: 'middle',align: 'center',width:"100px",
             sortable: false,visible: true,footerFormatter: totalTextFormatter,
             cellStyle:function cellStyle(value, row, index, field) {
-            	if(row.WORKSHOP == "汇总"){
+            	if(row.WORKSHOP == "Total"){
             		return {css: {"background-color":"darkcyan","padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
             	}else{
             		return {css: {"padding-left": "3px", "padding-right": "2px"}};
@@ -187,7 +185,7 @@ function initTable() {
 	        	field: dateArray[i],title: dateArray[i],align: 'center',valign: 'middle',align: 'center',width:"100px",
 	            sortable: false,visible: true,footerFormatter: totalTextFormatter,
 	            cellStyle:function cellStyle(value, row, index, field) {
-	            	if(row.WORKSHOP == "汇总"){
+	            	if(row.WORKSHOP == "Total"){
 	            		return {css: {"background-color":"darkcyan","padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
 	            	}else{
 	            		return {css: {"padding-left": "3px", "padding-right": "2px"}};
@@ -196,10 +194,10 @@ function initTable() {
 	        };
 	}
 	columnsArray[dateCount+4] = {
-        	field: 'MEMO',title: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
+        	field: 'MEMO',title: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remark&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',align: 'center',valign: 'middle',align: 'center',
             sortable: false,visible: true,footerFormatter: totalTextFormatter,width:"200px",
             cellStyle:function cellStyle(value, row, index, field) {
-            	if(row.WORKSHOP == "汇总"){
+            	if(row.WORKSHOP == "Total"){
             		return {css: {"background-color":"darkcyan","padding-left": "3px", "padding-right": "2px","font-size":"13px"}};
             	}else{
             		return {css: {"padding-left": "3px", "padding-right": "2px"}};
@@ -227,7 +225,7 @@ function initTable() {
         fixedNumber: 3,
         onLoadSuccess: function (data) {
         	$("#btnQuery").removeAttr("disabled");
-        	$("#btnQuery").val("查询");
+        	$("#btnQuery").val("Search");
         },
         onResetView: function (data) {
         	$(".fixed-table-body-columns").css("top","35px");

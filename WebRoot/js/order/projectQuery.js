@@ -43,7 +43,7 @@ function ajaxQuery(){
 		dom: 'Bfrtip',
 		lengthMenu: [
 		             [ 20, 50,100, -1 ],
-		             [ '显示20行', '显示50行', '显示100行', '全部' ]
+		             ['Show 20 rows', 'Show 50 rows', 'Show 100 rows', 'Show all rows' ]
 		         ],
 	    buttons: [
 	        {extend:'excelHtml5',title:'data_export',className:'black',text:'<i class=\"fa fa-file-excel-o bigger-130\" tooltip=\"导出excel\"></i>'},
@@ -97,39 +97,37 @@ function ajaxQuery(){
                     //此时的数据需确保正确无误，异常判断应在执行此回调前自行处理完毕
                     callback(returnData);
                     var head_width=$(".dataTables_scrollHead").width();
-                    //alert(head_width)
                     $(".dataTables_scrollHead").css("width",head_width-20);
-                    
                     $(".divLoading").hide();
                 }
             });
 		
 		},
 		columns: [
-		            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
-		            {"title":"Project Name","width":"200","class":"center","data":"project_name","defaultContent": ""},
-		            {"title":"Delivery Date","class":"center","data":"delivery_date","defaultContent": ""},
-		            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
-		            {"title":"Customer","class":"center","data":"customer","defaultContent":""},
-		            {"title":"Quantity","class":"center","data": "quantity","defaultContent": ""},
-		            {"title":"Welding Online","class":"center","data":"welding_online_count","defaultContent": ""},		            
-		            {"title":"Weiding Offline","class":"center","data": "welding_offline_count","defaultContent": ""},		            
-		            {"title":"Painting Online","class":"center","data":"painting_online_count","defaultContent": ""},
-		            {"title":"Painting Offline","class":"center","data":"painting_offline_count","defaultContent": ""},
-		            {"title":"Chassis Online","class":"center","data":"chassis_online_count","defaultContent": ""},
-		            {"title":"Chassis Offline","class":"center","data":"chassis_offline_count","defaultContent": ""},
-		            {"title":"Assembly Online","class":"center","data": "assembly_online_count","defaultContent": ""},
-		            {"title":"Assembly Offline","class":"center","data":"assembly_offline_count","defaultContent": ""},		            
-		            {"title":"Testing","class":"center","data":"testing_count","defaultContent": ""},		            
-		            {"title":"Outgoing","class":"center","data": "outgoing_count","defaultContent": ""},
-		            {"title":"Delivered","class":"center","data":"delivery_count","defaultContent":""},
-		            {"title":"BOM","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
-		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(\""+ row.project_no+"\");' style='color:blue;cursor: pointer;' title='Bom'></i>";
-		            }},
-		            {"title":"Details","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
-		            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;' title='Details'></i>";
-		            }},
-		       ],
+            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
+            {"title":"Project Name","width":"200","class":"center","data":"project_name","defaultContent": ""},
+            {"title":"Delivery Date","class":"center","data":"delivery_date","defaultContent": ""},
+            {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
+            {"title":"Customer","class":"center","data":"customer","defaultContent":""},
+            {"title":"Quantity","class":"center","data": "quantity","defaultContent": ""},
+            {"title":"Welding Online","class":"center","data":"welding_online_count","defaultContent": ""},		            
+            {"title":"Weiding Offline","class":"center","data": "welding_offline_count","defaultContent": ""},		            
+            {"title":"Painting Online","class":"center","data":"painting_online_count","defaultContent": ""},
+            {"title":"Painting Offline","class":"center","data":"painting_offline_count","defaultContent": ""},
+            {"title":"Chassis Online","class":"center","data":"chassis_online_count","defaultContent": ""},
+            {"title":"Chassis Offline","class":"center","data":"chassis_offline_count","defaultContent": ""},
+            {"title":"Assembly Online","class":"center","data": "assembly_online_count","defaultContent": ""},
+            {"title":"Assembly Offline","class":"center","data":"assembly_offline_count","defaultContent": ""},		            
+            {"title":"Testing","class":"center","data":"testing_count","defaultContent": ""},		            
+            {"title":"Outgoing","class":"center","data": "outgoing_count","defaultContent": ""},
+            {"title":"Delivered","class":"center","data":"delivery_count","defaultContent":""},
+            {"title":"BOM","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(\""+ row.project_no+"\");' style='color:blue;cursor: pointer;' title='Bom'></i>";
+            }},
+            {"title":"Details","class":"center","width":"50px","data":"","defaultContent":"","render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;' title='Details'></i>";
+            }},
+        ],
 	});
 	$("#tableOrder_info").addClass('col-xs-6');
 	$("#tableOrder_paginate").addClass('col-xs-6');
@@ -323,13 +321,6 @@ function ajaxShowBusNumber(project_id){
 							$( this ).dialog( "close" ); 
 						} 
 					},
-//					{
-//						text: "Confirm",
-//						"class" : "btn btn-primary btn-minier",
-//						click: function() {
-//							$( this ).dialog( "close" ); 
-//						} 
-//					}
 				]
 			});
 			if(response.success){
@@ -350,49 +341,52 @@ function drawBusInfoTable(data){
 		$('#tableBusNumber').empty();
 	}
 	var t=$("#tableBusNumber").dataTable({
-		paiging:false,
-		//showRowNumber:true,
-		ordering:false,
-		searching: false,
-		autoWidth:false,
-		destroy: true,
-		paginate:false,
+		//serverSide: true,
 		fixedColumns: {
-            leftColumns:1,
+            leftColumns:2,
             rightColumns:0
         },
-		scrollCollapse: false,
+        paiging:false,
+		ordering:false,
+		processing:true,
+		searching: false,
+		autoWidth:false,
+		paginate:false,
+		sScrollY: $(window).height()-260,
+		scrollX: true,
+		scrollCollapse: true,
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		language: {
-		},
+		language: {},
+		
+		destroy: true,
 		data:data,
 		columns: [
-            {"title":"No.","class":"center","data":"","width":"35px","defaultContent": ""
+            {"title":"No.","class":"center","data":"","width": "35px"
             	,"render":function(data,type,row,meta){
-				return meta.row + meta.settings._iDisplayStart + 1; // 序号值
-	        }
+					return meta.row + meta.settings._iDisplayStart + 1; // 序号值
+		        }
             },
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
-            {"title":"VIN","class":"center","data":"VIN","defaultContent": ""},
-            {"title":"Station","class":"center","data":"factory_name","defaultContent": ""},
-            {"title":"Welding Online","class":"center","data":"workshop","defaultContent": ""},
-            {"title":"Welding Offline","class":"center","data":"process_name","defaultContent": ""},
-            {"title":"Painting Online","class":"center","data":"welding_online_date","defaultContent": ""},
-            {"title":"Painting Offline","class":"center","data":"welding_offline_date","defaultContent": ""},
-            {"title":"Chassis Online","class":"center","data":"painting_online_date","defaultContent": ""},
-            {"title":"Chassis Offline","class":"center","data":"painting_offline_date","defaultContent": ""},
-            {"title":"Assembly Online","class":"center","data":"chassis_online_date","defaultContent": ""},
-            {"title":"Assembly Offline","class":"center","data":"chassis_offline_date","defaultContent": ""},
-            {"title":"Testing","class":"center","data":"assembly_online_date","defaultContent": ""},
-            {"title":"Outgoing","class":"center","data":"assembly_offline_date","defaultContent": ""},
-            {"title":"Delivered","class":"center","data":"warehousing_date","defaultContent": ""},
+            {"title":"VIN","class":"center","data":"VIN","width": "160px","defaultContent": ""},
+            {"title":"Station","class":"center","data":"station","defaultContent": ""},
+            {"title":"Welding Online","class":"center","data":"welding_online","defaultContent": ""},
+            {"title":"Welding Offline","class":"center","data":"welding_offline","defaultContent": ""},
+            {"title":"Painting Online","class":"center","data":"painting_online","defaultContent": ""},
+            {"title":"Painting Offline","class":"center","data":"painting_offline","defaultContent": ""},
+            {"title":"Chassis Online","class":"center","data":"chassis_online","defaultContent": ""},
+            {"title":"Chassis Offline","class":"center","data":"chassis_offline","defaultContent": ""},
+            {"title":"Assembly Online","class":"center","data":"assembly_online","defaultContent": ""},
+            {"title":"Assembly Offline","class":"center","data":"assembly_offline","defaultContent": ""},
+            {"title":"Testing","class":"center","data":"testing","defaultContent": ""},
+            {"title":"Outgoing","class":"center","data":"outgoing","defaultContent": ""},
+            {"title":"Delivered","class":"center","data":"delivery","defaultContent": ""},
        ],
        
 	});
-//	var head_width=$(".dataTables_scrollHead").width();
-//    $(".dataTables_scrollHead").css("width",head_width-10);
+	var head_width=$(".dataTables_scrollHead").width();
+    $(".dataTables_scrollHead").css("width",head_width-15);
 }
 function ajaxShowBom(project_no){
 	$(".divLoading").addClass("fade in").show();
@@ -455,7 +449,7 @@ function drawBomTable(data){
 		paginate:false,
 		sScrollY: $(window).height()-260,
 		scrollX: true,
-		scrollCollapse: true,
+		//scrollCollapse: true,
 		lengthChange:false,
 		orderMulti:false,
 		info:false,

@@ -31,7 +31,7 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">Index</a></li>
+							href="/MES/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
 						<li><a href="#">Inspection Record</a></li>
 					</ul>
@@ -46,7 +46,6 @@
 					</div>
 					<!-- /.nav-search -->
 				</div>
-
 				<div class="page-content">
 					<form id="form" class="well form-search">
 						<table>
@@ -61,25 +60,22 @@
 				
 								</td>	
 								<td>Bus No.：</td>
-								<td><input style="height: 30px;width:160px;" type="text" class="input-medium revise" placeholder="" id="search_bus_number" /></td> 	
-								
+								<td>
+								    <input style="height: 30px;width:160px;" type="text" class="input-medium revise" placeholder="" id="search_bus_number" /></td> 	
 								<td>
 								    <input type="button" class="btn btn-sm btn-primary" id="btnQuery" value="Search" style="margin-left: 10px;"></input>						
 									<input type="button" class="btn btn-sm btn-success" id="btnAdd" value="Add" style="margin-left: 2px;"></input>
 								</td>
 							</tr>
-
 						</table>
 					</form>
-						
 					<div class="row" >
-					<div class="col-xs-12 " id="scroll_div">
-						<table id="tableResult" class="table table-striped table-bordered table-hover  " style="font-size: 12px;" >
-						</table>	
-					</div>
+						<div class="col-xs-12 " id="scroll_div">
+							<table id="tableResult" class="table table-striped table-bordered table-hover  " style="font-size: 12px;" >
+							</table>	
+						</div>
 					</div>
 				</div>
-
 				<div id="dialog-config" class="hide" >
 				    <div class="form-group">
 						<label class="col-sm-2 control-label">*&nbsp;Bus No.：</label>
@@ -149,7 +145,6 @@
 					</div>
 				</form>
 			</div>
-			
 		</div>
 			<!-- /.main-container -->
 		</div>

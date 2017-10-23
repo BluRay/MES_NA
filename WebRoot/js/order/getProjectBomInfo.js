@@ -16,19 +16,18 @@ $(document).ready(function(){
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
 });
 
-
 function ajaxQuery(){
 	dt=$("#tableResult").DataTable({
 		serverSide: true,
 //		fixedColumns:   {
-//            leftColumns: 3,
-//            rightColumns:3
+//            leftColumns: 1,
+//            rightColumns:2
 //        },
 		dom: 'Bfrtip',
 		lengthMenu: [
@@ -44,16 +43,13 @@ function ajaxQuery(){
 		searching: false,
 		autoWidth:false,
 		destroy: true,
-		scrollY: $(window).height()-240,
+		scrollY: $(window).height()-250,
 		scrollX: $(window).width(),
 		/*scrollCollapse: true,*/
 		pageLength: 20,
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {
-			
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
@@ -85,38 +81,44 @@ function ajaxQuery(){
 		
 		},
 		columns: [
-		            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
-		            {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
-		            //{"title":"Year","class":"center","data":"product_year","defaultContent": ""},
-		            {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
-		            {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
-		            {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
-		            {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
-		            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
-		            },
-		            {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
-		            {"title":"Project Manager","class":"center","data": "project_manager","defaultContent": ""},
-		            {"title":"Version","class":"center","data": "version","defaultContent": ""},
-		            {"title":"DCN","class":"center","data": "DCN","defaultContent": ""},
-		            {"title":"Editor","class":"center","data": "username","defaultContent": ""},
-		            {"title":"Edit Date","class":"center","data": "bom_edit_date","defaultContent": ""},
-		            {"title":"","class":"center","data":null,"render":function(data,type,row){
-		            	var dcn=row.DCN!=undefined ? row.DCN : "";
-		            	var document_no=row.document_no!=undefined ? row.document_no : "";
-		            	var version=row.document_no!=undefined ? row.version : "";
-		                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"Display\" " +
-		                		"onclick=\"javascript:window.location = " +
-		                		"('showBomInfo?version="+version+"&projectNo="+row['project_no']+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
-		                				"style='color:blue;cursor: pointer;'></i>&nbsp;"+
-		                  "&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" " +
-		                  "onclick=\"javascript:window.location = " +
-		                  "('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"&version="+version+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
-		                  		"style='color:blue;cursor: pointer;'></i>&nbsp;";
-		            	return str;
-		                },
-		            }
-		        ],
-		
+            {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
+            {"title":"Project Name","class":"center","data":"project_name","defaultContent": ""},
+            //{"title":"Year","class":"center","data":"product_year","defaultContent": ""},
+            {"title":"Delivery Date","class":"center","data": "delivery_date","defaultContent": ""},
+            {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
+            {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
+            {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
+            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
+            },
+            {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
+            {"title":"Project Manager","class":"center","data": "project_manager","defaultContent": ""},
+            {"title":"Version","class":"center","data": "version","defaultContent": ""},
+            {"title":"DCN","class":"center","data": "DCN","defaultContent": ""},
+            {"title":"Editor","class":"center","data": "username","defaultContent": ""},
+            {"title":"Edit Date","class":"center","data": "bom_edit_date","defaultContent": ""},
+            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            	var dcn=row.DCN!=undefined ? row.DCN : "";
+            	var document_no=row.document_no!=undefined ? row.document_no : "";
+            	var version=row.document_no!=undefined ? row.version : "";
+                var  str="<i class=\"glyphicon glyphicon-search bigger-130\" title=\"Display\" " +
+                		"onclick=\"javascript:window.location = " +
+                		"('showBomInfo?version="+version+"&projectNo="+row['project_no']+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
+                				"style='color:blue;cursor: pointer;'></i>&nbsp;";
+            	return str;
+                },
+            },
+            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            	var dcn=row.DCN!=undefined ? row.DCN : "";
+            	var document_no=row.document_no!=undefined ? row.document_no : "";
+            	var version=row.document_no!=undefined ? row.version : "";
+                var  str="&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" " +
+                  "onclick=\"javascript:window.location = " +
+                  "('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"&version="+version+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
+                  		"style='color:blue;cursor: pointer;'></i>&nbsp;";
+            	return str;
+                },
+            }
+        ],
 	});
 	$("#tableResult_info").addClass('col-xs-6');
 	$("#tableResult_paginate").addClass('col-xs-6');

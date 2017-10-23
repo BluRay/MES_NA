@@ -62,6 +62,6 @@ public interface IProductionService {
 	public int measuresAbnormity(Map<String, Object> conditionMap);
 	
 	public List<Map<String,Object>> getMaterialRequirement(Map<String, Object> condMap);
-
-
+	public int printMaterialRequirement(Map<String, Object> conditionMap);
+	public int getLineDisCount(Map<String,Object> conditionMap);
 }

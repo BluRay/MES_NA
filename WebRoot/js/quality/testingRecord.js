@@ -143,7 +143,6 @@ function ajaxQuery(){
             param.length = data.length;//页面显示记录条数，在页面显示每页显示多少项的时候
             param.start = data.start;//开始的记录序号
             param.page = (data.start / data.length)+1;//当前页码
-
             $.ajax({
                 type: "post",
                 url: "getTestingRecordList",
@@ -184,7 +183,6 @@ function ajaxQuery(){
         ],
 	});
 }
-
 function getTestingTemplate(){
 	var testing_type=$("#testing_type_value :selected").attr('keyvalue');
 	if(testing_type==undefined || testing_type==''){
@@ -248,7 +246,6 @@ function getDetail(bus_number,test_type_value){
 	})
 	return detail;
 }
-
 function ajaxSave(){
 	if($("#bus_number").val()==''){
 		alert(Warn['P_common_02']);
@@ -374,11 +371,9 @@ function showInfoPage(row){
 	drawDetailTable("#tableDetail",detail_list);
 	$(".divLoading").hide();
 }
-
 function drawDetailTable(tableId,data){
 	var tb_detail=$(tableId).dataTable({
 		paiging:false,
-		 keys: true,
 		ordering:false,
 		searching: false,
 		autoWidth:false,
@@ -390,8 +385,6 @@ function drawDetailTable(tableId,data){
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		language: {
-		},
 		data:data||{},
 		columns: [
             {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
@@ -408,12 +401,10 @@ function drawDetailTable(tableId,data){
 		$("#tableDetail_wrapper .dataTables_scrollHead").css("width",head_width-17);
 	}
 }
-
 function showEditPage(row,type){
 	$("#show_bus_number").text(row.bus_number);
 	$(".divLoading").addClass("fade in").show();
 	var detail_list=getDetail(row.bus_number,row.test_type_value);
-	
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:945,
 		height:550,
@@ -422,19 +413,19 @@ function showEditPage(row,type){
 		title_html: true,
 		buttons: [ 
 			{
-					text: "Cancel",
-					"class" : "btn btn-minier",
-					click: function() {
-						$( this ).dialog( "close" ); 
-					} 
-				},
-				{
-					text: "Save",
-					"class" : "btn btn-primary btn-minier",
-					click: function() {
-						ajaxUpdate(type); 
-					} 
-				}
+				text: "Cancel",
+				"class" : "btn btn-minier",
+				click: function() {
+					$( this ).dialog( "close" ); 
+				} 
+			},
+			{
+				text: "Save",
+				"class" : "btn btn-primary btn-minier",
+				click: function() {
+					ajaxUpdate(type); 
+				} 
+			}
 		]
 	});
 	//先destroy datatable，隐藏form
@@ -455,7 +446,6 @@ function editDetailTable(tableId,data,type){
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
              }},
              {"title":"Re Inspection","class":"center","data": "re_inspection","defaultContent": ""},
-            
          ];
 	if(type=='repeat'){
 		columns=[

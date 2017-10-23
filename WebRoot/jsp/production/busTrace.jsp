@@ -79,19 +79,17 @@
 		</div><!-- /.main-container -->
 	</div>
 	</body>
-	<script src="../assets/js/fuelux/fuelux.tree.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.ui.touch-punch.min.js"></script>
 	<script src="../assets/js/jquery.gritter.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
-	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../assets/js/ace/elements.fileinput.js"></script>
 	<script type="text/javascript" src="../js/jquery.form.js"></script>
-	<script type="text/javascript" src="../js/datePicker/WdatePicker.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script type="text/javascript" src="../js/jsrender.min.js"></script>
+	<script type="text/javascript" src="../js/alertMessage.js"></script>
 	<script type="text/javascript" src="../js/production/busTrace.js"></script>
 </html>

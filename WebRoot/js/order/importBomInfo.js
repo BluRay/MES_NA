@@ -23,6 +23,10 @@ $(document).ready(function(){
 	
 	//ajaxQuery();
 	$("#btn_upload").click (function () {
+		if($("#file").val()==''){
+			alert(Warn['P_common_07']);
+			return false;
+		}
 		$(".divLoading").addClass("fade in").show();
 		$("#uploadForm").ajaxSubmit({
 			url:"uploadBomInfo",
@@ -49,7 +53,6 @@ $(document).ready(function(){
 			            {"title":"Note","class":"center","data": "note","defaultContent": ""},
 			            {"title":"Message","class":"center","data": "error","defaultContent": ""}
 			        ];
-
 					$("#tableResult").DataTable({
 						paiging:false,
 						fixedColumns:   { //固定列，行有错位现象
@@ -81,7 +84,6 @@ $(document).ready(function(){
 			                	}
 			                }   
 			                },
-			                //{ "sWidth": "620px", "aTargets": [3] }
 			            ],
 						data:datalist,
 						columns:columns
@@ -93,7 +95,10 @@ $(document).ready(function(){
 				var head_width=$(".dataTables_scrollHead").width();
                 $(".dataTables_scrollHead").css("width",head_width-17);
 				$(".divLoading").hide();
-			}			
+			},
+			complete:function(){
+				$("#uploadForm").reset();
+			}		
 		});
 	});
 	$('#btnSave').click(function(event) {
@@ -101,7 +106,7 @@ $(document).ready(function(){
 		var trs=$("#tableResult tbody").find("tr");
 		if(trs.length==0){
 			save_flag=false;
-			alert("没有可保存的数据");
+			alert(Warn['P_common_05']);
 			return false;
 		}
 		var addList=[];
@@ -111,7 +116,7 @@ $(document).ready(function(){
 			if(error!=''){
 				var item_no = $(tds).eq(0).html();
 				save_flag=false;
-				alert("Item:"+item_no+" 数据存在异常，请修改后在导入");
+				alert(item_no+Warn['P_common_06']);
 				return false;
 			}
 			var item_no = $(tds).eq(0).html();
@@ -156,17 +161,17 @@ $(document).ready(function(){
 });
 function ajaxSave(addList){
 	if($("#documentNo").val()==''){
-		alert("Document No. cannot be null");
+		alert(Warn['P_importBomInfo_01']);
 		$("#documentNo").focus();
 		return false;
 	}
 	if($("#version").val()==''){
-		alert("Version cannot be null");
+		alert(Warn['P_importBomInfo_02']);
 		$("#version").focus();
 		return false;
 	}
 	if($("#dcn").val()==''){
-		alert("DCN cannot be null");
+		alert(Warn['P_importBomInfo_03']);
 		$("#dcn").focus();
 		return false;
 	}
@@ -190,13 +195,13 @@ function ajaxSave(addList){
             	//$('#tableResult tbody').html("");
             	$.gritter.add({
 					title: 'Message：',
-					text: "<h5>"+response.message+"！</h5>",
+					text: "<h5>"+Warn['P_common_03']+"！</h5>",
 					class_name: 'gritter-info'
 				});
             }else{
             	$.gritter.add({
 					title: 'Message：',
-					text: "<h5>"+response.message+"！</h5>",
+					text: "<h5>"+Warn['P_common_04']+"</h5>",
 					class_name: 'gritter-info'
 				});
             }

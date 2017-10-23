@@ -11,12 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletContext;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,14 +25,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.byd.bms.order.service.IOrderService;
 import com.byd.bms.production.service.IProductionService;
-import com.byd.bms.setting.model.BmsBaseFactory;
 import com.byd.bms.setting.service.ISettingService;
 import com.byd.bms.util.ExcelModel;
 import com.byd.bms.util.ExcelTool;
-import com.byd.bms.util.HttpUtil;
 import com.byd.bms.util.controller.BaseController;
 import com.byd.bms.util.service.ICommonService;
 /**
@@ -46,7 +40,7 @@ import com.byd.bms.util.service.ICommonService;
 @Controller
 @RequestMapping("/production")
 public class ProductionController extends BaseController {
-	static Logger logger = Logger.getLogger(ProductionController.class.getName());
+	static Logger logger = Logger.getLogger("ProductionController");
 	@Autowired
 	protected IProductionService productionService;
 	@Autowired
@@ -899,6 +893,37 @@ public class ProductionController extends BaseController {
 		datalist = productionService.getMaterialRequirement(condMap);
 		initModel(true,"success",datalist);
 		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/printMaterialRequirement")
+	@ResponseBody
+	public ModelMap printMaterialRequirement() {
+		//生成送货单号
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+		String dis_date = df.format(new Date());
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("dis_date", dis_date);
+		SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df2.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		
+		int dis_count = productionService.getLineDisCount(condMap)+1;
+		String dis_no = dis_date +  String.format("%4d", dis_count).replace(" ", "0");
+		logger.info("-->dis_no = " + dis_no);
+		
+		String conditions=request.getParameter("conditions");
+		JSONArray jsonArray=JSONArray.fromObject(conditions);
+		for(int i=0;i<jsonArray.size();i++){
+			JSONObject object = (JSONObject)jsonArray.get(i);	
+			logger.info(object);
+			Map<String,Object> condMap2=new HashMap<String,Object>();
+			condMap2.put("dis_no", dis_no);
+			//写入送货流水表[BMS_NA_LINE_DISTRIBUTION]
+		}
+		
+		
+		
 		return model;
 	}
 	

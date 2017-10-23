@@ -7,8 +7,11 @@
 		<title>Bus Trace</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link rel="stylesheet"
+			href="../assets/css/fixedColumns.bootstrap.min.css" />
+		<link rel="stylesheet"
+			href="../assets/css/fixedColumns.dataTables.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
-		<link rel="stylesheet" href="../assets/css/jquery-ui.custom.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
 	</head>
 	<body class="no-skin" style="font-family: 'Microsoft YaHei';">
@@ -23,7 +26,7 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/MES/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
 						<li class="active">Bus Trace</li>
 					</ul><!-- /.breadcrumb -->
@@ -54,15 +57,19 @@
 								<td>&nbsp;Bus No.：</td>
 								<td><input id="search_busNumber"  style="width:150px" type="text" > </td>
 								<td>
-								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="查询" style="margin-left: 10px;"></input>
+								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="Search" style="margin-left: 10px;"></input>
 <!-- 								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="新增" style="margin-left: 2px;"></input> -->
 								</td>
 							</tr>
 						</table>	
 					</div>
-					<table id="tableData" class="table table-striped table-bordered table-hover" style="overflow-x:auto;font-size: 12px;">
-					</table>
+					<div class="row" >
+						<div class="col-xs-12 " id="scroll_div">
+							<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
+							</table>
+						</div>
 					</div>
+				</div>
 			</div><!-- /.main-content -->
 			
 			<div id="dialog-edit" class="hide" style="align:center;width:900px;height:600px">
@@ -85,19 +92,30 @@
 		</div><!-- /.main-container -->
 	</div>
 	</body>
-	<script src="../assets/js/fuelux/fuelux.tree.min.js"></script>
+<!-- 	<script src="../assets/js/jquery-ui.min.js"></script> -->
+<!-- 	<script src="../assets/js/jquery.ui.touch-punch.min.js"></script> -->
+<!-- 	<script src="../assets/js/jquery.gritter.min.js"></script> -->
+<!-- 	<script src="../assets/js/jquery.dataTables.min.js"></script> -->
+<!-- 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script> -->
+<!-- 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script> -->
+<!-- 	<script src="../assets/js/bootstrap3-typeahead.js"></script> -->
+<!-- 	<script src="../assets/js/ace/elements.fileinput.js"></script> -->
+<!-- 	<script type="text/javascript" src="../js/jquery.form.js"></script> -->
+<!-- 	<script type="text/javascript" src="../js/common.js"></script> -->
+<!-- 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script> -->
+<!-- 	<script type="text/javascript" src="../js/jsrender.min.js"></script> -->
+<!-- 	<script type="text/javascript" src="../js/alertMessage.js"></script> -->
+<!-- 	<script type="text/javascript" src="../js/quality/keyPartsTrace.js"></script> -->
+    <script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
-	<script src="../assets/js/jquery.ui.touch-punch.min.js"></script>
-	<script src="../assets/js/jquery.gritter.min.js"></script>
-	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
+	<script src="../assets/js/dataTables.rowGroup.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
-	<script src="../assets/js/ace/elements.fileinput.js"></script>
-	<script type="text/javascript" src="../js/jquery.form.js"></script>
-	<script type="text/javascript" src="../js/datePicker/WdatePicker.js"></script>
-	<script type="text/javascript" src="../js/common.js"></script>
-	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
-	<script type="text/javascript" src="../js/jsrender.min.js"></script>
-	<script type="text/javascript" src="../js/quality/keyPartsTrace.js"></script>
+	<script src="../assets/js/ace-elements.min.js"></script>
+	<script src="../assets/js/jquery.gritter.min.js"></script>
+	<script src="../js/jquery.form.js"></script>	
+	<script src="../js/common.js"></script>
+	<script src="../js/alertMessage.js"></script>
+	<script src="../js/quality/keyPartsTrace.js"></script>
 </html>

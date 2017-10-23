@@ -12,12 +12,18 @@
 		<link rel="stylesheet" href="../assets/css/jquery-ui.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery-ui.custom.min.css" />
 		<link rel="stylesheet" href="../assets/css/jquery.gritter.css" />
+		<link rel="stylesheet" href="../css/printable.css" type="text/css" media="print">
+		<style type="text/css" media="screen">
+	        .printable{
+	            display: none;
+	        }
+	  </style> 
 	</head>
 	<body class="no-skin" style="font-family: 'Microsoft YaHei';">
 		<!-- 头 -->
 		<jsp:include page="../top.jsp" flush="true"/>
 		<!-- 身 -->
-		<div class="main-container" id="main-container">
+		<div class="main-container notPrintable" id="main-container">
 			<!-- 左边菜单 -->
 			<jsp:include page="../left.jsp" flush="true"/>
 			<!-- 主体 -->
@@ -84,45 +90,47 @@
 					</div>
 			</div><!-- /.main-content -->
 			
-			<div id="dialog-lead" class="hide" style="align:center;width:700px;height:500px">
-				<form>
-					<table>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">BusNumber：</td><td colspan="3"><input type="text" disabled="disabled" id="lead_busNumber" placeholder="BusNumber..." class="form-control" style="width:250px" /></td>
+			<div id="dialog-print" class="hide notPrintable" style="align:center;width:700px;height:500px">
+				<table id="tableDataShow" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
+				<thead><tr>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">SAPmaterial</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
 					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">Plant：</td><td style="width:150px"><input type="text" disabled="disabled" id="lead_plant" placeholder="Plant..." class="form-control" style="width:250px" /></td>
-						<td align="right" style="width:100px">Workshop：</td><td style="width:150px"><input type="text" disabled="disabled" id="lead_workshop" placeholder="Workshop..." class="form-control" style="width:250px" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">Source Workshop：</td><td style="width:150px"><input type="text" disabled="disabled" id="lead_src_workshop" placeholder="Source Workshop..." class="form-control" style="width:250px" /></td>
-						<td align="right" style="width:100px">Location：</td><td style="width:150px"><input type="text" disabled="disabled" id="lead_location" placeholder="Location..." class="form-control" style="width:250px" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">Orientation：</td><td style="width:150px"><input type="text" disabled="disabled" class="form-control" placeholder="Orientation..." id="lead_orientation" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">ProblemDescription：</td><td colspan="3"><input type="text" disabled="disabled" id="lead_problemDescription" placeholder="ProblemDescription..." class="form-control" style="width:400px" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">Defect Codes：</td><td colspan="3"><input type="text" disabled="disabled" id="lead_defectcodes" placeholder="Defect Codes..." class="form-control" style="width:400px" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">Responsible Leader：</td><td style="width:150px"><input type="text" disabled="disabled" class="form-control" placeholder="Responsible Leader..." id="lead_responsibleleader" /></td>
-					</tr>
-					<tr style="height:40px">
-						<td align="right" style="width:100px">QC inspector：</td><td style="width:150px"><input type="text" disabled="disabled" class="form-control" placeholder="QC inspector..." id="lead_QCinspector" /></td>
-					</tr>
-					
-					</table>
-				</form>
-			
+				</thead>
+				<tbody></tbody>
+				</table>
 			</div>
+			
+			
 
 			<!-- 脚 -->
 			<%-- <jsp:include page="footer.jsp" flush="true"/> --%>
 			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a>
 		</div><!-- /.main-container -->
+				
+	</div>
+	<div id="printarea" class="printConfigure printable toPrint">
+		<table id="tableDataPrint" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
+		<thead><tr>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">SAPmaterial</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
+			<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+		</table>
+		<h2>printarea</h2>
 	</div>
 	</body>
 	<script src="../js/datePicker/WdatePicker.js"></script>

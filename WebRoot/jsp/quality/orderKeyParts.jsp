@@ -85,7 +85,7 @@
 									</div>
 									<div class="col-sm-4">
 										<input id="btn_upload" style="padding:0px 0px;font-size: 12px;height:30px" class="btn btn-primary" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
-										<a href="../docs/keyPartsDetail.xlsx">Download the pilot template</a>
+										<a href="../docs/busTraceTemplate.xlsx">Download the pilot template</a>
 									</div>							
 								</form>
 							</div>									

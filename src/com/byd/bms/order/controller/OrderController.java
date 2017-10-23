@@ -546,7 +546,7 @@ public class OrderController extends BaseController{
 	public ModelMap showProjectBusNumber(){
 		Map<String,Object> conditionMap=new HashMap<String,Object>();
 		conditionMap.put("project_id",request.getParameter("project_id"));
-		initModel(true,"查询成功！",orderService.getBusNumberByProject(conditionMap));
+		initModel(true,"",orderService.getBusNumberByProject(conditionMap));
 		return mv.getModelMap();
 	}
 }

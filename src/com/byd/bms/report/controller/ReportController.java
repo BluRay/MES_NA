@@ -38,9 +38,9 @@ public class ReportController extends BaseController {
 		return mv;
 	}
 	
-	@RequestMapping("/factoryOutputReport")
-	public ModelAndView factoryOutputReport(){
-		mv.setViewName("report/factoryOutputReport");
+	@RequestMapping("/yieldReport")
+	public ModelAndView yieldReport(){
+		mv.setViewName("report/yieldReport");
 		return mv;
 	}
 	

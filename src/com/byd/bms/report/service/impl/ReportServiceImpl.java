@@ -94,49 +94,48 @@ public class ReportServiceImpl implements IReportService {
 			Map<String, Object> map_sum = new HashMap<String,Object>();
 			//自制件下线
 			List<Map<String, Object>> conditionMap = new ArrayList<Map<String, Object>>();
-			for(int i = 0; i < dateArray.length; i++) {	
-				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
-				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "自制件车间(下)");
-				conditionMap1.put("workshop_id", "1");
-				conditionMap1.put("startDate", startDate);
-				conditionMap1.put("endDate", endDate);
-				conditionMap.add(conditionMap1);
-			}
+//			for(int i = 0; i < dateArray.length; i++) {	
+//				Map<String,Object> conditionMap1=new HashMap<String,Object>();
+//				conditionMap1.put("factory_id", cur_factoryid);
+//				conditionMap1.put("data", dateArray[i]);
+//				conditionMap1.put("workshop", "自制件车间(下)");
+//				conditionMap1.put("workshop_id", "1");
+//				conditionMap1.put("startDate", startDate);
+//				conditionMap1.put("endDate", endDate);
+//				conditionMap.add(conditionMap1);
+//			}
 			List<Map<String, Object>> output_result =  new ArrayList<Map<String, Object>>();
-			output_result = reportDao.queryFactoryZzjOutputReportData(conditionMap);		
-			datalist.add(output_result.get(0));
-			map_sum.putAll(output_result.get(0));
-			//System.arraycopy(output_result.get(0),0,map_sum,0,output_result.get(0).size());
+//			output_result = reportDao.queryFactoryZzjOutputReportData(conditionMap);		
+//			datalist.add(output_result.get(0));
+//			map_sum.putAll(output_result.get(0));
 			//部件下线
-			conditionMap = new ArrayList<Map<String, Object>>();
-			for(int i = 0; i < dateArray.length; i++) {	
-				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
-				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "部件车间(下)");
-				conditionMap1.put("workshop_id", "2");
-				conditionMap1.put("startDate", startDate);
-				conditionMap1.put("endDate", endDate);
-				conditionMap.add(conditionMap1);
-			}
-			output_result =  new ArrayList<Map<String, Object>>();
-			output_result = reportDao.queryFactoryBjOutputReportData(conditionMap);		
-			datalist.add(output_result.get(0));
-			//统计汇总
-			map_sum.put("SUM", Double.valueOf(map_sum.get("SUM").toString()) + Double.valueOf(output_result.get(0).get("SUM").toString()));
-			for(int i = 0; i < dateArray.length; i++) {	
-				map_sum.put(dateArray[i], Double.valueOf(map_sum.get(dateArray[i]).toString()) + Double.valueOf(output_result.get(0).get(dateArray[i]).toString()));
-			}
+//			conditionMap = new ArrayList<Map<String, Object>>();
+//			for(int i = 0; i < dateArray.length; i++) {	
+//				Map<String,Object> conditionMap1=new HashMap<String,Object>();
+//				conditionMap1.put("factory_id", cur_factoryid);
+//				conditionMap1.put("data", dateArray[i]);
+//				conditionMap1.put("workshop", "部件车间(下)");
+//				conditionMap1.put("workshop_id", "2");
+//				conditionMap1.put("startDate", startDate);
+//				conditionMap1.put("endDate", endDate);
+//				conditionMap.add(conditionMap1);
+//			}
+//			output_result =  new ArrayList<Map<String, Object>>();
+//			output_result = reportDao.queryFactoryBjOutputReportData(conditionMap);		
+//			datalist.add(output_result.get(0));
+//			//统计汇总
+//			map_sum.put("SUM", Double.valueOf(map_sum.get("SUM").toString()) + Double.valueOf(output_result.get(0).get("SUM").toString()));
+//			for(int i = 0; i < dateArray.length; i++) {	
+//				map_sum.put(dateArray[i], Double.valueOf(map_sum.get(dateArray[i]).toString()) + Double.valueOf(output_result.get(0).get(dateArray[i]).toString()));
+//			}
 			//焊装下线 welding_offline_date
 			conditionMap = new ArrayList<Map<String, Object>>();
 			for(int i = 0; i < dateArray.length; i++) {	
 				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
+				conditionMap1.put("production_plant_id", cur_factoryid);
 				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "welding_offline_date");
-				conditionMap1.put("workshop_name", "焊装车间(下)");
+				conditionMap1.put("workshop", "welding_offline");
+				conditionMap1.put("workshop_name", "Welding(Offline)");
 				conditionMap1.put("workshop_id", "3");
 				conditionMap1.put("startDate", startDate);
 				conditionMap1.put("endDate", endDate);
@@ -145,6 +144,7 @@ public class ReportServiceImpl implements IReportService {
 			output_result =  new ArrayList<Map<String, Object>>();
 			output_result = reportDao.queryFactoryOutputReportData(conditionMap);		
 			datalist.add(output_result.get(0));
+			map_sum.putAll(output_result.get(0));
 			//统计汇总
 			map_sum.put("SUM", Double.valueOf(map_sum.get("SUM").toString()) + Double.valueOf(output_result.get(0).get("SUM").toString()));
 			for(int i = 0; i < dateArray.length; i++) {	
@@ -155,10 +155,10 @@ public class ReportServiceImpl implements IReportService {
 			conditionMap = new ArrayList<Map<String, Object>>();
 			for(int i = 0; i < dateArray.length; i++) {	
 				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
+				conditionMap1.put("production_plant_id", cur_factoryid);
 				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "painting_offline_date");
-				conditionMap1.put("workshop_name", "涂装车间(下)");
+				conditionMap1.put("workshop", "painting_offline");
+				conditionMap1.put("workshop_name", "Painting(Offline)");
 				conditionMap1.put("workshop_id", "4");
 				conditionMap1.put("startDate", startDate);
 				conditionMap1.put("endDate", endDate);
@@ -177,10 +177,10 @@ public class ReportServiceImpl implements IReportService {
 			conditionMap = new ArrayList<Map<String, Object>>();
 			for(int i = 0; i < dateArray.length; i++) {	
 				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
+				conditionMap1.put("production_plant_id", cur_factoryid);
 				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "chassis_offline_date");
-				conditionMap1.put("workshop_name", "底盘车间(下)");
+				conditionMap1.put("workshop", "chassis_offline");
+				conditionMap1.put("workshop_name", "Chassis(Offline)");
 				conditionMap1.put("workshop_id", "5");
 				conditionMap1.put("startDate", startDate);
 				conditionMap1.put("endDate", endDate);
@@ -199,10 +199,10 @@ public class ReportServiceImpl implements IReportService {
 			conditionMap = new ArrayList<Map<String, Object>>();
 			for(int i = 0; i < dateArray.length; i++) {	
 				Map<String,Object> conditionMap1=new HashMap<String,Object>();
-				conditionMap1.put("factory_id", cur_factoryid);
+				conditionMap1.put("production_plant_id", cur_factoryid);
 				conditionMap1.put("data", dateArray[i]);
-				conditionMap1.put("workshop", "assembly_offline_date");
-				conditionMap1.put("workshop_name", "总装车间(下)");
+				conditionMap1.put("workshop", "assembly_offline");
+				conditionMap1.put("workshop_name", "Assembly(Offline)");
 				conditionMap1.put("workshop_id", "6");
 				conditionMap1.put("startDate", startDate);
 				conditionMap1.put("endDate", endDate);
@@ -217,7 +217,7 @@ public class ReportServiceImpl implements IReportService {
 				map_sum.put(dateArray[i], Double.valueOf(map_sum.get(dateArray[i]).toString()) + Double.valueOf(output_result.get(0).get(dateArray[i]).toString()));
 			}
 			//计划工厂汇总
-			map_sum.put("WORKSHOP", "汇总");
+			map_sum.put("WORKSHOP", "Total");
 			datalist.add(map_sum);
 		}
 		return datalist;
