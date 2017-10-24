@@ -80,6 +80,9 @@ public interface IProductionDao {
 	void batchUpdateEcnBus(List<Map<String, Object>> bus_list);
 
 	int queryUnQCBusCount(String ecn_item_id);
+	
+	List<Map<String,Object>> queryWorkshopStock(Map<String, Object> condMap);
+	
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);

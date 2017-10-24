@@ -12,17 +12,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
-
 import com.byd.bms.production.dao.IProductionDao;
 import com.byd.bms.production.service.IProductionService;
 import com.byd.bms.util.DataSource;
@@ -577,6 +573,14 @@ public class ProductionServiceImpl implements IProductionService {
 			model.put("message", "Failed!");
 			throw new RuntimeException(e.getCause());
 		}	
+		
+	}
+
+	
+	@Override
+	public void getWorkshopStock(Map<String, Object> condMap, ModelMap model) {
+		List<Map<String, Object>> stock_list=productionDao.queryWorkshopStock(condMap);
+		model.put("data", stock_list);
 		
 	}
 

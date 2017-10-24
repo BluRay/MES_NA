@@ -35,7 +35,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
 						href="/MES/index">index</a></li>
-					<li class="active">BOM</li>
+					<li class="active">Project</li>
+					<li class="active">Project BOM</li>
 				</ul>
 				<!-- /.breadcrumb -->
 

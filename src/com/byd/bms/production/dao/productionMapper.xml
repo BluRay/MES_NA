@@ -4,9 +4,16 @@
 <!-- ########################### xiong jianwu start#############################-->
 	<select id="queryLineProcessList" parameterType="Map" resultType="Map">
 		SELECT p.line line_name,p.workshop workshop_name,p.factory factory_name,
-		concat('[',group_concat('{"id":',p.id,',"code":"',TRIM(p.station_code),'","monitor_flag":"',p.monitory_point_flag,'","name":"',TRIM(p.station_name),'","plan_node":"',ifnull(k.key_name,''),'"}' order by p.id),']') process_list
+		concat('[',group_concat('{"id":',p.id,',"code":"',TRIM(p.station_code),'","status":"',(case when s.abnormal_qty>0 then 'abnormal' else 'normal' end ),       
+		'","monitor_flag":"',p.monitory_point_flag,'","name":"',TRIM(p.station_name),'","plan_node":"',ifnull(k.key_name,''),'"}' order by p.id),']') process_list
 		FROM BMS_NA_BASE_STATION p
 		left join BMS_NA_BASE_KEY k on k.value=p.plan_node_id and k.key_code='PLAN_CODE'
+		left join ( select count(a.bus_number) abnormal_qty,p.id,p.station_code
+		from BMS_NA_PRODUCTION_ABNORMITY a
+		left join BMS_NA_BASE_STATION p on a.abnormal_station_id=p.id
+		where (a.measures is null or a.measures='') and a.plant=#{factory} and a.workshop=#{workshop}
+		group by p.id			
+		)s on s.id=p.id
 		where p.factory=#{factory} and p.workshop=#{workshop} and p.delete_flag='0'
 		group by p.line
 	</select>
@@ -346,6 +353,74 @@
 		select count(id) from BMS_NA_ECN_ITEM_BUS where ecn_item_id=#{ecn_item_id} 
 		and (qc_date&lt;=0 or qc_date is null)
 	</select>
+	
+	<select id="queryWorkshopStock" parameterType="Map" resultType="Map">
+		select count(a.bus_number) qty, 'Test' key_name
+		from (
+		select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station='Test' and r.plant=#{factory} and r.on_offline='online' and r.rework='0'
+		group by r.bus_number,r.on_offline) a
+		left join 
+		(select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station='Test' and r.plant=#{factory} and r.on_offline='offline' and r.rework='0'
+		group by r.bus_number,r.on_offline) b 
+		on a.bus_number=b.bus_number
+		where a.pty>0 and (b.pty is null or b.pty=0)
+		union all
+		select count(a.bus_number) qty, 'Pre-Paint' key_name
+		from (
+		select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station=(select station_name from BMS_NA_BASE_SCAN_RULE where factory=#{factory} and workshop='Painting' order by sequence asc limit 1)
+		and r.plant=#{factory} and r.on_offline='online' and r.rework='0'
+		group by r.bus_number,r.on_offline) a
+		left join 
+		(select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station=(select station_name from BMS_NA_BASE_SCAN_RULE where factory=#{factory} and workshop='Painting' order by sequence asc  limit 1) 
+		and r.plant=#{factory} and r.on_offline='offline' and r.rework='0'
+		group by r.bus_number,r.on_offline) b 
+		on a.bus_number=b.bus_number
+		where a.pty>0 and (b.pty is null or b.pty=0)
+		union all
+		select count(a.bus_number) qty, 'Painting' key_name
+		from (
+		select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station=(select station_name from BMS_NA_BASE_SCAN_RULE where factory=#{factory} and workshop='Painting' order by sequence desc limit 1)
+		and r.plant=#{factory} and r.on_offline='online' and r.rework='0'
+		group by r.bus_number,r.on_offline) a
+		left join 
+		(select count(r.id) pty,r.on_offline,r.bus_number
+		from BMS_NA_BUS_SCANNING_RECORD r
+		where r.station=(select station_name from BMS_NA_BASE_SCAN_RULE where factory=#{factory} and workshop='Painting' order by sequence desc  limit 1) 
+		and r.plant=#{factory} and r.on_offline='offline' and r.rework='0'
+		group by r.bus_number,r.on_offline) b 
+		on a.bus_number=b.bus_number
+		where a.pty>0 and (b.pty is null or b.pty=0)
+		union all
+		select count(b.bus_number) qty,'Post-Paint' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.painting_offline>0 and b.chassis_online &lt;=0 and production_plant_id=#{factory_id}
+		union all
+		select count(b.bus_number) qty,'Welding' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.welding_online>0 and b.welding_offline &lt;=0 and production_plant_id=#{factory_id}
+		union all
+		select count(b.bus_number) qty,'Chassis' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.chassis_online>0 and b.chassis_offline &lt;=0 and production_plant_id=#{factory_id}
+		union all
+		select count(b.bus_number) qty,'Assembly' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.assembly_online>0 and b.assembly_offline &lt;=0 and production_plant_id=#{factory_id}
+		union all
+		select count(b.bus_number) qty,'Outgoing' key_name
+		from BMS_NA_PROJECT_BUS b
+		where b.outgoing>0 and b.delivery &lt;=0 and production_plant_id=#{factory_id}
+	</select>
 <!-- ########################### xiong jianwu end#############################-->	
 
 	<select id="getVinTotalCount" parameterType="Map" resultType="int">
@@ -555,10 +630,13 @@
 		ORDER BY B.bus_number LIMIT ${planQty}
 	</select>
 	<select id="getBomListByProject" parameterType="Map" resultType="Map">
-	SELECT T.item_no,#{station} AS 'station',#{bus_number} AS 'bus_number',T.SAP_material,T.BYD_NO,T.part_name,T.specification,T.quantity,T.unit,T.vendor, 
+	SELECT T.item_no,#{station} AS 'station',#{bus_number} AS 'bus_number',T.SAP_material,T.BYD_NO,
+	T.part_name,T.specification,T.quantity,T.unit,T.vendor, 
 	(SELECT IFNULL(SUM(D.dis_quantity),0) FROM BMS_NA_LINE_DISTRIBUTION D WHERE 
 	D.bus_number = #{bus_number} AND D.SAP_material = T.SAP_material) 
-	AS dis_qty
+	AS dis_qty,
+	(SELECT IFNULL(SUM(L.line_quantity),0) AS line_quantity FROM BMS_NA_LINE_INVENTORY L WHERE L.bus_number = #{bus_number}
+	AND L.station = #{station} AND L.sap_material = T.SAP_material) AS line_quantity 
 	FROM BMS_NA_PROJECT_BOM_ITEM T 
 	WHERE T.bom_head_id = (SELECT H.id FROM BMS_NA_PROJECT_BOM_HEAD H WHERE H.project_id = #{project_id} ORDER BY H.version DESC LIMIT 1)
 	</select>
@@ -596,11 +674,11 @@
 	</update>
 	<select id="getLineInventoryQty" parameterType="Map" resultType="int">
 	SELECT IFNULL(SUM(line_quantity),0) AS line_quantity FROM BMS_NA_LINE_INVENTORY 
-	WHERE bus_number = #{bus_number} AND sap_material = #{sap_material}
+	WHERE bus_number = #{bus_number} AND sap_material = #{sap_material} AND station_id = #{station_id}
 	</select>
 	<update id="updateLineInventoryQty" parameterType="Map">
 		UPDATE BMS_NA_LINE_INVENTORY SET line_quantity = line_quantity + ${dis_quantity}
-		WHERE bus_number = #{bus_number} AND sap_material = #{sap_material}
+		WHERE bus_number = #{bus_number} AND sap_material = #{sap_material} AND station_id = #{station_id}
 	</update>
 	<insert id="insertLineInventory" useGeneratedKeys="true" keyProperty="id" parameterType="Map">
 	INSERT INTO BMS_NA_LINE_INVENTORY

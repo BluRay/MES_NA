@@ -295,7 +295,7 @@ function ajaxQuery(){
 		    	$("<td style=\"text-align:center;\" />").html(value.quantity).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.dis_qty).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html("0").appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.line_quantity).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' onkeyup=\"value=value.replace(/[^\\d]/g,'')\" type='text'/>").appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    	
 		    	

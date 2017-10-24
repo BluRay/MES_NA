@@ -81,7 +81,7 @@
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Dispatch</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">LineQuantity</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">LineQuantity</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
 						</tr>

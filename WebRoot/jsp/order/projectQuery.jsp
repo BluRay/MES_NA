@@ -32,9 +32,9 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">Index</a></li>
-						<li class="active">Project Management</li>
-						<li class="active">Search</li>
+							href="/MES/index">Index</a></li>
+						<li class="active">Project</li>
+						<li class="active">Project Search</li>
 					</ul>
 					<!-- /.breadcrumb -->
 
@@ -92,7 +92,7 @@
 				    <table id="tableBom" style="font-size: 12px;width:1105px;overflow-x:auto" class="table table-bordered table-striped">
 					</table>
 				</div>
-				<div id="dialog-message" class="hide" style="width: calc(100vw + 15px)">   <!-- style="width: calc(100vw + 10px)"-->
+				<div id="dialog-message" class="hide" style="width: calc(100vw + 17px)">   <!-- style="width: calc(100vw + 10px)"-->
 					<table id="tableBusNumber" style="font-size: 12px;width:1900px;" class="table table-bordered table-striped">
 					</table>
 				</div>

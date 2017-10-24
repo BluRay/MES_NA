@@ -403,7 +403,7 @@
 	<select id="queryBusNumberByProject" parameterType="Map" resultType="Map">
 		SELECT b.id,b.project_id,o.project_no,b.bus_number,b.VIN,b.current_station,p.station,
 		b.welding_online,b.welding_offline,b.painting_online,b.painting_offline,b.chassis_online,b.chassis_offline,
-		b.assembly_online,b.assembly_offline,b.testing,b.outgoing,o.project_no,o.project_name
+		b.assembly_online,b.assembly_offline,b.testing,b.outgoing,b.delivery,o.project_no,o.project_name
 		FROM BMS_NA_PROJECT_BUS b
 		LEFT OUTER JOIN BMS_NA_PROJECT o ON b.project_id = o.id
 		LEFT OUTER JOIN BMS_NA_BASE_PROCESS p ON b.current_station = p.id

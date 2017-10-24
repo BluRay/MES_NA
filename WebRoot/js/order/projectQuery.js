@@ -12,7 +12,7 @@ $(document).ready(function(){
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			//window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
@@ -101,7 +101,6 @@ function ajaxQuery(){
                     $(".divLoading").hide();
                 }
             });
-		
 		},
 		columns: [
             {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
@@ -133,137 +132,134 @@ function ajaxQuery(){
 	$("#tableOrder_paginate").addClass('col-xs-6');
 	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
 }
-
-
-
 //----------START bootstrap initTable ----------
 function initTable() {
 	var columns=[
-		         [
-		            {
-		            	field: 'project_no',title: 'Project No.',align: 'center',width:'250',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-			        	return {css: {"padding-left": "3px", "padding-right": "2px","font-size":"12px"}};
-			        	}
-		            },{
-		            	field: 'project_name',title: 'Project Name',align: 'center',width:'90',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'delivery_date',title: 'Delivery Date',align: 'center',width:'100',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'plant',title: 'Plant',align: 'center',width:'150',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	},
-		    	      
-		            },{
-		            	field: 'customer',title: 'Customer',align: 'center',width:'60',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'quantity',title: 'Quantity',align: 'center',width:'150',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'welding_online_count',title: 'Welding Online',align: 'center',width:'150',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'welding_offline_count',title: 'Welding Offline',align: 'center',width:'60',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'painting_online_count',title: 'Painting Online',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'painting_offline_count',title: 'Painting Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'chassis_online_count',title: 'Chassis Online',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'chassis_offline_count',title: 'Chassis Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'assembly_online_count',title: 'Assembly Online',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'assembly_offline_count',title: 'Assembly Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'testing_count',title: 'Testing',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'outgoing_count',title: 'Outgoing',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: 'delivery_count',title: 'Delivered',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	}
-		            },{
-		            	field: '',title: 'BOM',align: 'center',width:'60',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        	},
-		    	        formatter:function(value,row,index){
-		    	        		return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(" + row.project_no+ ");' style='color:blue;cursor: pointer;'></i>";
-		    	        }
-		            },{
-		            	field: '',title: 'Details',align: 'center',width:'80',valign: 'middle',align: 'center',
-		                sortable: false,visible: true,footerFormatter: totalTextFormatter,
-		                cellStyle:function cellStyle(value, row, index, field) {
-		    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
-		    	        },
-		    	        formatter:function(value,row,index){
-		    	        		return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;'></i>";
-		    	        }
-		            }
-		        ]
-		    ];
+         [
+            {
+            	field: 'project_no',title: 'Project No.',align: 'center',width:'250',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+	        	return {css: {"padding-left": "3px", "padding-right": "2px","font-size":"12px"}};
+	        	}
+            },{
+            	field: 'project_name',title: 'Project Name',align: 'center',width:'90',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'delivery_date',title: 'Delivery Date',align: 'center',width:'100',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'plant',title: 'Plant',align: 'center',width:'150',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	},
+    	      
+            },{
+            	field: 'customer',title: 'Customer',align: 'center',width:'60',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'quantity',title: 'Quantity',align: 'center',width:'150',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'welding_online_count',title: 'Welding Online',align: 'center',width:'150',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'welding_offline_count',title: 'Welding Offline',align: 'center',width:'60',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'painting_online_count',title: 'Painting Online',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'painting_offline_count',title: 'Painting Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'chassis_online_count',title: 'Chassis Online',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'chassis_offline_count',title: 'Chassis Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'assembly_online_count',title: 'Assembly Online',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'assembly_offline_count',title: 'Assembly Offline',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'testing_count',title: 'Testing',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'outgoing_count',title: 'Outgoing',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: 'delivery_count',title: 'Delivered',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	}
+            },{
+            	field: '',title: 'BOM',align: 'center',width:'60',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        	},
+    	        formatter:function(value,row,index){
+    	        		return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBom(" + row.project_no+ ");' style='color:blue;cursor: pointer;'></i>";
+    	        }
+            },{
+            	field: '',title: 'Details',align: 'center',width:'80',valign: 'middle',align: 'center',
+                sortable: false,visible: true,footerFormatter: totalTextFormatter,
+                cellStyle:function cellStyle(value, row, index, field) {
+    	        	return {css: {"padding-left": "2px", "padding-right": "2px","font-size":"12px"}};
+    	        },
+    	        formatter:function(value,row,index){
+    	        		return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" onclick = 'ajaxShowBusNumber(" + row.id+ ");' style='color:blue;cursor: pointer;'></i>";
+    	        }
+            }
+        ]
+    ];
 	
     $table.bootstrapTable({
         height: getHeight(),
@@ -324,6 +320,10 @@ function ajaxShowBusNumber(project_id){
 				]
 			});
 			if(response.success){
+				if($.fn.dataTable.isDataTable("#tableBusNumber")){
+					$('#tableBusNumber').DataTable().destroy();
+					$('#tableBusNumber').empty();
+				}
 				drawBusInfoTable(response.data)
 			}
 		},
@@ -334,14 +334,11 @@ function ajaxShowBusNumber(project_id){
 }
 
 function drawBusInfoTable(data){
-	if($.fn.dataTable.isDataTable("#tableBusNumber")){
-		$('#tableBusNumber').DataTable().destroy();
-		$('#tableBusNumber').empty();
-	}
 	var t=$("#tableBusNumber").dataTable({
 		//serverSide: true,
 		fixedColumns: {
-            leftColumns:2
+            leftColumns:2,
+            //rightColumns:2
         },
         paiging:false,
 		ordering:false,
@@ -365,7 +362,7 @@ function drawBusInfoTable(data){
             },
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
             {"title":"VIN","class":"center","data":"VIN","width": "160px","defaultContent": ""},
-            {"title":"Station","class":"center","data":"station","defaultContent": ""},
+            {"title":"Station","class":"center","data":"current_station","defaultContent": ""},
             {"title":"Welding Online","class":"center","data":"welding_online","defaultContent": ""},
             {"title":"Welding Offline","class":"center","data":"welding_offline","defaultContent": ""},
             {"title":"Painting Online","class":"center","data":"painting_online","defaultContent": ""},
@@ -378,10 +375,11 @@ function drawBusInfoTable(data){
             {"title":"Outgoing","class":"center","data":"outgoing","defaultContent": ""},
             {"title":"Delivered","class":"center","data":"delivery","defaultContent": ""},
        ],
-       
 	});
-	var head_width=$(".dataTables_scrollHead").width();
-    $(".dataTables_scrollHead").css("width",head_width-15);
+	var head_width=$("#tableBusNumber_wrapper").width();
+	if(head_width>0){
+		$("#tableBusNumber_wrapper .dataTables_scrollHead").css("width",head_width-17);
+	}
 }
 function ajaxShowBom(project_no){
 	$(".divLoading").addClass("fade in").show();
