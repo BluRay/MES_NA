@@ -325,8 +325,6 @@ function ajaxShowBusNumber(project_id){
 			});
 			if(response.success){
 				drawBusInfoTable(response.data)
-			} else {
-				alert(response.message);
 			}
 		},
 		complete:function (response){
@@ -343,8 +341,7 @@ function drawBusInfoTable(data){
 	var t=$("#tableBusNumber").dataTable({
 		//serverSide: true,
 		fixedColumns: {
-            leftColumns:2,
-            rightColumns:0
+            leftColumns:2
         },
         paiging:false,
 		ordering:false,
@@ -358,12 +355,10 @@ function drawBusInfoTable(data){
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
-		language: {},
-		
-		destroy: true,
+		//destroy: true,
 		data:data,
 		columns: [
-            {"title":"No.","class":"center","data":"","width": "35px"
+            {"title":"No.","class":"center","data":"","width": "45px"
             	,"render":function(data,type,row,meta){
 					return meta.row + meta.settings._iDisplayStart + 1; // 序号值
 		        }
@@ -429,7 +424,7 @@ function drawBomTable(data){
 	var columns=[
 	    {"title":"item No.","class":"center","width":"45px","data":"item_no","defaultContent": ""},
 	    {"title":"SAP_material","class":"center","data":"SAP_material","defaultContent": ""},
-	    {"title":"BYD_P/N","class":"center","data":"BYD_PN","defaultContent": ""},
+	    {"title":"BYD_P/N","class":"center","data":"BYD_NO","defaultContent": ""},
 	    {"title":"Part Name","class":"center","data": "part_name","defaultContent": ""},
 	    {"title":"Specification","class":"center","width":"160px","data":"specification","defaultContent": ""},
 	    {"title":"Unit","class":"center","width":"45px","data": "unit","defaultContent": ""},
