@@ -346,6 +346,10 @@ function showInfoPage(row){
 			}
 		]
 	});
+	if($.fn.dataTable.isDataTable("#tableDetail")){
+		$('#tableDetail').DataTable().destroy();
+		$('#tableDetail').empty();
+	}
 	drawTplDetailTable("#tableDetail",detail_list,false);
 	$(".divLoading").hide();
 }

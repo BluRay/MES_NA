@@ -74,7 +74,7 @@
 					</form>
 						
 					<div class="row" >
-					<div class="col-xs-12 " id="scroll_div">
+					<div class="col-xs-12">
 						<table id="tableResult" class="table table-striped table-bordered table-hover  " style="font-size: 12px;" >
 						</table>	
 					</div>
@@ -95,7 +95,6 @@
 						</div>
 					</div>
 				</div>
-				
 			</div>		
 		
 		    <div id="dialog-add" class="hide">
@@ -113,16 +112,13 @@
 						</div>
 					</div>
 					<div class="row" style="margin-top:20px;">
-						<div class="col-xs-12" id="scroll_div" >
+						<div class="col-xs-12">
 							<table id="tableAddDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:755px;overflow:auto;text-align:center" >
 							</table>	
 						</div>
 					</div>
 				</form>
 			</div>
-			
-		</div>
-			<!-- /.main-container -->
 		</div>
 	</div>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>

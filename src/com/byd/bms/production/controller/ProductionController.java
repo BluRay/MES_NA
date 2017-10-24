@@ -11,9 +11,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.byd.bms.order.service.IOrderService;
 import com.byd.bms.production.service.IProductionService;
 import com.byd.bms.setting.service.ISettingService;
@@ -768,6 +772,24 @@ public class ProductionController extends BaseController {
 		mv.setViewName("production/busTrace");
 		return mv;
 	}
+	@RequestMapping("/productionsearchbusinfo")
+	public ModelAndView productionsearchbusinfo(){
+		mv.setViewName("production/productionsearchbusinfo");
+		return mv;
+	}
+	
+	@RequestMapping("/getProductionSearchBusInfo")
+	@ResponseBody
+	public ModelMap getProductionSearchBusInfo(){		
+		List<Map<String, String>> datalist = productionService.getProductionSearchBusinfo(request.getParameter("bus_number"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("data", datalist);
+		mv.clear();
+		mv.getModelMap().addAllAttributes(result);
+		model = mv.getModelMap();
+		return model;
+	}
+	
 	/*****************Start Abnormity 生产异常反馈 生产异常处理 AddBy:Yangke 171010************************************************************/
 	@RequestMapping("/abnormity")
 	public ModelAndView abnormity(){
@@ -951,5 +973,71 @@ public class ProductionController extends BaseController {
 	}
 	
 	/*****************End   Material Requirement 物料需求 ****************************************************/
+	
+	/*****************Start Material Reception 物料接收 AddBy:Yangke 171024***********************************/
+	@RequestMapping("/materialReception")
+	public ModelAndView materialReception(){
+		mv.setViewName("production/materialReception");
+		return mv;
+	}
+	
+	@RequestMapping("/getMaterialReception")
+	@ResponseBody
+	public ModelMap getMaterialReception(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("dis_no", request.getParameter("dis_no"));
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		datalist = productionService.getMaterialReception(condMap);
+		initModel(true,"success",datalist);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/materialReceptionConfirm")
+	@ResponseBody
+	public ModelMap materialReceptionConfirm(){
+		String conditions=request.getParameter("conditions");
+		JSONArray jsonArray=JSONArray.fromObject(conditions);
+		for(int i=0;i<jsonArray.size();i++){
+			JSONObject object = (JSONObject)jsonArray.get(i);	
+			Map<String,Object> condMap=new HashMap<String,Object>();
+			if(i==0){
+				//01 判断发货单状态 是否已经接收
+				condMap.put("dis_no", object.get("dis_no"));
+				String reception_user = productionService.getDistributionReceptionUser(condMap);
+				logger.info("-->reception_user = " + reception_user);
+				if(reception_user != null){
+					initModel(false,"error","P_materialReception_03");
+					model = mv.getModelMap();
+					return model;
+				}
+				//02 更新发货单收货人信息
+				SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String curTime = df2.format(new Date());
+				String userName=String.valueOf(session.getAttribute("user_name"));
+				condMap.put("reception_time", curTime);
+				condMap.put("reception_user", userName);
+				productionService.updateLineDistributionReception(condMap);				
+			}
+			//03 更新线边物料表 [BMS_NA_LINE_INVENTORY]
+			condMap.put("station_id", object.get("station_id"));
+			condMap.put("station", object.get("station"));
+			condMap.put("bus_number", object.get("bus_number"));
+			condMap.put("sap_material", object.get("sap_material"));
+			condMap.put("byd_no", object.get("byd_no"));
+			condMap.put("part_name", object.get("part_name"));
+			condMap.put("specification", object.get("specification"));
+			condMap.put("required_quantity", object.get("required_quantity"));
+			condMap.put("dis_quantity", object.get("dis_quantity"));
+			condMap.put("unit", object.get("unit"));
+			condMap.put("vendor", object.get("vendor"));
+			productionService.updateLineInventory(condMap);
+			
+		}
+		return model;
+	}
+	
+	/*****************End   Material Requirement 物料接收 ****************************************************/
+	
 	
 }

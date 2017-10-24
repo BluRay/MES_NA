@@ -43,7 +43,7 @@ public interface IQualityService {
 	public int saveTestingRecord(Map<String, Object> map);
 	public void getTestingRecordDetailList(Map<String, Object> conditionMap,ModelMap model);
 	public int updateTestingRecord(List<Map<String, String>> list);
-
+	public int checkTestingRecord(Map<String, Object> conditionMap);
 	public int leadInitialsPunch(Map<String, Object> conditionMap);
 	public int qcInitialsPunch(Map<String, Object> conditionMap);
 

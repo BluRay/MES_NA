@@ -54,6 +54,9 @@ public interface IProductionService {
 	public int updateVinPrint(Map<String,Object> conditionMap);
 	
 	public Map<String, Object> getProjectBusNumberList(Map<String, Object> conditionMap);
+	
+	public List<Map<String,String>> getProductionSearchBusinfo(String bus_number);
+	
 	/*****************************tang jin end  *****************************/
 	
 	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);
@@ -65,4 +68,9 @@ public interface IProductionService {
 	public int printMaterialRequirement(Map<String, Object> conditionMap);
 	public int getLineDisCount(Map<String,Object> conditionMap);
 	public int insertLineDistribution(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getMaterialReception(Map<String,Object> conditionMap);
+	public String getDistributionReceptionUser(Map<String,Object> conditionMap);
+	public int updateLineDistributionReception(Map<String,Object> conditionMap);
+	public void updateLineInventory(Map<String,Object> conditionMap);
+	
 }

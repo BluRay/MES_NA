@@ -124,12 +124,21 @@ public class QualityController extends BaseController {
 	@RequestMapping("/getPunchList")
 	@ResponseBody
 	public ModelMap getPunchList(){
+		int draw=request.getParameter("draw")!=null?Integer.parseInt(request.getParameter("draw")):1;
+		int start=request.getParameter("start")!=null?Integer.parseInt(request.getParameter("start")):0;
+		int length=request.getParameter("length")!=null?Integer.parseInt(request.getParameter("length")):-1;
+		String plant=request.getParameter("plant");
+		String workshop=request.getParameter("workshop");
+		String status=request.getParameter("status");
+		String bus_number=request.getParameter("bus_number");
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("draw",request.getParameter("draw").toString());
-		map.put("plant",request.getParameter("plant").toString());
-		map.put("workshop",request.getParameter("workshop").toString());
-		map.put("status",request.getParameter("status").toString());
-		map.put("bus_number",request.getParameter("bus_number").toString());
+		map.put("draw",draw);
+		map.put("start",start);
+		map.put("length",length);
+		map.put("plant",plant);
+		map.put("workshop",workshop);
+		map.put("status",status);
+		map.put("bus_number",bus_number);
 		Map<String,Object> result = qualityService.getPunchList(map);
 		model.addAllAttributes(result);
 		return model;
@@ -729,9 +738,9 @@ public class QualityController extends BaseController {
 	public ModelMap getInspectionRecordList(){
 		model=new ModelMap();;
 		Map<String,Object> condMap=new HashMap<String,Object>();
-		int draw=Integer.parseInt(request.getParameter("draw"));
-		int start=Integer.parseInt(request.getParameter("start"));
-		int length=Integer.parseInt(request.getParameter("length"));
+		int draw=request.getParameter("draw")!=null?Integer.parseInt(request.getParameter("draw")):1;
+		int start=request.getParameter("start")!=null?Integer.parseInt(request.getParameter("start")):0;
+		int length=request.getParameter("length")!=null?Integer.parseInt(request.getParameter("length")):-1;
 		String project_no=request.getParameter("project_no");
 		String bus_number=request.getParameter("bus_number");
 		String plant=request.getParameter("plant");
@@ -954,8 +963,16 @@ public class QualityController extends BaseController {
 		JSONArray add_arr=JSONArray.fromObject(request.getParameter("list"));
 		String bus_number=request.getParameter("bus_number");
 		String test_type_value=request.getParameter("test_type_value");
-		Iterator it=add_arr.iterator();
 		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("bus_number", bus_number);
+		map.put("test_type_value", test_type_value);
+		int count=qualityService.checkTestingRecord(map);
+		if(count>0){
+			initModel(false,"P_testingRecord_01",null);
+			model = mv.getModelMap();
+			return model;
+		}
+		Iterator it=add_arr.iterator();
 		List<Map<String,Object>> detail=new ArrayList<Map<String,Object>>();
 		while(it.hasNext()){
 			JSONObject jel=(JSONObject) it.next();
@@ -963,22 +980,20 @@ public class QualityController extends BaseController {
 			detail.add(bean);
 		}
 		map.put("detail", detail);
-		map.put("bus_number", bus_number);
-		map.put("test_type_value", test_type_value);
 		map.put("edit_date", curTime);
 		map.put("editor_id", user_id);
 		map.put("user_name", user_name);
 		try{
 			int result=qualityService.saveTestingRecord(map);
 			if(result>0){
-				initModel(true,"",null);
+				initModel(true,"P_common_03",null);
 			}else{
-				initModel(false,"",null);
+				initModel(false,"P_common_04",null);
 			}
 			
 		}catch(Exception e){
 			logger.error(e.getMessage());
-			initModel(false,""+e.getMessage(),null);
+			initModel(false,"P_common_04",null);
 		}
 		return mv.getModelMap();
 	}

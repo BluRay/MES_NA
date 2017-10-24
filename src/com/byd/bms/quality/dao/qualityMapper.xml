@@ -513,7 +513,7 @@
 		<if test="bus_number !=null and bus_number !=''">
 			and bus_number = #{bus_number}
 		</if>
-		<if test="offset!=null">
+		<if test="start!=null and length!=-1">
 			LIMIT #{start} ,#{length} 
 		</if>
 	</select>

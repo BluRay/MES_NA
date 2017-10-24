@@ -584,5 +584,52 @@
 	#{required_quantity},#{dis_quantity},#{unit},#{vendor},#{create_user},#{create_time})
 	</insert>
 	
+	<select id="getMaterialReception" parameterType="Map" resultType="Map">
+	SELECT * FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no}
+	</select>
+	<select id="getDistributionReceptionUser" parameterType="Map" resultType="String">
+	SELECT reception_user FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} LIMIT 1
+	</select>
+	<update id="updateLineDistributionReception" parameterType="Map">
+		UPDATE BMS_NA_LINE_DISTRIBUTION SET reception_user =#{reception_user},reception_time = #{reception_time}
+		WHERE dis_no=#{dis_no}
+	</update>
+	<select id="getLineInventoryQty" parameterType="Map" resultType="int">
+	SELECT IFNULL(SUM(line_quantity),0) AS line_quantity FROM BMS_NA_LINE_INVENTORY 
+	WHERE bus_number = #{bus_number} AND sap_material = #{sap_material}
+	</select>
+	<update id="updateLineInventoryQty" parameterType="Map">
+		UPDATE BMS_NA_LINE_INVENTORY SET line_quantity = line_quantity + ${dis_quantity}
+		WHERE bus_number = #{bus_number} AND sap_material = #{sap_material}
+	</update>
+	<insert id="insertLineInventory" useGeneratedKeys="true" keyProperty="id" parameterType="Map">
+	INSERT INTO BMS_NA_LINE_INVENTORY
+	(station_id, station, bus_number, sap_material, byd_no, part_name, specification, required_quantity, 
+	unit, line_quantity, print_quantity, vendor)
+	VALUES(#{station_id},#{station},#{bus_number},#{sap_material},#{byd_no},#{part_name},#{specification},#{required_quantity},
+	#{unit},#{dis_quantity},'0',#{vendor})
+	</insert>
 	
+	<select id="getProductionSearchBusinfo" parameterType="String" resultType="Map">
+		SELECT b.id,p.project_no,p.project_name,p.bus_type,p.quantity,f.factory_name,
+		b.bus_number,b.vin,p.customer,
+		t.*,p.project_status,
+		b.welding_online,b.welding_offline,b.painting_online,
+		b.painting_offline,b.chassis_online,b.chassis_offline,b.assembly_online,
+		b.assembly_offline,b.testing,b.outgoing
+		FROM BMS_NA_PROJECT_BUS b
+		LEFT JOIN BMS_NA_PROJECT p ON b.project_id = b.id
+		LEFT JOIN BMS_NA_BASE_BUS_TYPE t ON t.bus_type_code = p.bus_type
+		LEFT JOIN BMS_NA_BASE_FACTORY f ON b.production_plant_id = f.id
+		WHERE b.bus_number = #{bus_number} OR b.VIN = #{bus_number}
+	</select>
+	
+	<select id="queryEcnBusListByBusNo" parameterType="String" resultType="Map">
+		select b.bus_number,i.work_station,b.confirmed_date,b.qc_date,b.production_people,b.qc,pb.production_plant_id,f.factory_name plant
+		from BMS_NA_ECN_ITEM_BUS b
+		left join BMS_NA_ECN_ITEM i on b.ecn_item_id=i.id
+		left join BMS_NA_PROJECT_BUS pb on pb.bus_number=b.bus_number
+		left join BMS_NA_BASE_FACTORY f on f.id=pb.production_plant_id
+		where 1=1 and b.bus_number=#{bus_number}    
+	</select>
 </mapper>

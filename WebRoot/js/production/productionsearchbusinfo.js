@@ -29,7 +29,7 @@ $(document).ready(function () {
 		}else if(this.id == "div2"){	//生产信息
 			cur_tab = "02";
 			ajaxQueryTab02();
-		}else if(this.id == "div3"){
+		}else if(this.id == "div3"){ // Bus Trace
 			cur_tab = "03";
 			ajaxQueryTab03();
 		}else if(this.id == "div4"){
@@ -58,7 +58,7 @@ $(document).ready(function () {
 	
 	$("#btnQuery").click (function () {
 		if($("#search_busnumber").val()==""){
-			alert("请输入车号或VIN号！");
+			alert(Warn['P_common_02']);
 			return false;
 		}
 		if(cur_tab == "01")ajaxQuery();
@@ -120,7 +120,7 @@ function ajaxQuery(){
 
 function ajaxQueryTab02(){
 	$.ajax({
-	    url: "getProductionSearchScan",
+	    url: "../quality/getPunchList",
 	    dataType: "json",
 		type: "get",
 	    data: {
@@ -131,19 +131,20 @@ function ajaxQueryTab02(){
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr height='30px' id= '"+value.id+"'/>");
     			$("<td style=\"text-align:center;padding:3px\" />").html(index + 1).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.bus_number).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.factory_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.workshop_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.line_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.process_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.scan_time).appendTo(tr);
-    			var status = "正常";
-    			if (value.repair == "1")status = "返修";
-    			if (value.ecn == "1")status = "技改";
-    			if (value.onlineflag == "1")status += "返修";
-    			if (value.offlineflag == "1")status += "技改";
-    			$("<td style=\"text-align:center;padding:3px\" />").html(status).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.display_name).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.plant).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.workshop).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.source_workshop).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.main_location).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.orientation).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.problem_description).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.defect_codes).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.responsible_leader).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.qc_inspector).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.date_found).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.lead_initials).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.lead_initials_date).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.quality_initials).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.quality_initials_date).appendTo(tr);
     			$("#table02 tbody").append(tr);
 	    	});
 	    }
@@ -153,7 +154,7 @@ function ajaxQueryTab02(){
 
 function ajaxQueryTab03(){
 	$.ajax({
-	    url: "getQmTestCardList",
+	    url: "../quality/getBusNumberDetailList",
 	    dataType: "json",
 		type: "get",
 	    data: {
@@ -165,12 +166,13 @@ function ajaxQueryTab03(){
 	    		var tr = $("<tr height='30px' id= '"+value.id+"'/>");
     			$("<td style=\"text-align:center;padding:3px\" />").html(index + 1).appendTo(tr);
     			$("<td style=\"text-align:center;padding:3px\" />").html(value.bus_number).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.test_node).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.test_result).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.result_judge).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.rework).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.tester).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.test_date).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.SAP_material).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.parts_name).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.BYD_NO).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.vendor).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.workshop).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.station).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.batch).appendTo(tr);
     			$("#table03 tbody").append(tr);
 	    	});
 	    }
@@ -178,9 +180,9 @@ function ajaxQueryTab03(){
 	
 }
 
-function ajaxQueryTab04(){
+function ajaxQueryTab04(){  // 成品记录
 	$.ajax({
-	    url: "getBusNumberDetailList",
+	    url: "../quality/getInspectionRecordDetail",
 	    dataType: "json",
 		type: "get",
 	    data: {
@@ -191,13 +193,14 @@ function ajaxQueryTab04(){
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr height='30px' id= '"+value.id+"'/>");
     			$("<td style=\"text-align:center;padding:3px\" />").html(index + 1).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.SAP_material).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.parts_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.BYD_NO).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.bus_number).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.inspection_item).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.specification_and_standard).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.workshop).appendTo(tr);
     			$("<td style=\"text-align:center;padding:3px\" />").html(value.station).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.batch).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.display_name).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.edit_date).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.process_name).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.supervisor).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.supervisor_date).appendTo(tr);
     			$("#table04 tbody").append(tr);
 	    	});
 	    }

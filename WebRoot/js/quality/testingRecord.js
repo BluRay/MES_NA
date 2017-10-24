@@ -259,8 +259,12 @@ function ajaxSave(){
 	}
 	var trs=$("#tableAddDetail tbody").children("tr");
 	var arr=[];
+	var flag=true;
 	$.each(trs,function(index,tr){
 		var tds=$(tr).children("td");
+		if(tds.eq(0).text()=='No data available in table'){
+			flag=false;
+		}
 		var item_no=tds.eq(0).text();
 		var inspection_item=tds.eq(1).text();
 		var specification_standard=tds.eq(2).text();
@@ -270,6 +274,10 @@ function ajaxSave(){
 		obj.specification_standard=specification_standard;
 		arr.push(obj);
 	});
+	if(!flag){
+		alert(Warn['P_common_05']);
+		return false;
+	}
 	$.ajax({
 		url:"saveTestingRecord",
 		async:false,
@@ -285,13 +293,13 @@ function ajaxSave(){
 				$("#dialog-add").dialog("close");
 				$.gritter.add({
 					title: 'Message：',
-					text: "<h5>"+Warn['P_common_03']+"</h5>",
+					text: "<h5>"+Warn[response.message]+"</h5>",
 					class_name: 'gritter-info'
 				});
 			}else{
 				$.gritter.add({
 					title: 'Message：',
-					text: "<h5>"+Warn['P_common_04']+"</h5>",
+					text: "<h5>"+Warn[response.message]+"</h5>",
 					class_name: 'gritter-info'
 				});
 			}
@@ -368,6 +376,10 @@ function showInfoPage(row){
 			}
 		]
 	});
+	if($.fn.dataTable.isDataTable("#tableDetail")){
+		$('#tableDetail').DataTable().destroy();
+		$('#tableDetail').empty();
+	}
 	drawDetailTable("#tableDetail",detail_list);
 	$(".divLoading").hide();
 }

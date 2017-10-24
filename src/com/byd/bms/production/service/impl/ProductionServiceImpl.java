@@ -12,13 +12,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+
 import com.byd.bms.production.dao.IProductionDao;
 import com.byd.bms.production.service.IProductionService;
 import com.byd.bms.util.DataSource;
@@ -714,5 +718,34 @@ public class ProductionServiceImpl implements IProductionService {
 	public int insertLineDistribution(Map<String, Object> conditionMap) {
 		return productionDao.insertLineDistribution(conditionMap);
 	}
+
+	@Override
+	public List<Map<String, Object>> getMaterialReception(Map<String, Object> conditionMap) {
+		return productionDao.getMaterialReception(conditionMap);
+	}
+
+	@Override
+	public String getDistributionReceptionUser(Map<String, Object> conditionMap) {
+		return productionDao.getDistributionReceptionUser(conditionMap);
+	}
+
+	@Override
+	public int updateLineDistributionReception(Map<String, Object> conditionMap) {
+		return productionDao.updateLineDistributionReception(conditionMap);
+	}
+
+	@Override
+	public void updateLineInventory(Map<String, Object> conditionMap) {
+		//判断当前车号当前料号是否存在 存在刚更新 不存在则新增
+		int lineInventoryQty = productionDao.getLineInventoryQty(conditionMap);
+		if(lineInventoryQty == 0){
+			productionDao.insertLineInventory(conditionMap);
+		}else{
+			productionDao.updateLineInventoryQty(conditionMap);
+		}
+	}
 	
+	public List<Map<String, String>> getProductionSearchBusinfo(String bus_number) {
+		return productionDao.getProductionSearchBusinfo(bus_number);
+	}
 }

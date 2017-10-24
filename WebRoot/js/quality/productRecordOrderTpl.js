@@ -285,7 +285,8 @@ function save(project_id,version) {
 	}
 }
 
-function drawTplDetailTable(tableId,data){
+function drawTplDetailTable(tableId,data,project_no,version){
+	$("#add_project_no").val(project_no);
 	var tb=$(tableId).DataTable({
 		paiging:false,
 		 keys: true,
@@ -382,7 +383,7 @@ function showInfoPage(row){
 		$('#tplDetailTable').empty();
 	}
 	var detail_list=getTplDetailByHeader(row.id,row.version)
-	drawTplDetailTable("#tplDetailTable",detail_list);
+	drawTplDetailTable("#tplDetailTable",detail_list,row.project_no,row.version);
 	$("#importDiv").hide();
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:947,

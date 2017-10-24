@@ -25,6 +25,11 @@ var Warn={
     
     'P_materialRequirement_01'	: '发货数量不能为空！',
     'P_materialRequirement_02'	: '请勾选需要发货的物料信息！',
+    
+    'P_materialReception_01'	: '查询前请输入或扫描发货单号！',
+    'P_materialReception_02'	: '是否确认收货？',
+    'P_materialReception_03'	: '当前发货单已经接收，不能重复接收！',
+    'P_materialReception_04'	: '收货成功！',
     	
     /********End  Yangke***********************/
     	
@@ -62,6 +67,7 @@ var Warn={
     'P_printBusNumber_01':'请先导入VIN',
     'P_printBusNumber_02':'请先选择一条记录',
     'P_inspectionRecord_01':'成品记录模板不能为空',
+    'P_testingRecord_01':'该车号和检测类型已存在记录',
     'P_testingRecord_03':'检测类型不能为空',
     'P_yieldReport_01':'请选择生产开始日期！',
     'P_yieldReport_02':'请选择生产结束日期！',

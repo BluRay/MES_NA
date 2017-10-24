@@ -146,13 +146,13 @@ public class QualityServiceImpl implements IQualityService {
 	}
 	@Override
 	@Transactional
-	public void saveInspectionRecordTemplate(Map<String, Object> keyParts) {
+	public void saveInspectionRecordTemplate(Map<String, Object> inspection) {
 		List detail_list=new ArrayList();
-		String detail=(String)keyParts.get("detail");
-		String project_id=keyParts.get("project_id").toString();
-		String editor_id=keyParts.get("editor_id").toString();
-		String edit_date=(String)keyParts.get("edit_date");
-		String version=keyParts.get("version")!=null ? (String)keyParts.get("version"):"";
+		String detail=(String)inspection.get("detail");
+		String project_id=inspection.get("project_id").toString();
+		String editor_id=inspection.get("editor_id").toString();
+		String edit_date=(String)inspection.get("edit_date");
+		String version=inspection.get("version")!=null ? (String)inspection.get("version"):"";
 		if(version.equals("")){ // 新增导入
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
 			// 同一天内 新增导入多次的情况
@@ -184,10 +184,10 @@ public class QualityServiceImpl implements IQualityService {
 			detailmap.put("edit_date", edit_date);
 			detail_list.add(detailmap);
 		}
-		if(keyParts.get("version")!=null){ // 更新此前版本,先删除
+		if(inspection.get("version")!=null){ // 更新此前版本,先删除
 			Map<String,Object> map=new HashMap<String,Object>();
 			map.put("project_id", Integer.parseInt(project_id));
-			map.put("version", (String)keyParts.get("version"));
+			map.put("version", (String)inspection.get("version"));
 			qualityDao.deleteInspectionRecordTemplate(map);
 		}
 		qualityDao.saveInspectionRecordTemplate(detail_list);
@@ -342,6 +342,10 @@ public class QualityServiceImpl implements IQualityService {
 		result.put("recordsFiltered", totalCount);
 		result.put("data", datalist);
 		model.addAllAttributes(result);
+	}
+	@Override
+	public int checkTestingRecord(Map<String, Object> conditionMap) {
+		return qualityDao.getTestingRecordCount(conditionMap);
 	}
 	@Transactional
 	public int saveTestingRecord(Map<String, Object> map){
