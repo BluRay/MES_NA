@@ -17,7 +17,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.ui.ModelMap;
 
 import com.byd.bms.plan.dao.IPlanDao;
-import com.byd.bms.production.model.ProductionException;
 import com.byd.bms.util.EmailSender;
 import com.byd.bms.util.EmailSender.TableTable;
 import com.byd.bms.util.EmailSender.TableTable.TdTd;
@@ -266,6 +265,7 @@ public class SendPlanEmailJob  implements Job {
 				conditionMap1.put("factory_id", String.valueOf(m.get("factory_id")));
 				conditionMap1.put("order_no", m1.get("order_no"));
 				conditionMap1.put("workshop_name", m1.get("key_name").replaceAll("下线", ""));
+				/**
 				List<ProductionException> datalist1=new ArrayList<ProductionException>();
 				datalist1=planDao.getExceptionList(conditionMap1);
 				if(datalist1.size()>0){
@@ -276,7 +276,7 @@ public class SendPlanEmailJob  implements Job {
 					tr.add(tableX.new TdTd(remark));
 				}else{
 					tr.add(tableX.new TdTd(" "));
-				}
+				}**/
 			}else{
 				tr.add(tableX.new TdTd(" "));
 			}

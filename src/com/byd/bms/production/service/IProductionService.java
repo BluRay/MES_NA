@@ -59,6 +59,9 @@ public interface IProductionService {
 	
 	public List<Map<String,String>> getProductionSearchBusinfo(String bus_number);
 	
+	public void getEcnBusListByBusNo(String bus_number, ModelMap model);
+	
+	public void getBusNumberScanList(String bus_number, ModelMap model);
 	/*****************************tang jin end  *****************************/
 	
 	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);

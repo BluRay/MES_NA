@@ -67,10 +67,7 @@ function ajaxQuery(){
 		destroy: true,sScrollY: table_height,scrollX: "100%",orderMulti:false,
 		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
 		language: {
-			emptyTable:"Nothing found",
-			info:"Total _TOTAL_，Showing page _PAGE_ of _PAGES_",
-			infoEmpty:"",
-			paginate: { first:"First",previous: "Previous",next:"Next",last:"Last",loadingRecords: "Loading..."}
+
 		},
 		ajax:function (data, callback, settings) {
 			var param ={

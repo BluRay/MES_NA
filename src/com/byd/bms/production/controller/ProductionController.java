@@ -657,6 +657,25 @@ public class ProductionController extends BaseController {
 		mv.setViewName("production/workshopView");
 		return mv;
 	}
+	
+	/**
+	 * 查询各车间的在制库存
+	 * @return
+	 */
+	@RequestMapping("/getWorkshopStock")
+	@ResponseBody
+	public ModelMap getWorkshopStock(){
+		model.clear();
+		String factory=request.getParameter("factory");
+		String factory_id=request.getParameter("factory_id");
+		
+		Map<String, Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", factory);
+		condMap.put("factory_id", factory_id);
+		productionService.getWorkshopStock(condMap, model);
+		
+		return model;
+	}
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")
@@ -789,7 +808,21 @@ public class ProductionController extends BaseController {
 		model = mv.getModelMap();
 		return model;
 	}
+	@RequestMapping("/getEcnBusListByBusNo")
+	@ResponseBody
+	public ModelMap getEcnBusListByBusNo(){	
+		model.clear();
+		productionService.getEcnBusListByBusNo(request.getParameter("bus_number").toString(),model);
+        return model;
+	}
 	
+	@RequestMapping("/getBusNumberScanList")
+	@ResponseBody
+	public ModelMap getBusNumberScanList(){	
+		model.clear();
+		productionService.getBusNumberScanList(request.getParameter("bus_number").toString(),model);
+        return model;
+	}
 	/*****************Start Abnormity 生产异常反馈 生产异常处理 AddBy:Yangke 171010************************************************************/
 	@RequestMapping("/abnormity")
 	public ModelAndView abnormity(){
@@ -1045,7 +1078,13 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
-	/*****************End   Material Requirement 物料接收 ****************************************************/
+	/*****************Start Line Inventory AddBy:Yangke 171025**********************************************/
+	@RequestMapping("/lineInventory")
+	public ModelAndView lineInventory(){
+		mv.setViewName("production/lineInventory");
+		return mv;
+	}
 	
+	/*****************End   Line Inventory *****************************************************************/
 	
 }

@@ -116,16 +116,7 @@ function ajaxQuery(){
 		destroy: true,sScrollY: table_height,sScrollX:true,orderMulti:false,
 		pageLength: 25,pagingType:"full_numbers",lengthChange:false,
 		language: {
-			emptyTable:"No data available in table！",
-			info:"Got a total of _TOTAL_ entries to show _PAGE_ of _PAGES_ pages",
-			infoEmpty:"",
-			paginate: {
-			  first:"First",
-		      previous: "Previous",
-		      next:"Next",
-		      last:"Last",
-		      loadingRecords: "Please wait - loading...",		     
-			}
+
 		},
 		ajax:function (data, callback, settings) {
 			var param ={

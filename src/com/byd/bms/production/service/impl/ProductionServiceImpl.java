@@ -580,7 +580,13 @@ public class ProductionServiceImpl implements IProductionService {
 	@Override
 	public void getWorkshopStock(Map<String, Object> condMap, ModelMap model) {
 		List<Map<String, Object>> stock_list=productionDao.queryWorkshopStock(condMap);
-		model.put("data", stock_list);
+		Map<String, Object> stock=new HashMap<String,Object>();
+		for(Map<String,Object> m:stock_list){
+			
+			stock.put(m.get("key_name")+"_text", m.get("key_name")+"("+m.get("qty")+")");
+			
+		}
+		model.put("data", stock);
 		
 	}
 
@@ -653,6 +659,7 @@ public class ProductionServiceImpl implements IProductionService {
 		station_seq = productionDao.getStationSquence(condMap);
 		logger.info("-->station_seq = " + station_seq);
 		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		String station_code = condMap.get("station").toString();
 		String station = condMap.get("station").toString() + " " + condMap.get("station_name").toString();
 		if(station_seq == 1){//焊装第一个节点 取计划数量
 			String bus_number = condMap.get("bus_number").toString();
@@ -674,6 +681,7 @@ public class ProductionServiceImpl implements IProductionService {
 					condMapBom.put("project_id", busProjectList.get(j).get("project_id"));
 					condMapBom.put("bus_number", busProjectList.get(j).get("bus_number"));
 					condMapBom.put("station", station);
+					condMapBom.put("station_code", station_code);
 					List<Map<String, Object>> busBomList = productionDao.getBomListByProject(condMapBom);
 					//04 查询当前车辆线边物料并汇总
 					
@@ -698,6 +706,7 @@ public class ProductionServiceImpl implements IProductionService {
 				condMapBom.put("project_id", busProjectList.get(i).get("project_id"));
 				condMapBom.put("bus_number", busProjectList.get(i).get("bus_number"));
 				condMapBom.put("station", station);
+				condMapBom.put("station_code", station_code);
 				List<Map<String, Object>> busBomList = productionDao.getBomListByProject(condMapBom);
 				datalist.addAll(busBomList);
 				
@@ -754,7 +763,22 @@ public class ProductionServiceImpl implements IProductionService {
 	}
 
 	@Override
+	public void getEcnBusListByBusNo(String bus_number, ModelMap model) {
+		List<Map<String,Object>> datalist=new ArrayList<Map<String,Object>>();
+		datalist=productionDao.queryEcnBusListByBusNo(bus_number);
+		model.put("data", datalist);
+	}
+
+	@Override
+	public void getBusNumberScanList(String bus_number, ModelMap model) {
+		List<Map<String,Object>> datalist=new ArrayList<Map<String,Object>>();
+		datalist=productionDao.getBusNumberScanList(bus_number);
+		model.put("data", datalist);
+	}
+
+	@Override
 	public int getDistributionCount(Map<String, Object> conditionMap) {
 		return productionDao.getDistributionCount(conditionMap);
 	}
+
 }

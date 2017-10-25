@@ -109,16 +109,6 @@ function ajaxQuery(){
 		lengthChange:false,
 		orderMulti:false,
 		language: {
-			emptyTable:"No data available in table！",
-			info:"Got a total of _TOTAL_ entries to show _PAGE_ of _PAGES_ pages",
-			infoEmpty:"",
-			paginate: {
-				  first:"First",
-			      previous: "Previous",
-			      next:"Next",
-			      last:"Last",
-			      loadingRecords: "Please wait - loading...",		     
-			}
 		},
 		ajax:function (data, callback, settings) {
 			var param ={

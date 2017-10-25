@@ -639,10 +639,11 @@
 	AND L.station = #{station} AND L.sap_material = T.SAP_material) AS line_quantity 
 	FROM BMS_NA_PROJECT_BOM_ITEM T 
 	WHERE T.bom_head_id = (SELECT H.id FROM BMS_NA_PROJECT_BOM_HEAD H WHERE H.project_id = #{project_id} ORDER BY H.version DESC LIMIT 1)
+	AND station_code LIKE CONCAT('%',#{station_code},'%')
 	</select>
 	<select id="getLastStationInfo" parameterType="Map" resultType="Map">
 	SELECT R.id,R.factory,R.workshop,R.station_name FROM BMS_NA_BASE_SCAN_RULE R 
-	WHERE R.factory = #{factory_name} AND R.workshop = #{workshop_name} AND R.sequence = #{sequence}
+	WHERE R.factory = #{factory_name} AND R.sequence = #{sequence}
 	</select>
 	<select id="getStationBusNumberProject" parameterType="Map" resultType="Map">
 	SELECT S.project_id,S.bus_number FROM BMS_NA_BUS_SCANNING_RECORD S WHERE S.plant = #{factory_name} AND S.workshop = #{workshop_name}
@@ -650,6 +651,9 @@
 	AND S.bus_number NOT IN 
 	(SELECT S.bus_number FROM BMS_NA_BUS_SCANNING_RECORD S WHERE S.plant = #{factory_name} AND S.workshop = #{workshop_name}
 	AND S.station = #{station_name} AND S.rework = '0' AND S.on_offline = 'online')
+	<if test="bus_number !='' and bus_number !=null">
+	AND S.bus_number = #{bus_number}
+	</if>
 	</select>
 	<select id="getLineDisCount" parameterType="Map" resultType="int">
 		SELECT COUNT(DISTINCT(dis_no)) AS dis_count FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no LIKE CONCAT('%',#{dis_date},'%')
@@ -695,24 +699,26 @@
 	
 	<select id="getProductionSearchBusinfo" parameterType="String" resultType="Map">
 		SELECT b.id,p.project_no,p.project_name,p.bus_type,p.quantity,f.factory_name,
-		b.bus_number,b.vin,p.customer,
-		t.*,p.project_status,
-		b.welding_online,b.welding_offline,b.painting_online,
+		b.bus_number,b.vin,p.customer,b.welding_online,b.welding_offline,b.painting_online,
 		b.painting_offline,b.chassis_online,b.chassis_offline,b.assembly_online,
-		b.assembly_offline,b.testing,b.outgoing
+		b.assembly_offline,b.testing,b.outgoing,b.delivery
 		FROM BMS_NA_PROJECT_BUS b
-		LEFT JOIN BMS_NA_PROJECT p ON b.project_id = b.id
-		LEFT JOIN BMS_NA_BASE_BUS_TYPE t ON t.bus_type_code = p.bus_type
+		LEFT JOIN BMS_NA_PROJECT p ON b.project_id = p.id
 		LEFT JOIN BMS_NA_BASE_FACTORY f ON b.production_plant_id = f.id
 		WHERE b.bus_number = #{bus_number} OR b.VIN = #{bus_number}
 	</select>
 	
 	<select id="queryEcnBusListByBusNo" parameterType="String" resultType="Map">
 		select b.bus_number,i.work_station,b.confirmed_date,b.qc_date,b.production_people,b.qc,pb.production_plant_id,f.factory_name plant
-		from BMS_NA_ECN_ITEM_BUS b
+		,i.items,i.problem_details from BMS_NA_ECN_ITEM_BUS b
 		left join BMS_NA_ECN_ITEM i on b.ecn_item_id=i.id
 		left join BMS_NA_PROJECT_BUS pb on pb.bus_number=b.bus_number
 		left join BMS_NA_BASE_FACTORY f on f.id=pb.production_plant_id
 		where 1=1 and b.bus_number=#{bus_number}    
+	</select>
+	<select id="getBusNumberScanList" parameterType="String" resultType="Map">
+		select s.*,u.username scanner from BMS_NA_BUS_SCANNING_RECORD s
+		left join BMS_NA_BASE_USER u on s.scanner_id=u.id
+		where 1=1 and s.bus_number=#{bus_number}    
 	</select>
 </mapper>

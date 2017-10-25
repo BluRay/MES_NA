@@ -100,6 +100,8 @@ public interface IProductionDao {
     public List<Map<String, Object>> getProjectBusNumberList(Map<String, Object> condMap);
 	
 	public int getProjectBusNumberCount(Map<String, Object> condMap);
+	
+	public List<Map<String, Object>> getBusNumberScanList(String bus_number);
 	/**************************** tang jin end*********************************/
 	
 	public int insertAbnormity(Map<String,Object> conditionMap);
@@ -125,4 +127,7 @@ public interface IProductionDao {
 	public int insertLineInventory(Map<String,Object> conditionMap);
 	
 	public List<Map<String,String>> getProductionSearchBusinfo(String bus_number);
+
+	public List<Map<String,Object>> queryEcnBusListByBusNo(@Param(value = "bus_number")String bus_number);
+
 }

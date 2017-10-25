@@ -5,6 +5,7 @@ $(document).ready(function(){
 	initPage();
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
+		getBusNumberSelect('#search_bus_number');
 		getKeysSelect("TESTING_TYPE", "", $("#testing_type_value"),"All",""); 
 		getKeysSelect("TESTING_TYPE", "", $("#search_test_type_value"),"All",""); 
 		getBusTypeSelect('','#search_bus_type','All','id');

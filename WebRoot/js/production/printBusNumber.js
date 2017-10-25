@@ -3,6 +3,7 @@ $(document).ready(function () {
 	initPage();
 	function initPage(){
 		getBusNumberSelect('#search_bus_number');
+		getBusNumberSelect('#nav-search-input');
 		getOrderNoSelect("#search_project_no","#orderId");
 		getFactorySelect("production/printBusNumber",'',"#search_plant","All",'id');
 	};
