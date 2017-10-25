@@ -30,6 +30,8 @@ var Warn={
     'P_materialReception_02'	: '是否确认收货？',
     'P_materialReception_03'	: '当前发货单已经接收，不能重复接收！',
     'P_materialReception_04'	: '收货成功！',
+    'P_materialReception_05'	: '没有找到需要接收的物料信息！',
+    'P_materialReception_05'	: '发货单查询失败或此发货单已经失效！',
     	
     /********End  Yangke***********************/
     	

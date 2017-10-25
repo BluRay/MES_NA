@@ -118,6 +118,7 @@ public interface IProductionDao {
 
 	public List<Map<String, Object>> getMaterialReception(Map<String,Object> conditionMap);
 	public String getDistributionReceptionUser(Map<String,Object> conditionMap);
+	public int getDistributionCount(Map<String,Object> conditionMap);
 	public int updateLineDistributionReception(Map<String,Object> conditionMap);
 	public int getLineInventoryQty(Map<String,Object> conditionMap);
 	public int updateLineInventoryQty(Map<String,Object> conditionMap);

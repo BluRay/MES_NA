@@ -752,4 +752,9 @@ public class ProductionServiceImpl implements IProductionService {
 	public List<Map<String, String>> getProductionSearchBusinfo(String bus_number) {
 		return productionDao.getProductionSearchBusinfo(bus_number);
 	}
+
+	@Override
+	public int getDistributionCount(Map<String, Object> conditionMap) {
+		return productionDao.getDistributionCount(conditionMap);
+	}
 }

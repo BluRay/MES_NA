@@ -22,6 +22,15 @@ $(document).ready(function () {
 	});
 	
 	$("#btnReception").click(function () {
+		if(typeof(query_data) == "undefined"){
+			alert(Warn['P_materialReception_05']);
+			return false;
+		}
+		if(query_data.length == 0){
+			alert(Warn['P_materialReception_05']);
+			return false;
+		}
+		
 		if(confirm(Warn['P_materialReception_02'])){
 			$.ajax({
 				url : "materialReceptionConfirm",
@@ -93,7 +102,7 @@ function ajaxQuery(){
 
 function selectAll(){
 	//$("#tableData tbody :checkbox").prop("checked", true);
-	console.log($("#selectAll").prop("checked"));
+	//console.log($("#selectAll").prop("checked"));
 	if ($("#selectAll").prop("checked") == true) {
 		check_All_unAll("#tableData", true);
 	} else {

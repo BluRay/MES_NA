@@ -1002,8 +1002,16 @@ public class ProductionController extends BaseController {
 			JSONObject object = (JSONObject)jsonArray.get(i);	
 			Map<String,Object> condMap=new HashMap<String,Object>();
 			if(i==0){
-				//01 判断发货单状态 是否已经接收
 				condMap.put("dis_no", object.get("dis_no"));
+				//00 判断发货单是否存在
+				int dis_count = productionService.getDistributionCount(condMap);
+				if(dis_count == 0){
+					initModel(false,"error","P_materialReception_06");
+					model = mv.getModelMap();
+					return model;
+				}
+				
+				//01 判断发货单状态 是否已经接收
 				String reception_user = productionService.getDistributionReceptionUser(condMap);
 				logger.info("-->reception_user = " + reception_user);
 				if(reception_user != null){

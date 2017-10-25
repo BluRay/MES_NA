@@ -30,7 +30,7 @@ $(document).ready(function () {
 		$("#tableDataPrint tbody").html("");
 		$("#tableData tbody :checkbox").each(function(){
 			if($(this).prop("checked")){
-				console.log("-->tableData checkbox " + tr_count + ":" + query_data[tr_count].item_no);
+				//console.log("-->tableData checkbox " + tr_count + ":" + query_data[tr_count].item_no);
 				if($("#des_" + tr_count).val() == ""){
 					vali_data = -1;
 				}
@@ -296,9 +296,9 @@ function ajaxQuery(){
 		    	$("<td style=\"text-align:center;\" />").html(value.dis_qty).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.line_quantity).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' onkeyup=\"value=value.replace(/[^\\d]/g,'')\" type='text'/>").appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    	
-		    	
+		    	var des_num = value.quantity - value.dis_qty - value.line_quantity;
+		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' value='"+((des_num<0)?0:des_num)+"' onkeyup=\"value=value.replace(/[^\\d]/g,'')\" type='text'/>").appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    			    	
 		    	$("#tableData tbody").append(tr);
 	    	})
 	    }
@@ -307,7 +307,7 @@ function ajaxQuery(){
 
 function selectAll(){
 	//$("#tableData tbody :checkbox").prop("checked", true);
-	console.log($("#selectAll").prop("checked"));
+	//console.log($("#selectAll").prop("checked"));
 	if ($("#selectAll").prop("checked") == true) {
 		check_All_unAll("#tableData", true);
 	} else {

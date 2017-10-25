@@ -134,7 +134,7 @@ $(document).ready(function () {
  			$("#taskcount").html(data.count);
  			$("#task").html("需处理任务数 "+data.count+" 个");
 			var str="";
-            console.log("object",data);
+            //console.log("object",data);
 			$.each(data.datalist,function(index,item){
 				var url="<%=basePath%>/"+item.url;
 				if(item.params!=null && item.params!=undefined){

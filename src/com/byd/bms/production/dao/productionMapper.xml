@@ -663,7 +663,7 @@
 	</insert>
 	
 	<select id="getMaterialReception" parameterType="Map" resultType="Map">
-	SELECT * FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no}
+	SELECT * FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} AND remove = 0
 	</select>
 	<select id="getDistributionReceptionUser" parameterType="Map" resultType="String">
 	SELECT reception_user FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} LIMIT 1
@@ -687,6 +687,11 @@
 	VALUES(#{station_id},#{station},#{bus_number},#{sap_material},#{byd_no},#{part_name},#{specification},#{required_quantity},
 	#{unit},#{dis_quantity},'0',#{vendor})
 	</insert>
+	<select id="getDistributionCount" parameterType="Map" resultType="int">
+	SELECT COUNT(id) AS dis_count FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} AND remove = 0
+	</select>
+	
+	
 	
 	<select id="getProductionSearchBusinfo" parameterType="String" resultType="Map">
 		SELECT b.id,p.project_no,p.project_name,p.bus_type,p.quantity,f.factory_name,
