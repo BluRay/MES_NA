@@ -83,6 +83,8 @@ public interface IProductionDao {
 	
 	List<Map<String,Object>> queryWorkshopStock(Map<String, Object> condMap);
 	
+	List<Map<String,Object>> queryMonitorBusList(Map<String, Object> condMap);
+	
 	/*****************************xiong jianwu end  *****************************/
     /**************************** tang jin start*********************************/
 	public List<Map<String, Object>> getVinList(Map<String, Object> condMap);

@@ -111,106 +111,7 @@
 
 								<div class="widget-body" id="chart2" style="height:270px">
 									<div id="myCarousel" class="carousel slide" style="height:100%">
-									<div class="carousel-inner">
-									<div class="item active" style="line-height:23px;">
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Station：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Line Ⅰ_A3 Interior trim</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Status：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Abnormal , Lack of Material : 38Min</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Bus No.：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >ABQ F-2</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>VIN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >LC06S24K3H5498521</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Project：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >K7M-UCSF</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Punch List：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >2 in Open & 7 in Closed</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>ECN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >BYD-US-K8-SBMTD -ECN-00001</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-12" style="text-align:center;bottom: -10px;">1/3</label>
-										</div>	
-									</div>
-									<div class="item" style="line-height:23px;">
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Station：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Line Ⅰ_A3 Interior trim</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Status：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Abnormal , Lack of Material : 38Min</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Bus No.：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >ABQ F-2</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>VIN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >LC06S24K3H5498521</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Project：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >K7M-UCSF</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Punch List：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >2 in Open & 7 in Closed</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>ECN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >BYD-US-K8-SBMTD -ECN-00001</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-12" style="text-align:center;bottom: -10px;">2/3</label>
-										</div>	
-									</div>
-									<div class="item" style="line-height:23px;">
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Station：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Line Ⅰ_A3 Interior trim</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Status：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >Abnormal , Lack of Material : 38Min</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Bus No.：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >ABQ F-2</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>VIN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >LC06S24K3H5498521</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Project：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >K7M-UCSF</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Punch List：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >2  in Open & 7  in Closed</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>ECN：</b></label>
-											<label class="col-sm-9 control-label no-padding-left" >BYD-US-K8-SBMTD -ECN-00001</label>
-										</div>
-										<div class="form-group">
-											<label class="col-sm-12" style="text-align:center;bottom: -10px;">3/3</label>
-										</div>	
-									</div>
+									<div class="carousel-inner" >							
 									</div>						
 									<a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
 									<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
@@ -221,34 +122,34 @@
 						<div class="item hidden" style="line-height:23px;" id="bus_item_temp">
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Station：</b></label>
-								<label class="col-sm-9 control-label no-padding-left station" >Line Ⅰ_A3 Interior trim</label>
+								<label class="col-sm-9 control-label no-padding-left station" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Status：</b></label>
-								<label class="col-sm-9 control-label no-padding-left status" >Abnormal , Lack of Material : 38Min</label>
+								<label class="col-sm-9 control-label no-padding-left status" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Bus No.：</b></label>
-								<label class="col-sm-9 control-label no-padding-left bus_no" >ABQ F-2</label>
+								<label class="col-sm-9 control-label no-padding-left bus_no" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>VIN：</b></label>
-								<label class="col-sm-9 control-label no-padding-left vin" >LC06S24K3H5498521</label>
+								<label class="col-sm-9 control-label no-padding-left vin" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Project：</b></label>
-								<label class="col-sm-9 control-label no-padding-left project" >K7M-UCSF</label>
+								<label class="col-sm-9 control-label no-padding-left project" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>Punch List：</b></label>
-								<label class="col-sm-9 control-label no-padding-left punch_list" >2 in Open & 7 in Closed</label>
+								<label class="col-sm-9 control-label no-padding-left punch_list" ></label>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label " style="text-align:right;padding-right:20px"><b>ECN：</b></label>
-								<label class="col-sm-9 control-label no-padding-left ecn" >BYD-US-K8-SBMTD -ECN-00001</label>
+								<label class="col-sm-9 control-label no-padding-left ecn" ></label>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-12 pagesec" style="text-align:center;bottom: -10px;">3/3</label>
+								<label class="col-sm-12 pagesec" style="text-align:center;bottom: -10px;"></label>
 							</div>	
 						</div>											
 				</div>
@@ -256,12 +157,12 @@
 			</div>
 
 			<div class="row">
-				<div class="col-xs-12 col-sm-12 widget-container-col ui-sortable">
+				<div class="col-xs-12 col-sm-12 widget-container-col ui-sortable" >
 					<div class="widget-box ui-sortable-handle">
 								<div class="widget-header">
 									<h5 class="widget-title" id="stations" >Welding:</h5>									
 								</div>
-								<div class="widget-body" >							
+								<div class="widget-body" style="height:190px;">							
 								<canvas id="canvas_stations" width=1115 height=190  style="border: solid 0px;"> 
 					
 								</canvas> 						

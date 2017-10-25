@@ -45,6 +45,9 @@ public interface IProductionService {
 	public void confirmEcnItem_QC(List<Map<String, Object>> bus_list, ModelMap model);
 	
 	public void getWorkshopStock(Map<String, Object> condMap, ModelMap model);
+	
+	public void getMonitorBusList(Map<String, Object> condMap, ModelMap model);
+	
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
     public Map<String, Object> getVinList(Map<String, Object> conditionMap);

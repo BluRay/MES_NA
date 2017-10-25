@@ -61,7 +61,7 @@ $(document).ready(function() {
 		$(cp_tab).addClass("active");
 		$(cp_tab).removeClass("hide");
 		$(cp_tab).attr("id","new_task"+task_item);
-		$('.tab-content').append($(cp_tab))
+		$('#new_task_list').append($(cp_tab))
 	})
 	/**
 	 * 编辑界面-新增技改任务

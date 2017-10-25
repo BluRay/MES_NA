@@ -676,6 +676,32 @@ public class ProductionController extends BaseController {
 		
 		return model;
 	}
+	
+	/**
+	 * 查询各车间、工位在制车辆信息
+	 * @return
+	 */
+	@RequestMapping("/getMonitorBusList")
+	@ResponseBody
+	public ModelMap getMonitorBusList(){
+		model.clear();
+		String factory=request.getParameter("factory");
+		String factory_id=request.getParameter("factory_id");
+		String station_id=request.getParameter("station_id");
+		String station=request.getParameter("station");
+		String workshop=request.getParameter("workshop");
+		
+		Map<String, Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory", factory);
+		condMap.put("factory_id", factory_id);
+		condMap.put("station", station);
+		condMap.put("station_id", station_id);
+		condMap.put("workshop", workshop);
+		productionService.getMonitorBusList(condMap, model);
+		
+		return model;
+	}
+	
 	/****************************  xiongjianwu end***************************/
 	
 	@RequestMapping("/saveVinInfo")

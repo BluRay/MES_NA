@@ -355,7 +355,7 @@
 	</select>
 	
 	<select id="queryWorkshopStock" parameterType="Map" resultType="Map">
-		select count(a.bus_number) qty, 'Test' key_name
+		select count(a.bus_number) qty, 'Testing' key_name
 		from (
 		select count(r.id) pty,r.on_offline,r.bus_number
 		from BMS_NA_BUS_SCANNING_RECORD r
@@ -420,6 +420,55 @@
 		select count(b.bus_number) qty,'Outgoing' key_name
 		from BMS_NA_PROJECT_BUS b
 		where b.outgoing>0 and b.delivery &lt;=0 and production_plant_id=#{factory_id}
+	</select>
+	
+	<select id="queryMonitorBusList" parameterType="Map" resultType="Map">
+		select concat('Line',s.line,' ',s.station_code,' ',s.station_name) station,b.bus_number,b.VIN,p.project_name,
+		(select case a.abnormal_cause when null then 'Normal' else  concat('Abnormal,',a.abnormal_cause,':',TIMESTAMPDIFF(MINUTE,a.open_date,now()),'Min')  end 
+		from  BMS_NA_PRODUCTION_ABNORMITY a 
+		where a.bus_number=b.bus_number and a.workshop=#{workshop} and (a.measure_date &lt;=0 or a.measure_date is null)  
+		<if test="station_id !=null and station_id !=''">
+			and a.abnormal_station_id=#{station_id}
+		</if>
+		<if test="station !=null and station !=''">
+			and a.abnormal_station like concat('%',#{station},'%')
+		</if>		
+		order by a.open_date desc limit 1) abnormal_cause,
+		(select count(pl.id) from BMS_NA_BUS_PUNCH_LIST pl 
+		where pl.bus_number=b.bus_number and (pl.quality_initials_date is null or pl.quality_initials_date='') ) punch_open,
+		(select count(pl.id) from BMS_NA_BUS_PUNCH_LIST pl 
+		where pl.bus_number=b.bus_number and pl.quality_initials_date>0 ) punch_closed,
+		(select count(distinct e.ecn_item_id) from BMS_NA_ECN_ITEM_BUS e 
+		where e.bus_number=b.bus_number and (e.qc_date is null or e.qc_date='') ) ecn_open,
+		(select count(distinct e.ecn_item_id) from BMS_NA_ECN_ITEM_BUS e 
+		where e.bus_number=b.bus_number and e.qc_date>0 ) ecn_closed
+		from BMS_NA_PROJECT_BUS b
+		left join BMS_NA_BASE_STATION s on s.id=b.latest_station_id
+		left join BMS_NA_PROJECT p on p.id=b.project_id
+		where b.production_plant_id=#{factory_id}
+		<if test="workshop=='Welding'">
+			and b.welding_online>0 and b.welding_offline &lt;=0 
+		</if>
+		<if test="workshop=='Painting'">
+			and b.painting_online>0 and b.painting_offline &lt;=0 
+		</if>
+		<if test="workshop=='Chassis'">
+			and b.chassis_online>0 and b.chassis_offline &lt;=0 
+		</if>
+		<if test="workshop=='Assembly'">
+			and b.assembly_online>0 and b.assembly_offline &lt;=0 
+		</if>
+		<if test="workshop=='Outgoing'">
+			and b.outgoing>0 and b.delivery &lt;=0 
+		</if>
+		 
+		<if test="station_id !=null and station_id !=''">
+			and s.id=#{station_id}
+		</if>
+		<if test="station !=null and station !=''">
+			and s.station_name=#{station}
+		</if>
+		
 	</select>
 <!-- ########################### xiong jianwu end#############################-->	
 

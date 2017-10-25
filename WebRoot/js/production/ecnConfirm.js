@@ -51,10 +51,10 @@ $(document).ready(function() {
 function ajaxQuery(){
 	dt=$("#tableResult").DataTable({
 		serverSide: true,
-		fixedColumns:   {
+	/*	fixedColumns:   {
             leftColumns: 2,
             rightColumns:2
-        },
+        },*/
 		dom: 'Bfrtip',
 		lengthMenu: [
 		             [ 20, 30, 50, -1 ],

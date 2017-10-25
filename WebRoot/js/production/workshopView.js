@@ -18,10 +18,29 @@ var rech_testing = rech_welding; //Testing矩形高
 var station_rect_list=[];
 var workshop_rect_list=[];
 var cvs_stations=document.getElementById('canvas_stations');
+var ctx_s=cvs_stations.getContext("2d");
+var shine_timer_list=[] ;
+var shine_station_list=[];
 
 $(document).ready(function(){
 	initPage();
-	document.onmousemove=function(e){e=e? e:window.event;$("#nav-search-input").val("X:"+e.screenX+"Y:"+e.screenY);}
+	//document.onmousemove=function(e){e=e? e:window.event;$("#nav-search-input").val("X:"+e.screenX+"Y:"+e.screenY);}
+	
+	setInterval(function(){
+		var workshop=$("#stations").html().substring(0,$("#stations").html().length-1);
+		var tobj=ajaxGetWorkshopStock($("#search_factory :selected").text(),$("#search_factory").val());		
+		drawWorkshopView(tobj);		
+		/**
+		 * 工位canvas
+		 */
+		var line_stations=ajaxGetLinStationList($("#search_factory :selected").text(),workshop);	
+		drawStationLine(workshop,line_stations);
+		
+		var bus_list=ajaxGetBusList(workshop);	
+		drawBusDetails(bus_list);
+		$('.carousel').carousel();
+		
+	},1000*60)
 	
 	canvas.onmouseover=function(e){
 		this.style.cursor = 'pointer';
@@ -34,29 +53,38 @@ $(document).ready(function(){
 		
 		var rect=getRect(x,y,workshop_rect_list);
 		//alert(rect.x+"/"+rect.y);
-		//alert(rect.name);
 		var workshop=rect.name;
+		var station="";
 		if(rect.name=="Pre-Paint"||rect.name=="Painting"||rect.name=="Post-Paint"){
 			workshop="Painting";
 		}
+		if(rect.name=="Testing"){
+			workshop="Assembly";
+			station="Test";
+		}
 		
-	/**
-	 * for example,线别列表
-	 */
-	var line_stations=[];
-	var line_1={line:'Line I',stations:[{'code':'P-1','name':'P-1'},{'code':'P-2','name':'P-2'},{'code':'P-3','name':'P-3'},{'code':'P-4','name':'P-4'}
-	,{'code':'P-5','name':'P-5'},{'code':'P-6','name':'P-6'},{'code':'P-7','name':'P-7'},{'code':'P-8','name':'P-8'},{'code':'P-9','name':'P-9'}]};
-	line_stations.push(line_1);
-	var line_2={line:'Line II',stations:[{'code':'P21','name':'P21'},{'code':'P22','name':'P22'},{'code':'P23','name':'P23'}]};
-	line_stations.push(line_2)
-
-	drawStationLine(workshop,line_stations);
+		/**
+		 * 工位canvas
+		 */
+		var line_stations=ajaxGetLinStationList($("#search_factory :selected").text(),workshop);	
+		drawStationLine(workshop,line_stations);
 		
+		/**
+		 * 显示车辆明细
+		 */
+		var bus_list=ajaxGetBusList(workshop,station);	
+		drawBusDetails(bus_list);
+		$('.carousel').carousel();
 	}
-	
+	/**
+	 * 工位canvas鼠标悬停
+	 */
 	cvs_stations.onmouseover=function(e){
 		this.style.cursor = 'pointer';
 	}
+	/**
+	 * 工位canvas鼠标点击事件，查询点击工位下车辆明细列表
+	 */
 	cvs_stations.onclick=function(e){
 		var p=getEventPosition(e);
 		//alert(p.x+"/"+p.y);
@@ -64,55 +92,35 @@ $(document).ready(function(){
 		var y=p.y;
 		
 		var rect=getStationRect(x,y,station_rect_list,cvs_stations);
-		//alert(rect.x+"/"+rect.y);
-		//alert(rect.name);		
-		shineStation(rect,'start')
 		
+		/**
+		 * 显示车辆明细
+		 */
+		var workshop=$("#stations").html().substring(0,$("#stations").html().length-1);
+		var bus_list=ajaxGetBusList(workshop,rect.name,rect.station_id);	
+		drawBusDetails(bus_list);
+		$('.carousel').carousel();
 	}
 	
-	
-	var tobj={};
-	tobj.welding_text='Welding(20)';
-	tobj.pre_paint_text='Pre-Paint(28)';
-	tobj.painting_text='Painting(11)';
-	tobj.post_paint_text='Post-Paint(20)';
-	tobj.chassis_text='Chassis(22)';
-	tobj.assembly_text='Assembly(28)';
-	tobj.outgoing_text='Outgoing(20)';
-	tobj.testing_text='Testing(18)';
-	drawWorkshopView(tobj);
 	
 })
 
 function initPage(){	
-	$('.carousel').carousel();
-	var tobj={};
-	tobj.welding_text='Welding(10)';
-	tobj.pre_paint_text='Pre-Paint(18)';
-	tobj.painting_text='Painting(11)';
-	tobj.post_paint_text='Post-Paint(10)';
-	tobj.chassis_text='Chassis(12)';
-	tobj.assembly_text='Assembly(18)';
-	tobj.outgoing_text='Outgoing(10)';
-	tobj.testing_text='Testing(8)';
+	getFactorySelect("","","#search_factory",null,"id");
+	
+	var tobj=ajaxGetWorkshopStock($("#search_factory :selected").text(),$("#search_factory").val());
 	
 	drawWorkshopView(tobj);
-	/**
-	 * for example,线别列表
-	 */
-	var line_stations=[];
-	var line_1={line:'Line I',stations:[{'code':'W-1','name':'W-1'},{'code':'W-2','name':'W-2'},{'code':'W-3','name':'W-3'},{'code':'W-4','name':'W-4'}
-	,{'code':'W-5','name':'W-5'},{'code':'W-6','name':'W-6'},{'code':'W-7','name':'W-7'},{'code':'W-8','name':'W-8'},{'code':'W-9','name':'W-9'}
-	/*,{'code':'W-10','name':'W-10'},{'code':'W-11','name':'W-11'},{'code':'W-12','name':'W-12'},{'code':'W-13','name':'W-13'},{'code':'W-14','name':'W-14'}
-	,{'code':'W-15','name':'W-15'},{'code':'W-16','name':'W-16'}*/]};
-	line_stations.push(line_1);
-	var line_2={line:'Line II',stations:[{'code':'W21','name':'W21'},{'code':'W22','name':'W22'},{'code':'W23','name':'W23'}]};
-	line_stations.push(line_2)
-	var line_3={line:'Line III',stations:[{'code':'W31','name':'W31'},{'code':'W32','name':'W32'},{'code':'W33','name':'W33'}]};
-	line_stations.push(line_3)
 	
+	/**
+	 * 工位canvas
+	 */
+	var line_stations=ajaxGetLinStationList($("#search_factory :selected").text(),"Welding");	
 	drawStationLine('Welding',line_stations);
-
+	
+	var bus_list=ajaxGetBusList('Welding');	
+	drawBusDetails(bus_list);
+	$('.carousel').carousel();
 }
 
 function drawWorkshopView(tobj){
@@ -123,7 +131,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw, btw, recw_welding, rech_welding);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.welding_text,btw,btw,recw_welding,rech_welding);
+	drawRectText(tobj['Welding_text'],btw,btw,recw_welding,rech_welding);
 	var rect_w={};
 	rect_w.x=btw;
 	rect_w.y=btw;
@@ -138,7 +146,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw*2+recw_welding, btw, recw_paint, rech_paint);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.pre_paint_text,btw*2+recw_welding,btw,recw_paint,rech_paint);
+	drawRectText(tobj['Pre-Paint_text'],btw*2+recw_welding,btw,recw_paint,rech_paint);
 	var rect_pp={};
 	rect_pp.x=btw*2+recw_welding;
 	rect_pp.y=btw;
@@ -153,7 +161,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw*2+recw_welding, 2*btw+rech_paint, recw_paint, rech_paint);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.painting_text,btw*2+recw_welding,btw*2+rech_paint,recw_paint,rech_paint);
+	drawRectText(tobj['Painting_text'],btw*2+recw_welding,btw*2+rech_paint,recw_paint,rech_paint);
 	var rect_p={};
 	rect_p.x=btw*2+recw_welding;
 	rect_p.y=2*btw+rech_paint;
@@ -168,7 +176,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw*2+recw_welding, (3*btw+rech_paint*2), recw_paint, rech_paint);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.post_paint_text,btw*2+recw_welding,btw*3+rech_paint*2,recw_paint,rech_paint);
+	drawRectText(tobj['Post-Paint_text'],btw*2+recw_welding,btw*3+rech_paint*2,recw_paint,rech_paint);
 	var rect_pop={};
 	rect_pop.x=btw*2+recw_welding;
 	rect_pop.y=3*btw+rech_paint*2;
@@ -184,7 +192,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw, (btw*2+rech_welding), recw_chassis, rech_chassis);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.chassis_text,btw,btw*2+rech_welding,recw_welding,rech_welding);
+	drawRectText(tobj['Chassis_text'],btw,btw*2+rech_welding,recw_welding,rech_welding);
 	var rect_dp={};
 	rect_dp.x=btw;
 	rect_dp.y=btw*2+rech_welding;
@@ -200,7 +208,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect(btw, (btw*3+rech_welding+rech_chassis), recw_assembly, rech_assembly);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.assembly_text,btw,btw*3+rech_welding*2,recw_assembly,rech_welding);
+	drawRectText(tobj['Assembly_text'],btw,btw*3+rech_welding*2,recw_assembly,rech_welding);
 	var rect_zz={};
 	rect_zz.x=btw;
 	rect_zz.y=btw*3+rech_welding+rech_chassis;
@@ -216,7 +224,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect((btw*3+recw_welding+recw_paint), (btw*2+rech_outgoing), recw_testing, rech_testing);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.testing_text,btw*3+recw_welding+recw_paint,btw*2+rech_outgoing,recw_testing,rech_testing);
+	drawRectText(tobj['Testing_text'],btw*3+recw_welding+recw_paint,btw*2+rech_outgoing,recw_testing,rech_testing);
 	var rect_jcx={};
 	rect_jcx.x=btw*3+recw_welding+recw_paint;
 	rect_jcx.y=btw*2+rech_outgoing;
@@ -232,7 +240,7 @@ function drawWorkshopView(tobj){
 	ctx.fillRect((btw*3+recw_welding+recw_paint), btw, recw_outgoing, rech_outgoing);
 	ctx.stroke();
 	ctx.closePath();
-	drawRectText(tobj.outgoing_text,btw*3+recw_welding+recw_paint,btw,recw_outgoing,rech_outgoing);
+	drawRectText(tobj['Outgoing_text'],btw*3+recw_welding+recw_paint,btw,recw_outgoing,rech_outgoing);
 	var rect_rk={};
 	rect_rk.x=btw*3+recw_welding+recw_paint;
 	rect_rk.y=btw;
@@ -318,9 +326,14 @@ function drawRectText(text,x_s,y_s,recw,rech,font){
 }
 
 function drawStationLine(workshop,line_stations){
+	shine_station_list=[];
+	$.each(shine_timer_list,function(i,shine_timer){
+		clearInterval(shine_timer);
+	})
+	
 	$("#stations").html(workshop+":");
-	var cvs=document.getElementById('canvas_stations');
-	var ctx_s=cvs.getContext("2d");
+	//var cvs=document.getElementById('canvas_stations');
+	//var ctx_s=cvs.getContext("2d");
 	var s_width=60;
 	var s_height=40;
 	var btw=15;//station 间隙
@@ -328,17 +341,17 @@ function drawStationLine(workshop,line_stations){
 	var y_s=btw;
 	var x_s=btw;
 	caculateCanvasHeigth(line_stations);
-	var cvs_w=cvs.width;
-	var cvs_h=cvs.height;
-	
+	var cvs_w=cvs_stations.width;
+	var cvs_h=cvs_stations.height;
+	//alert(cvs_w+"/"+cvs_h)
 	ctx_s.clearRect(0,0,cvs_w,cvs_h);
 	
 	
 	$.each(line_stations,function(i,line){
 		var yi_s=btw;
 		var xi_s=btw;
-		var line_name=line.line;
-		var stations=line.stations;
+		var line_name=line.line_name;
+		var stations=JSON.parse(line.process_list);
 		//draw 线别名称
 		ctx_s.font = "16px Arial";
 		ctx_s.fillStyle='black'
@@ -362,23 +375,31 @@ function drawStationLine(workshop,line_stations){
 			station.y=yi_s;
 			drawStation(station);
 			
+			if(station.status=='abnormal'){
+				shine_station_list.push(station)
+			}
+			
 			xi++;
 		})
 		//alert(y_s+"/"+line_name)
 		y_s+=btw+s_height;
 		
 	})
+	
+	$.each(shine_station_list,function(i,station){
+		var shine_timer=shineStation(station,'start');
+		shine_timer_list.push(shine_timer);
+	})
+
 }
 
 function drawStation(station){
-	
-	var cvs=document.getElementById('canvas_stations');
-	var ctx_s=cvs.getContext("2d");
 	var s_width=60;
 	var s_height=40;
 	var btw=15;//station 间隙
 	color=station.color||'rgb(150, 200, 150)';
 	//alert(xi_s+"/"+yi_s)
+	ctx_s.clearRect(station.x,station.y,s_width,s_height)
 	
 	ctx_s.beginPath();
 	ctx_s.fillStyle =color;
@@ -389,7 +410,7 @@ function drawStation(station){
 	rect.x=station.x;
 	rect.y=station.y;
 	rect.name=station.name;
-	rect.stationId=station.id;
+	rect.station_id=station.id;
 	rect.workshop=station.workshopId;
 	rect.line=station.line;
 	rect.factory=station.factory;
@@ -411,13 +432,12 @@ function drawStation(station){
 	
 	ctx_s.closePath();
 	
-	
 }
 
 function caculateCanvasHeigth(line_stations){
-	var cvs=document.getElementById('canvas_stations');
-	var ctx_s=cvs.getContext("2d");
-	var cvs_w=cvs.width;
+	//var cvs=document.getElementById('canvas_stations');
+	//var ctx_s=cvs.getContext("2d");
+	var cvs_w=cvs_stations.width;
 	var s_width=70;
 	var s_height=40;
 	var btw=15;//station 间隙
@@ -430,25 +450,28 @@ function caculateCanvasHeigth(line_stations){
 		var xi_s=btw;
 		var xi = 1;
 		var yi = 1;
-		var stations=line.stations;
+		var stations=JSON.parse(line.process_list);
+		
 		$.each(stations,function(i,station){
 			if ((xi_s+s_width+btw+s_width)>cvs_w) {
 				xi = 1;
 				yi++;
-				y_s+=btw+s_height;
+				y_s+=(btw+s_height);
 			}
 			xi_s = btw+60 + (s_width + btw) * (xi - 1);
 			yi_s = y_s;			
 			xi++;
 		})
-		y_s+=btw+s_height;
+		y_s+=(btw+s_height);
 	})	
-	$(cvs).attr("height",y_s);
+
+	$(cvs_stations).attr("height",y_s);
 }
 
 function shineStation(rect,flag){
+	var shine_timer="";
 	if(flag=='start'){
-		setInterval(function(){
+		shine_timer=setInterval(function(){
 			if(rect.color=='red'){
 				rect.color='rgb(150, 200, 150)';
 				drawStation(rect);
@@ -461,5 +484,91 @@ function shineStation(rect,flag){
 		rect.color='rgb(150, 200, 150)';
 		drawStation(rect);
 	}
+	return shine_timer;
+}
 
+function drawBusDetails(bus_list){
+	$("#myCarousel").find(".carousel-inner").eq(0).html("");
+	if(bus_list.length==0){
+		$("#myCarousel").find(".carousel-inner").eq(0).html("<div style='text-align:center;margin-top:20%;font-size:16px;color:red'>"+Warn.W_20+"</div>");
+	}
+	$.each(bus_list,function(i,bus){
+		var cp_item= $('#bus_item_temp').clone(true);
+		$(cp_item).removeClass("hidden");
+		if(i==0){
+			$(cp_item).addClass("active");			
+		}
+		$(cp_item).find(".station").html(bus.station);
+		$(cp_item).find(".status").html((bus.abnormal_cause!=undefined)?("<sapn style='color:red'>"+bus.abnormal_cause+"</span>"):"Normal");
+		$(cp_item).find(".bus_no").html((bus.abnormal_cause!=undefined)?("<sapn style='color:red'>"+bus.bus_number+"</span>"):bus.bus_number);
+		$(cp_item).find(".vin").html(bus.VIN);
+		$(cp_item).find(".project").html(bus.project_name);
+		$(cp_item).find(".punch_list").html(bus.punch_open+" in Open &"+bus.punch_closed+" in Closed");
+		$(cp_item).find(".ecn").html(bus.ecn_open+" in Open &"+bus.ecn_closed+" in Closed");
+		$(cp_item).find(".pagesec").html((i+1)+"/"+bus_list.length);
+		$(cp_item).attr("id","item_"+i)
+		$("#myCarousel").find(".carousel-inner").eq(0).append(cp_item);
+	})
+	
+}
+
+function ajaxGetWorkshopStock(factory,factory_id){
+	var tobj={};
+	$.ajax({
+		url:'getWorkshopStock',
+		type:'post',
+		dataType:'json',
+		async:false,
+		data:{
+			factory:factory,
+			factory_id:factory_id
+		},
+		success:function(response){
+			tobj=response.data;
+
+		}
+	})
+	
+	return tobj;
+}
+
+function ajaxGetLinStationList(factory,workshop){
+	var conditions={factory:factory,workshop:workshop};
+	
+	var line_stations=[];
+	$.ajax({
+		url:'getLineProcessList',
+		type:'post',
+		dataType:'json',
+		async:false,
+		data:{
+			conditions:JSON.stringify(conditions)
+		},
+		success:function(response){
+			line_stations=response.dataList;
+		}
+	})
+	
+	return line_stations;
+}
+
+function ajaxGetBusList(workshop,station,station_id){
+	var bus_list=[];
+	$.ajax({
+		url:'getMonitorBusList',
+		type:'post',
+		dataType:'json',
+		async:false,
+		data:{
+			factory:$("#search_factory :selected").text(),
+			factory_id:$("#search_factory").val(),
+			workshop:workshop,
+			station:station,
+			station_id:station_id
+		},
+		success:function(response){
+			bus_list=response.data;
+		}
+	})
+	return bus_list;
 }
