@@ -92,6 +92,7 @@
 			</div><!-- /.main-content -->
 			
 			<div id="dialog-print" class="hide notPrintable" style="align:center;width:700px;height:500px">
+				<div style="height:500px">
 				<table id="tableDataShow" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 				<thead><tr>
 					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
@@ -106,6 +107,7 @@
 				</thead>
 				<tbody></tbody>
 				</table>
+				</div>
 			</div>
 			
 			

@@ -69,6 +69,7 @@ var Warn={
     'P_printBusNumber_01':'请先导入VIN',
     'P_printBusNumber_02':'请先选择一条记录',
     'P_inspectionRecord_01':'成品记录模板不能为空',
+    'P_inspectionRecord_02':'Self Inspection不能为空',
     'P_testingRecord_01':'该车号和检测类型已存在记录',
     'P_testingRecord_03':'检测类型不能为空',
     'P_yieldReport_01':'请选择生产开始日期！',

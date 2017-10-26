@@ -1,7 +1,12 @@
 var extArray=['.xls']
 $(document).ready(function() {	
 	initPage();
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	//点击Add，弹出“新增”对话框
 	$("#btnAdd").click(function(){
 		$("#create_form").clearForm();
@@ -111,7 +116,7 @@ function initPage(){
 	}).on('file.error.ace', function(event, info) {
 		alert("Please Choose xls File!");
     });
-	
+	getBusNumberSelect('#nav-search-input');
 	getOrderNoSelect("#new_project","#orderId",function(obj){
 		var bus_list=[];
 		$.ajax({			

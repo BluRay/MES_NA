@@ -1,6 +1,7 @@
 var pageSize=1;
 var table;
 var table_height = $(window).height()-300;
+var project_id='';
 $(document).ready(function(){
 	initPage();
 	$("#breadcrumbs").resize(function() {
@@ -38,6 +39,28 @@ $(document).ready(function(){
 	$("#btnAdd").click (function () {
 		ajaxEdit();
 	});
+	$("#search_busNumber").change(function(e){
+		if($("#search_busNumber").val()==''){
+			return false;
+		}
+		$.ajax({
+			url:"../production/showBusNumberList",
+			async:false,
+			type:"post",
+			dataType:"json",
+			data:{
+				"bus_number":$("#bus_number").val()
+			},
+			success:function(response){
+				detail=response.data;
+				if(detail.length>0){
+					project_id=detail[0].project_id;
+				}else{
+					project_id='';
+				}
+			}
+		})
+	});
 	$('body').on('keydown', ".batch",function(e){
 		if (e.keyCode == "13") {
 			$(e.target).parent("td").parent("tr").next().children().eq(6).find(".batch").focus();
@@ -57,6 +80,26 @@ function showEditPage(){
 		alert(Warn['P_common_02']);
 		$("#search_busNumber").focus();
 		return false;
+	}else{
+		$.ajax({
+			url:"showBusNumberList",
+			async:false,
+			type:"post",
+			dataType:"json",
+			data:{
+				"bus_number":$("#search_busNumber").val()
+			},
+			success:function(response){
+				detail=response.data;
+				if(detail.length>0){
+					project_id=detail[0].project_id;
+				}else{
+					project_id='';
+					alert(Warn['P_common_01']);
+					return false;
+				}
+			}
+		})
 	}
 	$("#tableData").dataTable({
 		paiging:false,
@@ -72,11 +115,10 @@ function showEditPage(){
 		info:false,
 		sScrollY: $(window).height()-240,
 		sScrollX:true,
-		language: {
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"bus_number":$("#search_busNumber").val(),
+				"project_id":project_id,
 				"plant":$("#search_plant").val(),
 				"workshop":$("#search_workshop").find("option:selected").text(),
 				"station":$("#search_station").val(),
@@ -84,7 +126,7 @@ function showEditPage(){
            
             $.ajax({
                 type: "post",
-                url: "../quality/getBusNumberDetailList",
+                url: "../quality/getBusNumberTemplateList",
                 cache: false,  //禁用缓存
                 data: param,  //传入组装的参数
                 dataType: "json",

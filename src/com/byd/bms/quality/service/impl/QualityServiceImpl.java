@@ -231,7 +231,12 @@ public class QualityServiceImpl implements IQualityService {
 	    }
 	}
 	public void getTestingTemplateByHeader(Map<String, Object> condMap, ModelMap model){
-		model.put("data", qualityDao.getTestingTemplateDetailByHeader(condMap));
+		String sign=condMap.get("sign")!=null ? condMap.get("sign").toString():"";
+		List<Map<String,String>> list=qualityDao.getTestingTemplateDetailByHeader(condMap);
+		for(Map<String,String> map : list){
+			map.put("sign", sign);
+		}
+		model.put("data", list);
 	}
 	@Override
 	public void getKeyPartsTraceList(Map<String, Object> conditionMap, ModelMap model) {
@@ -352,7 +357,16 @@ public class QualityServiceImpl implements IQualityService {
 		return qualityDao.saveTestingRecord(map);
 	}
 	public void getTestingRecordDetailList(Map<String, Object> conditionMap,ModelMap model){
+		String sign=conditionMap.get("sign")!=null?conditionMap.get("sign").toString():"";
 		List<Map<String,Object>> datalist= qualityDao.getTestingRecordDetailList(conditionMap);
+		for(Map<String,Object> map : datalist){
+//			if(map.get("first_sign")==null){
+//				map.put("first_sign", sign);
+//			}
+			if(map.get("re_sign")==null){
+				map.put("re_sign", sign);
+			}
+		}
 		Map<String, Object> result=new HashMap<String,Object>();
 		result.put("data", datalist);
 		model.addAllAttributes(result);

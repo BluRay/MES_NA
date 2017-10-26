@@ -712,6 +712,7 @@ public class QualityController extends BaseController {
 	@ResponseBody
 	public ModelMap getTestingTemplateDetailList(){
 		model=new ModelMap();
+		String sign=session.getAttribute("display_name")!=null?session.getAttribute("display_name").toString():"";
 		String header_id=request.getParameter("header_id");
 		String project_id=request.getParameter("project_id");
 		String test_type_value=request.getParameter("test_type_value");
@@ -719,6 +720,7 @@ public class QualityController extends BaseController {
 		condMap.put("header_id", header_id);
 		condMap.put("project_id", project_id);
 		condMap.put("test_type_value", test_type_value);
+		condMap.put("sign", sign);
 		qualityService.getTestingTemplateByHeader(condMap,model);
 		
 		return model;
@@ -864,6 +866,7 @@ public class QualityController extends BaseController {
 		String inspection_item=request.getParameter("inspection_item");
 		String specification_and_standard=request.getParameter("specification_and_standard");
 		String memo=request.getParameter("memo");
+		String self_inspection=request.getParameter("self_inspection");
 		condMap.put("bus_number",bus_number);
 		condMap.put("workshop",workshop);
 		condMap.put("station",station);
@@ -871,8 +874,7 @@ public class QualityController extends BaseController {
 		condMap.put("inspection_item",inspection_item);
 		condMap.put("specification_and_standard",specification_and_standard);
 		condMap.put("memo",memo);
-		condMap.put("inspection_item",inspection_item);
-		condMap.put("memo",memo);
+		condMap.put("self_inspection",self_inspection);
 		condMap.put("editor_id",userid);
 		condMap.put("edit_date",curTime);
 		int result=qualityService.saveInspectionRecord(condMap);
@@ -1000,12 +1002,14 @@ public class QualityController extends BaseController {
 	@RequestMapping("/getTestingRecordDetailList")
 	@ResponseBody
 	public ModelMap getTestingRecordDetailList(){
-		model=new ModelMap();;
+		model=new ModelMap();
+		String sign=session.getAttribute("user_name")!=null?(String) session.getAttribute("user_name"):"";
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		String bus_number=request.getParameter("bus_number");
 		String test_type_value=request.getParameter("test_type_value");
 		condMap.put("test_type_value", test_type_value);
 		condMap.put("bus_number", bus_number);
+		condMap.put("sign", sign);
 		qualityService.getTestingRecordDetailList(condMap,model);
 		return model;
 	}

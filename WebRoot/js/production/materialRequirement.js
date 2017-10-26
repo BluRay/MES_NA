@@ -89,7 +89,7 @@ $(document).ready(function () {
 							click: function() {$( this ).dialog( "close" );} 
 						},
 						{
-							text: "Save",
+							text: "Print",
 							id:"btn_ok",
 							"class" : "btn btn-success btn-minier",
 							click: function() {

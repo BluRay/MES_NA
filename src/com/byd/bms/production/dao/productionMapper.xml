@@ -743,6 +743,38 @@
 	<select id="getDistributionCount" parameterType="Map" resultType="int">
 	SELECT COUNT(id) AS dis_count FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} AND remove = 0
 	</select>
+	<select id="getLineInventoryList" parameterType="Map" resultType="Map">
+	SELECT d.dis_no,d.station,d.bus_number,count(d.dis_no) AS dis_num,d.create_user,d.create_time,d.reception_user,d.reception_time,
+	s.factory,s.workshop,s.line,s.station_name
+	FROM BMS_NA_LINE_DISTRIBUTION d left join BMS_NA_BASE_STATION s on d.station_id = s.id 
+	WHERE d.create_time >= #{start_date} AND d.create_time &lt;= #{end_date} AND d.remove = 0
+	<if test="factory_name !='' and factory_name !=null">
+	AND s.factory = #{factory_name}
+	</if>
+	<if test="workshop_name !='' and workshop_name !=null">
+	AND s.workshop = #{workshop_name}
+	</if>
+	<if test="line !='' and line !=null">
+	AND s.line = #{line}
+	</if>
+	<if test="station_name !='' and station_name !=null">
+	AND s.station_name = #{station_name}
+	</if>
+	<if test="bus_number !='' and bus_number !=null">
+	AND d.bus_number = #{bus_number}
+	</if>
+	<if test="dis_no !='' and dis_no !=null">
+	AND d.dis_no = #{dis_no}
+	</if>
+	<if test="status == 1">
+	AND d.reception_user IS NOT NULL
+	</if>
+	<if test="status == 2">
+	AND d.reception_user IS NULL
+	</if>
+	group by d.dis_no 
+	order by d.create_time DESC
+	</select>
 	
 	
 	

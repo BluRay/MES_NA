@@ -1,11 +1,16 @@
 $(document).ready(function() {	
 	ajaxQuery();
-	
+	getBusNumberSelect('#nav-search-input');
 	//点击查询
 	$("#btnQuery").click(function(){
 		ajaxQuery();
 	})
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	$(document).on("click","#selectAll",function() {
 		var cur_date=new Date();
 		var year=cur_date.getFullYear();

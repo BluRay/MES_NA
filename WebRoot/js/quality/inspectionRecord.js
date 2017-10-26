@@ -16,10 +16,11 @@ $(document).ready(function(){
 		$("#workshop").html("");
 		$("#station").html("");
 		$("#process").html("");
+		$("#self_inspection").val("");
 		$("#inspection_item").html("");
 		var dialog = $( "#dialog-add" ).removeClass('hide').dialog({
 			width:700,
-			height:500,
+			height:580,
 			modal: true,
 			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Add Inspection Record</h4></div>",
 			title_html: true,
@@ -45,6 +46,17 @@ $(document).ready(function(){
 		var workshop=$(this).find("option:selected").text();
 		if(workshop=='All'){
 			$("#station").html("");
+			return false;
+		}
+		if($("#line").val()!=''){
+			getAllstationSelect();
+			getAllProcessSelect();
+		}
+		
+	});
+	$(document).on("change","#line",function(e){
+		var workshop=$(this).val();
+		if(line==''){
 			return false;
 		}
 		getAllstationSelect();
@@ -75,7 +87,7 @@ $(document).ready(function(){
 				}
 			}
 		})
-	})
+	});
 	$("#btnQuery").click(function(){
 		ajaxQuery();
 	})
@@ -122,6 +134,7 @@ function initPage(){
 	getBusNumberSelect('#search_bus_number');
 	getOrderNoSelect("#search_project_no","#orderId");
 	getFactorySelect("quality/inspectionRecord",'',"#search_plant","All",'id');
+	getLineSelectStandard('quality/inspectionRecord','#line','Please Choose','id');
 }
 
 function ajaxQuery(){
@@ -179,14 +192,14 @@ function ajaxQuery(){
             {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},		    
             {"title":"QC Supervisor","class":"center","data":"qc_sign","defaultContent": ""},		
             {"title":"QC Supervisor Date","class":"center","qc_sign_date": "editor","defaultContent": ""},
-            {"title":"QC Inspection","class":"center","data":null,"render":function(data,type,row){
-            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"qc\");' style='color:green;cursor: pointer;'></i>";
-               },
-            },
             {"title":"Self Inspection","class":"center","data":null,"render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"self\");' style='color:green;cursor: pointer;'></i>";
                },
             },
+            {"title":"QC Inspection","class":"center","data":null,"render":function(data,type,row){
+            	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"qc\");' style='color:green;cursor: pointer;'></i>";
+               },
+            }, 
             {"title":"","class":"center","data":null,"render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
                },
@@ -235,6 +248,11 @@ function ajaxSave(){
 		$("#process").focus();
 		return false;
 	}
+	if($("#self_inspection").val()==''){
+		alert(Warn['P_inspectionRecord_02']);
+		$("#self_inspection").focus();
+		return false;
+	}
 	if($("#inspection_item").find("option:selected").text()=='All'){
 		alert(Warn['P_inspectionRecord_01']);
 		$("#inspection_item").focus();
@@ -250,6 +268,7 @@ function ajaxSave(){
 			"workshop":$("#workshop").find("option:selected").text(),
 			"station":$("#station").find("option:selected").text(),
 			"process":$("#process").find("option:selected").text(),
+			"self_inspection":$("#self_inspection").val(),
 			"inspection_item":$("#inspection_item").find("option:selected").text(),
 			"specification_and_standard":$("#inspection_item").val(),
 			"remark":$("#remark").val(),
@@ -280,7 +299,7 @@ function ajaxUpdate(type){
 		if(type=='self'){
 			var self_inspection=tds.eq(4).find(".self_inspection").val();
 			var id=tds.eq(4).find(".id").val();
-			var remark=tds.eq(6).find(".remark").val();
+			var remark=tds.eq(5).find(".remark").val();
 			var obj={};
 			obj.self_inspection=self_inspection;
 			obj.id=id;
@@ -431,10 +450,10 @@ function editDetailTable(tableId,data,type){
              {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
              {"title":"Specification And Standard","class":"center","width":"15%","data": "specification_and_standard","defaultContent": ""},
              {"title":"Self Inspection","class":"center","data": "self_inspection","render": function(data,type,row){
-             	return "<input style='width:120px;text-align:center' class='self_inspection' " +
+             	return "<input style='width:180px;text-align:center' class='self_inspection' " +
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
              }},
-             {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
+             //{"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
              {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
              	return "<input style='width:120px;text-align:center' class='remark' " +
  				" value='"+(data!=undefined ? data : '')+"'/>";
@@ -490,7 +509,7 @@ function getAllstationSelect() {
 		data : {
 			factory:plant,
 			workshop:$("#workshop").find("option:selected").text(),
-		//	line:$("#line").val(),
+			line:$("#line").find("option:selected").text(),
 			start:0,
 			length:-1
 			},

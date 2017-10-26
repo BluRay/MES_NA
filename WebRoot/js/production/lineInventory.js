@@ -7,6 +7,9 @@ $(document).ready(function () {
 	initPage();
 	
 	function initPage(){
+		var now = new Date();
+		$("#search_start_date").val(formatDate(now));
+		$("#search_end_date").val(formatDate(now));
 		getBusNumberSelect('#nav-search-input');
 		getFactorySelect();
 		ajaxQuery();
@@ -159,7 +162,7 @@ function getAllWorkshopSelect() {
 
 function ajaxQuery(){
 	$.ajax({
-	    url: "getMaterialRequirement",
+	    url: "getLineInventoryList",
 	    dataType: "json",
 		type: "get",
 	    data: {
@@ -171,28 +174,74 @@ function ajaxQuery(){
 	    	"station_id": $('#search_station').val(),
 	    	"station_name": $("#search_station :selected").attr('process'),
 	    	"station": $("#search_station :selected").text(),
-	    	"bus_number": $('#search_busno').val()
+	    	"bus_number": $('#search_busno').val(),
+	    	"dis_no": $('#search_disno').val(),
+	    	"start_date": $('#search_start_date').val(),
+	    	"end_date": $('#search_end_date').val(),
+	    	"status": $('#search_status').val()
+	    	
 	    },
 	    success:function(response){
 	    	$("#tableData tbody").html("");
 	    	query_data = response.data;
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr/>");
-	    		$("<td style=\"text-align:center;\" />").html(value.item_no).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.dis_no).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.station).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.bus_number).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.SAP_material).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.BYD_NO).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.specification).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.quantity).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.dis_qty).appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
-		    	var des_num = value.quantity - value.dis_qty - value.line_quantity;
-		    	$("<td style=\"text-align:center;\" />").html("<input style='width:60px' id='des_"+index+"' value='"+((des_num<0)?0:des_num)+"' onkeyup=\"value=value.replace(/[^\\d]/g,'')\" type='text'/>").appendTo(tr);
-		    	$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);		    			    	
+		    	$("<td style=\"text-align:center;\" />").html(value.dis_num).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.create_user).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.create_time).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.reception_user).appendTo(tr);
+		    	$("<td style=\"text-align:center;\" />").html(value.reception_time).appendTo(tr);
+		    	var str = "<i class=\"glyphicon glyphicon-search bigger-130 \" title=\"ShowDetail\" onclick=\"showDetai("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>";
+		    	str += " <i class=\"glyphicon glyphicon-print bigger-130 \" title=\"Print\" onclick=\"print("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
+		    	if(typeof(value.reception_user) == "undefined"){
+		    		str += " <i class=\"glyphicon glyphicon-remove bigger-130 \" title=\"Remove\" onclick=\"remove("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
+		    	}
+		    	$("<td style=\"text-align:center;\" />").html(str).appendTo(tr);		    			    	
 		    	$("#tableData tbody").append(tr);
 	    	})
+	    }
+	});
+}
+
+function showDetai(dis_no){
+	console.log("-->dis_no = " + dis_no);
+	$.ajax({
+	    url: "getDistributionDetail",
+	    dataType: "json",
+		type: "get",
+	    data: {
+	    	"dis_no": dis_no
+	    },
+	    success:function(response){
+	    	$("#tableDataShow tbody").html("");
+	    	$.each(response.data,function (index,value) {
+	    		var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html(index+1).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.bus_number).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.sap_material).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.required_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.dis_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);
+	    		$("#tableDataShow tbody").append(tr);	    		
+	    	});
+	    	$("#dialog-print").removeClass('hide').dialog({
+				resizable: false,
+				title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Distribution Info</h4></div>',
+				title_html: true,
+				width:'1200px',
+				modal: true,
+				buttons: [{
+							text: "Close",
+							"class" : "btn btn-minier",
+							click: function() {$( this ).dialog( "close" );} 
+						}
+					]
+			});
 	    }
 	});
 }

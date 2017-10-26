@@ -54,6 +54,9 @@ $(document).ready(function(){
 	});
 	
 	$(document).on("change","#testing_type_value",function(e){
+		if($("#bus_number").val()==''){
+			return false;
+		}
 		getTestingTemplate();
 	});
 	
@@ -226,6 +229,14 @@ function getTestingTemplate(){
             {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
             {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},
             {"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
+            {"title":"1st Inspection","class":"center","data": "first_inspection","render": function(data,type,row){
+             	return "<input style='width:120px;text-align:center' class='first_inspection' " +
+ 				" value='"+(data!=undefined ? data : '')+"'/>";
+            }},
+            {"title":"Sign","class":"center","data": "sign","render": function(data,type,row){
+             	return "<input style='width:60px;text-align:center' class='first_sign' " +
+ 				" value='"+(data!=undefined ? data : '')+"'/>";
+            }}
         ],
 	});
 }
@@ -269,10 +280,14 @@ function ajaxSave(){
 		var item_no=tds.eq(0).text();
 		var inspection_item=tds.eq(1).text();
 		var specification_standard=tds.eq(2).text();
+		var first_inspection=tds.eq(3).find(".first_inspection").val();
+		var first_sign=tds.eq(4).find(".first_sign").val();
 		var obj={};
 		obj.item_no=item_no;
 		obj.inspection_item=inspection_item;
 		obj.specification_standard=specification_standard;
+		obj.first_inspection=first_inspection;
+		obj.first_sign=first_sign;
 		arr.push(obj);
 	});
 	if(!flag){
@@ -314,18 +329,22 @@ function ajaxUpdate(type){
 		var tds=$(tr).children("td");
 		if(type=='first'){
 			var first_inspection=tds.eq(3).find(".first_inspection").val();
+			var first_sign=tds.eq(4).find(".first_sign").val();
 			var id=tds.eq(3).find(".id").val();
 			var obj={};
 			obj.first_inspection=first_inspection;
+			obj.first_sign=first_sign;
 			obj.id=id;
 			obj.type=type;
 			arr.push(obj);
 		}
 		if(type=='repeat'){
-			var re_inspection=tds.eq(4).find(".re_inspection").val();
-			var id=tds.eq(4).find(".id").val();
+			var re_inspection=tds.eq(5).find(".re_inspection").val();
+			var id=tds.eq(5).find(".id").val();
+			var re_sign=tds.eq(6).find(".re_sign").val();
 			var obj={};
 			obj.re_inspection=re_inspection;
+			obj.re_sign=re_sign;
 			obj.id=id;
 			obj.type=type;
 			arr.push(obj);
@@ -458,7 +477,11 @@ function editDetailTable(tableId,data,type){
              	return "<input style='width:120px;text-align:center' class='first_inspection' " +
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
              }},
-             {"title":"Re Inspection","class":"center","data": "re_inspection","defaultContent": ""},
+             {"title":"Sign","class":"center","data": "first_sign","render": function(data,type,row){
+              	return "<input style='width:60px;text-align:center' class='first_sign' " +
+  				" value='"+(data!=undefined ? data : '')+"'/>";
+              }},
+             //{"title":"Re Inspection","class":"center","data": "re_inspection","defaultContent": ""},
          ];
 	if(type=='repeat'){
 		columns=[
@@ -466,10 +489,15 @@ function editDetailTable(tableId,data,type){
 			{"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
 			{"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
 			{"title":"1st Inspection","class":"center","data": "first_inspection","defaultContent": ""},
+			{"title":"Sign","class":"center","data": "first_sign","defaultContent": ""},
 			{"title":"Re Inspection","class":"center","data": "re_inspection","render": function(data,type,row){
 				return "<input style='width:120px;text-align:center' class='re_inspection' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
 			}},
+			{"title":"Sign","class":"center","data": "re_sign","render": function(data,type,row){
+              	return "<input style='width:60px;text-align:center' class='re_sign' " +
+  				" value='"+(data!=undefined ? data : '')+"'/>";
+              }}
 	    ];
 	}
 	tb_detail=$(tableId).dataTable({

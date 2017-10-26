@@ -114,15 +114,27 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Work Station:</label>
+						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">&nbsp;Line:</label>
+						<div class="col-sm-9">
+							<select class="input-medium" id="line" ></select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Work Station:</label>
 						<div class="col-sm-9">
 							<select class="input-medium" id="station" ></select>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Process：</label>
+						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Process：</label>
 						<div class="col-sm-9">
 							<select class="input-medium" id="process" ></select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Self Inspection:</label>
+						<div class="col-sm-9">
+							<input type="text" class="input-medium" placeholder="" id="self_inspection" />
 						</div>
 					</div>
 					<div class="form-group">

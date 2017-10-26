@@ -319,7 +319,7 @@
 		<if test="bus_number !=null and bus_number !=''">
 			and h.bus_number=#{bus_number}
 		</if>
-			group by h.bus_number order by p.project_no desc
+			group by h.bus_number order by p.project_no desc,h.bus_number asc
 		<if test="start !=null">
 			limit #{start},#{length}
 		</if>
@@ -440,11 +440,11 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_BUS_INSPECTION_RECORD 
-		(bus_number,workshop,station,process_name,inspection_item,
+		(bus_number,workshop,station,process_name,inspection_item,self_inspection,
 		specification_and_standard,supervisor_id,supervisor_date,editor_id,edit_date)
-		values (#{bus_number},#{workshop},#{station},
-			#{process_name},#{inspection_item},#{specification_and_standard},#{editor_id},
-		    #{edit_date},#{editor_id},#{edit_date})
+		values (#{bus_number},#{workshop},#{station},#{process_name},#{inspection_item},
+		#{self_inspection},#{specification_and_standard},#{editor_id},
+		#{edit_date},#{editor_id},#{edit_date})
 	</insert>
 	<select id="getInspectionRecordDetail" parameterType="Map" resultType="Map">
 		select h.id,bus_number,workshop,station,process_name,inspection_item,
@@ -454,20 +454,20 @@
 	    from BMS_NA_BUS_INSPECTION_RECORD h
 		left join BMS_NA_BASE_USER u on u.id=h.supervisor_id
 		where 1=1
-		<if test="bus_number !=null and bus_number !=''">
+<!-- 		<if test="bus_number !=null and bus_number !=''"> -->
 			and h.bus_number=#{bus_number}
-		</if>
+<!-- 		</if> -->
 	</select>
 	<update id="updateInspectionRecord" parameterType="List">
 		<foreach collection="list" index="index" item="item" separator=";">
 			update BMS_NA_BUS_INSPECTION_RECORD set
 			<if test="item.type !=null and item.type =='self'">
 			   self_sign=#{item.user_name},self_sign_date=#{item.edit_date},
-			   self_inspection=#{item.self_inspection},remark=#{item.remark}
+			   self_inspection=#{item.self_inspection},remark=concat(ifnull(remark,''),' ',#{item.remark})
 			</if>
 			<if test="item.type !=null and item.type =='qc'">
 			   qc_sign=#{item.user_name},qc_sign_date=#{item.edit_date},
-			   qc_inspection=#{item.qc_inspection},remark=#{item.remark}
+			   qc_inspection=#{item.qc_inspection},remark=concat(ifnull(remark,''),' ',#{item.remark})
 			</if>
 			 where id=#{item.id}
 		</foreach>
@@ -593,11 +593,11 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_BUS_TESTING_RECORD 
-		(bus_number,test_type_value,item_no,inspection_item,specification_standard,signature,editor_id,edit_date)
+		(bus_number,test_type_value,item_no,inspection_item,specification_standard,first_inspection,first_sign,editor_id,edit_date)
 		values
 		<foreach collection="detail" item="detail" index="index" separator=",">
 			(#{bus_number},#{test_type_value},#{detail.item_no},#{detail.inspection_item},#{detail.specification_standard},
-			#{#signature},#{editor_id},#{edit_date})
+			#{detail.first_inspection},#{detail.first_sign},#{editor_id},#{edit_date})
 		</foreach>		
 	</insert>
 	<select id="getTestingRecordDetailList" parameterType="Map" resultType="Map">
@@ -608,10 +608,10 @@
 		<foreach collection="list" index="index" item="item" separator=";">
 			update BMS_NA_BUS_TESTING_RECORD set
 			<if test="item.type !=null and item.type =='first'">
-			   first_sign=#{item.user_name},first_inspection=#{item.first_inspection}
+			   first_sign=#{item.first_sign},first_inspection=#{item.first_inspection}
 			</if>
 			<if test="item.type !=null and item.type =='repeat'">
-			   re_sign=#{item.user_name},re_inspection=#{item.re_inspection}
+			   re_sign=#{item.re_sign},re_inspection=#{item.re_inspection}
 			</if>
 			 where id=#{item.id}
 		</foreach>

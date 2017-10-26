@@ -127,6 +127,7 @@ public interface IProductionDao {
 	public int getLineInventoryQty(Map<String,Object> conditionMap);
 	public int updateLineInventoryQty(Map<String,Object> conditionMap);
 	public int insertLineInventory(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getLineInventoryList(Map<String,Object> conditionMap);
 	
 	public List<Map<String,String>> getProductionSearchBusinfo(String bus_number);
 

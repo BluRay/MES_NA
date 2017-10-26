@@ -1,6 +1,6 @@
 var pageSize=1;
 var table;
-var table_height = $(window).height()-300;
+var table_height = $(window).height()-250;
 $(document).ready(function(){
 	initPage();
 	$("#breadcrumbs").resize(function(){
@@ -14,7 +14,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	$("#btnQuery").click (function () {
+	$("#btnQuery").click (function (){
 		ajaxQuery();
 	});
 	$('body').on('keydown', ".batch",function(e){
@@ -60,8 +60,8 @@ function ajaxQuery(){
 			var param ={
 				"draw":1,
 				//"factoryId":$("#search_factory").val(),
-				"bustype" : $("#search_bus_type").find("option:selected").text(),
-				"busNumber" : $("#search_busNumber").val(),
+				"bus_type" : $("#search_bus_type").find("option:selected").text(),
+				"bus_number" : $("#search_busNumber").val(),
 				"project_no" : $("#search_project_no").val(),
 			//	"workshop" : $("#search_workshop").find("option:selected").text()
 			};
@@ -120,10 +120,11 @@ function showInfoPage(json){
 		ajax:function (data, callback, settings) {
 			var param ={
 				"bus_number":json.bus_number,
+				"project_id":json.project_id
 			};       
             $.ajax({
                 type: "post",
-                url: "getBusNumberDetailList",
+                url: "getBusNumberTemplateList",
                 cache: false,  //禁用缓存
                 data: param,  //传入组装的参数
                 dataType: "json",

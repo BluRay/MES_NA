@@ -63,23 +63,33 @@
 								<td>&nbsp;<select id="search_station" class="input-small" style="height: 30px;width:90px"></select></td>
 								<td>&nbsp;BusNo : &nbsp;</td>
 								<td>&nbsp;<input id="search_busno" placeholder="Bus No..." style="height: 30px;width:100px" type="text"></td>
+								<td>&nbsp;&nbsp;</td>
+							</tr>
+							<tr>
+								<td>Distribution No : &nbsp;</td>
+								<td>&nbsp;<input id="search_disno" placeholder="Distribution No..." style="height: 30px;width:120px" type="text"></td>
+								<td>&nbsp;Start Date : &nbsp;</td>
+								<td>&nbsp;<input id="search_start_date" style="height: 30px;width:100px" onClick="WdatePicker({el:'search_start_date',dateFmt:'yyyy-MM-dd'});" type="text"></td>
+								<td>&nbsp;End Date : &nbsp;</td>
+								<td>&nbsp;<input id="search_end_date" style="height: 30px;width:100px" onClick="WdatePicker({el:'search_end_date',dateFmt:'yyyy-MM-dd'});" type="text"></td>
+								<td>&nbsp;Status : &nbsp;</td>
+								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:90px"><option value="">全部</option><option value="1">已收货</option><option value="2">未收货</option></select></td>
+								<td></td>
 								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
+								<td></td>
 							</tr>
 						</table>
 					</div>
 					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 					<thead><tr>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">DistributionNo</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="100px">Station</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="200px">Station</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">SAPmaterial</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">BYD_NO</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="160px">Specification</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">MaterialNum</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">CreateUser</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">CreateTime</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">ReceptionUser</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">ReceptionTser</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Oprtation</th>
 						</tr>
 					</thead>
@@ -87,6 +97,25 @@
 					</table>
 					</div>
 			</div><!-- /.main-content -->	
+			
+			<div id="dialog-print" class="hide notPrintable" style="align:center;width:700px;height:500px">
+				<div style="height:500px">
+				<table id="tableDataShow" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
+				<thead><tr>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Item</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">SAPmaterial</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">PartName</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Quantity</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="30px">Unit</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">Distribution</th>
+					<th style="text-align:center;padding-left:0px;padding-right:0px;" width="40px">Vendor</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+				</table>
+				</div>
+			</div>
 
 			<!-- 脚 -->
 			<%-- <jsp:include page="footer.jsp" flush="true"/> --%>

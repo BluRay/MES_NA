@@ -996,7 +996,7 @@ public class ProductionController extends BaseController {
 		condMap.put("dis_date", dis_date);
 		SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String curTime = df2.format(new Date());
-		String userid=String.valueOf(session.getAttribute("user_id"));
+		String create_user=String.valueOf(session.getAttribute("user_name"));
 		
 		int dis_count = productionService.getLineDisCount(condMap)+1;
 		String dis_no = dis_date +  String.format("%4d", dis_count).replace(" ", "0");
@@ -1009,7 +1009,7 @@ public class ProductionController extends BaseController {
 			logger.info(object);
 			Map<String,Object> condMap2=new HashMap<String,Object>();
 			condMap2.put("dis_no", dis_no);
-			condMap2.put("create_user", userid);
+			condMap2.put("create_user", create_user);
 			condMap2.put("create_time", curTime);
 			condMap2.put("station_id", object.get("station_id"));
 			condMap2.put("station", object.get("station"));
@@ -1109,6 +1109,42 @@ public class ProductionController extends BaseController {
 	public ModelAndView lineInventory(){
 		mv.setViewName("production/lineInventory");
 		return mv;
+	}
+	
+	@RequestMapping("/getLineInventoryList")
+	@ResponseBody
+	public ModelMap getLineInventoryList(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("factory_name", request.getParameter("factory_name"));
+		condMap.put("factory_id", request.getParameter("factory_id"));
+		condMap.put("workshop_name", request.getParameter("workshop_name"));
+		condMap.put("workshop_id", request.getParameter("workshop_id"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("station", request.getParameter("station"));
+		condMap.put("station_name", request.getParameter("station_name"));
+		condMap.put("station_id", request.getParameter("station_id"));
+		condMap.put("bus_number", request.getParameter("bus_number"));
+		condMap.put("dis_no", request.getParameter("dis_no"));
+		condMap.put("start_date", request.getParameter("start_date"));
+		condMap.put("end_date", request.getParameter("end_date"));
+		condMap.put("status", request.getParameter("status"));
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		datalist = productionService.getLineInventoryList(condMap);
+		initModel(true,"success",datalist);
+		model = mv.getModelMap();
+		return model;
+	}
+	
+	@RequestMapping("/getDistributionDetail")
+	@ResponseBody
+	public ModelMap getDistributionDetail(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("dis_no", request.getParameter("dis_no"));
+		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
+		datalist = productionService.getMaterialReception(condMap);
+		initModel(true,"success",datalist);
+		model = mv.getModelMap();
+		return model;
 	}
 	
 	/*****************End   Line Inventory *****************************************************************/

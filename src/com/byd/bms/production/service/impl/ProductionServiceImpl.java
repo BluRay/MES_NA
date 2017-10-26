@@ -791,4 +791,9 @@ public class ProductionServiceImpl implements IProductionService {
 		return productionDao.getDistributionCount(conditionMap);
 	}
 
+	@Override
+	public List<Map<String, Object>> getLineInventoryList(Map<String, Object> conditionMap) {
+		return productionDao.getLineInventoryList(conditionMap);
+	}
+
 }
