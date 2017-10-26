@@ -9,7 +9,7 @@ $(document).ready(function () {
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
 		getFactorySelect();
-		ajaxQuery();
+		//ajaxQuery();
 	};
 
 	$('#nav-search-input').bind('keydown', function(event) {
@@ -126,6 +126,8 @@ $(document).ready(function () {
 				$("#btn_ok").removeAttr("disabled");
 				window.print();
 				ajaxQuery();
+
+				fadeMessageAlert(null,"Distribution No. " + response.message,"gritter-info");
 			}
 		});
 	}
@@ -283,6 +285,9 @@ function ajaxQuery(){
 	    success:function(response){
 	    	$("#tableData tbody").html("");
 	    	query_data = response.data;
+	    	if(response.data.length == 0){
+	    		alert(Warn['P_lineInventory_01']);
+	    	}
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr/>");
 	    		$("<td style=\"text-align:center;\" />").html("<input id='data_"+index+"' type='checkbox'/>").appendTo(tr);

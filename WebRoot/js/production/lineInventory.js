@@ -196,10 +196,10 @@ function ajaxQuery(){
 		    	$("<td style=\"text-align:center;\" />").html(value.create_time).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.reception_user).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.reception_time).appendTo(tr);
-		    	var str = "<i class=\"glyphicon glyphicon-search bigger-130 \" title=\"ShowDetail\" onclick=\"showDetai("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>";
-		    	str += " <i class=\"glyphicon glyphicon-print bigger-130 \" title=\"rePrint\" onclick=\"rePrint("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
+		    	var str = "<i class=\"glyphicon glyphicon-search bigger-130 \" title=\"ShowDetail\" onclick=\"showDetai("+value.dis_no+")\" style='color:green;cursor: pointer;'></i>";
+		    	str += " <i class=\"glyphicon glyphicon-print bigger-130 \" title=\"rePrint\" onclick=\"rePrint("+value.dis_no+")\" style='color:green;cursor: pointer;'></i>"
 		    	if(typeof(value.reception_user) == "undefined"){
-		    		str += " <i class=\"glyphicon glyphicon-remove bigger-130 \" title=\"Remove\" onclick=\"remove("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
+		    		str += " <i class=\"glyphicon glyphicon-remove bigger-130 \" title=\"Remove\" onclick=\"remove("+value.dis_no+")\" style='color:green;cursor: pointer;'></i>"
 		    	}
 		    	$("<td style=\"text-align:center;\" />").html(str).appendTo(tr);		    			    	
 		    	$("#tableData tbody").append(tr);

@@ -758,7 +758,7 @@
 	SELECT COUNT(id) AS dis_count FROM BMS_NA_LINE_DISTRIBUTION WHERE dis_no = #{dis_no} AND remove = 0
 	</select>
 	<select id="getLineInventoryList" parameterType="Map" resultType="Map">
-	SELECT d.dis_no,d.station,d.bus_number,count(d.dis_no) AS dis_num,d.create_user,d.create_time,d.reception_user,d.reception_time,
+	SELECT d.dis_no,d.station,group_concat(distinct d.bus_number) AS bus_number,count(d.dis_no) AS dis_num,d.create_user,d.create_time,d.reception_user,d.reception_time,
 	s.factory,s.workshop,s.line,s.station_name
 	FROM BMS_NA_LINE_DISTRIBUTION d left join BMS_NA_BASE_STATION s on d.station_id = s.id 
 	WHERE d.create_time >= #{start_date} AND d.create_time &lt;= CONCAT(#{end_date},' 23:59:59') AND d.remove = 0

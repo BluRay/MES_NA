@@ -497,7 +497,7 @@ function fadeMessageAlert(title,message, alertClass) {
 	});*/
 	$.gritter.add({
 		title: title,
-		time: 1000,  
+		time: 3000,  
 	    speed:500,
 		text: '<h5>'+message+'</h5>',
 		class_name: alertClass

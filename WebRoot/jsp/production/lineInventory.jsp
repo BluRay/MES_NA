@@ -83,8 +83,8 @@
 					<table id="tableData" class="table table-striped table-bordered table-hover" style="font-size: 12px;">
 					<thead><tr>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">DistributionNo</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="200px">Station</th>
-						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">BusNumber</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="180px">Station</th>
+						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="150px">BusNumber</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">MaterialNum</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="50px">CreateUser</th>
 						<th style="text-align:center;padding-left:0px;padding-right:0px;" width="60px">CreateTime</th>

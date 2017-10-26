@@ -79,6 +79,9 @@ function ajaxQuery(){
 	    success:function(response){
 	    	$("#tableData tbody").html("");
 	    	query_data = response.data;
+	    	if(response.data.length == 0){
+	    		alert(Warn['P_lineInventory_01']);
+	    	}
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr/>");
 		    	$("<td style=\"text-align:center;\" />").html(value.station).appendTo(tr);
