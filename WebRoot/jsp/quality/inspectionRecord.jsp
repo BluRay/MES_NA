@@ -96,16 +96,16 @@
 						</div>
 					</div>
 				</div>
-				
 			</div>		
 		
 		    <div id="dialog-add" class="hide">
 				<form id="addForm" class="form-horizontal">
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Bus No.:</label>
-						<div class="col-sm-9">
+						<label  style="float:left;width:25%" class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Bus No.:</label>
+						<div class="col-sm-9" style="float:left;width:30%">
 							<input type="text" class="input-medium" placeholder="" id="bus_number" />
 						</div>
+						<label style="float:left;width:20%;color:red;text-align:left" class="col-sm-3 control-label no-padding-right" id="message"></label>												
 					</div>
 					<div class="form-group">
 						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Workshop:</label>

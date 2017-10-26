@@ -91,7 +91,12 @@ $(document).ready(function(){
 		}
 
 	});
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	
 });
 
@@ -101,6 +106,7 @@ function initPage(){
 	getFactorySelect('','','#factory','Please Choose','id');
 	getKeysSelect("PLAN_CODE", '', '#plan_node','Please Choose','id');
 	getLineSelectStandard('','#line','Please Choose','id');
+	getBusNumberSelect('#nav-search-input');
 	//getWorkshopSelect('',$("#factory :selected").text(),'','#search_workshop','请选择','id');
 }
 

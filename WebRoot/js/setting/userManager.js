@@ -6,8 +6,14 @@ $(document).ready(function () {
 	function initPage(){
 		getFactorySelect();
 		ajaxQuery();
+		getBusNumberSelect('#nav-search-input');
 	}
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 
 	
 	$.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {

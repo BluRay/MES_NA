@@ -275,10 +275,10 @@
 		SELECT d.* FROM BMS_NA_PROJECT_BOM_ITEM d
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		<if test="version !=null and sapNo !=''">
+		<if test="version !=null and version !=''">
 			and h.version=#{version} 
 		</if> 
-		<if test="version !=null">
+		<if test="version ==null">
 			and h.version = (select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
 		</if>
 		where p.project_no=#{projectNo}  
@@ -298,7 +298,12 @@
 		SELECT count(1) FROM BMS_NA_PROJECT_BOM_ITEM d			
 		LEFT JOIN BMS_NA_PROJECT_BOM_HEAD  h on d.bom_head_id=h.id			
 		LEFT JOIN BMS_NA_PROJECT p ON h.project_id = p.id
-		and h.version=#{version} <!--(select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)  -->
+		<if test="version !=null and version !=''">
+			and h.version=#{version} 
+		</if> 
+		<if test="version ==null">
+			and h.version = (select max(version) from BMS_NA_PROJECT_BOM_HEAD h1 where h1.project_id = p.id)
+		</if>
 		where p.project_no=#{projectNo}  
 		<if test="sapNo !=null and sapNo !=''">
 			and d.SAP_material = #{sapNo} 

@@ -73,7 +73,7 @@
 								<td>&nbsp;End Date : &nbsp;</td>
 								<td>&nbsp;<input id="search_end_date" style="height: 30px;width:100px" onClick="WdatePicker({el:'search_end_date',dateFmt:'yyyy-MM-dd'});" type="text"></td>
 								<td>&nbsp;Status : &nbsp;</td>
-								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:90px"><option value="">全部</option><option value="1">已收货</option><option value="2">未收货</option></select></td>
+								<td>&nbsp;<select id="search_status" class="input-small" style="height: 30px;width:90px"><option value="">All</option><option value="1">已收货</option><option value="2">未收货</option></select></td>
 								<td></td>
 								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
 								<td></td>

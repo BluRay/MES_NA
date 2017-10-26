@@ -114,9 +114,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						          <th align="center">Quantity</th>
 						          <th align="center">English Description</th>
 						          <th align="center">Vendor</th>
-						          <th align="center">Station Code</th>
+						          <th align="center">Process Code</th>
 						          <th align="center">Note</th>
-						          <th align="center">Message</th>
+						          <th align="center"></th>
 						       </tr>
 						    </thead>
 						</table>

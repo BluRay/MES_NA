@@ -19,6 +19,7 @@ var Warn={
     'W_18' : '请填写技改人！',
     'W_19' : '请选择需要跟进的车辆！',
     'W_20' : '该车间/工位下暂无在制的车辆！',
+    'W_21' : '请不要重复扫描！',
     /********Start Yangke***********************/
     'P_measureAbnormity_01'	: '处理日期不能为空！',
     'P_measureAbnormity_02'	: 'measures 不能为空！',
@@ -32,6 +33,10 @@ var Warn={
     'P_materialReception_04'	: '收货成功！',
     'P_materialReception_05'	: '没有找到需要接收的物料信息！',
     'P_materialReception_05'	: '发货单查询失败或此发货单已经失效！',
+    
+    'P_lineInventory_01'	: '没有查询到任何数据！请检查查询条件',
+    'P_lineInventory_02'	: '确认要删除此送货单吗？',
+    'P_lineInventory_03'	: '送货单删除成功',
     	
     /********End  Yangke***********************/
     	
@@ -51,6 +56,7 @@ var Warn={
     'P_common_13'   : '工位不能为空！',
     'P_common_14'   : '工序不存在！',
     'P_common_15'   : '工序不能为空！',
+    'P_common_16'   : '未找到模板数据！',
     'P_importBomInfo_01':'Document No.不能为空',
     'P_importBomInfo_02':'Version不能为空',
     'P_importBomInfo_03':'DCN不能为空',

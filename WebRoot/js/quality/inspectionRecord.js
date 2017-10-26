@@ -79,11 +79,13 @@ $(document).ready(function(){
 				if(detail.length>0){
 					plant=detail[0].plant;
 					project_id=detail[0].project_id;
+					$("#message").text('');
 					getWorkshopSelect('',detail[0].plant,"","#workshop","All","id");
 					getAllInspectionItemSelect(project_id);
 				}else{
 					$("#bus_number").focus();
-					alert(Warn['P_common_01']);
+					$("#message").text(Warn['P_common_01']);
+					//alert(Warn['P_common_01']);
 				}
 			}
 		})
@@ -132,9 +134,10 @@ $(document).ready(function(){
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
 	getBusNumberSelect('#search_bus_number');
+	getBusNumberSelect('#bus_number');
 	getOrderNoSelect("#search_project_no","#orderId");
 	getFactorySelect("quality/inspectionRecord",'',"#search_plant","All",'id');
-	getLineSelectStandard('quality/inspectionRecord','#line','Please Choose','id');
+	getLineSelectStandard('quality/inspectionRecord','#line','','id');
 }
 
 function ajaxQuery(){
@@ -200,7 +203,7 @@ function ajaxQuery(){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"qc\");' style='color:green;cursor: pointer;'></i>";
                },
             }, 
-            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            {"title":"","class":"center","width":"50px","data":null,"render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
                },
             }
@@ -448,7 +451,7 @@ function editDetailTable(tableId,data,type){
              {"title":"Station","class":"center","data":"station","defaultContent": ""},
              {"title":"Process Name","class":"center","data":"process_name","defaultContent": ""},
              {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-             {"title":"Specification And Standard","class":"center","width":"15%","data": "specification_and_standard","defaultContent": ""},
+             {"title":"Specification And Standard","class":"center","width":"280px","data": "specification_and_standard","defaultContent": ""},
              {"title":"Self Inspection","class":"center","data": "self_inspection","render": function(data,type,row){
              	return "<input style='width:180px;text-align:center' class='self_inspection' " +
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";

@@ -31,7 +31,7 @@
 				<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a
-							href="/BMS/index">Index</a></li>
+							href="/MES/index">Index</a></li>
 						<li><a href="#">Quality</a></li>
 						<li><a href="#">Testing Record</a></li>
 					</ul>
@@ -90,7 +90,7 @@
 					</div>
 					<div class="row" style="margin-top:20px;">
 						<div class="col-xs-12" id="scroll_div" >
-							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:900px;overflow:auto;text-align:center" >
+							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:1100px;overflow:auto;text-align:center" >
 							</table>	
 						</div>
 					</div>
@@ -100,20 +100,23 @@
 		    <div id="dialog-add" class="hide">
 				<form id="addForm" class="form-horizontal">
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right">*&nbsp;Bus No.:</label>
-						<div class="col-sm-9">
-							<input type="text" class="input-medium" placeholder="" id="bus_number" />
+						<label class="col-sm-2 col-sm-2 control-label no-padding-right">*&nbsp;Bus No.:</label>
+						<div class="col-sm-2">
+						    <input type="text" class="input-medium" placeholder="" id="bus_number" />
+						</div>
+						<div class="col-sm-8">
+						    <label class="col-sm-2 col-sm-2 control-label no-padding-right" style="color:red" id="message">&nbsp;</label>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-3 col-sm-3 control-label no-padding-right no-padding-right" for="workshop">*&nbsp;Testing Type:</label>
-						<div class="col-sm-9">
+						<label class="col-sm-2 col-sm-2 control-label no-padding-right" for="workshop">*&nbsp;Testing Type:</label>
+						<div class="col-sm-2">
 							<select class="input-medium" id="testing_type_value" ></select>
 						</div>
 					</div>
 					<div class="row" style="margin-top:20px;">
 						<div class="col-xs-12">
-							<table id="tableAddDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:755px;overflow:auto;text-align:center" >
+							<table id="tableAddDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:900px;overflow:auto;text-align:center" >
 							</table>	
 						</div>
 					</div>

@@ -350,7 +350,7 @@ public class QualityController extends BaseController {
 		excelTool.readExcel(is, excelModel);
 		Map<String,Object> queryMap=new HashMap<String,Object>();
 		queryMap.put("length", -1);
-        String stationStr=settingService.checkStation(queryMap, "Name");
+        String stationStr=settingService.checkStation(queryMap, "Code");
         String workshopStr=settingService.checkWorkshop(queryMap, "Name");
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
 		for (Object[] data : excelModel.getData()) {
@@ -497,8 +497,8 @@ public class QualityController extends BaseController {
 		excelTool.readExcel(is, excelModel);
 		Map<String,Object> queryMap=new HashMap<String,Object>();
 		queryMap.put("length", -1);
-		String stationStr=settingService.checkStation(queryMap,"Name");
-		String processStr=settingService.checkProcess(queryMap,"Name");
+		String stationStr=settingService.checkStation(queryMap,"Code");
+		String processStr=settingService.checkProcess(queryMap,"Code");
 		List<Map<String, String>> addList = new ArrayList<Map<String, String>>();
 		for (Object[] data : excelModel.getData()) {
 			Map<String, String> infomap = new HashMap<String, String>();
@@ -514,7 +514,7 @@ public class QualityController extends BaseController {
 			}
 			infomap.put("station", data[1] == null ? null : data[1].toString().trim());
 			if(data[2] != null && !data[2].toString().trim().equals("")){
-				int index=processStr.indexOf("_"+data[1].toString().trim()+";");
+				int index=processStr.indexOf("_"+data[2].toString().trim()+";");
 				if(index<0){
 					errorMessage+= "P_common_14;";
 				}

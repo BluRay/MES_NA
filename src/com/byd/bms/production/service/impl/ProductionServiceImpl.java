@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -198,7 +199,7 @@ public class ProductionServiceImpl implements IProductionService {
 			m.put("project_id", condMap.get("project_id"));
 			m.put("factory_id", condMap.get("factory_id"));
 			//车辆第一次扫描时，判断工厂订单所有车辆是否全部扫描完成，第一辆车扫描焊装上线时更新工厂订单状态为“生产中”，全部扫描入库完成则更新状态为“已完成”
-			if("welding online".equals(condMap.get("plan_node_name"))&&condMap.get("on_offline").equals("online")){
+			if("welding online".equals(StringUtils.lowerCase(condMap.get("plan_node_name").toString()))&&condMap.get("on_offline").equals("online")){
 				int welding_online_count=0;
 				welding_online_count=productionDao.queryWeldingOnlineCount(condMap);
 				if(welding_online_count==1){//第一辆车焊装上线扫描,更新BMS_OR_FACTORY_ORDER status为1：“生产中”					
@@ -206,7 +207,7 @@ public class ProductionServiceImpl implements IProductionService {
 					productionDao.updateProject(m);
 				}
 			}
-			if("outgoing".equals(condMap.get("plan_node_name"))&&condMap.get("on_offline").equals("offline")){
+			if("outgoing".equals(StringUtils.lowerCase(condMap.get("plan_node_name").toString()))&&condMap.get("on_offline").equals("offline")){
 				Map<String,Object> info=productionDao.queryWarehouseInfo(condMap);
 				int warehouse_count=Integer.parseInt(info.get("warehouse_count").toString());
 				int factory_order_qty=Integer.parseInt(info.get("production_qty").toString());
@@ -222,11 +223,11 @@ public class ProductionServiceImpl implements IProductionService {
 			return rMap;
 			
 		}else{//已经扫描，更新关键零部件信息			
-			if(partsList.size()>0){
+			/*if(partsList.size()>0){
 				productionDao.updateParts(partsList);
-			}		
-			rMap.put("success", true);
-			rMap.put("message", "扫描成功！");
+			}*/		
+			rMap.put("success", false);
+			rMap.put("message", "W_21");
 			return rMap;
 		}
 
@@ -794,6 +795,11 @@ public class ProductionServiceImpl implements IProductionService {
 	@Override
 	public List<Map<String, Object>> getLineInventoryList(Map<String, Object> conditionMap) {
 		return productionDao.getLineInventoryList(conditionMap);
+	}
+
+	@Override
+	public int removeDistribution(Map<String, Object> conditionMap) {
+		return productionDao.removeDistribution(conditionMap);
 	}
 
 }

@@ -248,5 +248,9 @@ public class ReportController extends BaseController {
 		model = mv.getModelMap();
 		return model;
 	}
-
+	@RequestMapping("/ecnSearch")
+	public ModelAndView ecnSearch(){
+		mv.setViewName("report/ecnSearch");
+		return mv;
+	}
 }

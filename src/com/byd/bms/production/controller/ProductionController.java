@@ -226,7 +226,8 @@ public class ProductionController extends BaseController {
 			Map<String,Object> condMap=new HashMap<String,Object>();
 			condMap.put("factory_name", businfo.get("factory"));
 			condMap.put("order_type", businfo.get("order_type"));
-			condMap.put("station_name", businfo.get("station_name"));
+			condMap.put("station_name", businfo.get("current_station"));
+			condMap.put("on_offline", businfo.get("on_offline"));
 			Map<String,Object> nextStation=productionService.getNextStation(condMap);
 			model.put("businfo", businfo);
 			model.put("nextStation", nextStation);
@@ -486,6 +487,7 @@ public class ProductionController extends BaseController {
 		model.clear();
 		String ecn_no=request.getParameter("ecn_no");
 		String status=request.getParameter("status");
+		String items=request.getParameter("items");
 		String start_date=request.getParameter("start_date");
 		String end_date=request.getParameter("end_date");
 		int draw=Integer.parseInt(request.getParameter("draw")!=null ? request.getParameter("draw") : "1"); 
@@ -498,6 +500,7 @@ public class ProductionController extends BaseController {
 		condMap.put("length", length);
 		condMap.put("ecn_no", ecn_no);
 		condMap.put("status", status);
+		condMap.put("items", items);
 		condMap.put("start_date", start_date);
 		condMap.put("end_date", end_date);
 		
@@ -1147,6 +1150,16 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
+	@RequestMapping("/removeDistribution")
+	@ResponseBody
+	public ModelMap removeDistribution(){
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("dis_no", request.getParameter("dis_no"));
+		int result = productionService.removeDistribution(condMap);
+		initModel(true,String.valueOf(result),null);
+		model = mv.getModelMap();
+		return model;
+	}
 	/*****************End   Line Inventory *****************************************************************/
 	
 }

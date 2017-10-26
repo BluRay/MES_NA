@@ -12,7 +12,7 @@ $(document).ready(function () {
 		$("#search_end_date").val(formatDate(now));
 		getBusNumberSelect('#nav-search-input');
 		getFactorySelect();
-		ajaxQuery();
+		//ajaxQuery();
 	};
 
 	$('#nav-search-input').bind('keydown', function(event) {
@@ -183,7 +183,9 @@ function ajaxQuery(){
 	    },
 	    success:function(response){
 	    	$("#tableData tbody").html("");
-	    	query_data = response.data;
+	    	if(response.data.length == 0){
+	    		alert(Warn['P_lineInventory_01']);
+	    	}
 	    	$.each(response.data,function (index,value) {
 	    		var tr = $("<tr/>");
 	    		$("<td style=\"text-align:center;\" />").html(value.dis_no).appendTo(tr);
@@ -195,7 +197,7 @@ function ajaxQuery(){
 		    	$("<td style=\"text-align:center;\" />").html(value.reception_user).appendTo(tr);
 		    	$("<td style=\"text-align:center;\" />").html(value.reception_time).appendTo(tr);
 		    	var str = "<i class=\"glyphicon glyphicon-search bigger-130 \" title=\"ShowDetail\" onclick=\"showDetai("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>";
-		    	str += " <i class=\"glyphicon glyphicon-print bigger-130 \" title=\"Print\" onclick=\"print("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
+		    	str += " <i class=\"glyphicon glyphicon-print bigger-130 \" title=\"rePrint\" onclick=\"rePrint("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
 		    	if(typeof(value.reception_user) == "undefined"){
 		    		str += " <i class=\"glyphicon glyphicon-remove bigger-130 \" title=\"Remove\" onclick=\"remove("+value.dis_no+")\" style='color:blue;cursor: pointer;'></i>"
 		    	}
@@ -207,7 +209,6 @@ function ajaxQuery(){
 }
 
 function showDetai(dis_no){
-	console.log("-->dis_no = " + dis_no);
 	$.ajax({
 	    url: "getDistributionDetail",
 	    dataType: "json",
@@ -244,6 +245,89 @@ function showDetai(dis_no){
 			});
 	    }
 	});
+}
+
+function rePrint(dis_no){
+	$.ajax({
+	    url: "getDistributionDetail",
+	    dataType: "json",
+		type: "get",
+	    data: {
+	    	"dis_no": dis_no
+	    },
+	    success:function(response){
+	    	$("#tableDataShow tbody").html("");
+	    	$.each(response.data,function (index,value) {
+	    		var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html(index+1).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.bus_number).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.sap_material).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.required_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.dis_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);
+	    		$("#tableDataShow tbody").append(tr);	    		
+	    	});
+	    	$("#tableDataPrint tbody").html("");
+	    	$.each(response.data,function (index,value) {
+	    		var tr = $("<tr/>");
+	    		$("<td style=\"text-align:center;\" />").html(index+1).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.bus_number).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.sap_material).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.part_name).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.required_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.unit).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.dis_quantity).appendTo(tr);
+	    		$("<td style=\"text-align:center;\" />").html(value.vendor).appendTo(tr);
+	    		$("#tableDataPrint tbody").append(tr);	    		
+	    	});
+	    	$("#dialog-print").removeClass('hide').dialog({
+				resizable: false,
+				title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Distribution Info</h4></div>',
+				title_html: true,
+				width:'1200px',
+				modal: true,
+				buttons: [{
+							text: "Close",
+							"class" : "btn btn-minier",
+							click: function() {$( this ).dialog( "close" );} 
+						},
+						{
+							text: "rePrint",
+							id:"btn_ok",
+							"class" : "btn btn-success btn-minier",
+							click: function() {
+								btnPrintConfirm(dis_no);
+							} 
+						}
+					]
+			});
+	    }
+	});
+}
+
+function remove(dis_no){
+	if(confirm(Warn['P_lineInventory_02'])){
+		$.ajax({
+		    url: "removeDistribution",
+		    dataType: "json",
+			type: "get",
+		    data: {
+		    	"dis_no": dis_no
+		    },
+		    success:function(response){
+		    	alert(Warn['P_lineInventory_03'])
+		    	ajaxQuery();
+		    }
+		});
+	}
+}
+
+function btnPrintConfirm(dis_no){
+	$("#dialog-print").dialog( "close" );
+	$("#dis_no").html("Distribution No. " + dis_no);
+	window.print();
 }
 
 function selectAll(){

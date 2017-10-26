@@ -82,5 +82,6 @@ public interface IProductionService {
 	public int updateLineDistributionReception(Map<String,Object> conditionMap);
 	public void updateLineInventory(Map<String,Object> conditionMap);
 	public List<Map<String, Object>> getLineInventoryList(Map<String,Object> conditionMap);
+	public int removeDistribution(Map<String,Object> conditionMap);
 	
 }

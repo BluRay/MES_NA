@@ -83,7 +83,13 @@ $(document).ready(function(){
 		}
 
 	});
-	
+
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	
 });
 
@@ -91,6 +97,7 @@ function initPage(){
 	getFactorySelect('','','#search_factory','All','id');
 	ajaxQuery();
 	getFactorySelect('','','#factory','Please Choose','id');
+	getBusNumberSelect('#nav-search-input');
 }
 
 function ajaxQuery(){

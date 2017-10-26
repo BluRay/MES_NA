@@ -132,10 +132,10 @@ $(document).ready(function () {
 		            success: function(response){
 		                resetPage();
 		                if(response.success){ 
-		                	fadeMessageAlert(null,response.message,'gritter-success');
+		                	fadeMessageAlert(null,"Succeed !",'gritter-success');
 		                }
 		                else{
-		                	fadeMessageAlert(null,response.message,'gritter-error');
+		                	fadeMessageAlert(null,Warn[response.message],'gritter-error');
 		                }
 
 		                //setTimeout(function() {
@@ -176,7 +176,7 @@ $(document).ready(function () {
                     	$('#vinText').data("vin",bus.VIN);
                     	$('#vinText').data("project_id",bus.project_id);
                     	$('#vinText').data("bus_type",bus.bus_type);
-              	
+                    	var next_station=response.nextStation;
                     	
                     	bus_production_status=bus.production_status;
                     	orderType=bus.order_type;
@@ -187,7 +187,7 @@ $(document).ready(function () {
                 		$("#infoLine").html(bus.line);
                 		$("#infoStation").html(bus.station_name);
                 		$("#infoOrder").html(bus.order_desc);
-                		$//("#infoStatus").html(bus.status=='0'?'正常':'冻结');
+                		$("#infoStatus").html(bus.on_offline);
                 		$("#btnSubmit").removeAttr("disabled");
  
                 		var cur_line=$("#exec_line option:selected").text();
@@ -204,7 +204,9 @@ $(document).ready(function () {
                 		//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描                    		
                 		$("#exec_line").attr("disabled",true);
                     		
-                    	/*}*/
+                		//$("#exec_station").val(next_station.station_id)
+                		$("#exec_station option:contains("+next_station.station_name+")").attr("selected",true)
+                		$("#on_offline").val(next_station.on_offline)
                     }
             },
             error:function(){alertError();}

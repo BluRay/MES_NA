@@ -227,7 +227,7 @@ public class PlanServiceImpl implements IPlanService {
 			String[] revisionStrArray=revision_str.split(";");
 			for(int i = 0; i < revisionStrArray.length; i++){
 				String[] revisionArray = revisionStrArray[i].split(",");
-				PlanMasterPlan editPlanMasterPlan = (PlanMasterPlan) datalist.get(Integer.parseInt(revisionArray[2]));
+				PlanMasterPlan editPlanMasterPlan = (PlanMasterPlan) datalist.get(Integer.parseInt(revisionArray[2])-1);
 				//revisionArray[6] = String.valueOf(editPlanMasterPlan.getD1()); //原值
 				switch(Integer.parseInt(revisionArray[4])){
 				case 1:revisionArray[6] = String.valueOf(editPlanMasterPlan.getD1());editPlanMasterPlan.setD1(Integer.parseInt(revisionArray[5]));break;
@@ -278,7 +278,7 @@ public class PlanServiceImpl implements IPlanService {
 			Map<String, Object> condMap = new HashMap<String, Object>();
 			condMap.put("project_id", Integer.parseInt(revisionArray[0]));
 			condMap.put("plant_id", Integer.parseInt(revisionArray[1]));
-			condMap.put("plan_code_value", Integer.parseInt(revisionArray[2]));
+			condMap.put("plan_code_value", (Integer.parseInt(revisionArray[2])==9)?10:Integer.parseInt(revisionArray[2]));
 			condMap.put("cur_day", thisMonthStr + "-" + ((thisDay<10)?"0":"") + thisDay);
 			condMap.put("plan_date", thisMonthStr + "-" + ((thisDay<10)?"0":"") + thisDay);
 			condMap.put("plan_qty", Integer.parseInt(revisionArray[5]));

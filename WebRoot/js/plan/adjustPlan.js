@@ -20,7 +20,7 @@ $(document).ready(function () {
 
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/BMS/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	})
@@ -158,7 +158,7 @@ function ajaxQuery(){
     	    		$("<td style=\"line-height:12px;\" />").html("").appendTo(tr);
     	    		$("#tableData tbody").append(tr);
     			}
-    			tr = $("<tr height=\"30px\" id=\""+ index + "," +value.month+"\"/>");
+    			tr = $("<tr height=\"30px\" id=\""+ (index+1) + "," +value.month+"\"/>");
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.plan_node).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(value.month).appendTo(tr);
     			$("<td style=\"text-align:center;padding-left:0px;padding-right:0px;line-height:12px;\" />").html(stock[index%12]).appendTo(tr);

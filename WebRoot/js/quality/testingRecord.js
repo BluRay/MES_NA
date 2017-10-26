@@ -1,11 +1,10 @@
 var detail_list=[];
-var plant="";
-var project_id="";
 $(document).ready(function(){
 	initPage();
 	function initPage(){
 		getBusNumberSelect('#nav-search-input');
 		getBusNumberSelect('#search_bus_number');
+		getBusNumberSelect('#bus_number');
 		getKeysSelect("TESTING_TYPE", "", $("#testing_type_value"),"All",""); 
 		getKeysSelect("TESTING_TYPE", "", $("#search_test_type_value"),"All",""); 
 		getBusTypeSelect('','#search_bus_type','All','id');
@@ -17,7 +16,6 @@ $(document).ready(function(){
 			return false;
 		}
 	});
-	
 	//新增记录
 	$("#btnAdd").click(function(){
 		$("#bus_number").val("");
@@ -27,7 +25,7 @@ $(document).ready(function(){
 		$("#process").html("");
 		$("#inspection_item").html("");
 		var dialog = $( "#dialog-add" ).removeClass('hide').dialog({
-			width:800,
+			width:945,
 			height:560,
 			modal: true,
 			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Add Testing Record</h4></div>",
@@ -37,7 +35,6 @@ $(document).ready(function(){
 					text: "Cancel",
 					"class" : "btn btn-minier",
 					click: function() {
-						project_id="";
 						$( this ).dialog( "close" ); 
 					} 
 				},
@@ -45,7 +42,6 @@ $(document).ready(function(){
 					text: "Save",
 					"class" : "btn btn-primary btn-minier",
 					click: function() {
-						project_id="";
 						ajaxSave(); 
 					} 
 				}
@@ -56,8 +52,28 @@ $(document).ready(function(){
 	$(document).on("change","#testing_type_value",function(e){
 		if($("#bus_number").val()==''){
 			return false;
+		}else{
+			$.ajax({
+				url:"../production/showBusNumberList",
+				async:false,
+				type:"post",
+				dataType:"json",
+				data:{
+					"bus_number":$("#bus_number").val()
+				},
+				success:function(response){
+					detail=response.data;
+					if(detail.length>0){
+						$("#message").text('');
+						var project_id=detail[0].project_id;
+						getTestingTemplate(project_id);
+	                }else{
+						$("#bus_number").focus();
+						$("#message").text(Warn['P_common_01']);
+					}
+				}
+			});
 		}
-		getTestingTemplate();
 	});
 	
 	$("#bus_number").change(function(e){
@@ -75,20 +91,25 @@ $(document).ready(function(){
 			success:function(response){
 				detail=response.data;
 				if(detail.length>0){
-					plant=detail[0].plant;
-					project_id=detail[0].project_id;
+					$("#message").text('');
+					var project_id=detail[0].project_id;
 					var testing_type=$("#testing_type_value :selected").attr('keyvalue');
 					if(testing_type==undefined || testing_type==''){
 						return false;
 					}else{
-                    	getTestingTemplate();
+                    	getTestingTemplate(project_id);
                     }
 				}else{
 					$("#bus_number").focus();
-					alert(Warn['P_common_01']);
+                    $("#message").text(Warn['P_common_01']);
+                    if($.fn.dataTable.isDataTable("#tableAddDetail")){
+                		$('#tableAddDetail').DataTable().destroy();
+                		$('#tableAddDetail').empty();
+                	}
+					//alert(Warn['P_common_01']);
 				}
 			}
-		})
+		});
 	});
 	$('body').on('keydown', ".first_inspection",function(e){
 		if (e.keyCode == "13") {
@@ -134,8 +155,6 @@ function ajaxQuery(){
 		pagingType:"full_numbers",
 		lengthChange:false,
 		orderMulti:false,
-		language: {
-		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"draw":1,
@@ -169,9 +188,7 @@ function ajaxQuery(){
             {"title":"Bus Type","class":"center","data":"bus_type","defaultContent": ""},
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
             {"title":"Testing Type","class":"center","data": "testing_type","defaultContent": ""},
-          //  {"title":"Remark","class":"center","data":"remark","defaultContent": ""},		            
-            {"title":"Signature","class":"center","data":"signature","defaultContent": ""},		    
-          //  {"title":"Date","class":"center","data":"edit_date","defaultContent": ""},		
+            //{"title":"Signature","class":"center","data":"signature","defaultContent": ""},		    
             {"title":"First Inspection","class":"center","data":null,"render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"first\");' style='color:green;cursor: pointer;'></i>";
                },
@@ -180,17 +197,21 @@ function ajaxQuery(){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"repeat\");' style='color:green;cursor: pointer;'></i>";
                },
             },
-            {"title":"","class":"center","data":null,"render":function(data,type,row){
+            {"title":"","class":"center","data":null,"width":"70px","render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-search bigger-130 editorder\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
                },
             }
         ],
 	});
 }
-function getTestingTemplate(){
+function getTestingTemplate(project_id){
 	var testing_type=$("#testing_type_value :selected").attr('keyvalue');
 	if(testing_type==undefined || testing_type==''){
 		return false;
+	}
+	if($.fn.dataTable.isDataTable("#tableAddDetail")){
+		$('#tableAddDetail').DataTable().destroy();
+		$('#tableAddDetail').empty();
 	}
 	var tb=$("#tableAddDetail").DataTable({
 		paiging:false,
@@ -206,6 +227,9 @@ function getTestingTemplate(){
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
+		language: {
+			emptyTable:Warn['P_common_16'],
+		},
 		ajax:function (data, callback, settings) {
 			var param ={
 				"test_type_value":testing_type,
@@ -230,11 +254,11 @@ function getTestingTemplate(){
             {"title":"Inspection Item","class":"center","data":"inspection_item","defaultContent": ""},
             {"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
             {"title":"1st Inspection","class":"center","data": "first_inspection","render": function(data,type,row){
-             	return "<input style='width:120px;text-align:center' class='first_inspection' " +
+             	return "<input style='width:160px;text-align:center' class='first_inspection' " +
  				" value='"+(data!=undefined ? data : '')+"'/>";
             }},
             {"title":"Sign","class":"center","data": "sign","render": function(data,type,row){
-             	return "<input style='width:60px;text-align:center' class='first_sign' " +
+             	return "<input style='width:100px;text-align:center' class='first_sign' " +
  				" value='"+(data!=undefined ? data : '')+"'/>";
             }}
         ],
@@ -270,11 +294,15 @@ function ajaxSave(){
 		return false;
 	}
 	var trs=$("#tableAddDetail tbody").children("tr");
+	if(trs.length==0){
+		alert(Warn['P_common_05']);
+		return false;
+	}
 	var arr=[];
 	var flag=true;
 	$.each(trs,function(index,tr){
 		var tds=$(tr).children("td");
-		if(tds.eq(0).text()=='No data available in table'){
+		if(tds.eq(0).text()==Warn['P_common_16']){
 			flag=false;
 		}
 		var item_no=tds.eq(0).text();
@@ -381,7 +409,7 @@ function showInfoPage(row){
 	var detail_list=getDetail(row.bus_number,row.test_type_value);
 	$("#show_bus_number").text(row.bus_number);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-		width:945,
+		width:1145,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Display Testing Record</h4></div>",
@@ -411,7 +439,7 @@ function drawDetailTable(tableId,data){
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
-		sScrollY: 310,
+		sScrollY: 345,
 		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,
@@ -419,9 +447,9 @@ function drawDetailTable(tableId,data){
 		info:false,
 		data:data||{},
 		columns: [
-            {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
-            {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-            {"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
+            {"title":"Item No.","class":"center","width":"80px","data":"item_no","defaultContent": ""},
+            {"title":"Inspection Item","class":"center","width":"150px","data": "inspection_item","defaultContent": ""},
+            {"title":"Specification Standard","class":"center","width":"240px","data": "specification_standard","defaultContent": ""},
             {"title":"1st Inspection","class":"center","data": "first_inspection","defaultContent": ""},
             {"title":"Sign","class":"center","data": "first_sign","defaultContent": ""},
             {"title":"Re Inspection","class":"center","data": "re_inspection","defaultContent": ""},
@@ -438,7 +466,7 @@ function showEditPage(row,type){
 	$(".divLoading").addClass("fade in").show();
 	var detail_list=getDetail(row.bus_number,row.test_type_value);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-		width:945,
+		width:1145,
 		height:550,
 		modal: true,
 		title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Edit Testing Record</h4></div>",
@@ -472,13 +500,13 @@ function editDetailTable(tableId,data,type){
 	var columns=[
              {"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
              {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-             {"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
+             {"title":"Specification Standard","class":"center","width":"480px","data": "specification_standard","defaultContent": ""},
              {"title":"1st Inspection","class":"center","data": "first_inspection","render": function(data,type,row){
-             	return "<input style='width:120px;text-align:center' class='first_inspection' " +
+             	return "<input style='width:200px;text-align:center' class='first_inspection' " +
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
              }},
              {"title":"Sign","class":"center","data": "first_sign","render": function(data,type,row){
-              	return "<input style='width:60px;text-align:center' class='first_sign' " +
+              	return "<input style='width:120px;text-align:center' class='first_sign' " +
   				" value='"+(data!=undefined ? data : '')+"'/>";
               }},
              //{"title":"Re Inspection","class":"center","data": "re_inspection","defaultContent": ""},
@@ -487,15 +515,15 @@ function editDetailTable(tableId,data,type){
 		columns=[
 			{"title":"Item No.","class":"center","data":"item_no","defaultContent": ""},
 			{"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
-			{"title":"Specification Standard","class":"center","data": "specification_standard","defaultContent": ""},
-			{"title":"1st Inspection","class":"center","data": "first_inspection","defaultContent": ""},
-			{"title":"Sign","class":"center","data": "first_sign","defaultContent": ""},
+			{"title":"Specification Standard","class":"center","width":"360px","data": "specification_standard","defaultContent": ""},
+			{"title":"1st Inspection","class":"center","width":"150px","data": "first_inspection","defaultContent": ""},
+			{"title":"Sign","class":"center","width":"110px","data": "first_sign","defaultContent": ""},
 			{"title":"Re Inspection","class":"center","data": "re_inspection","render": function(data,type,row){
-				return "<input style='width:120px;text-align:center' class='re_inspection' " +
+				return "<input style='margin:1px;width:100%;height:100%;text-align:center' class='re_inspection' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
 			}},
 			{"title":"Sign","class":"center","data": "re_sign","render": function(data,type,row){
-              	return "<input style='width:60px;text-align:center' class='re_sign' " +
+              	return "<input style='width:110px;text-align:center' class='re_sign' " +
   				" value='"+(data!=undefined ? data : '')+"'/>";
               }}
 	    ];
@@ -507,7 +535,7 @@ function editDetailTable(tableId,data,type){
 		autoWidth:false,
 		destroy: true,
 		paginate:false,
-		sScrollY: 310,
+		sScrollY: 335,
 		scrollX: true,
 		scrollCollapse: false,
 		lengthChange:false,

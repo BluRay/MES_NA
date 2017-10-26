@@ -312,7 +312,12 @@ $(document).ready(function(){
 			$(tableId).find("tbody").append(tr);
 		}	
 	})
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	
 })
 
@@ -322,6 +327,7 @@ function initPage(){
 	getKeysSelect("ORDER_TYPE", '', '#search_orderType','全部','name');
 	getKeysSelect("ORDER_TYPE", '标准订单', '#order_type,#order_type_edit',null,'name');
 	getFactorySelect('','','#factory,#factory_edit','请选择','id');
+	getBusNumberSelect('#nav-search-input');
 }
 
 function ajaxQuery(){

@@ -32,7 +32,7 @@
 	</select>
 
 	<select id="queryProcessMonitorList" parameterType="Map" resultType="Map">
-		select p.id,p.station_code,r.station_name,k.key_name field_name,k.key_name_en plan_node_name
+		select p.id,p.station_code,r.station_name,k.key_name plan_node_name,k.key_name_en field_name
 		from BMS_NA_BASE_SCAN_RULE r
 		left join BMS_NA_BASE_STATION p on r.factory=p.factory and r.workshop=p.workshop 
 		and p.line=#{line} and p.station_name=r.station_name 
@@ -44,11 +44,13 @@
 	</select>
 	
 	<select id="queryBusInfo" parameterType="String" resultType="Map">
-		select b.*,o.project_name AS order_desc,
-		o.production_plant factory,p.workshop,p.line,p.station_name,'Standard order' order_type,o.bus_type
+		select b.*,o.project_name AS order_desc,o.production_plant factory,p.workshop,p.line,p.station_name,
+		'Standard order' order_type,o.bus_type,
+		case (select count(r.id) from BMS_NA_BUS_SCANNING_RECORD r where r.bus_number=#{bus_number} and r.station_id=b.latest_station_id and r.rework='0' and r.on_offline='offline') 
+		when 0 then 'online' else 'offline' end as on_offline
 		from BMS_NA_PROJECT_BUS b
 		left join BMS_NA_PROJECT o on b.project_id=o.id
-		left join BMS_NA_BASE_STATION p on p.id=b.current_station
+		left join BMS_NA_BASE_STATION p on p.id=b.latest_station_id
 		where b.bus_number=#{bus_number}
 	</select>
 	
@@ -61,16 +63,22 @@
 	</select>
 	
 	<select id="queryNextStation" parameterType="Map" resultType="Map">
-		SELECT p.id station_id,p.station_name,r.sequence,r.workshop
+		SELECT p.id station_id,p.station_name,r.sequence,r.workshop,
+		<if test="on_offline=='online'">'offline'</if>
+		<if test="on_offline=='offline'">'online'</if>
+		on_offline
 		FROM BMS_NA_BASE_SCAN_RULE r
 		LEFT JOIN BMS_NA_BASE_STATION p on r.factory=p.factory and r.workshop=p.workshop 
 		and p.station_name=r.station_name 
 		where r.factory=#{factory_name} 
-		<if test="station_name !=null and station_name !=''">
+		<if test="station_name !=null and station_name !='' and on_offline=='offline' ">
 		and r.sequence>=(
 			select r1.sequence+1 from BMS_NA_BASE_SCAN_RULE r1 where r1.factory=#{factory_name}
 			and r1.station_name=#{station_name} and r1.order_type=#{order_type})
-		</if>		
+		</if>	
+		<if test="station_name !=null and station_name !='' and on_offline=='online' ">
+			and r.station_name=#{station_name}
+		</if>	
 		and r.order_type=#{order_type}  and p.monitory_point_flag='1'
 		order by r.sequence 
 		limit 1
@@ -226,6 +234,9 @@
 		<if test="ecn_no !=null and ecn_no !=''">
 			and h.ecn_no like concat('%',#{ecn_no},'%')
 		</if>
+		<if test="items !=null and items !=''">
+			and i.items like concat('%',#{items},'%')
+		</if>
 		<if test="status !=null and status !='All'">
 			and i.status = #{status}
 		</if>
@@ -250,6 +261,9 @@
 		where 1=1
 		<if test="ecn_no !=null and ecn_no !=''">
 			and h.ecn_no like concat('%',#{ecn_no},'%')
+		</if>
+		<if test="items !=null and items !=''">
+			and i.items like concat('%',#{items},'%')
 		</if>
 		<if test="status !=null and status !='All'">
 			and i.status = #{status}
@@ -747,7 +761,7 @@
 	SELECT d.dis_no,d.station,d.bus_number,count(d.dis_no) AS dis_num,d.create_user,d.create_time,d.reception_user,d.reception_time,
 	s.factory,s.workshop,s.line,s.station_name
 	FROM BMS_NA_LINE_DISTRIBUTION d left join BMS_NA_BASE_STATION s on d.station_id = s.id 
-	WHERE d.create_time >= #{start_date} AND d.create_time &lt;= #{end_date} AND d.remove = 0
+	WHERE d.create_time >= #{start_date} AND d.create_time &lt;= CONCAT(#{end_date},' 23:59:59') AND d.remove = 0
 	<if test="factory_name !='' and factory_name !=null">
 	AND s.factory = #{factory_name}
 	</if>
@@ -775,6 +789,10 @@
 	group by d.dis_no 
 	order by d.create_time DESC
 	</select>
+	<update id="removeDistribution" parameterType="Map">
+		UPDATE BMS_NA_LINE_DISTRIBUTION SET remove = '1'
+		WHERE dis_no = #{dis_no} AND reception_user IS NULL
+	</update>
 	
 	
 	

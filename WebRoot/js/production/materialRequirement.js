@@ -103,8 +103,8 @@ $(document).ready(function () {
 	});
 
 	function btnPrintConfirm(){
+		$("#btn_ok").attr("disabled","disabled");
 		$("#dialog-print").dialog( "close" );
-		
 		var req_data = [];
 		for(var i=0;i<req_arr.length;i++){
 			req_data.push(query_data[req_arr[i]]);
@@ -112,6 +112,7 @@ $(document).ready(function () {
 		console.log("req_data = ",req_data);
 		$.ajax({
 			url : "printMaterialRequirement",
+			type: "post",
 			dataType : "json",
 			data : {
 				conditions:JSON.stringify(req_data)
@@ -122,11 +123,11 @@ $(document).ready(function () {
 			},
 			success : function(response) {
 				$("#dis_no").html("Distribution No. " + response.message);
+				$("#btn_ok").removeAttr("disabled");
 				window.print();
 				ajaxQuery();
 			}
 		});
-		
 	}
 	
 	Array.prototype.remove = function(val) {  

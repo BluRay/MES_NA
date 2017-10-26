@@ -25,7 +25,12 @@ var shine_station_list=[];
 $(document).ready(function(){
 	initPage();
 	//document.onmousemove=function(e){e=e? e:window.event;$("#nav-search-input").val("X:"+e.screenX+"Y:"+e.screenY);}
-	
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	})
 	setInterval(function(){
 		var workshop=$("#stations").html().substring(0,$("#stations").html().length-1);
 		var tobj=ajaxGetWorkshopStock($("#search_factory :selected").text(),$("#search_factory").val());		
@@ -107,7 +112,7 @@ $(document).ready(function(){
 
 function initPage(){	
 	getFactorySelect("","","#search_factory",null,"id");
-	
+	getBusNumberSelect('#nav-search-input');
 	var tobj=ajaxGetWorkshopStock($("#search_factory :selected").text(),$("#search_factory").val());
 	
 	drawWorkshopView(tobj);
