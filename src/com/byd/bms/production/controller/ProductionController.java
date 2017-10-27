@@ -1107,10 +1107,10 @@ public class ProductionController extends BaseController {
 		return model;
 	}
 	
-	/*****************Start Line Inventory AddBy:Yangke 171025**********************************************/
-	@RequestMapping("/lineInventory")
-	public ModelAndView lineInventory(){
-		mv.setViewName("production/lineInventory");
+	/*****************Start DistributionManage AddBy:Yangke 171025**********************************************/
+	@RequestMapping("/distributionManage")
+	public ModelAndView distributionManage(){
+		mv.setViewName("production/distributionManage");
 		return mv;
 	}
 	
@@ -1160,6 +1160,14 @@ public class ProductionController extends BaseController {
 		model = mv.getModelMap();
 		return model;
 	}
-	/*****************End   Line Inventory *****************************************************************/
+	/*****************End   Distribution Manage *****************************************************************/
+	/*****************Start LineInventory AddBy:Yangke 171025****************************************************/
+	@RequestMapping("/lineInventory")
+	public ModelAndView lineInventory(){
+		mv.setViewName("production/lineInventory");
+		return mv;
+	}
 	
+	
+	/*****************Start LineInventory ***********************************************************************/
 }

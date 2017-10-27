@@ -4,7 +4,7 @@
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>LineInventory</title>
+		<title>Distribution Manage</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<link rel="stylesheet" href="../assets/css/fixedColumns.bootstrap.min.css" />
@@ -33,7 +33,7 @@
 					<ul class="breadcrumb">
 						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
 						<li><a href="#">Production</a></li>
-						<li class="active">Line Inventory</li>
+						<li class="active">Distribution Manage</li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
@@ -152,5 +152,5 @@
 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/jquery.form.js"></script>
-	<script type="text/javascript" src="../js/production/lineInventory.js"></script>
+	<script type="text/javascript" src="../js/production/distributionManage.js"></script>
 </html>
