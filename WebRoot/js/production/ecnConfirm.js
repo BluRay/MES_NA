@@ -56,10 +56,10 @@ $(document).ready(function() {
 function ajaxQuery(){
 	dt=$("#tableResult").DataTable({
 		serverSide: true,
-	/*	fixedColumns:   {
+		fixedColumns:   {
             leftColumns: 2,
             rightColumns:2
-        },*/
+        },
 		dom: 'Bfrtip',
 		lengthMenu: [
 		             [ 20, 30, 50, -1 ],
@@ -136,8 +136,16 @@ function ajaxQuery(){
 		},
 		columns: [
 		            
-		            {"title":"ECN No","width":"150","class":"center","data":"ecn_no","defaultContent": ""},
-		            {"title":"Items","width":"200","class":"center","data":"items","defaultContent": ""},
+		            {"title":"ECN No","class":"center","data":"ecn_no","defaultContent": ""},
+		            {"title":"Items","width":"200","class":"center","data":"items","defaultContent": "","render":function(data,row,type){
+		            	var html=""
+			            	if(data.length>50){
+			            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,45)+"...</i>"
+			            	}else{
+			            		html=data;
+			            	}
+			            	return html;
+			         }},
 		            {"title":"Problem Detail","width":"300","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
 		            	var html=""
 		            	if(data.length>50){

@@ -793,7 +793,31 @@
 		UPDATE BMS_NA_LINE_DISTRIBUTION SET remove = '1'
 		WHERE dis_no = #{dis_no} AND reception_user IS NULL
 	</update>
-	
+	<select id="getLineInventoryMatList" parameterType="Map" resultType="Map">
+		SELECT I.sap_material,group_concat(DISTINCT I.bus_number) AS bus_number,I.byd_no,I.part_name,I.specification,
+		SUM(I.required_quantity) AS required_quantity,I.unit,SUM(I.line_quantity) AS line_quantity,I.vendor
+		FROM BMS_NA_LINE_INVENTORY I WHERE 1=1 
+		<if test="station_id !='' and station_id !=null">
+		AND I.station_id = #{station_id}
+		</if>
+		<if test="sap_material !='' and sap_material !=null">
+		AND I.sap_material = #{sap_material}
+		</if>
+		GROUP BY I.sap_material
+		ORDER BY I.sap_material
+		<if test="start !=null">
+			LIMIT #{start} ,#{length} 
+		</if>	
+	</select>
+	<select id="getLineInventoryMatListCount" parameterType="Map" resultType="int">
+		SELECT count(distinct I.sap_material) FROM BMS_NA_LINE_INVENTORY I WHERE 1=1 
+		<if test="station_id !='' and station_id !=null">
+		AND I.station_id = #{station_id}
+		</if>	
+		<if test="sap_material !='' and sap_material !=null">
+		AND I.sap_material = #{sap_material}
+		</if>
+	</select>
 	
 	
 	<select id="getProductionSearchBusinfo" parameterType="String" resultType="Map">

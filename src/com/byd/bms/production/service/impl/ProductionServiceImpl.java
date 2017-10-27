@@ -802,4 +802,17 @@ public class ProductionServiceImpl implements IProductionService {
 		return productionDao.removeDistribution(conditionMap);
 	}
 
+	@Override
+	public Map<String, Object> getLineInventoryMatList(Map<String, Object> conditionMap) {
+		int totalCount=0;
+		List<Map<String, Object>> datalist = productionDao.getLineInventoryMatList(conditionMap);
+		totalCount = productionDao.getLineInventoryMatListCount(conditionMap);
+		Map<String, Object> result = new HashMap<String,Object>();		
+		result.put("draw", conditionMap.get("draw"));
+		result.put("recordsTotal", totalCount);
+		result.put("recordsFiltered", totalCount);
+		result.put("data", datalist);
+		return result;
+	}
+
 }

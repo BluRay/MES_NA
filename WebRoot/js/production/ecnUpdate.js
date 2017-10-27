@@ -435,15 +435,7 @@ function ajaxQuery(){
 		orderMulti:false,
 		language: {
 			emptyTable:"Sorry,There's no records searched！",
-			//info:"Total _TOTAL_ records,page _PAGE_ to _PAGES_ pages",
 			infoEmpty:"",
-		/*	paginate: {
-			  first:"first page",
-		      previous: "previous page",
-		      next:"next page",
-		      last:"last page",
-		      loadingRecords: "Hold on please,processing...",		     
-			}*/
 		},
 		ajax:function (data, callback, settings) {
 			var param ={
@@ -487,8 +479,24 @@ function ajaxQuery(){
 		columns: [
 		            
 		            {"title":"ECN No","class":"center","data":"ecn_no","defaultContent": ""},
-		            {"title":"Items","class":"center","data":"items","defaultContent": ""},
-		            {"title":"Problem Detail","class":"center","data":"problem_details","defaultContent": ""},
+		            {"title":"Items","class":"center","data":"items","defaultContent": "","render":function(data,row,type){
+		            	var html=""
+			            	if(data.length>50){
+			            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,45)+"...</i>"
+			            	}else{
+			            		html=data;
+			            	}
+			            	return html;
+			            }},
+		            {"title":"Problem Detail","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
+		            	var html=""
+			            	if(data.length>70){
+			            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,65)+"...</i>"
+			            	}else{
+			            		html=data;
+			            	}
+			            	return html;
+			            }},
 		            {"title":"Design People","class":"center","data":"design_people","defaultContent": ""},
 		            {"title":"Project","class":"center","data":"project_name","defaultContent": ""},
 		            {"title":"Work Station","class":"center","data": "work_station","defaultContent": ""},

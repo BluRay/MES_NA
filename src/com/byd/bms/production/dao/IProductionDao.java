@@ -129,6 +129,8 @@ public interface IProductionDao {
 	public int insertLineInventory(Map<String,Object> conditionMap);
 	public List<Map<String, Object>> getLineInventoryList(Map<String,Object> conditionMap);
 	public int removeDistribution(Map<String,Object> conditionMap);
+	public List<Map<String, Object>> getLineInventoryMatList(Map<String,Object> conditionMap);
+	public int getLineInventoryMatListCount(Map<String,Object> conditionMap);
 	
 	public List<Map<String,String>> getProductionSearchBusinfo(String bus_number);
 

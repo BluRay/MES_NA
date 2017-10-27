@@ -1168,6 +1168,33 @@ public class ProductionController extends BaseController {
 		return mv;
 	}
 	
+	@RequestMapping("/getLineInventoryMatList")
+	@ResponseBody
+	public ModelMap getLineInventoryMatList(){
+		int draw=(request.getParameter("draw")!=null)?Integer.parseInt(request.getParameter("draw")):1;	
+		int start=(request.getParameter("start")!=null)?Integer.parseInt(request.getParameter("start")):0;		//分页数据起始数
+		int length=(request.getParameter("length")!=null)?Integer.parseInt(request.getParameter("length")):50;	//每一页数据条数
+		
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		condMap.put("draw", draw);
+		condMap.put("start", start);
+		condMap.put("length", length);
+		condMap.put("factory_name", request.getParameter("factory_name"));
+		condMap.put("factory_id", request.getParameter("factory_id"));
+		condMap.put("workshop_name", request.getParameter("workshop_name"));
+		condMap.put("workshop_id", request.getParameter("workshop_id"));
+		condMap.put("line", request.getParameter("line"));
+		condMap.put("station", request.getParameter("station"));
+		condMap.put("station_name", request.getParameter("station_name"));
+		condMap.put("station_id", request.getParameter("station_id"));
+		condMap.put("sap_material", request.getParameter("sap_material"));
+		
+		Map<String,Object> list = productionService.getLineInventoryMatList(condMap);
+		mv.clear();
+		mv.getModelMap().addAllAttributes(list);
+		model = mv.getModelMap();
+		return model;
+	}
 	
 	/*****************Start LineInventory ***********************************************************************/
 }
