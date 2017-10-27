@@ -178,6 +178,7 @@
 	<script src="../assets/js/jquery-ui.custom.min.js"></script>
 	<script src="../assets/js/jquery.easypiechart.min.js"></script>
 	<script src="../js/highcharts.js"></script>
+	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/production/workshopView.js"></script>
 	

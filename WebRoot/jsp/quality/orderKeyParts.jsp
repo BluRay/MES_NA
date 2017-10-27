@@ -92,7 +92,7 @@
 						</div>
 						<div class="form-group">					
 							<div class="col-sm-12">			
-								<table class="table table-striped table-bordered table-hover" style="width: 900px;font-size:12px;" id="keyPartsTable">
+								<table class="table table-striped table-bordered table-hover" style="width: 950px;font-size:12px;" id="keyPartsTable">
 								</table>
 							</div>
 						</div>

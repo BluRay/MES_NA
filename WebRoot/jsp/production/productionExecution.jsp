@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>BMS</title>
+<title>MES</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
@@ -103,7 +103,6 @@
 										<span class="label label-info" rel="tooltip" title="Current Station" id="infoStation"></span> 
 										<span class="label label-info" rel="tooltip" title="Status" id="infoStatus"></span> 
 										<span class="label label-info" rel="tooltip" title="Color" id="infoColor"></span> 
-										<span class="label label-info" rel="tooltip" title="Seats" id="infoSeats"></span>
 									</div>
 								</form>
 							</div>
@@ -250,6 +249,7 @@
 		<script src="../assets/js/bootstrap3-typeahead.js"></script>
 		<script src="../assets/js/jquery.gritter.min.js"></script>
 		<script src="../js/common.js"></script>
+		<script src="../js/alertMessage.js"></script>
 		<script src="../js/production/productionExecution.js"></script>
 </div>
 </body>

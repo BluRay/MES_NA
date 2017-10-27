@@ -96,7 +96,7 @@ $(document).ready(function(){
 			$('#keyPartsTable').empty();
 		}
 		var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
-			width:970,
+			width:1020,
 			height:550,
 			modal: true,
 			title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i>Import Bus Trace Template</h4></div>",

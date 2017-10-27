@@ -178,6 +178,9 @@ function showEditPage(json){
 		lengthChange:false,
 		orderMulti:false,
 		info:false,
+		language: {
+			emptyTable:Warn['P_common_16'],
+		},
 		sScrollY: table_height,sScrollX:true,
 		ajax:function (data, callback, settings) {
 			var param ={
@@ -247,8 +250,12 @@ function ajaxEdit(json){
 	var busNumber=$("#bus_number").text();
 	var production_plant_id=json.production_plant_id;
 	var project_id=json.project_id;
+	var flag=true;
 	$.each(trs,function(index,tr){
 		var tds=$(tr).children("td");
+		if(tds.eq(0).text()==Warn['P_common_16']){
+			flag=false;
+		}
 		var SAP_material=tds.eq(1).text();
 		var parts_name=tds.eq(2).text();
 		var vendor=tds.eq(3).text();
@@ -272,6 +279,10 @@ function ajaxEdit(json){
 		obj.type="audit";// 审核操作
 		arr.push(obj);
 	});
+	if(!flag){
+		alert(Warn['P_common_05']);
+		return false;
+	}
 	$.ajax({
 		type:"post",
 		url: "addKeyParts",

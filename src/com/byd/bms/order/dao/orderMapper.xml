@@ -362,7 +362,7 @@
 	</select>
 
 	<select id="queryProjectQueryList" parameterType="Map" resultType="Map">
-		select o.id,o.project_no,o.project_name,o.delivery_date,o.customer,o.quantity,o.production_plant,f.factory_name plant,
+		select o.id,o.project_no,o.project_name,o.project_status status,o.delivery_date,o.customer,o.quantity,o.production_plant,f.factory_name plant,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.welding_online >0 AND b.project_id = o.id) as welding_online_count,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.welding_offline  >0 AND b.project_id = o.id) as welding_offline_count,
 		(SELECT COUNT(b.id) FROM BMS_NA_PROJECT_BUS b WHERE b.painting_online >0 AND b.project_id = o.id) as painting_online_count,

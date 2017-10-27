@@ -9,8 +9,14 @@ $(document).ready(function () {
 			$("#div_tree2").height($(window).height() * 0.6);
 			$("#div_tree3").height($(window).height() * 0.6);
 		}
+		getBusNumberSelect('#nav-search-input');
 	}
-
+	$('#nav-search-input').bind('keydown', function(event) {
+		if (event.keyCode == "13") {
+			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			return false;
+		}
+	});
 	var DataSourceTree = function(options) {
 		this._data 	= options.data;
 		this._delay = options.delay;

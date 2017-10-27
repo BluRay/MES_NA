@@ -60,15 +60,15 @@
 								<td>
 									<select name="" id="search_status" class="input-small">
 										<option value="">All</option>
-										<option value="0">Created</option>
-										<option value="1">In Process</option>
-										<option value="2">Completed</option>
+										<option value="1">Created</option>
+										<option value="2">In Process</option>
+										<option value="3">Completed</option>
 									</select>
 								</td>
-								<td>Year：</td>
-								<td>
-									<input class="input-small"  style="height: 30px;" id="search_productive_year" onclick="WdatePicker({el:'search_productive_year',dateFmt:'yyyy'});" type="text">
-								</td>
+<!-- 								<td>Year：</td> -->
+<!-- 								<td> -->
+<!-- 									<input class="input-small"  style="height: 30px;" id="search_productive_year" onclick="WdatePicker({el:'search_productive_year',dateFmt:'yyyy'});" type="text"> -->
+<!-- 								</td> -->
 								<td>Plant：</td>
 								<td>
 									<select name="" id="search_plant" class="input-small"></select>

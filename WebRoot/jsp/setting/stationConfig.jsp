@@ -245,6 +245,7 @@
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
+	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../js/jsrender.min.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/setting/stationConfig.js"></script>

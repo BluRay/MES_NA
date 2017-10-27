@@ -131,5 +131,7 @@
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.ui.touch-punch.min.js"></script>
 	<script src="../assets/js/jquery.gritter.min.js"></script>
+	<script src="../assets/js/bootstrap3-typeahead.js"></script>
+	<script src="../js/common.js"></script>
 	</body>
 </html>

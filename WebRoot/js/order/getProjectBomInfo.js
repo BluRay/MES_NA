@@ -88,7 +88,7 @@ function ajaxQuery(){
             {"title":"Quantity","class":"center","data":"quantity","width":"75px","defaultContent": ""},
             {"title":"Plant","class":"center","data": "production_plant","defaultContent": ""},
             {"title":"Status","class":"center","data":"project_status","width":"85px","render":function(data,type,row){
-            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
+            	return data=="1"?"Created":(data=="2"?"In Process":"Completed")},"defaultContent":""
             },
             {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
             {"title":"Project Manager","class":"center","data": "project_manager","defaultContent": ""},
