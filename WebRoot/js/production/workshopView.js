@@ -506,7 +506,7 @@ function drawBusDetails(bus_list){
 		$(cp_item).find(".station").html(bus.station);
 		$(cp_item).find(".status").html((bus.abnormal_cause!=undefined)?("<sapn style='color:red'>"+bus.abnormal_cause+"</span>"):"Normal");
 		$(cp_item).find(".bus_no").html((bus.abnormal_cause!=undefined)?("<sapn style='color:red'>"+bus.bus_number+"</span>"):bus.bus_number);
-		$(cp_item).find(".vin").html(bus.VIN);
+		$(cp_item).find(".vin").html(bus.VIN.trim().length==0?"("+Warn.W_22+")":bus.VIN);
 		$(cp_item).find(".project").html(bus.project_name);
 		$(cp_item).find(".punch_list").html(bus.punch_open+" in Open &"+bus.punch_closed+" in Closed");
 		$(cp_item).find(".ecn").html(bus.ecn_open+" in Open &"+bus.ecn_closed+" in Closed");

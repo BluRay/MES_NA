@@ -58,9 +58,9 @@
 					<!-- /.breadcrumb -->
 					
 					<div style="right: 180px; position: absolute; top: 5px;" class="breadcrumb">
-						<i class="fa fa-print bigger-130" aria-hidden="true" style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Bus No.
-						<i class="fa fa-print bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Key Parts
-						<i class="fa fa-wrench bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> ECN
+						<a href="printBusNumber"><i class="fa fa-print bigger-130" aria-hidden="true" style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Bus No.</a>
+						<a href=""><i class="fa fa-print bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> Key Parts</a>
+						<a href="ecnUpdate"><i class="fa fa-wrench bigger-130" aria-hidden="true"  style='color: #4c8fbd;cursor: pointer;margin-left:5px;'></i> ECN</a>
 					</div>
 					
 

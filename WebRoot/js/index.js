@@ -387,28 +387,28 @@ function drawOutputChart(){
 				var assembly_percent=0;
 				
 				$.each(response.data,function(i,data){
-					if(data.key_name=='welding_online'){
+					if(data.key_name=='welding online'){
 						welding_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						if(data.plan_qty==0||data.plan_qty==undefined){
 							welding_percent=1
 						}else
 						welding_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='painting_online'){
+					if(data.key_name=='painting online'){
 						painting_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						if(data.plan_qty==0||data.plan_qty==undefined){
 							painting_percent=1
 						}else
 						painting_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='chassis_online'){
+					if(data.key_name=='chassis online'){
 						chassis_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						if(data.plan_qty==0||data.plan_qty==undefined){
 							chassis_percent=1
 						}else
 						chassis_percent=data.finished_qty/data.plan_qty||0
 					}
-					if(data.key_name=='assembly_offline'){
+					if(data.key_name=='assembly offline'){
 						assembly_plan_done=(data.finished_qty+"/"+data.plan_qty);
 						if(data.plan_qty==0||data.plan_qty==undefined){
 							assembly_percent=1

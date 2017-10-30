@@ -24,6 +24,7 @@ var Warn={
     'Scan_online' : '请先扫描该节点上线!',
     'Scan_last' : '请先扫描上一节点下线',
     'Scan_passline' : '不能跨线扫描！',
+    'W_22' : '未绑定VIN',
     /********Start Yangke***********************/
     'P_measureAbnormity_01'	: '处理日期不能为空！',
     'P_measureAbnormity_02'	: 'measures 不能为空！',
