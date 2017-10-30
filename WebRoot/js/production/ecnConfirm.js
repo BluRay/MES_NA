@@ -164,12 +164,21 @@ function ajaxQuery(){
 		            	return data=="1"?"Created":(data=="2"?"In Process":"Completed");
 		            }},		            		          
 		            {"title":"Production","class":"center","data":'ecn_id',"render":function(data,type,row){
-		            	return "<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>"
+		            	var obj={};
+		            	obj.ecn_no=row.ecn_no;
+		            	obj.items=row.items;
+		            	obj.ecn_item_id=row.ecn_item_id;
+		            	
+		            	return "<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(obj)+ ");' style='color:green;cursor: pointer;'></i>"
 		            	},
 		            	"defaultContent": ""
 		            },
 		            {"title":"QC","class":"center","data":'ecn_id',"render":function(data,type,row){
-		            	return "&nbsp;&nbsp;<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(row)+ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
+		            	var obj={};
+		            	obj.ecn_no=row.ecn_no;
+		            	obj.items=row.items;
+		            	obj.ecn_item_id=row.ecn_item_id;
+		            	return "&nbsp;&nbsp;<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(obj)+ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
 	            	},
 	            	"defaultContent": ""
 		            }
@@ -247,14 +256,14 @@ function drawConfirmTable(bus_list,tb,flag){
 		            {"title":"Work Station","class":"center","data":"work_station","defaultContent": ""},
 		            {"title":"Finished Time","class":"center","data":"confirmed_date","defaultContent": "","render":function(data,type,row){
 		            	var html="<input class=\"input-medium confirm_date\" style=\"width:100%;margin: 0 0;\" onclick=\"WdatePicker({language:'en_us',dateFmt:'yyyy-MM-dd'})\" type=\"text\">";
-		            	if(data!=undefined){
+		            	if(data!=undefined && data.trim().length>0 ){
 		            		html=data;
 		            	}
 		            	return html;
 		            }},
 		            {"title":"Production People","class":"center","data":"production_people","defaultContent": "","render":function(data,type,row){
 		            	var html="<input type='text' style='width:100%;margin: 0 0;' class='input-medium production' />";
-		            	if(data!=undefined){
+		            	if(data!=undefined && data.trim().length>0){
 		            		html=data;
 		            	}
 		            	return html;
@@ -279,7 +288,7 @@ function drawConfirmTable(bus_list,tb,flag){
 		            }*/},
 					{"title":"QC","class":"center","data":"qc","defaultContent": "","render":function(data,type,row){
 						var html="<input type='text' style='width:100%;margin: 0 0;' class='input-medium qc' />";
-						if(data!=undefined){
+						if(data!=undefined && data.trim().length>0){
 		            		html=data;
 		            	}
 		            	return html;

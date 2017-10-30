@@ -111,10 +111,10 @@ function ajaxQuery(){
             	var dcn=row.DCN!=undefined ? row.DCN : "";
             	var document_no=row.document_no!=undefined ? row.document_no : "";
             	var version=row.document_no!=undefined ? row.version : "";
-                var  str="&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" " +
+                var  str="&nbsp;<i class=\"ace-icon fa fa-upload bigger-130\" title=\"Import\" " +
                   "onclick=\"javascript:window.location = " +
                   "('importBomInfo?projectNo="+row['project_no']+"&projectId="+row['id']+"&version="+version+"&document_no="+document_no+"&dcn="+dcn+"')\" " +
-                  		"style='color:blue;cursor: pointer;'></i>&nbsp;";
+                  		"style='color:green;cursor: pointer;'></i>&nbsp;";
             	return str;
                 },
             }

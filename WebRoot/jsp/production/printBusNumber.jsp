@@ -32,8 +32,8 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
 					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/BMS/index">Index</a></li>
-						<li><a href="#">Production</a></li>
+						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/MES/index">Index</a></li>
+						<li><a href="#">Manufacturing</a></li>
 						<li class="active">Print Bus No.</li>
 					</ul><!-- /.breadcrumb -->
 

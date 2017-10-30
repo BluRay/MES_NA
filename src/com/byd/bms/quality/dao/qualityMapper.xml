@@ -195,6 +195,9 @@
 	<select id="getPrdRcdOrderTplDetailList" parameterType="Map" resultType="Map">
 		select d.* from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
 		where d.project_id=#{project_id}
+		<if test="process_name !=null and process_name !=''">
+		   and d.process_name=#{process_name}
+		</if>
 		<if test="version !=null and version !=''">
 		   and d.version=#{version}
 		</if>
@@ -202,6 +205,23 @@
 		   and d.version=(select max(version) from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE
 		   where project_id=#{project_id})
 		</if>
+	</select>
+	<select id="getInspectionDetailList" parameterType="Map" resultType="Map">
+		select d.*,r.self_inspection,r.self_sign,r.self_sign_date,r.qc_inspection,
+		r.qc_sign,r.qc_sign_date from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE d
+		left join BMS_NA_BUS_INSPECTION_RECORD r on r.template_id=d.id 
+		and r.inspection_item=d.inspection_item and r.bus_number=#{bus_number}
+		where d.project_id=#{project_id}
+		<if test="version !=null and version !=''">
+		   and d.version=#{version}
+		</if>
+		<if test="version ==null">
+		   and d.version=(select max(version) from BMS_NA_PROJECT_INSPECTION_RECORD_TEMPLATE
+		   where project_id=#{project_id})
+		</if>
+	</select>
+	<select id="getInspectionByBusNo" parameterType="Map" resultType="Map">
+		select * from BMS_NA_BUS_INSPECTION_RECORD r where bus_number=#{bus_number}
 	</select>
 	<select id="getPrdRcdTestingTplList" parameterType="Map" resultType="Map">
 		select p.id,p.project_no,h.project_id,h.id header_id,h.test_type_value,h.initiated,h.approved,h.remarks,h.editor_id,h.edit_date,
@@ -440,9 +460,9 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_BUS_INSPECTION_RECORD 
-		(bus_number,workshop,station,process_name,inspection_item,self_inspection,
+		(bus_number,workshop,station,process_name,template_id,inspection_item,self_inspection,
 		specification_and_standard,supervisor_id,supervisor_date,editor_id,edit_date)
-		values (#{bus_number},#{workshop},#{station},#{process_name},#{inspection_item},
+		values (#{bus_number},#{workshop},#{station},#{process_name},#{template_id},#{inspection_item},
 		#{self_inspection},#{specification_and_standard},#{editor_id},
 		#{edit_date},#{editor_id},#{edit_date})
 	</insert>

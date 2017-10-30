@@ -29,7 +29,8 @@ public interface IQualityService {
 	public int updateKeyParts(List<Map<String,Object>> list);
 	public void getInspectionRecordList(Map<String, Object> conditionMap, ModelMap model);
 	public int saveInspectionRecord(Map<String, Object> map);
-	public void getInspectionRecordDetail(Map<String, Object> conditionMap, ModelMap model);
+	public void getInspectionRecordDetail(Map<String, Object> conditionMap,ModelMap model);
+	public void getInspectionByBusNo(Map<String, Object> map,ModelMap model);
 	public int updateInspectionRecord(List list);
 	
 	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);

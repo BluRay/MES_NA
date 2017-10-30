@@ -7,7 +7,7 @@ $(document).ready(function() {
 	});
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
-			window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	});
@@ -81,9 +81,17 @@ function ajaxQuery(){
 		},
 		columns: [
 		            
-            {"title":"ECN No","width":"120","class":"center","data":"ecn_no","defaultContent": ""},
-            {"title":"Items","width":"200","class":"center","data":"items","defaultContent": ""},
-            {"title":"Problem Detail","width":"240","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
+            {"title":"ECN No","width":"120px","class":"center","data":"ecn_no","defaultContent": ""},
+            {"title":"Items","width":"170px","class":"center","data":"items","defaultContent": "","render":function(data,row,type){
+            	var html=""
+                	if(data.length>20){
+                		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,20)+"...</i>"
+                	}else{
+                		html=data;
+                	}
+                	return html;
+                }},
+            {"title":"Problem Detail","width":"200px","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
             	var html=""
             	if(data.length>50){
             		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,30)+"...</i>"
@@ -100,7 +108,7 @@ function ajaxQuery(){
             {"title":"Status","class":"center","data":"status","defaultContent": "","render":function(data,type,row){
             	return data=="1"?"Created":(data=="2"?"In Process":"Completed");
             }},		            		          
-            {"title":"","class":"center","data":'ecn_id',"render":function(data,type,row){
+            {"title":"","class":"center","width":"50px","data":'ecn_id',"render":function(data,type,row){
             	return "&nbsp;&nbsp;<i title='Display' class=\"glyphicon glyphicon-search bigger-130\" onclick = 'show(" + JSON.stringify(row)+ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
         	},
         	"defaultContent": ""

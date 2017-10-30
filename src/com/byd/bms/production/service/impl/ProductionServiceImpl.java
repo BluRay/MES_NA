@@ -114,7 +114,7 @@ public class ProductionServiceImpl implements IProductionService {
 			Map<String,Object> onlineRecord=productionDao.queryScanNodeRecord(reMap);
 			if(onlineRecord==null){//未上线扫描
 				rMap.put("success", false);
-				rMap.put("message", "该节点未扫描上线，请先扫描"+condMap.get("station_name")+"上线!");
+				rMap.put("message", "Scan_online");
 				return rMap;
 			}else{
 				productionDao.saveScanRecord(condMap);//保存扫描记录
@@ -122,7 +122,7 @@ public class ProductionServiceImpl implements IProductionService {
 					productionDao.updateParts(partsList);//更新关键零部件信息
 				}
 				rMap.put("success", true);
-				rMap.put("message", "Succeed！");
+				rMap.put("message", "Success！");
 				return rMap;
 			}
 			
@@ -151,7 +151,7 @@ public class ProductionServiceImpl implements IProductionService {
 					Map<String,Object> scanRecord_last=productionDao.queryScanLastScanNode(condMap);
 					if(scanRecord_last==null){//上一扫描节点未扫描下线
 						rMap.put("success", false);
-						rMap.put("message", "请先扫描"+lastScanNode.get("station_name")+"下线!");
+						rMap.put("message", "Scan_last");
 						return rMap;
 					}else{//上一扫描节点已扫描下线，保存该节点扫描信息及关键零部件信息
 						productionDao.saveScanRecord(condMap);
@@ -177,7 +177,7 @@ public class ProductionServiceImpl implements IProductionService {
 				Map<String,Object> onlineRecord=productionDao.queryScanNodeRecord(reMap);
 				if(onlineRecord==null){//未扫描上线
 					rMap.put("success", false);
-					rMap.put("message", "请先扫描"+condMap.get("station_name")+"上线!");
+					rMap.put("message", "Scan_online");
 					return rMap;
 				}else{//已扫描上线，保存扫描记录
 					productionDao.saveScanRecord(condMap);
@@ -202,16 +202,16 @@ public class ProductionServiceImpl implements IProductionService {
 			if("welding online".equals(StringUtils.lowerCase(condMap.get("plan_node_name").toString()))&&condMap.get("on_offline").equals("online")){
 				int welding_online_count=0;
 				welding_online_count=productionDao.queryWeldingOnlineCount(condMap);
-				if(welding_online_count==1){//第一辆车焊装上线扫描,更新BMS_OR_FACTORY_ORDER status为1：“生产中”					
+				if(welding_online_count==1){//第一辆车焊装上线扫描,更新BMS_OR_FACTORY_ORDER status为2：“生产中”					
 					m.put("status", "2");
 					productionDao.updateProject(m);
 				}
 			}
-			if("outgoing".equals(StringUtils.lowerCase(condMap.get("plan_node_name").toString()))&&condMap.get("on_offline").equals("offline")){
+			if("outgoing online".equals(StringUtils.lowerCase(condMap.get("plan_node_name").toString()))&&condMap.get("on_offline").equals("online")){
 				Map<String,Object> info=productionDao.queryWarehouseInfo(condMap);
 				int warehouse_count=Integer.parseInt(info.get("warehouse_count").toString());
 				int factory_order_qty=Integer.parseInt(info.get("production_qty").toString());
-				if(warehouse_count==factory_order_qty){//最后一台车入库，更新BMS_OR_FACTORY_ORDER status为2：“已完成”
+				if(warehouse_count==factory_order_qty){//最后一台车入库，更新BMS_OR_FACTORY_ORDER status为3：“已完成”
 					m.put("status", "3");
 					productionDao.updateProject(m);
 				}
@@ -219,7 +219,7 @@ public class ProductionServiceImpl implements IProductionService {
 			
 				
 			rMap.put("success", true);
-			rMap.put("message", "扫描成功！");
+			rMap.put("message", "Success");
 			return rMap;
 			
 		}else{//已经扫描，更新关键零部件信息			

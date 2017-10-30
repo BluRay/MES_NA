@@ -162,14 +162,14 @@ function ajaxQuery(){
             {"title":"Quantity","class":"center","data":"quantity","defaultContent": ""},
             {"title":"Plant","class":"center","data": "plant","defaultContent": ""},
             {"title":"Status","class":"center","data":"project_status","render":function(data,type,row){
-            	return data=="0"?"Created":(data=="1"?"In Process":"Completed")},"defaultContent":""
+            	return data=="1"?"Created":(data=="2"?"In Process":"Completed")},"defaultContent":""
             },
             {"title":"Sales Manager","class":"center","data": "sales_manager","defaultContent": ""},
             {"title":"Project Manager","class":"center","data": "project_manager","defaultContent": ""},
             {"title":"Editor","class":"center","data": "username","defaultContent": ""},
             {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
             {"title":"VIN","class":"center","data":null,"render":function(data,type,row){
-                var  str="&nbsp;<i class=\"ace-icon fa fa-pencil bigger-130\" title=\"Import\" onclick='importVinInfo("+JSON.stringify(row)+")' style='color:blue;cursor: pointer;'></i>&nbsp;";
+                var  str="&nbsp;<i class=\"ace-icon fa fa-upload bigger-130\" title=\"Import\" onclick='importVinInfo("+JSON.stringify(row)+")' style='color:green;cursor: pointer;'></i>&nbsp;";
             	return str;
                 },
             }

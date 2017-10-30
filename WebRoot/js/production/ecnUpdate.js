@@ -504,8 +504,19 @@ function ajaxQuery(){
 		            	return data=="1"?"Created":(data=="2"?"In Process":"Completed");
 		            }},		            		          
 		            {"title":"","class":"center","data":'ecn_id',"render":function(data,type,row){
-		            	return "<i title='Change' class=\"ace-icon fa fa-pencil bigger-130\" onclick = 'showEdit(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>"+
-		            	"&nbsp;&nbsp;<i title='Display' class=\"ace-icon fa fa-search bigger-130\" onclick = 'showDisplay(" + JSON.stringify(row)+ ");' style='color:blue;cursor: pointer;'></i>"
+		            	var obj={};
+		            	obj.project_id=row.project_id;
+		            	obj.project=row.project;
+		            	obj.ecn_no=row.ecn_no;
+		            	obj.ecn_id=row.ecn_id;
+		            	obj.pictures=row.pictures;
+		            	obj.design_people=row.design_people;
+		            	obj.bus_list=row.bus_list;
+		            	obj.item_no=row.item_no;
+		            	obj.factory=row.factory;
+		            	
+		            	return "<i title='Change' class=\"ace-icon fa fa-pencil bigger-130\" onclick = 'showEdit(" + JSON.stringify(obj)+ ");' style='color:green;cursor: pointer;'></i>"+
+		            	"&nbsp;&nbsp;<i title='Display' class=\"ace-icon fa fa-search bigger-130\" onclick = 'showDisplay(" + JSON.stringify(obj)+ ");' style='color:blue;cursor: pointer;'></i>"
 		            	},
 		            	"defaultContent": "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" style='color:green;cursor: pointer;'></i>"}
 		          ],

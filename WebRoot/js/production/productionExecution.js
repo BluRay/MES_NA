@@ -21,11 +21,20 @@ $(document).ready(function () {
 	initPage();
 	
 	function initPage(){
+		
 		getBusNumberSelect('#nav-search-input');
 		//alert(location.href.substr(location.href.indexOf("action?")+7,location.href.length));
 		$('#rightlink').attr('href','production!exception.action?' + location.href.substr(location.href.indexOf("action?")+7,location.href.length)); 
 		getFactorySelect();
 		$('#vinText').focus();
+		workshop_name=$("#exec_workshop :selected").text();
+		if(workshop_name=='Outgoing'){
+			$("#exec_type").attr("disabled",true);
+			$("#on_offline").attr("disabled",true);
+		}else{
+			$("#exec_type").attr("disabled",false);
+			$("#on_offline").attr("disabled",false);
+		}
 		//alert(getQueryString("factory_name"));
 	};
 
@@ -176,6 +185,7 @@ $(document).ready(function () {
                     	$('#vinText').data("vin",bus.VIN);
                     	$('#vinText').data("project_id",bus.project_id);
                     	$('#vinText').data("bus_type",bus.bus_type);
+                   
                     	var next_station=response.nextStation;
                     	
                     	bus_production_status=bus.production_status;
@@ -196,7 +206,7 @@ $(document).ready(function () {
                 		}
                 		//alert(cur_line);
                 		if(bus.line !=$("#exec_line option:selected").text()&&bus.workshop==$("#exec_workshop option:selected").text()){
-                			fadeMessageAlert(null,'该车辆已在'+bus.line+'扫描，不能跨线扫描！','gritter-error');
+                			fadeMessageAlert(null,Warn['Scan_passline'],'gritter-error');
                 			//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描,带出相应工序
                     		getSelects(line_selects_data, bus.line, "#exec_line",null,"name"); 
                     		getAllstationSelect(bus.order_type);
@@ -206,7 +216,12 @@ $(document).ready(function () {
                     		
                 		//$("#exec_station").val(next_station.station_id)
                 		$("#exec_station option:contains("+next_station.station_name+")").attr("selected",true)
-                		$("#on_offline").val(next_station.on_offline)
+                		if($('#exec_workshop').find("option:selected").text()!='Outgoing'){
+                			$("#on_offline").val(next_station.on_offline)
+                		}else{
+                			$("#on_offline").val('online')
+                		}
+                		
                     }
             },
             error:function(){alertError();}
@@ -222,7 +237,7 @@ $(document).ready(function () {
             data: {
             	"factory_id":$("#exec_factory").val(),
                 "bus_number": $('#vinText').val(),
-                "station_name":$("#exec_station :selected").attr("station")||"",
+                "station_name":$("#exec_station :selected").attr("station_code")||"",
                 "workshop":$('#exec_workshop').find("option:selected").text(),
                 "project_id":$('#vinText').data("project_id")||0,
                 "bus_type":$('#vinText').data("bus_type")||""
@@ -430,7 +445,7 @@ function getAllstationSelect(order_type) {
 /*		    	if (index == 0) {
 		    		$("#exec_stationname").val(value.station_name);
 		    	}*/
-		    	strs += "<option value=" + value.id + " station='"+value.station_name+"' plan_node='"+(value.plan_node_name||"")
+		    	strs += "<option value=" + value.id + " station_code='"+value.station_code+"' station='"+value.station_name+"' plan_node='"+(value.plan_node_name||"")
 		    	+"' field_name='" +(value.field_name||"")+ "'>" + (value.station_code+" "+value.station_name) + "</option>";
 		    });
 		  //  alert(station_id_default);

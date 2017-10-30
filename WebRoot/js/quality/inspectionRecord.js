@@ -29,6 +29,8 @@ $(document).ready(function(){
 					text: "Cancel",
 					"class" : "btn btn-minier",
 					click: function() {
+						plant="";
+						project_id="";
 						$( this ).dialog( "close" ); 
 					} 
 				},
@@ -53,6 +55,14 @@ $(document).ready(function(){
 			getAllProcessSelect();
 		}
 		
+	});
+	$(document).on("change","#process",function(e){
+		var process=$(this).val();
+		if(process==''){
+			$("#inspection_item").html("");
+			return false;
+		}
+		getAllInspectionItemSelect(project_id);
 	});
 	$(document).on("change","#line",function(e){
 		var workshop=$(this).val();
@@ -85,6 +95,8 @@ $(document).ready(function(){
 				}else{
 					$("#bus_number").focus();
 					$("#message").text(Warn['P_common_01']);
+					plant="";
+					project_id="";
 					//alert(Warn['P_common_01']);
 				}
 			}
@@ -210,10 +222,24 @@ function ajaxQuery(){
         ],
 	});
 }
-/**
- * 查询成品记录表模板明细
- */
-function getBusNumberDetail(bus_number){
+
+function getInspectionByBusNo(bus_number){
+	var detail=null;
+	$.ajax({
+		url:"getInspectionByBusNo",
+		async:false,
+		type:"post",
+		dataType:"json",
+		data:{
+			"bus_number":bus_number
+		},
+		success:function(response){
+			detail=response.data;
+		}
+	});
+	return detail;
+}
+function getBusNumberDetail(bus_number,project_id){
 	var detail=null;
 	$.ajax({
 		url:"getInspectionRecordDetail",
@@ -221,7 +247,8 @@ function getBusNumberDetail(bus_number){
 		type:"post",
 		dataType:"json",
 		data:{
-			"bus_number":bus_number
+			"bus_number":bus_number,
+			"project_id":project_id
 		},
 		success:function(response){
 			detail=response.data;
@@ -269,6 +296,7 @@ function ajaxSave(){
 		data:{
 			"bus_number":$("#bus_number").val(),
 			"workshop":$("#workshop").find("option:selected").text(),
+			"template_id":$("#inspection_item :selected").attr('keyvalue'),
 			"station":$("#station").find("option:selected").text(),
 			"process":$("#process").find("option:selected").text(),
 			"self_inspection":$("#self_inspection").val(),
@@ -349,7 +377,7 @@ function ajaxUpdate(type){
 	})	
 }
 function showInfoPage(row){
-	var detail_list=getBusNumberDetail(row.bus_number);
+	var detail_list=getBusNumberDetail(row.bus_number,row.project_id);
 	$("#show_bus_number").text(row.bus_number);
 	$("#show_plant").text(row.plant);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
@@ -380,8 +408,7 @@ function showEditPage(row,type){
 	$("#show_bus_number").text(row.bus_number);
 	$("#show_plant").text(row.plant);
 	$(".divLoading").addClass("fade in").show();
-	var detail_list=getBusNumberDetail(row.bus_number);
-	
+	var detail_list=getInspectionByBusNo(row.bus_number);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:1100,
 		height:550,
@@ -390,19 +417,19 @@ function showEditPage(row,type){
 		title_html: true,
 		buttons: [ 
 			{
-					text: "Cancel",
-					"class" : "btn btn-minier",
-					click: function() {
-						$( this ).dialog( "close" ); 
-					} 
-				},
-				{
-					text: "Save",
-					"class" : "btn btn-primary btn-minier",
-					click: function() {
-						ajaxUpdate(type); 
-					} 
-				}
+				text: "Cancel",
+				"class" : "btn btn-minier",
+				click: function() {
+					$( this ).dialog( "close" ); 
+				} 
+			},
+			{
+				text: "Save",
+				"class" : "btn btn-primary btn-minier",
+				click: function() {
+					ajaxUpdate(type); 
+				} 
+			}
 		]
 	});
 	//先destroy datatable，隐藏form
@@ -550,7 +577,7 @@ function getAllProcessSelect() {
 		    $("#process").html("");
 		   
 		    $.each(response.data, function(index, value) {
-		    	strs += "<option value='" + value.process_name + "'>" + value.process_name + "</option>";
+		    	strs += "<option value='" + value.process_code + "'>" + value.process_name + "</option>";
 		    });
 		    $("#process").append(strs);
 		}
@@ -561,7 +588,8 @@ function getAllInspectionItemSelect(project_id) {
 		url : "getPrdRcdOrderTplDetailList",
 		dataType : "json",
 		data : {
-			project_id:project_id
+			project_id:project_id,
+			process:$("#process").val()
 			},
 		async : false,
 		error : function(response) {
@@ -572,7 +600,7 @@ function getAllInspectionItemSelect(project_id) {
 		    $("#inspection_item").html("");
 		   
 		    $.each(response.data, function(index, value) {
-		    	strs += "<option value='" + value.specification_and_standard + "'>" + value.inspection_item + "</option>";
+		    	strs += "<option keyvalue='"+value.id+"' value='" + value.specification_and_standard + "'>" + value.inspection_item + "</option>";
 		    });
 		    $("#inspection_item").append(strs);
 		}

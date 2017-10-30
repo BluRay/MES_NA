@@ -562,18 +562,20 @@ public class QualityController extends BaseController {
 	}
 	
 	/**
-	 *  查询关键零部件明细
+	 *  查询成品记录模板明细
 	 * @return
 	 */
 	@RequestMapping("getPrdRcdOrderTplDetailList") 
 	@ResponseBody
 	public ModelMap getPrdRcdOrderTplDetailList(){
 		model=new ModelMap();
-		String project_id=request.getParameter("project_id");//订单
+		String project_id=request.getParameter("project_id");
 		String version=request.getParameter("version");
+		String process=request.getParameter("process");
 		HashMap<String, Object> condMap =new HashMap<String,Object>();
 		condMap.put("project_id", project_id);
 		condMap.put("version", version);
+		condMap.put("process_name", process);
 		qualityService.getPrdRcdOrderTplDetailList(condMap,model);
 		
 		return model;
@@ -863,6 +865,7 @@ public class QualityController extends BaseController {
 		String workshop=request.getParameter("workshop");
 		String station=request.getParameter("station");
 		String process=request.getParameter("process");
+		String template_id=request.getParameter("template_id");
 		String inspection_item=request.getParameter("inspection_item");
 		String specification_and_standard=request.getParameter("specification_and_standard");
 		String memo=request.getParameter("memo");
@@ -871,6 +874,7 @@ public class QualityController extends BaseController {
 		condMap.put("workshop",workshop);
 		condMap.put("station",station);
 		condMap.put("process_name",process);
+		condMap.put("template_id",template_id);
 		condMap.put("inspection_item",inspection_item);
 		condMap.put("specification_and_standard",specification_and_standard);
 		condMap.put("memo",memo);
@@ -892,11 +896,22 @@ public class QualityController extends BaseController {
 		model=new ModelMap();;
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		String bus_number=request.getParameter("bus_number");
+		String project_id=request.getParameter("project_id");
 		condMap.put("bus_number",bus_number);
+		condMap.put("project_id",project_id);
 		qualityService.getInspectionRecordDetail(condMap,model);
 		return model;
 	}
-	
+	@RequestMapping("/getInspectionByBusNo")
+	@ResponseBody
+	public ModelMap getInspectionByBusNo(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String bus_number=request.getParameter("bus_number");
+		condMap.put("bus_number",bus_number);
+		qualityService.getInspectionByBusNo(condMap,model);
+		return model;
+	}
 	@RequestMapping("updateInspectionRecord")
 	@ResponseBody
 	public ModelMap updateInspectionRecord(){
@@ -936,7 +951,7 @@ public class QualityController extends BaseController {
 	@RequestMapping("/getTestingRecordList")
 	@ResponseBody
 	public ModelMap getTestingRecordList(){
-		model=new ModelMap();;
+		model=new ModelMap();
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		int draw=Integer.parseInt(request.getParameter("draw"));
 		int start=Integer.parseInt(request.getParameter("start"));

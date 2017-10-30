@@ -228,6 +228,7 @@ public class ProductionController extends BaseController {
 			condMap.put("order_type", businfo.get("order_type"));
 			condMap.put("station_name", businfo.get("current_station"));
 			condMap.put("on_offline", businfo.get("on_offline"));
+			condMap.put("workshop", businfo.get("workshop"));
 			Map<String,Object> nextStation=productionService.getNextStation(condMap);
 			model.put("businfo", businfo);
 			model.put("nextStation", nextStation);
@@ -322,6 +323,7 @@ public class ProductionController extends BaseController {
 			m.put("station_name", station_name);
 			m.put("editor_id", userid);
 			m.put("edit_date", curTime);
+			m.put("project_id", project_id);
 		}
 		
 		try{

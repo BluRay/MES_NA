@@ -5,7 +5,12 @@ var colors=[  '#a8ef9d','#24CBE5','#629b58', '#058DC7', '#FF9655','#50B432', '#F
 $(document).ready(function() {				
 			//初始化页面
 			initPage();
-			
+			$('#nav-search-input').bind('keydown', function(event) {
+				if (event.keyCode == "13") {
+					window.open("/MES/production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
+					return false;
+				}
+			})
 /*			$(".ui-sortable").bind('sortstop', function(event, ui) { 
 				//alert(ui.item.context.clientWidth);
 				var widget=$(ui.item[0]).find(".widget-body");
@@ -80,7 +85,7 @@ $(document).ready(function() {
 	drawFactoryDailyChart();
 	//drawFactoryException();
 	//drawStaffCountChart();
-	
+	getBusNumberSelect('#nav-search-input');
 	$('.widget-container-col').sortable({
 		connectWith : '.widget-container-col',
 		items : '> .widget-box',

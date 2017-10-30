@@ -34,8 +34,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div class="breadcrumbs ace-save-state" id="breadcrumbs">
 				<ul class="breadcrumb">
 					<li><i class="ace-icon fa fa-home home-icon"></i><a
-						href="/BMS/index">index</a></li>
-					<li class="active">Production</li>
+						href="/MES/index">Index</a></li>
+					<li class="active">Manufacturing</li>
 					<li class="active">VIN</li>
 				</ul>
 				<!-- /.breadcrumb -->
@@ -61,9 +61,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							
 							<td><select id="search_status" class="input-medium revise">
 								<option value=''>ALL</option>
-								<option value='0'>Created</option>
-								<option value='1'>In Process</option>
-								<option value='2'>Completed</option>
+								<option value='1'>Created</option>
+								<option value='2'>In Process</option>
+								<option value='3'>Completed</option>
 								</select>
 							</td>
 							<td>Plant：</td>

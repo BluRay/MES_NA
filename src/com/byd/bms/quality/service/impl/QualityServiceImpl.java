@@ -295,7 +295,14 @@ public class QualityServiceImpl implements IQualityService {
 	}
 	@Override
 	public void getInspectionRecordDetail(Map<String,Object> conditionMap,ModelMap model) {
-		List<Map<String,Object>> datalist= qualityDao.getInspectionRecordDetail(conditionMap);
+		List<Map<String,Object>> datalist= qualityDao.getInspectionDetailList(conditionMap);
+		Map<String, Object> result=new HashMap<String,Object>();
+		result.put("data", datalist);
+		model.addAllAttributes(result);
+	}
+	@Override
+	public void getInspectionByBusNo(Map<String,Object> conditionMap,ModelMap model) {
+		List<Map<String,Object>> datalist= qualityDao.getInspectionByBusNo(conditionMap);
 		Map<String, Object> result=new HashMap<String,Object>();
 		result.put("data", datalist);
 		model.addAllAttributes(result);

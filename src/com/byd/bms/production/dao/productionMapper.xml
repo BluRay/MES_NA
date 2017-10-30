@@ -46,8 +46,11 @@
 	<select id="queryBusInfo" parameterType="String" resultType="Map">
 		select b.*,o.project_name AS order_desc,o.production_plant factory,p.workshop,p.line,p.station_name,
 		'Standard order' order_type,o.bus_type,
-		case (select count(r.id) from BMS_NA_BUS_SCANNING_RECORD r where r.bus_number=#{bus_number} and r.station_id=b.latest_station_id and r.rework='0' and r.on_offline='offline') 
-		when 0 then 'online' else 'offline' end as on_offline
+		case when (select count(r.id) from BMS_NA_BUS_SCANNING_RECORD r where r.bus_number=#{bus_number} and r.station_id=b.latest_station_id and r.rework='0' and r.on_offline='offline') >0
+ 		then 'offline' 
+		when(select count(r.id) from BMS_NA_BUS_SCANNING_RECORD r where r.bus_number=#{bus_number} and r.station_id=b.latest_station_id and r.rework='0' and r.on_offline='online')>0
+		then 'online' 
+		else '' end as on_offline
 		from BMS_NA_PROJECT_BUS b
 		left join BMS_NA_PROJECT o on b.project_id=o.id
 		left join BMS_NA_BASE_STATION p on p.id=b.latest_station_id
@@ -64,21 +67,25 @@
 	
 	<select id="queryNextStation" parameterType="Map" resultType="Map">
 		SELECT p.id station_id,p.station_name,r.sequence,r.workshop,
-		<if test="on_offline=='online'">'offline'</if>
-		<if test="on_offline=='offline'">'online'</if>
+		<if test="on_offline=='online' and workshop!='Outgoing'">'offline'</if>
+		<if test="on_offline=='online' and workshop=='Outgoing'">'online'</if>
+		<if test="on_offline=='offline' or on_offline==''">'online'</if>
 		on_offline
 		FROM BMS_NA_BASE_SCAN_RULE r
 		LEFT JOIN BMS_NA_BASE_STATION p on r.factory=p.factory and r.workshop=p.workshop 
 		and p.station_name=r.station_name 
-		where r.factory=#{factory_name} 
-		<if test="station_name !=null and station_name !='' and on_offline=='offline' ">
-		and r.sequence>=(
+		where r.factory=#{factory_name}  
+		<if test="station_name !=null and station_name !=''">
+			<if test="on_offline=='offline' or workshop=='Outgoing' ">
+			and r.sequence>=(
 			select r1.sequence+1 from BMS_NA_BASE_SCAN_RULE r1 where r1.factory=#{factory_name}
 			and r1.station_name=#{station_name} and r1.order_type=#{order_type})
-		</if>	
-		<if test="station_name !=null and station_name !='' and on_offline=='online' ">
-			and r.station_name=#{station_name}
-		</if>	
+			</if>
+			<if test="on_offline=='online' and workshop!='Outgoing' ">
+				and r.station_name=#{station_name}
+			</if>
+		
+		</if>		
 		and r.order_type=#{order_type}  and p.monitory_point_flag='1'
 		order by r.sequence 
 		limit 1
@@ -90,10 +97,10 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into BMS_NA_BUS_TRACE
-		(bus_number,production_plant_id,trace_template_id,workshop,SAP_material,BYD_NO,parts_name,vendor,station,batch,editor_id,edit_date)
+		(bus_number,project_id,production_plant_id,trace_template_id,workshop,SAP_material,BYD_NO,parts_name,vendor,station,batch,editor_id,edit_date)
 		values
 		<foreach  collection="parts_list" item="detail" index="index" separator=",">
-		(#{detail.bus_number},#{detail.production_plant_id},#{detail.id},#{detail.workshop},#{detail.SAP_material},#{detail.BYD_NO},
+		(#{detail.bus_number},#{detail.project_id},#{detail.production_plant_id},#{detail.id},#{detail.workshop},#{detail.SAP_material},#{detail.BYD_NO},
 		#{detail.parts_name},#{detail.vendor},#{detail.station_name},#{detail.batch},#{detail.editor_id},#{detail.edit_date}
 		)
 		</foreach>
@@ -168,9 +175,9 @@
 	<select id="queryWarehouseInfo" parameterType="Map" resultType="Map">
 		select count(b.id) warehouse_count, 
 		(select p.quantity from BMS_NA_PROJECT p 
-		where p.project_id=#{project_id}) production_qty
-		from BMS_PLAN_BUS b 
-		where b.production_plant_id=#{factory_id} and b.project_id=#{project_id} and b.outgoing>0
+		where p.id=#{project_id}) production_qty
+		from BMS_NA_PROJECT_BUS b 
+		where b.production_plant_id=#{project_id} and b.project_id=#{project_id} and b.outgoing>0
 	</select>
 	
 	<update id="updateProject" parameterType="Map">
