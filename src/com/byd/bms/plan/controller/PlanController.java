@@ -215,8 +215,8 @@ public class PlanController extends BaseController{
 		conditionMap.put("factory_id", request.getParameter("factory_id"));
 		conditionMap.put("order_no", request.getParameter("order_no"));
 		String workshop = "";
-		if (!request.getParameter("workshop").equals("全部")) workshop = request.getParameter("workshop");
-		if(workshop.equals("成品库")) workshop="入库";
+		if (!request.getParameter("workshop").equals("All")) workshop = request.getParameter("workshop");
+		////if(workshop.equals("成品库")) workshop="入库";
 		conditionMap.put("workshop", workshop);
 		conditionMap.put("start_date", request.getParameter("start_date"));
 		conditionMap.put("end_date", request.getParameter("end_date"));

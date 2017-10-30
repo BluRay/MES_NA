@@ -65,7 +65,7 @@
 						</ul>
 						
 						<div class="tab-content" id="tab-content">
-							<div id="div_1" style="height:390px" class="tab-pane fade in active">
+							<div id="div_1" style="height:350px" class="tab-pane fade in active">
 								<table id="table01" style="text-align:center;table-layout:fixed;font-size:12px;width:1150px" class="table table-bordered table-striped">
 									<tr>
 										<td width="165px">Project No.：</td><td id="tab01_order_no"></td><td width="165px">Bus No.：</td><td id="tab01_bus_number"></td><td width="165px">VIN：</td><td id="tab01_vin"></td>
@@ -87,130 +87,128 @@
 									</tr>				
 								</table>
 							</div>
-							<div id="div_5" style="overflow:auto;height:390px" class="tab-pane fade">
-<!-- 								<table id="table05" class="table table-bordered" style="font-size: 12px;"> -->
-<!-- 									<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="text-align:center;">No.</th> -->
-<!-- 											<th style="text-align:center;">Plant</th> -->
-<!-- 											<th style="text-align:center;">Workshop</th> -->
-<!-- 											<th style="text-align:center;">Station</th> -->
-<!-- 											<th style="text-align:center;">Status</th> -->
-<!-- 											<th style="text-align:center;">Scanner</th>	 -->
-<!-- 											<th style="text-align:center;">Scan Date</th>							 -->
-<!-- 										</tr> -->
-<!-- 									</thead> -->
-<!-- 									<tbody> -->
-<!-- 									</tbody> -->
-<!-- 								</table> -->
-<!--                                 <div class="row"  >        style="width: calc(100vw + 15px)"-->
-								    <div class="col-xs-12"> 
-										<table id="table05" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1069px" >
-										</table>
-									</div>
+							<div id="div_5" style="overflow:auto;height:350px" class="tab-pane fade">
+								<table id="table05" class="table table-bordered" style="font-size: 12px">
+									<thead>
+										<tr>
+											<th style="text-align:center;">No.</th>
+											<th style="text-align:center;">Plant</th>
+											<th style="text-align:center;">Workshop</th>
+											<th style="text-align:center;">Station</th>
+											<th style="text-align:center;">Status</th>
+											<th style="text-align:center;">Scanner</th>	
+											<th style="text-align:center;">Scan Date</th>							
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+<!-- 							    <div class="col-xs-12">  -->
+<!-- 									<table id="table05" class="table table-striped table-bordered table-hover" style="font-size: 12px; width: 100% !important; " > -->
+<!-- 									</table> -->
 <!-- 								</div> -->
 							</div>
 							
-							<div id="div_2" style="overflow:auto;height:390px" class="tab-pane fade">
-<!-- 								<table id="table02" style="text-align:center;table-layout:fixed;font-size:12px" class="table table-bordered table-striped"> -->
-<!-- 									<thead> -->
-<!-- 										<tr id="0"> -->
-<!-- 											<th style="width:60px;text-align:center;">No.</th> -->
-<!-- 											<th style="text-align:center;">Plant</th> -->
-<!-- 											<th style="text-align:center;">Workshop</th> -->
-<!-- 											<th style="text-align:center;">SourceWorkshop</th> -->
-<!-- 											<th style="text-align:center;">Location</th> -->
-<!-- 											<th style="text-align:center;">Orientation</th> -->
-<!-- 											<th style="text-align:center;">Problem Description</th> -->
-<!-- 											<th style="text-align:center;">DefectCodes</th> -->
-<!-- 											<th style="text-align:center;">Responsible Leader</th> -->
-<!-- 											<th style="text-align:center;">QC_Inspector</th> -->
-<!-- 											<th style="text-align:center;">Date Found</th> -->
-<!-- 											<th style="text-align:center;">Lead Initials</th> -->
-<!-- 											<th style="text-align:center;">Lead Initials Date</th> -->
-<!-- 											<th style="text-align:center;">Quality Initials</th> -->
-<!-- 											<th style="text-align:center;">Quality Initials Date</th> -->
-<!-- 										</tr> -->
-<!-- 									</thead> -->
-<!-- 									<tbody>	 -->
-<!-- 									</tbody> -->
-<!-- 								</table> -->
-                                    <div class="col-xs-12"> 
-										<table id="table02" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1570px" >
-										</table>
-									</div>
+							<div id="div_2" style="overflow:auto;height:350px" class="tab-pane fade">
+								<table id="table02" style="text-align:center;font-size:12px;width:2100px" class="table table-bordered table-striped">
+									<thead>
+										<tr id="0">
+											<th style="width:60px;text-align:center;">No.</th>
+											<th style="text-align:center;">Plant</th>
+											<th style="text-align:center;">Workshop</th>
+											<th style="text-align:center;">SourceWorkshop</th>
+											<th style="text-align:center;">Location</th>
+											<th style="text-align:center;">Orientation</th>
+											<th style="text-align:center;">Problem Description</th>
+											<th style="text-align:center;">DefectCodes</th>
+											<th style="text-align:center;">Responsible Leader</th>
+											<th style="text-align:center;">QC_Inspector</th>
+											<th style="text-align:center;">Date Found</th>
+											<th style="text-align:center;">Lead Initials</th>
+											<th style="text-align:center;">Lead Initials Date</th>
+											<th style="text-align:center;">Quality Initials</th>
+											<th style="text-align:center;">Quality Initials Date</th>
+										</tr>
+									</thead>
+									<tbody>	
+									</tbody>
+								</table>
+<!--                                     <div class="col-xs-12">  -->
+<!-- 										<table id="table02" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1570px" > -->
+<!-- 										</table> -->
+<!-- 									</div> -->
 							</div>
 							
-							<div id="div_3" style="overflow:auto;height:390px" class="tab-pane fade">
-<!-- 								<table id="table03" class="table table-bordered" style="font-size: 12px;"> -->
-<!-- 									<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="text-align:center;">Item No.</th> -->
-<!-- 											<th style="text-align:center;">Bus No.</th> -->
-<!-- 											<th style="text-align:center;">SAP Material</th> -->
-<!-- 											<th style="text-align:center;">Parts Name</th> -->
-<!-- 											<th style="text-align:center;">BYD P/N</th> -->
-<!-- 											<th style="text-align:center;">Vendor</th> -->
-<!-- 											<th style="text-align:center;">Workshop</th> -->
-<!-- 											<th style="text-align:center;">Station</th> -->
-<!-- 											<th style="text-align:center;">Batch</th> -->
-<!-- 										</tr> -->
-<!-- 									</thead> -->
-<!-- 									<tbody> -->
-<!-- 									</tbody> -->
-<!-- 								</table> -->
-                                <div class="col-xs-12"> 
-									<table id="table03" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1069px" >
-									</table>
-								</div>
+							<div id="div_3" style="overflow:auto;height:350px" class="tab-pane fade">
+								<table id="table03" class="table table-bordered" style="font-size: 12px;">
+									<thead>
+										<tr>
+											<th style="text-align:center;">Item No.</th>
+											<th style="text-align:center;">Bus No.</th>
+											<th style="text-align:center;">SAP Material</th>
+											<th style="text-align:center;">Parts Name</th>
+											<th style="text-align:center;">BYD P/N</th>
+											<th style="text-align:center;">Vendor</th>
+											<th style="text-align:center;">Workshop</th>
+											<th style="text-align:center;">Station</th>
+											<th style="text-align:center;">Batch</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+<!--                                 <div class="col-xs-12">  -->
+<!-- 									<table id="table03" class="table table-striped table-bordered table-hover" style="font-size: 12px;width: 100% !important;" > -->
+<!-- 									</table> -->
+<!-- 								</div> -->
 							</div>
 							
-							<div id="div_4" style="overflow:auto;height:390px" class="tab-pane fade">
-<!-- 								<table id="table04" class="table table-bordered" style="font-size: 12px;"> -->
-<!-- 									<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="text-align:center;">No.</th> -->
-<!-- 											<th style="text-align:center;">Bus No.</th> -->
-<!-- 											<th style="text-align:center;">Inspection Item</th> -->
-<!-- 											<th style="text-align:center;">Inspection And Standard</th> -->
-<!-- 											<th style="text-align:center;">Workshop</th> -->
-<!-- 											<th style="text-align:center;">Station</th> -->
-<!-- 											<th style="text-align:center;">Process Name</th> -->
-<!-- 											<th style="text-align:center;">Supervisor</th> -->
-<!-- 											<th style="text-align:center;">Supervisor Date</th> -->
-<!-- 										</tr> -->
-<!-- 									</thead> -->
-<!-- 									<tbody> -->
-<!-- 									</tbody> -->
-<!-- 								</table> -->
-                                <div class="col-xs-12"> 
-									<table id="table04" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1069px" >
-									</table>
-								</div>
+							<div id="div_4" style="overflow:auto;height:350px" class="tab-pane fade">
+								<table id="table04" class="table table-bordered" style="font-size: 12px;">
+									<thead>
+										<tr>
+											<th style="text-align:center;">No.</th>
+											<th style="text-align:center;">Bus No.</th>
+											<th style="text-align:center;">Inspection Item</th>
+											<th style="text-align:center;">Inspection And Standard</th>
+											<th style="text-align:center;">Workshop</th>
+											<th style="text-align:center;">Station</th>
+											<th style="text-align:center;">Process Name</th>
+											<th style="text-align:center;">Supervisor</th>
+											<th style="text-align:center;">Supervisor Date</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+<!--                                 <div class="col-xs-12">  -->
+<!-- 									<table id="table04" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1069px" > -->
+<!-- 									</table> -->
+<!-- 								</div> -->
 							</div>
 							
 							
-							<div id="div_6" style="overflow:auto;height:390px" class="tab-pane fade">
-<!-- 								<table id="table06" style="text-align:center;table-layout:fixed;font-size:12px;width:1150px" class="table table-bordered table-striped"> -->
-<!-- 									<thead> -->
-<!-- 										<tr> -->
-<!-- 											<th style="text-align:center;">No.</th> -->
-<!-- 											<th style="text-align:center;">Item</th> -->
-<!-- 											<th style="text-align:center;">Problem Details</th> -->
-<!-- 											<th style="text-align:center;">Station</th> -->
-<!-- 											<th style="text-align:center;">Supervisor</th> -->
-<!-- 											<th style="text-align:center;">Supervisor Date</th> -->
-<!-- 											<th style="text-align:center;">QC Inspection</th> -->
-<!-- 											<th style="text-align:center;">QC Inspection Date</th> -->
-<!-- 										</tr> -->
-<!-- 									</thead> -->
-<!-- 									<tbody> -->
-<!-- 									</tbody> -->
-<!-- 								</table> -->
-                                <div class="col-xs-12"> 
-									<table id="table06" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:1069px" >
-									</table>
-								</div>
+							<div id="div_6" style="overflow:auto;height:350px" class="tab-pane fade">
+								<table id="table06" style="text-align:center;table-layout:fixed;font-size:12px;width:1150px" class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th style="text-align:center;">No.</th>
+											<th style="text-align:center;">Item</th>
+											<th style="text-align:center;">Problem Details</th>
+											<th style="text-align:center;">Station</th>
+											<th style="text-align:center;">Supervisor</th>
+											<th style="text-align:center;">Supervisor Date</th>
+											<th style="text-align:center;">QC Inspection</th>
+											<th style="text-align:center;">QC Inspection Date</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+<!--                                 <div class="col-xs-12">  -->
+<!-- 									<table id="table06" class="table table-striped table-bordered table-hover" style="font-size: 12px;width:100% !important;"> -->
+<!-- 									</table> -->
+<!-- 								</div> -->
 							</div>
 							
 <!-- 							<div id="div_7" style="overflow:auto" class="tab-pane fade"> -->
