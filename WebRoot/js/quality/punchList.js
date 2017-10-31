@@ -23,7 +23,7 @@ $(document).ready(function () {
 	});
 	
 	$("#btnAdd").on('click', function(e) {
-		getDefectCode();
+		getDefectCodeType();
 		getLocationList();
 		$("#new_busNumber").val("");
 		$("#new_orientation").val("");
@@ -60,8 +60,8 @@ $(document).ready(function () {
 			$('#new_busNumber').focus();
 			return false;
 		}
-		console.log($('#new_defectcodes :selected').text());
-		var defectcodes = $('#new_defectcodes :selected').text();
+		console.log($('#new_defectcodes_info :selected').text());
+		var defectcodes = $('#new_defectcodes_info :selected').text();
         $.ajax({
             type: "get",
             dataType: "json",
@@ -75,7 +75,7 @@ $(document).ready(function () {
             	"main_location" : $('#new_location :selected').text(),
             	"Orientation" : $('#new_orientation').val(),
             	"ProblemDescription" : $('#new_problemDescription').val(),
-            	"defect_codes_id" : $('#new_defectcodes').val(),
+            	"defect_codes_id" : $('#new_defectcodes_info').val(),
             	"defect_codes" : defectcodes,
             	"responsible_leader" : $('#new_responsibleleader').val(),
             	"qc_inspector" : $('#new_QCinspector').val(),
@@ -114,6 +114,9 @@ $(document).ready(function () {
 		if($("#edit_plant").val() !=''){
 			getAllEditWorkshopSelect();
 		}
+	});
+	$("#new_defectcodes").change(function(){
+		getDefectCodeInfo($("#new_defectcodes").val());
 	});
 	
 	function getFactorySelect() {
@@ -246,7 +249,7 @@ function ajaxQuery(){
 		            {"title":"Location","class":"center","data":"main_location","defaultContent": ""},
 		            {"title":"Orientation","class":"center","data":"orientation","defaultContent": ""},
 		            {"title":"ProblemDescription","class":"center","data":"problem_description","defaultContent": ""},
-		            {"title":"DefectCodes","class":"center","data":"defect_codes","defaultContent": ""},
+		            {"title":"  DefectCodes  ","class":"center","data":"defect_codes","defaultContent": ""},
 		            {"title":"ResponsibleLeader","class":"center","data":"responsible_leader","defaultContent": ""},
 		            {"title":"QC_Inspector","class":"center","data":"qc_inspector","defaultContent": ""},
 		            {"title":"DateFound","class":"center","data":"date_found","defaultContent": ""},
@@ -264,7 +267,7 @@ function ajaxQuery(){
 }
 
 function editPunsh(id){
-	getDefectCode();
+	getDefectCodeType();
 	getLocationList();
 	$.ajax({
 		url : "getPunchInfoByid",
@@ -278,7 +281,9 @@ function editPunsh(id){
 			$("#edit_busNumber").val(response.data[0].bus_number);
 			$("#edit_orientation").val(response.data[0].orientation);
 			$("#edit_problemDescription").val(response.data[0].problem_description);
-			$("#edit_defectcodes").val(response.data[0].defect_codes_id);
+			$("#edit_defectcodes").val(response.data[0].defect_type);
+			getDefectCodeInfo(response.data[0].defect_type);
+			$("#edit_defectcodes_info").val(response.data[0].defect_codes_id);
 			$("#edit_responsibleleader").val(response.data[0].responsible_leader);
 			$("#edit_QCinspector").val(response.data[0].qc_inspector);
 			$("#edit_location").val(response.data[0].main_location_id);
@@ -328,8 +333,8 @@ function btnEditConfirm(id){
 			"main_location" : $("#edit_location :selected").text(),
 			"Orientation" : $("#edit_orientation").val(),
 			"ProblemDescription" : $("#edit_problemDescription").val(),
-			"defect_codes_id" : $("#edit_defectcodes").val(),
-			"defect_codes" : $("#edit_defectcodes :selected").text(),
+			"defect_codes_id" : $("#edit_defectcodes_info").val(),
+			"defect_codes" : $("#edit_defectcodes_info :selected").text(),
 			"responsible_leader" : $("#edit_responsibleleader").val(),
 			"qc_inspector" : $("#edit_QCinspector").val(),
 		},
@@ -341,22 +346,44 @@ function btnEditConfirm(id){
 	});
 }
 
-function getDefectCode(){
+function getDefectCodeType(){
 	$("#new_defectcodes").empty();
 	$("#edit_defectcodes").empty();
 	$.ajax({
-		url : "getDefectCode",
+		url : "getDefectCodeType",
 		dataType : "json",
 		data : {},
 		async : false,
 		error : function(response) {alert(response.message)},
 		success : function(response) {
 			var strs ="";
-			$.each(response, function(index, value) {
-				strs += "<option value=" + value.id + ">" + value.defect_code + " " + value.defect_name + "</option>";
+			$.each(response.data, function(index, value) {
+				strs += "<option value=" + value.defect_type + ">" + value.defect_type + "</option>";
+				if(index == 0){
+					getDefectCodeInfo(value.defect_type)
+				}
 			});
 			$("#new_defectcodes").append(strs);
 			$("#edit_defectcodes").append(strs);
+		}
+	});
+}
+function getDefectCodeInfo(defect_type){
+	$("#new_defectcodes_info").empty();
+	$("#edit_defectcodes_info").empty();
+	$.ajax({
+		url : "getDefectCodeInfo",
+		dataType : "json",
+		data : {"defect_type" : defect_type},
+		async : false,
+		error : function(response) {alert(response.message)},
+		success : function(response) {
+			var strs ="";
+			$.each(response.data, function(index, value) {
+				strs += "<option value=" + value.id + ">" + value.defect_code + " " + value.defect_name + "</option>";
+			});
+			$("#new_defectcodes_info").append(strs);
+			$("#edit_defectcodes_info").append(strs);
 		}
 	});
 }
@@ -371,7 +398,7 @@ function getLocationList(){
 		error : function(response) {alert(response.message)},
 		success : function(response) {
 			var strs ="";
-			$.each(response, function(index, value) {
+			$.each(response.data, function(index, value) {
 				strs += "<option value=" + value.id + ">" + value.main_location + "</option>";
 			});
 			$("#new_location").append(strs);

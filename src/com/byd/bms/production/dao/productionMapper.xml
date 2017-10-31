@@ -689,7 +689,7 @@
 	</select>
 	<select id="getMatReqProjectQty" parameterType="Map" resultType="Map">
 		SELECT P.id,P.project_id,P.plan_qty FROM BMS_NA_PROJECT_PRODUCTION_PLAN P WHERE 
-		P.plant_id = #{factory_id} AND P.plan_code_value = '1' AND P.plan_date = #{curDate}
+		P.plant_id = #{factory_id} AND P.plan_code_value = '1' AND P.plan_date = #{search_date}
 	</select>
 	<select id="getBusNumberProject" parameterType="Map" resultType="Map">
 		SELECT B.bus_number,B.project_id FROM BMS_NA_PROJECT_BUS B WHERE B.project_id = #{project_id} 
@@ -717,7 +717,7 @@
 	</select>
 	<select id="getStationBusNumberProject" parameterType="Map" resultType="Map">
 	SELECT S.project_id,S.bus_number FROM BMS_NA_BUS_SCANNING_RECORD S WHERE S.plant = #{factory_name} AND S.workshop = #{workshop_name}
-	AND S.station = #{last_station_name} AND S.rework = '0' AND S.on_offline = 'offline'
+	AND S.station = #{last_station_name} AND S.rework = '0' AND S.on_offline = 'online'
 	AND S.bus_number NOT IN 
 	(SELECT S.bus_number FROM BMS_NA_BUS_SCANNING_RECORD S WHERE S.plant = #{factory_name} AND S.workshop = #{workshop_name}
 	AND S.station = #{station_name} AND S.rework = '0' AND S.on_offline = 'online')

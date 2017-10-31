@@ -983,6 +983,7 @@ public class ProductionController extends BaseController {
 		condMap.put("station_name", request.getParameter("station_name"));
 		condMap.put("station_id", request.getParameter("station_id"));
 		condMap.put("bus_number", request.getParameter("bus_number"));
+		condMap.put("search_date", request.getParameter("search_date"));
 		
 		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
 		datalist = productionService.getMaterialRequirement(condMap);

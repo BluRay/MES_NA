@@ -33,7 +33,8 @@ public interface IQualityService {
 	public void getInspectionByBusNo(Map<String, Object> map,ModelMap model);
 	public int updateInspectionRecord(List list);
 	
-	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getDefectCodeType(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getDefectCodeInfo(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
 	public int addPunch(Map<String, Object> conditionMap);
 	public Map<String, Object> getPunchList(Map<String, Object> conditionMap);

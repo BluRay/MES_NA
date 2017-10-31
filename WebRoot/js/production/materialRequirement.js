@@ -10,6 +10,9 @@ $(document).ready(function () {
 		getBusNumberSelect('#nav-search-input');
 		getFactorySelect();
 		//ajaxQuery();
+		if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+			$("#select_date").css("display","none");
+		}
 	};
 
 	$('#nav-search-input').bind('keydown', function(event) {
@@ -21,6 +24,13 @@ $(document).ready(function () {
 	
 	$("#btnQuery").click(function () {
 		ajaxQuery();
+	});
+	$('#search_station').change(function(){
+		if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+			$("#select_date").css("display","none");
+		}else{
+			$("#select_date").css("display","");
+		}
 	});
 	
 	$(document).on('click', '#btnPrint',function(){
@@ -145,6 +155,11 @@ $(document).ready(function () {
 			getAllWorkshopSelect();
 			getAllLineSelect();
 			getAllProcessSelect();
+			if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+				$("#select_date").css("display","none");
+			}else{
+				$("#select_date").css("display","");
+			}
 		}
 	});
 	
@@ -153,6 +168,11 @@ $(document).ready(function () {
 		if($("#exec_workshop").val() !=''){
 			getAllLineSelect();
 			getAllProcessSelect();
+			if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+				$("#select_date").css("display","none");
+			}else{
+				$("#select_date").css("display","");
+			}
 		}
 	});
 
@@ -160,6 +180,11 @@ $(document).ready(function () {
 		$("#search_station").empty();
 		if($("#search_line").val() !=''){
 			getAllProcessSelect();
+			if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+				$("#select_date").css("display","none");
+			}else{
+				$("#select_date").css("display","");
+			}
 		}
 	});
 	
@@ -179,6 +204,11 @@ $(document).ready(function () {
 				getAllWorkshopSelect();
 				getAllLineSelect();
 				getAllProcessSelect();
+				if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+					$("#select_date").css("display","none");
+				}else{
+					$("#select_date").css("display","");
+				}
 			}
 		});
 	}
@@ -199,6 +229,11 @@ $(document).ready(function () {
 			success : function(response) {
 				line_selects_data=response.data;
 				getSelects(response.data, "", "#search_line",null,"name"); 
+				if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+					$("#select_date").css("display","none");
+				}else{
+					$("#select_date").css("display","");
+				}
 			}
 		});
 	}
@@ -260,6 +295,11 @@ function getAllWorkshopSelect() {
 		},
 		success : function(response) {
 			getSelects(response.data, "", "#search_workshop",null,"id");
+			if($("#search_station").find("option:selected").text() !="W1" && $("#search_station").find("option:selected").text() !="W2"){
+				$("#select_date").css("display","none");
+			}else{
+				$("#select_date").css("display","");
+			}
 		}
 	});
 }
@@ -280,7 +320,8 @@ function ajaxQuery(){
 	    	"station_id": $('#search_station').val(),
 	    	"station_name": $("#search_station :selected").attr('process'),
 	    	"station": $("#search_station :selected").text(),
-	    	"bus_number": $('#search_busno').val()
+	    	"bus_number": $('#search_busno').val(),
+	    	"search_date":$('#search_date').val()
 	    },
 	    success:function(response){
 	    	$("#tableData tbody").html("");

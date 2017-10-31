@@ -117,13 +117,13 @@ function getSearch(){
     		
     		//订单计划达成
     		$.each(response.data,function (index,value) {
-    			var tr = $("<tr id= '"+value.id+"'/>");  			
-    			if(last_order==value.order_desc){
-    				var rowspan=parseInt($(orderTd).attr("rowspan"));
-    				$(orderTd).attr("rowspan",rowspan+1);
+    			var tr = $("<tr id= 'order_"+value.id+"'/>");  			
+    			if(last_order==value.project_no){
+    				var rowspan=parseInt($(orderTd).find("td").eq(0).attr("rowspan"));
+    				$(orderTd).find("td").eq(0).attr("rowspan",rowspan+1);
     			}else{ 
-    				orderTd="#order_"+value.order_id;
-    				$("<td style=\"text-align:center;\" rowspan=1 id='order_"+value.order_id+"'/>").html(value.order_desc).appendTo(tr);
+    				orderTd="#order_"+value.id;
+    				$("<td style=\"text-align:center;\" rowspan=1 id='order_"+value.id+"'/>").html(value.project_no+" "+value.order_desc).appendTo(tr);
     			}
     			$("<td style=\"text-align:center;\" />").html(value.key_name).appendTo(tr);
     			$("<td style=\"text-align:center;\" />").html(value.total_plan_qty).appendTo(tr);
@@ -134,7 +134,7 @@ function getSearch(){
     			}
     			$("<td style=\"text-align:center;\" />").html(rate_qty).appendTo(tr);
     			$("<td style=\"text-align:center;\" />").html(value.total_qty).appendTo(tr);
-    			last_order=value.order_desc;
+    			last_order=value.project_no;
     			$("#tablePlan tbody").append(tr);
     			//tplan_zzj+=(value.key_name=='自制下线'?parseInt(value.total_plan_qty):0);
         		//treal_zzj+=(value.key_name=='自制下线'?parseInt(value.real_qty):0);
@@ -201,15 +201,15 @@ function getSearch(){
     		
     		//$("#tr_undone").find("td").eq("1").html((treal_zzj-tplan_zzj)<0?"<span style='color:red'>"+(treal_zzj-tplan_zzj):(treal_zzj-tplan_zzj));
     		//$("#tr_undone").find("td").eq("2").html((treal_bjoff-tplan_bjoff)<0?"<span style='color:red'>"+(treal_bjoff-tplan_bjoff):(treal_bjoff-tplan_bjoff));
-    		$("#tr_undone").find("td").eq("1").html((treal_hzon-tplan_hzon)<0?"<span style='color:red'>"+(treal_hzon-tplan_hzon):(treal_hzon-tplan_hzon));
-    		$("#tr_undone").find("td").eq("2").html((treal_hzoff-tplan_hzoff)<0?"<span style='color:red'>"+(treal_hzoff-tplan_hzoff):(treal_hzoff-tplan_hzoff));
-    		$("#tr_undone").find("td").eq("3").html((treal_tzon-tplan_tzon)<0?"<span style='color:red'>"+(treal_tzon-tplan_tzon):(treal_tzon-tplan_tzon));
-    		$("#tr_undone").find("td").eq("4").html((treal_tzoff-tplan_tzoff)<0?"<span style='color:red'>"+(treal_tzoff-tplan_tzoff):(treal_tzoff-tplan_tzoff));
-    		$("#tr_undone").find("td").eq("5").html((treal_dpon-tplan_dpon)<0?"<span style='color:red'>"+(treal_dpon-tplan_dpon):(treal_dpon-tplan_dpon));
-    		$("#tr_undone").find("td").eq("6").html((treal_dpoff-tplan_dpoff)<0?"<span style='color:red'>"+(treal_dpoff-tplan_dpoff):(treal_dpoff-tplan_dpoff));
-    		$("#tr_undone").find("td").eq("7").html((treal_zzon-tplan_zzon)<0?"<span style='color:red'>"+(treal_zzon-tplan_zzon):(treal_zzon-tplan_zzon));
-    		$("#tr_undone").find("td").eq("8").html((treal_zzoff-tplan_zzoff)<0?"<span style='color:red'>"+(treal_zzoff-tplan_zzoff):(treal_zzoff-tplan_zzoff));
-    		$("#tr_undone").find("td").eq("9").html((treal_rk-tplan_rk)<0?"<span style='color:red'>"+(treal_rk-tplan_rk):(treal_rk-tplan_rk));
+    		$("#tr_undone").find("td").eq("1").html((tplan_hzon-treal_hzon)<0?"<span style='color:red'>"+(tplan_hzon-treal_hzon):(tplan_hzon-treal_hzon));
+    		$("#tr_undone").find("td").eq("2").html((tplan_hzoff-treal_hzoff)<0?"<span style='color:red'>"+(tplan_hzoff-treal_hzoff):(tplan_hzoff-treal_hzoff));
+    		$("#tr_undone").find("td").eq("3").html((tplan_tzon-treal_tzon)<0?"<span style='color:red'>"+(tplan_tzon-treal_tzon):(tplan_tzon-treal_tzon));
+    		$("#tr_undone").find("td").eq("4").html((tplan_tzoff-treal_tzoff)<0?"<span style='color:red'>"+(tplan_tzoff-treal_tzoff):(tplan_tzoff-treal_tzoff));
+    		$("#tr_undone").find("td").eq("5").html((tplan_dpon-treal_dpon)<0?"<span style='color:red'>"+(tplan_dpon-treal_dpon):(tplan_dpon-treal_dpon));
+    		$("#tr_undone").find("td").eq("6").html((tplan_dpoff-treal_dpoff)<0?"<span style='color:red'>"+(tplan_dpoff-treal_dpoff):(tplan_dpoff-treal_dpoff));
+    		$("#tr_undone").find("td").eq("7").html((tplan_zzon-treal_zzon)<0?"<span style='color:red'>"+(tplan_zzon-treal_zzon):(tplan_zzon-treal_zzon));
+    		$("#tr_undone").find("td").eq("8").html((tplan_zzoff-treal_zzoff)<0?"<span style='color:red'>"+(tplan_zzoff-treal_zzoff):(tplan_zzoff-treal_zzoff));
+    		$("#tr_undone").find("td").eq("9").html((tplan_rk-treal_rk)<0?"<span style='color:red'>"+(tplan_rk-treal_rk):(tplan_rk-treal_rk));
 
 	    	
 	    }
@@ -348,7 +348,7 @@ function getDetail(){
         					&&(value.workshop).indexOf("总装上线")==-1)){
         				var tr = $("<tr id= '"+value.id+"'/>");
         				$("<td colSpan='1' style=\"text-align:center; text-align:center; width:70px;\" />").html(order_no).appendTo(tr);
-            			$("<td colSpan='1' style=\"text-align:center; width:105px;\" />").html("达成率").appendTo(tr);
+            			$("<td colSpan='1' style=\"text-align:center; width:105px;\" />").html("Rate").appendTo(tr);
             			$("<td style=\"text-align:center; width:55px;\" />").html(rate(realQty1,planQty1)).appendTo(tr);
             			$("<td style=\"text-align:center; width:55px;\" />").html(rate(realQty2,planQty2)).appendTo(tr);
             			$("<td style=\"text-align:center; width:55px;\" />").html(rate(realQty3,planQty3)).appendTo(tr);

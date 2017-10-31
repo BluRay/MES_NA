@@ -312,8 +312,12 @@ public class QualityServiceImpl implements IQualityService {
 	}
 
 	@Override
-	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap) {
-		return qualityDao.getDefectCode(conditionMap);
+	public List<Map<String, String>> getDefectCodeType(Map<String, Object> conditionMap) {
+		return qualityDao.getDefectCodeType(conditionMap);
+	}
+	@Override
+	public List<Map<String, String>> getDefectCodeInfo(Map<String, Object> conditionMap) {
+		return qualityDao.getDefectCodeInfo(conditionMap);
 	}
 	@Override
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap) {

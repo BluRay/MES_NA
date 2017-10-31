@@ -17,6 +17,11 @@
 	        .printable{
 	            display: none;
 	        }
+	        .VIN:focus{
+			border: 1px solid #66AACC;
+			box-shadow: 0 0 5px #66AACC;
+			outline: none;
+			}
 	  </style> 
 		
 	</head>
@@ -116,6 +121,7 @@
 	<script src="../assets/js/dataTables.buttons.js"></script>
 	<script src="../assets/js/buttons.colVis.js"></script>
 	<script src="../assets/js/buttons.html5.js"></script>
+	<script src="../assets/js/bootbox.min.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/jquery-barcode.js"></script>
 	<script type="text/javascript" src="../js/production/printBusNumber.js"></script>

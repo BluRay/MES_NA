@@ -86,7 +86,8 @@
 						<td align="right" style="width:100px">ProblemDescription：</td><td colspan="3"><input type="text" id="new_problemDescription" placeholder="ProblemDescription..." class="form-control" style="width:400px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Defect Codes：</td><td colspan="3"><select id="new_defectcodes" class="form-control" style="width:200px"></select></td>
+						<td align="right" style="width:100px">Defect Codes：</td><td colspan="1"><select id="new_defectcodes" class="form-control" style="width:140px"></select></td>
+						<td colspan="2"><select id="new_defectcodes_info" class="form-control" style="width:200px"></select></td>
 					</tr>
 					<tr style="height:40px">
 						<td align="right" style="width:100px">Responsible Leader：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Responsible Leader..." id="new_responsibleleader" /></td>
@@ -121,7 +122,8 @@
 						<td align="right" style="width:100px">ProblemDescription：</td><td colspan="3"><input type="text" id="edit_problemDescription" placeholder="ProblemDescription..." class="form-control" style="width:400px" /></td>
 					</tr>
 					<tr style="height:40px">
-						<td align="right" style="width:100px">Defect Codes：</td><td colspan="3"><select id="edit_defectcodes" class="form-control" style="width:200px"></select></td>
+						<td align="right" style="width:100px">Defect Codes：</td><td colspan="1"><select id="edit_defectcodes" class="form-control" style="width:140px"></select></td>
+						<td colspan="2"><select id="edit_defectcodes_info" class="form-control" style="width:200px"></select></td>
 					</tr>
 					<tr style="height:40px">
 						<td align="right" style="width:100px">Responsible Leader：</td><td style="width:150px"><input type="text" class="input-medium" placeholder="Responsible Leader..." id="edit_responsibleleader" /></td>

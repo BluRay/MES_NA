@@ -62,9 +62,11 @@
 								<td>&nbsp;Station : &nbsp;</td>
 								<td>&nbsp;<select id="search_station" class="input-small" style="height: 30px;width:90px"></select></td>
 								<td>&nbsp;BusNo : &nbsp;</td>
-								<td>&nbsp;<input id="search_busno" placeholder="Bus No..." style="height: 30px;width:100px" type="text"></td>
+								<td>&nbsp;<input id="search_busno" placeholder="Bus No..." style="height: 30px;width:100px" type="text"><span id="select_date" style="">
+								Plan Date：<input id="search_date" style="height: 30px;width:100px" onclick="WdatePicker({el:'search_date',dateFmt:'yyyy-MM-dd'});" type="text" ></span>
+								</td>
 								<td>&nbsp;<input type="button" class="btn btn-sm btn-success" id="btnQuery" value="Search" style="margin-left: 2px;"></input>&nbsp;</td>
-								<td>&nbsp;<input type="button" class="btn btn-sm btn-info" id="btnPrint" value="Print Distribution Order" style="margin-left: 2px;"></input>&nbsp;</td>
+								<td>&nbsp;<input type="button" class="btn btn-sm btn-info" id="btnPrint" value="Print" style="margin-left: 2px;"></input>&nbsp;</td>
 							</tr>
 						</table>
 					</div>

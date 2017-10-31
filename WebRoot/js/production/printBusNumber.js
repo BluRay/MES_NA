@@ -6,6 +6,7 @@ $(document).ready(function () {
 		getBusNumberSelect('#nav-search-input');
 		getOrderNoSelect("#search_project_no","#orderId");
 		getFactorySelect("production/printBusNumber",'',"#search_plant","All",'id');
+		ajaxQuery();
 	};
 
 	$('#nav-search-input').bind('keydown', function(event) {
@@ -51,18 +52,18 @@ $(document).ready(function () {
 		var flag=true;
 		$("#tableResult tbody :checkbox").each(function(){
 			if($(this).prop("checked")){
-				if($(this).parents("tr").children().eq(4).text()==''){
+				if($(this).parents("tr").children().eq(4).find("input").val()==''){
 					flag=false;
 					return false;
 				}
-				vinList+=$(this).parents("tr").children().eq(4).text()+",";
+				vinList+=$(this).parents("tr").children().eq(4).find("input").val()+",";
 				printhtml+="<div class=\"printConfigure printable toPrint\" style=\"padding-top:10px;padding-bottom:10px;line-height:40px;\" ><table border=0>"
 					+"<tr ><td style=\"text-align:right; font-size:26px;font-weight:bold; height:35px; padding-left:0px\">Project No.：</td>" +
 							"<td style=\"text-align:left; font-size:22px;font-weight:bold; width:270px;height:35px \">"+$(this).parents("tr").children().eq(2).text()+"</td></tr>"+
 					"<tr><td style=\"text-align:right; font-size:26px; font-weight:bold;height:35px; padding-left:0px;\">Bus Number：</td>"
 					+"<td style=\"text-align:left; font-size:26px; font-weight:bold;width:270px;height:35px;\">"+$(this).parents("tr").children().eq(3).text()+"</td></tr>"+
 					"<tr><td style=\"text-align:right; font-size:26px;font-weight:bold;height:35px;padding-left:0px\">VIN：</td>"
-					+"<td style=\"text-align:left; font-size:26px;font-weight:bold ;width:270px;height:35px; \">"+$(this).parents("tr").children().eq(4).text()+"</td></tr></table>"
+					+"<td style=\"text-align:left; font-size:26px;font-weight:bold ;width:270px;height:35px; \">"+$(this).parents("tr").children().eq(4).find("input").val()+"</td></tr></table>"
 					+"<div id=\"bcTarget"+count+"\" style=\"width:300px; height:60px;margin-top:10px;text-align:center;margin:0 auto\"></div></div>";
 				count++;
 			}
@@ -97,6 +98,59 @@ $(document).ready(function () {
 	    $('#table tbody :checkbox').prop("checked",this.checked); 
 	}); 
 });
+
+function saveVIN(input){
+	bootbox.confirm({
+		message: "VIN has changed, whether it is saved?",
+		buttons: {
+		  confirm: {
+			 label: "OK",
+			 className: "btn-primary btn-sm",
+		  },
+		  cancel: {
+			 label: "Cancel",
+			 className: "btn-sm",
+		  }
+		},
+		callback: function(result) {
+			if(result) {
+				var addList=[];
+				var vinArr={};
+				vinArr.bus_number=$(input).attr("bus_number");
+				vinArr.vin=$(input).val();;
+				vinArr.project_id=$(input).attr("project_id");
+				addList.push(vinArr);
+				$.ajax({
+					url:'saveVinInfo',
+					method:'post',
+					dataType:'json',
+					async:false,
+					data:{
+						"addList":JSON.stringify(addList)
+					},
+					success:function(response){
+			            if(response.success){
+			            	$.gritter.add({
+								title: 'Message：',
+								text: "<h5>"+Warn['P_common_03']+"</h5>",
+								class_name: 'gritter-info'
+							});
+			            }else{
+			            	$.gritter.add({
+								title: 'Message：',
+								text: "<h5>"+Warn['P_common_04']+"！</h5>",
+								class_name: 'gritter-info'
+							});
+			            }
+					}
+				});
+			}else{
+				$(input).val($(input).attr("oldValue"));
+			}
+		}
+	  }
+	);
+}
 
 function ajaxQuery(){
 	
@@ -163,7 +217,11 @@ function ajaxQuery(){
             {"title":"Plant","class":"center","data":"plant","defaultContent": ""},
             {"title":"Project No.","class":"center","data":"project_no","defaultContent": ""},
             {"title":"Bus No.","class":"center","data":"bus_number","defaultContent": ""},
-            {"title":"VIN","class":"center","data": "VIN","defaultContent": ""},
+            {"title":"VIN","class":"center","data": "VIN","defaultContent": "","render":function(data,type,row){
+				return "<input style='width:100%;text-align:center;border:0px;' onchange='saveVIN(this)' class='VIN' " +
+				" value='"+(data!=undefined ? data : '')+"' oldValue='"+(data!=undefined ? data : '')+"' project_id='"+row.project_id+"' bus_number='"+row.bus_number+"'/>"; 
+			}
+            },
             {"title":"Print Flag","class":"center","data":"print_flag","render":function(data, type, row){
             	return (data=="1") ? "Printed" : "Not Print";
             },"defaultContent": ""},

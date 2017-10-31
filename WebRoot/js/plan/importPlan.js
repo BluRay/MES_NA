@@ -9,7 +9,7 @@ $(document).ready(function () {
 		$("#file").val("");
 		getOrderNoSelect("#search_project_no","#orderId");
 		getFactorySelect("plan/planRevision",'',"#search_factory",null,'id');
-		//ajaxQuery();
+		ajaxQuery();
 	}
 
 	$('#nav-search-input').bind('keydown', function(event) {

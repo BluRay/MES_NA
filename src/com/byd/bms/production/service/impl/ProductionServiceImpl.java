@@ -672,7 +672,7 @@ public class ProductionServiceImpl implements IProductionService {
 		List<Map<String, Object>> datalist = new ArrayList<Map<String, Object>>();
 		String station_code = condMap.get("station").toString();
 		String station = condMap.get("station").toString() + " " + condMap.get("station_name").toString();
-		if(station_seq == 1){//焊装第一个节点 取计划数量
+		if(station_seq == 1 || station_seq==2){//焊装第一个、第二个节点 取计划数量
 			String bus_number = condMap.get("bus_number").toString();
 			//01 获取计划列表
 			List<Map<String, Object>> projectQtyList = productionDao.getMatReqProjectQty(condMap);				
@@ -703,7 +703,7 @@ public class ProductionServiceImpl implements IProductionService {
 			
 		}else{//其他节点 取上一节点扫描车辆信息
 			//01 查询上一节点信息
-			condMap.put("sequence", station_seq-1);
+			condMap.put("sequence", station_seq-2);
 			List<Map<String, Object>> lastStation = productionDao.getLastStationInfo(condMap);
 			logger.info("-->lastStation = " + lastStation.get(0).get("station_name"));
 			condMap.put("last_station_name", lastStation.get(0).get("station_name"));

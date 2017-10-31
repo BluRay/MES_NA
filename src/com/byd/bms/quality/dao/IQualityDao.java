@@ -54,7 +54,8 @@ public interface IQualityDao {
 	public List<Map<String, Object>> getInspectionRecordDetail(Map<String, Object> map);
 	public List<Map<String, Object>> getInspectionByBusNo(Map<String, Object> map);
 	public int updateInspectionRecord(List list);
-	public List<Map<String, String>> getDefectCode(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getDefectCodeType(Map<String, Object> conditionMap);
+	public List<Map<String, String>> getDefectCodeInfo(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getLocationList(Map<String, Object> conditionMap);
 	public int addPunch(Map<String, Object> conditionMap);
 	public List<Map<String, String>> getPunchList(Map<String, Object> conditionMap);

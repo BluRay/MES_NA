@@ -221,7 +221,7 @@ function ajaxShowBom(project_no){
 		success: function (response) {
 			var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 				width:1150,
-				height:550,
+				height:580,
 				modal: true,
 				title: "<div class='widget-header widget-header-small'><h4 class='smaller'><i class='ace-icon glyphicon glyphicon-list-alt' style='color:green'></i> Bom Detail</h4></div>",
 				title_html: true,

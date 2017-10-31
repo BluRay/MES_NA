@@ -493,8 +493,11 @@
 		</foreach>
 	</update>
 	
-	<select id="getDefectCode" parameterType="Map" resultType="Map">
-		SELECT * FROM BMS_NA_DEFECT_CODE
+	<select id="getDefectCodeType" parameterType="Map" resultType="Map">
+		SELECT DISTINCT(D.defect_type) AS defect_type FROM BMS_NA_DEFECT_CODE D
+	</select>
+	<select id="getDefectCodeInfo" parameterType="Map" resultType="Map">
+		SELECT D.id,D.serious_level,D.defect_code,D.defect_name FROM BMS_NA_DEFECT_CODE D WHERE D.defect_type = #{defect_type}
 	</select>
 	<select id="getLocationList" parameterType="Map" resultType="Map">
 		SELECT * FROM BMS_NA_MAIN_LOCATION
@@ -514,24 +517,26 @@
 		#{qc_inspector},#{date_found})
 	</insert>
 	<select id="getPunchList" parameterType="Map" resultType="Map">
-		SELECT * FROM BMS_NA_BUS_PUNCH_LIST WHERE 1=1
+		SELECT p.*,d.defect_type FROM BMS_NA_BUS_PUNCH_LIST p
+		LEFT JOIN BMS_NA_DEFECT_CODE d ON p.defect_codes_id = d.id
+		WHERE 1=1
 		<if test="id !=null and id !=''">
-			and id = #{id}
+			and p.id = #{id}
 		</if>
 		<if test="plant !=null and plant !=''">
-			and plant = #{plant}
+			and p.plant = #{plant}
 		</if>
 		<if test="workshop !=null and workshop !=''">
-			and workshop = #{workshop}
+			and p.workshop = #{workshop}
 		</if>
 		<if test="status == 1">
-			and quality_initials IS NULL
+			and p.quality_initials IS NULL
 		</if>
 		<if test="status == 2">
-			and quality_initials IS NOT NULL
+			and p.quality_initials IS NOT NULL
 		</if>
 		<if test="bus_number !=null and bus_number !=''">
-			and bus_number = #{bus_number}
+			and p.bus_number = #{bus_number}
 		</if>
 		<if test="start!=null and length!=-1">
 			LIMIT #{start} ,#{length} 

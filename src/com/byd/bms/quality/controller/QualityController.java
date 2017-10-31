@@ -76,13 +76,22 @@ public class QualityController extends BaseController {
         return mv;  
     }
 	
-	@RequestMapping("/getDefectCode")
+	@RequestMapping("/getDefectCodeType")
 	@ResponseBody
-	public ModelMap getDefectCode(){
+	public ModelMap getDefectCodeType(){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Map<String, String>> result = qualityService.getDefectCode(map);
-		mv.clear();
-		mv.getModelMap().addAllAttributes(result);
+		List<Map<String, String>> result = qualityService.getDefectCodeType(map);
+		initModel(true,"success",result);
+		model = mv.getModelMap();
+		return model;
+	}
+	@RequestMapping("/getDefectCodeInfo")
+	@ResponseBody
+	public ModelMap getDefectCodeInfo(){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("defect_type",request.getParameter("defect_type").toString());
+		List<Map<String, String>> result = qualityService.getDefectCodeInfo(map);
+		initModel(true,"success",result);
 		model = mv.getModelMap();
 		return model;
 	}
@@ -91,8 +100,7 @@ public class QualityController extends BaseController {
 	public ModelMap getLocationList(){
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Map<String, String>> result = qualityService.getLocationList(map);
-		mv.clear();
-		mv.getModelMap().addAllAttributes(result);
+		initModel(true,"success",result);
 		model = mv.getModelMap();
 		return model;
 	}
