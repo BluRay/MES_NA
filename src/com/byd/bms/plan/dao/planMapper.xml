@@ -343,12 +343,12 @@
 		</if>
 		group by p1.project_id,k.key_name
 		) p on p.key_name=record.key_name and p.order_id=record.id
-		left join BMS_NA_BASE_KEY k on record.key_name=k.key_name
+		left join BMS_NA_BASE_KEY k on record.key_name=k.key_name_en
 		WHERE (p.total_plan_qty>0 OR record.real_qty >0)
 		<if test="workshop !=null and workshop !=''">
 			and record.key_name like concat(#{workshop},'%')
 		</if>		
-		order by record.project_no,cast(k.value as signed)
+		order by record.project_no DESC,(k.value+0) ASC
 	</select>
 	
 	<select id="getPlanOrderList" parameterType="Map" resultType="Map">

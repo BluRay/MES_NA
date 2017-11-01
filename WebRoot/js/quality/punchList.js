@@ -118,6 +118,9 @@ $(document).ready(function () {
 	$("#new_defectcodes").change(function(){
 		getDefectCodeInfo($("#new_defectcodes").val());
 	});
+	$("#edit_defectcodes").change(function(){
+		getDefectCodeInfo($("#edit_defectcodes").val());
+	});
 	
 	function getFactorySelect() {
 		$.ajax({
@@ -249,7 +252,7 @@ function ajaxQuery(){
 		            {"title":"Location","class":"center","data":"main_location","defaultContent": ""},
 		            {"title":"Orientation","class":"center","data":"orientation","defaultContent": ""},
 		            {"title":"ProblemDescription","class":"center","data":"problem_description","defaultContent": ""},
-		            {"title":"  DefectCodes  ","class":"center","data":"defect_codes","defaultContent": ""},
+		            {"title":"&nbsp;&nbsp;&nbsp;&nbsp;DefectCodes&nbsp;&nbsp;&nbsp;&nbsp;","class":"center","data":"defect_codes","defaultContent": ""},
 		            {"title":"ResponsibleLeader","class":"center","data":"responsible_leader","defaultContent": ""},
 		            {"title":"QC_Inspector","class":"center","data":"qc_inspector","defaultContent": ""},
 		            {"title":"DateFound","class":"center","data":"date_found","defaultContent": ""},

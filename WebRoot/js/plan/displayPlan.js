@@ -56,7 +56,7 @@ function ajaxQuery(){
     		var day = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"); 
     		var stock = new Array(0,0,0,0,0,0,0,0,0,0,0,0);		//库存
     		$.each(response.data,function (index,value) {
-    			if(index%12 == 0){       
+    			if(index%9 == 0){       
     				var date= new Date(Date.parse((value.month + "-01").replace(/-/g,  "/")));      //转换成Data();
     				if($("#search_plan_version").val() != ''){
     					$("#search_order_no").val(value.project_no);
