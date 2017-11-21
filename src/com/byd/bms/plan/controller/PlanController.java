@@ -213,7 +213,7 @@ public class PlanController extends BaseController{
 	public ModelMap showPlanSearch(){
 		Map<String,Object> conditionMap=new HashMap<String,Object>();
 		conditionMap.put("factory_id", request.getParameter("factory_id"));
-		conditionMap.put("order_no", request.getParameter("order_no"));
+		conditionMap.put("project_no", request.getParameter("order_no"));
 		String workshop = "";
 		if (!request.getParameter("workshop").equals("All")) workshop = request.getParameter("workshop");
 		////if(workshop.equals("成品库")) workshop="入库";

@@ -79,6 +79,8 @@ var Warn={
     'P_vinInfo_01':'VIN不能为空',
     'P_printBusNumber_01':'请先导入VIN',
     'P_printBusNumber_02':'请先选择一条记录',
+    'P_orderKeyParts_01':'已有扫描数据，无法更新模板',
+    'P_productRecordOrderTpl_01':'成品记录已有数据，无法更新成品记录模板',
     'P_inspectionRecord_01':'成品记录模板不能为空',
     'P_inspectionRecord_02':'Self Inspection不能为空',
     'P_testingRecord_01':'该车号和检测类型已存在记录',

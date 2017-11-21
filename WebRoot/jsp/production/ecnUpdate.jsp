@@ -186,7 +186,7 @@
 												</div>
 												<div class="col-sm-6">
 												<input style="padding:0px 0px;font-size: 12px;height:35px" class="btn btn-primary btn_upload" value="Import" onclick="javascript:return upload(this.form, this.form.file.value)" type="button"> 
-												<a href="../docs/ECNMaterialList.xls.xls">Download the pilot template</a>
+												<a href="../docs/ECNMaterialList.xls">Download the pilot template</a>
 												
 												</div>	
 												</form>		

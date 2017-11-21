@@ -1,6 +1,6 @@
 var pageSize=1;
 var table;
-var table_height = $(window).height()-250;
+var table_height = $(window).height()-240;
 $(document).ready(function(){
 	initPage();
 	$("#breadcrumbs").resize(function(){
@@ -92,11 +92,11 @@ function ajaxQuery(){
             {"title":"Project No.","class":"center","data":"project_name","defaultContent": ""},
             {"title":"Supervisor","class":"center","data":"editor","defaultContent": ""},
             {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},
-            {"title":"","class":"center","data":"","render":function(data,type,row){
+            {"title":"","class":"center","data":"","width":"80px","render":function(data,type,row){
             	return "<i class=\"glyphicon glyphicon-search bigger-130\" title='Display' onclick = 'showInfoPage(" + JSON.stringify(row)+");' style='color:blue;cursor: pointer;'></i>&nbsp;&nbsp;" 
             	}
             },
-            {"title":"","class":"center","data":"","render":function(data,type,row){
+            {"title":"","class":"center","data":"","width":"80px","render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ");' style='color:green;cursor: pointer;'></i>";
             	}
             }
@@ -133,7 +133,7 @@ function showInfoPage(json){
                 	$("#bus_number").text(json.bus_number);
                 	$("#dialog-edit").removeClass('hide').dialog({
         				resizable: false,
-        				title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i>Edit Bus Trace</h4></div>',
+        				title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i>Display Bus Trace</h4></div>',
         				title_html: true,
         				width:1000,
         				height:600,
@@ -235,7 +235,7 @@ function showEditPage(json){
 			{"title":"Workshop","class":"center","data":"workshop","defaultContent": ""},
 			{"title":"Station","class":"center","data":"station","defaultContent": ""},
 			{"title":"Batch/Serial Number","class":"center","data":"batch","render":function(data,type,row){
-				return "<input style='border:0;width:100px;text-align:center' class='batch' " +
+				return "<input style='border:1px;width:130px;text-align:center' class='batch' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' class='trace_id' " +
 				" value='"+(row.trace_id!=undefined ? row.trace_id : '')+"'/><input type='hidden' class='template_id' " +
 							" value='"+row.template_id+"'/>";

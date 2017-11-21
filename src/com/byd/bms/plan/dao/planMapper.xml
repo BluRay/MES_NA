@@ -331,7 +331,7 @@
 		) record  
 		left join 
 		(
-		SELECT k.key_name,sum(p1.plan_qty) total_plan_qty,p1.project_id AS order_id
+		SELECT k.key_name_en,sum(p1.plan_qty) total_plan_qty,p1.project_id AS order_id
 		FROM BMS_NA_PROJECT_PRODUCTION_PLAN p1
 		LEFT JOIN BMS_NA_BASE_KEY k ON p1.plan_code_value=k.value AND key_code = 'PLAN_CODE'
 		WHERE  p1.plant_id=#{factory_id}
@@ -342,7 +342,7 @@
 			and p1.plan_date &lt;=#{end_date}
 		</if>
 		group by p1.project_id,k.key_name
-		) p on p.key_name=record.key_name and p.order_id=record.id
+		) p on p.key_name_en=record.key_name and p.order_id=record.id
 		left join BMS_NA_BASE_KEY k on record.key_name=k.key_name_en
 		WHERE (p.total_plan_qty>0 OR record.real_qty >0)
 		<if test="workshop !=null and workshop !=''">

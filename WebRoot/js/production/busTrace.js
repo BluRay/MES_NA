@@ -16,14 +16,14 @@ $(document).ready(function(){
 	$('#search_plant').change(function(){ 
 		getWorkshopSelect("production/busTrace",$("#search_plant :selected").text(),"","#search_workshop","All","id");
 	});
-	$('#search_workshop').change(function(){ 
-		var workshop=$("#search_workshop").find("option:selected").text();
-		if(workshop=='All'){
-			$('#search_station').html("");
-			return false;
-		}
-		getAllstationSelect();
-	});
+//	$('#search_workshop').change(function(){ 
+//		var workshop=$("#search_workshop").find("option:selected").text();
+//		if(workshop=='All'){
+//			$('#search_station').html("");
+//			return false;
+//		}
+//		getAllstationSelect();
+//	});
 	
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
@@ -149,7 +149,15 @@ function showEditPage(){
 			{"title":"Batch/Serial Number","class":"center","data":"batch","render":function(data,type,row){
 				return "<input style='width:180px;text-align:center' class='batch' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' class='trace_id' " +
-				" value='"+(row.id!=undefined ? row.id : '')+"'/>";
+				" value='"+(row.id!=undefined ? row.id : '')+"'/>" +
+				"<input type='hidden' class='project_id' " +
+				" value='"+(project_id!=undefined ? project_id : '')+"'/>"+
+				"<input type='hidden' class='bus_number' " +
+				" value='"+$("#search_busNumber").val()+"'/>"+
+				"<input type='hidden' class='template_id' " +
+				" value='"+(row.template_id!=undefined ? row.template_id : '')+"'/>"+
+				"<input type='hidden' class='production_plant_id' " +
+				" value='"+(row.production_plant_id!=undefined ? row.production_plant_id : '')+"'/>";
 			}
 		}
 		],
@@ -172,10 +180,21 @@ function ajaxEdit(){
 		var template_id=tds.eq(6).find(".template_id").val();
 		var trace_id=tds.eq(6).find(".trace_id").val();
 		var batch=tds.eq(6).find(".batch").val();
+		var project_id=tds.eq(6).find(".project_id").val();
+		var bus_number=tds.eq(6).find(".bus_number").val();
+		var production_plant_id=tds.eq(6).find(".production_plant_id").val();
 		var obj={};
 		obj.trace_template_id=template_id;
+		obj.SAP_material=SAP_material;
+		obj.parts_name=parts_name;
+		obj.vendor=vendor;
+		obj.workshop=workshop;
+		obj.station=station;
+		obj.project_id=project_id;
+		obj.bus_number=bus_number;
 		obj.trace_id=trace_id;
 		obj.batch=batch;
+		obj.production_plant_id=production_plant_id;
 		obj.type="modify";
 		arr.push(obj);
 	});
@@ -212,8 +231,7 @@ function ajaxEdit(){
 	});	
 }
 function getAllstationSelect() {
-
-	$.ajax({
+    $.ajax({
 		url : "../setting/getStationList",
 		dataType : "json",
 		data : {
@@ -230,11 +248,9 @@ function getAllstationSelect() {
 		success : function(response) {
 			var strs = "<option value=''>All</option>";
 		    $("#search_station").html("");
-		   
 		    $.each(response.data, function(index, value) {
-		    	strs += "<option value='" + value.station_name + "'>" + value.station_name + "</option>";
+		    	strs += "<option value='" + value.station_code + "'>" + value.station_code + "</option>";
 		    });
-		  //  alert(station_id_default);
 		    $("#search_station").append(strs);
 		}
 	});

@@ -253,69 +253,90 @@ function showEditPage(row){
 	});
 }
 function save(project_id,version) {
-	var save_flag=true;
-	var trs=$("#keyPartsTable tbody").find("tr");
-	if(trs.length==0){
-		save_flag=false;
-		alert(Warn['P_common_05']);
-		return false;
-	}
-	var addList=[];
-	$.each(trs,function(i,tr){
-		var tds=$(tr).children("td");
-		var error = $(tds).eq(7).html();
-		if(error!=''){
-			var item_no = $(tds).eq(0).html();
-			save_flag=false;
-			alert(item_no+Warn['P_common_06']);
-			return false;
+	$.ajax({
+		url:'checkBusTraceByProjectId',
+		method:'post',
+		dataType:'json',
+		async:false,
+		data:{
+            "project_id":project_id
+		},
+		success:function(response){
+            if(parseInt(response.data)>0){
+            	//$( "#dialog-config" ).dialog( "close" );
+            	$.gritter.add({
+					title: 'Message：',
+					text: "<h5>"+Warn['P_orderKeyParts_01']+"</h5>",
+					class_name: 'gritter-info'
+				});
+            }else{ // BMS_NA_BUS_TRACE表不存在该订单数据
+            	var save_flag=true;
+            	var trs=$("#keyPartsTable tbody").find("tr");
+            	if(trs.length==0){
+            		save_flag=false;
+            		alert(Warn['P_common_05']);
+            		return false;
+            	}
+            	var addList=[];
+            	$.each(trs,function(i,tr){
+            		var tds=$(tr).children("td");
+            		var error = $(tds).eq(7).html();
+            		if(error!=''){
+            			var item_no = $(tds).eq(0).html();
+            			save_flag=false;
+            			alert(item_no+Warn['P_common_06']);
+            			return false;
+            		}
+            		var item_no = $(tds).eq(0).html();
+            		var SAP_material = $(tds).eq(1).html();
+            		var parts_name = $(tds).eq(2).html();
+            		var BYD_NO = $(tds).eq(3).html();
+            		var vendor = $(tds).eq(4).html();
+            		var workshop = $(tds).eq(5).html();
+            		var station = $(tds).eq(6).html();
+            		var keyparts={};
+            		keyparts.item_no=item_no;
+            		keyparts.SAP_material=SAP_material;
+            		keyparts.BYD_NO=BYD_NO;
+            		keyparts.parts_name=parts_name;
+            		keyparts.vendor=vendor;
+            		keyparts.workshop=workshop;
+            		keyparts.station=station;
+            		addList.push(keyparts);
+            	});
+            	if(save_flag){
+            		$.ajax({
+            			url:'saveKeyPartsTemplateInfo',
+            			method:'post',
+            			dataType:'json',
+            			async:false,
+            			data:{
+            				"addList":JSON.stringify(addList),
+            				"project_id":project_id,
+            				"version":version
+            			},
+            			success:function(response){
+            				$( "#dialog-config" ).dialog( "close" );
+            	            if(response.success){
+            	            	$( "#dialog-config" ).dialog( "close" );
+            	            	$.gritter.add({
+            						title: 'Message：',
+            						text: "<h5>"+Warn['P_common_03']+"</h5>",
+            						class_name: 'gritter-info'
+            					});
+            	            }else{
+            	            	$.gritter.add({
+            						title: 'Message：',
+            						text: "<h5>"+Warn['P_common_04']+"</h5>",
+            						class_name: 'gritter-info'
+            					});
+            	            }
+            			}
+            		});
+            	}
+            }
 		}
-		var item_no = $(tds).eq(0).html();
-		var SAP_material = $(tds).eq(1).html();
-		var parts_name = $(tds).eq(2).html();
-		var BYD_NO = $(tds).eq(3).html();
-		var vendor = $(tds).eq(4).html();
-		var workshop = $(tds).eq(5).html();
-		var station = $(tds).eq(6).html();
-		var keyparts={};
-		keyparts.item_no=item_no;
-		keyparts.SAP_material=SAP_material;
-		keyparts.BYD_NO=BYD_NO;
-		keyparts.parts_name=parts_name;
-		keyparts.vendor=vendor;
-		keyparts.workshop=workshop;
-		keyparts.station=station;
-		addList.push(keyparts);
 	});
-	if(save_flag){
-		$.ajax({
-			url:'saveKeyPartsTemplateInfo',
-			method:'post',
-			dataType:'json',
-			async:false,
-			data:{
-				"addList":JSON.stringify(addList),
-				"project_id":project_id,
-				"version":version
-			},
-			success:function(response){
-	            if(response.success){
-	            	$( "#dialog-config" ).dialog( "close" );
-	            	$.gritter.add({
-						title: 'Message：',
-						text: "<h5>"+Warn['P_common_03']+"</h5>",
-						class_name: 'gritter-info'
-					});
-	            }else{
-	            	$.gritter.add({
-						title: 'Message：',
-						text: "<h5>"+Warn['P_common_04']+"</h5>",
-						class_name: 'gritter-info'
-					});
-	            }
-			}
-		});
-	}
 }
 function showInfoPage(row){
 	$("#order_view").html(row.order_desc);

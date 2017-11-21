@@ -559,12 +559,17 @@ public class QualityController extends BaseController {
 		int userid=(int) session.getAttribute("user_id");
 		keyParts.put("editor_id", userid);
 		keyParts.put("edit_date", curTime);
+		int count=qualityService.checkInspectionRecordByProjectId(keyParts);
+		if(count>0){
+			initModel(false,"P_productRecordOrderTpl_01",null);
+			return mv.getModelMap();
+		}
 		try{
 			qualityService.saveInspectionRecordTemplate(keyParts);
-			initModel(true,"保存成功！",null);
+			initModel(true,"",null);
 		}catch(Exception e){
 			logger.error(e.getMessage());
-			initModel(false,"保存失败！"+e.getMessage(),null);
+			initModel(false,""+e.getMessage(),null);
 		}
 		return mv.getModelMap();
 	}
@@ -806,15 +811,35 @@ public class QualityController extends BaseController {
 		qualityService.getBusNumberDetailList(condMap,model);
 		return model;
 	}
+	
+	@RequestMapping("/checkBusTraceByProjectId")
+	@ResponseBody
+	public ModelMap checkBusTraceByProjectId(){
+		model=new ModelMap();;
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String project_id=request.getParameter("project_id");
+		condMap.put("project_id",project_id);
+		int count=qualityService.checkBusTraceByProjectId(condMap);
+		initModel(true,"success",count);
+		model = mv.getModelMap();
+		return model;
+
+	}
 	@RequestMapping("/getBusNumberTemplateList")
 	@ResponseBody
 	public ModelMap getBusNumberTemplateList(){
-		model=new ModelMap();;
+		model=new ModelMap();
 		Map<String,Object> condMap=new HashMap<String,Object>();
 		String bus_number=request.getParameter("bus_number");
 		String project_id=request.getParameter("project_id");
+		String plant=request.getParameter("plant");
+		String workshop=request.getParameter("workshop");
+		String station=request.getParameter("station");
 		condMap.put("bus_number",bus_number);
 		condMap.put("project_id",project_id);
+		condMap.put("plant",plant);
+		condMap.put("workshop",workshop);
+		condMap.put("station",station);
 		qualityService.getBusNumberTemplateList(condMap,model);
 		return model;
 	}
@@ -834,7 +859,8 @@ public class QualityController extends BaseController {
 		while(it.hasNext()){
 			JSONObject el=(JSONObject) it.next();	
 			Map<String,Object> map=new HashMap<String,Object>();
-			int trace_id=el.get("trace_id")!=null ? Integer.parseInt(el.get("trace_id").toString()) : 0;
+			int trace_id=(el.get("trace_id")!=null && 
+					!el.get("trace_id").toString().equals("")) ? Integer.parseInt(el.get("trace_id").toString()) : 0;
 			map.put("trace_id", trace_id);
 			map.put("batch", el.get("batch"));
 			map.put("bus_number", el.get("bus_number"));

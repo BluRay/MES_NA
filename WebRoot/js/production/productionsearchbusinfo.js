@@ -284,7 +284,7 @@ function ajaxQueryTab04(){  // 成品记录
 		return false;
 	}
 	$.ajax({
-	    url: "../quality/getInspectionRecordDetail",
+	    url: "../quality/getInspectionByBusNo",
 	    dataType: "json",
 		type: "get",
 	    data: {
@@ -488,21 +488,23 @@ function ajaxQueryTab06(trigger){
 	    	$.each(response.data,function(index,value){
 	    		var tr = $("<tr height='30px' id= '"+value.id+"'/>");
     			$("<td style=\"text-align:center;padding:3px\" />").html(index + 1).appendTo(tr);
-    			var html=""
-            	if(value.items.length>20){
-            		html="<i title='"+value.items+"' style='font-style: normal'>"+value.items.substring(0,15)+"...</i>"
+    			var html="";
+    			data=value.items.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+            	if(data.length>20){
+            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(0,15)+"...</i>"
             	}else{
-            		html=value.items;
+            		html=data;
             	}
     			$("<td style=\"text-align:center;padding:3px\" />").html(html).appendTo(tr);
-    			html=""
-            	if(value.problem_details.length>20){
-            		html="<i title='"+value.problem_details+"' style='font-style: normal'>"+value.problem_details.substring(0,18)+"...</i>"
+    			html="";
+    			data=value.problem_details.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+            	if(data.length>20){
+            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(0,18)+"...</i>"
             	}else{
-            		html=value.problem_details;
+            		html=data;
             	}
     			$("<td style=\"text-align:center;padding:3px\" />").html(html).appendTo(tr);
-    			$("<td style=\"text-align:center;padding:3px\" />").html(value.station).appendTo(tr);
+    			$("<td style=\"text-align:center;padding:3px\" />").html(value.work_station).appendTo(tr);
     			$("<td style=\"text-align:center;padding:3px\" />").html(value.production_people).appendTo(tr);
     			$("<td style=\"text-align:center;padding:3px\" />").html(value.confirmed_date).appendTo(tr);
     			$("<td style=\"text-align:center;padding:3px\" />").html(value.qc).appendTo(tr);

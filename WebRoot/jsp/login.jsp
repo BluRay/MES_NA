@@ -107,11 +107,12 @@
 										</div><!-- /.widget-main -->
 
 										<div class="toolbar clearfix">
-											<div>
+											<div style="width:100%;height:25px">
 												<a href="#" data-target="#forgot-box" class="forgot-password-link">
 													<i class="ace-icon fa fa-arrow-left"></i>
 													I forgot my password 
-												</a>
+												</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<a href="../MozillaFirefox.rar" class="forgot-password-link">FireFox浏览器</a>
 											</div>
 											<div>
 												<!-- <a href="#" data-target="#signup-box" class="user-signup-link">我要注册<i class="ace-icon fa fa-arrow-right"></i>

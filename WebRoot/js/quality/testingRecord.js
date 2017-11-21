@@ -124,13 +124,13 @@ $(document).ready(function(){
 	});
 	$('body').on('keydown', ".re_inspection",function(e){
 		if (e.keyCode == "13") {
-			$(e.target).parent("td").parent("tr").next().children().eq(4).find(".re_inspection").focus();
+			$(e.target).parent("td").parent("tr").next().children().eq(5).find(".re_inspection").focus();
 		}
 		if (e.keyCode == "38") { // 向上
-			$(e.target).parent("td").parent("tr").prev().children().eq(4).find(".first_inspection").focus();
+			$(e.target).parent("td").parent("tr").prev().children().eq(5).find(".first_inspection").focus();
 		}
 		if (e.keyCode == "40") { // 向下
-			$(e.target).parent("td").parent("tr").next().children().eq(4).find(".first_inspection").focus();
+			$(e.target).parent("td").parent("tr").next().children().eq(5).find(".first_inspection").focus();
 		}
 	});
 	$("#btnQuery").click(function(){

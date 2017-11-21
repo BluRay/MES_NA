@@ -4,7 +4,7 @@
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta charset="utf-8" />
-		<title>Bus Trace</title>
+		<title>Bus Trace Initials</title>
 		<meta name="description" content="Common Buttons &amp; Icons" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<link rel="stylesheet"
@@ -25,40 +25,34 @@
 			<div class="main-content">			
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs" id="breadcrumbs">
-					<ul class="breadcrumb">
-						<li><i class="ace-icon fa fa-home home-icon"></i><a href="/MES/index">Index</a></li>
-						<li><a href="#">Quality</a></li>
-						<li class="active">Bus Trace</li>
-					</ul><!-- /.breadcrumb -->
-
-					<!-- #section:basics/content.searchbox -->
-					<div class="nav-search" id="nav-search">
-						<form class="form-search">
-							<span class="input-icon">
-								<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" /><i class="ace-icon fa fa-search nav-search-icon"></i>
-							</span>
-						</form>
-					</div><!-- /.nav-search -->
+				<ul class="breadcrumb">
+					<li><i class="ace-icon fa fa-home home-icon"></i><a href="/MES/index">Index</a></li>
+					<li><a href="#">Quality</a></li>
+					<li class="active">Bus Trace Initials</li>
+				</ul>
+				<div class="nav-search" id="nav-search">
+					<form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" /><i class="ace-icon fa fa-search nav-search-icon"></i>
+						</span>
+					</form>
 				</div>
-				
+			</div>	
 			<div class="page-content">
-					<div class="page-content-area">
-					
+				<div class="page-content-area">
 					<div class="well">
 						<table>
 							<tr>
 								<td>Bus Type：</td>
 								<td><select name="" id="search_bus_type" class="input-small carType"></select></td>
 								<td>&nbsp;Project No.：</td>
-								<td><input id="search_project_no"  style="width:90px" type="text" ></td>
-								
+								<td><input id="search_project_no"  style="width:120px" type="text" ></td>
 <!-- 								<td>&nbsp;Plant：</td> -->
 <!-- 								<td><select id="search_factory" class="form-control" style="width:100px"></select></td> -->
 								<td>&nbsp;Bus No.：</td>
 								<td><input id="search_busNumber"  style="width:150px" type="text" > </td>
 								<td>
 								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="Search" style="margin-left: 10px;"></input>
-<!-- 								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="新增" style="margin-left: 2px;"></input> -->
 								</td>
 							</tr>
 						</table>	
@@ -70,12 +64,11 @@
 						</div>
 					</div>
 				</div>
-			</div><!-- /.main-content -->
-			
+			</div>
 			<div id="dialog-edit" class="hide" style="align:center;width:900px;height:600px">
 				<div class="form-group">
 						<label class="col-sm-2 control-label no-padding-right" for="" >&nbsp;Bus No.：</label>
-						<label id="bus_number" class="col-sm-4  no-padding-left"  style="margin-left:15px;"></label>
+						<label id="bus_number" class="col-sm-4  no-padding-left"  style="margin-left:5px;"></label>
 					</div>
 				<div class = "div-dialog">
 					<form id="form_edit">
@@ -85,32 +78,13 @@
 					</form>
 				</div>
 			</div>
-
-			<!-- 脚 -->
-			<%-- <jsp:include page="footer.jsp" flush="true"/> --%>
 			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"><i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i></a>
-		</div><!-- /.main-container -->
+		</div>
 	</div>
 	</body>
-<!-- 	<script src="../assets/js/jquery-ui.min.js"></script> -->
-<!-- 	<script src="../assets/js/jquery.ui.touch-punch.min.js"></script> -->
-<!-- 	<script src="../assets/js/jquery.gritter.min.js"></script> -->
-<!-- 	<script src="../assets/js/jquery.dataTables.min.js"></script> -->
-<!-- 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script> -->
-<!-- 	<script src="../assets/js/dataTables.fixedColumns.min.js"></script> -->
-<!-- 	<script src="../assets/js/bootstrap3-typeahead.js"></script> -->
-<!-- 	<script src="../assets/js/ace/elements.fileinput.js"></script> -->
-<!-- 	<script type="text/javascript" src="../js/jquery.form.js"></script> -->
-<!-- 	<script type="text/javascript" src="../js/common.js"></script> -->
-<!-- 	<script type="text/javascript" src="../assets/js/bootstrap3-typeahead.js"></script> -->
-<!-- 	<script type="text/javascript" src="../js/jsrender.min.js"></script> -->
-<!-- 	<script type="text/javascript" src="../js/alertMessage.js"></script> -->
-<!-- 	<script type="text/javascript" src="../js/quality/keyPartsTrace.js"></script> -->
     <script src="../assets/js/jquery.dataTables.min.js"></script>
 	<script src="../assets/js/jquery-ui.min.js"></script>
 	<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
-	<script src="../assets/js/dataTables.fixedColumns.min.js"></script>
-	<script src="../assets/js/dataTables.rowGroup.js"></script>
 	<script src="../assets/js/bootstrap3-typeahead.js"></script>
 	<script src="../assets/js/ace-elements.min.js"></script>
 	<script src="../assets/js/jquery.gritter.min.js"></script>

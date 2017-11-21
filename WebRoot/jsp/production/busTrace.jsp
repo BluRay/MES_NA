@@ -50,8 +50,8 @@
 								<td><select name="" id="search_plant" class="input-small"></select></td>
 								<td>&nbsp;Workshop：</td>
 								<td><select name="" id="search_workshop" class="input-small"></select></td>
-								<td>&nbsp;Station：</td>
-								<td><select name="" id="search_station" class="input-small"></select></td>
+<!-- 								<td>&nbsp;Station：</td> -->
+<!-- 								<td><select name="" id="search_station" class="input-small"></select></td> -->
 								<td>
 								    <input id="btnQuery" type="button" class="btn btn-sm btn-primary" value="Search" style="margin-left: 10px;"></input>
 								    <input id="btnAdd" type="button" class="btn btn-sm btn-success" value="Save" style="margin-left: 2px;"></input>

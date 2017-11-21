@@ -71,6 +71,9 @@ function ajaxQuery(){
                     returnData.draw = data.draw;//这里直接自行返回了draw计数器,应该由后台返回
                     returnData.recordsTotal = result.recordsTotal;//返回数据全部记录
                     returnData.recordsFiltered = result.recordsTotal;//后台不实现过滤功能，每次查询均视作全部结果
+//                    for(var i=0;i<result.data.length;i++){
+//                    	JSON.stringify(result.data[i]);
+//                    }
                     returnData.data = result.data;//返回的数据列表
                     callback(returnData);
 //                    var head_width=$(".dataTables_scrollHead").width();
@@ -84,17 +87,19 @@ function ajaxQuery(){
             {"title":"ECN No","width":"120px","class":"center","data":"ecn_no","defaultContent": ""},
             {"title":"Items","width":"170px","class":"center","data":"items","defaultContent": "","render":function(data,row,type){
             	var html=""
-                	if(data.length>20){
-                		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,20)+"...</i>"
-                	}else{
-                		html=data;
-                	}
-                	return html;
-                }},
+            	data=data.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+            	if(data.length>50){
+            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,20)+"...</i>"
+            	}else{
+            		html=data;
+            	}
+            	return html;
+            }},
             {"title":"Problem Detail","width":"200px","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
             	var html=""
+            	data=data.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
             	if(data.length>50){
-            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,30)+"...</i>"
+            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,20)+"...</i>"
             	}else{
             		html=data;
             	}
@@ -109,7 +114,9 @@ function ajaxQuery(){
             	return data=="1"?"Created":(data=="2"?"In Process":"Completed");
             }},		            		          
             {"title":"","class":"center","width":"50px","data":'ecn_id',"render":function(data,type,row){
-            	return "&nbsp;&nbsp;<i title='Display' class=\"glyphicon glyphicon-search bigger-130\" onclick = 'show(" + JSON.stringify(row)+ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
+            	return "&nbsp;&nbsp;<i title='Display' class=\"glyphicon glyphicon-search bigger-130\" " +
+            	"onclick = 'show(" + JSON.stringify(row).replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;")  
++ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
         	},
         	"defaultContent": ""
             }
@@ -130,7 +137,7 @@ function show(row,flag){
 //		return false;
 //	}
 	$("#ecn_no").val(row.ecn_no);
-	$("#items").val(row.items);
+	$("#items").val(row.items.replace(/\r/ig, "").replace(/\n/ig, ""));
 	
 	var bus_list=getBusList(row.ecn_item_id);
 	
@@ -229,4 +236,11 @@ function validateUserAuth(url){
 		}
 	})
 	return flag;
+}
+function replace(str){
+	var result="";
+	result=str.replace(/'/g,"&apos;"); // 单引号
+	result=str.replace(/"/g,"&quot;"); // 双引号
+	result=result.replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;"); // 空格 tab
+	return result;
 }

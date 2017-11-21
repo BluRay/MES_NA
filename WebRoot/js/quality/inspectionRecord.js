@@ -206,7 +206,7 @@ function ajaxQuery(){
             {"title":"Production Supervisor","class":"center","data":"supervisor","defaultContent": ""},		            
             {"title":"Supervisor Date","class":"center","data":"supervisor_date","defaultContent": ""},		    
             {"title":"QC Supervisor","class":"center","data":"qc_sign","defaultContent": ""},		
-            {"title":"QC Supervisor Date","class":"center","qc_sign_date": "editor","defaultContent": ""},
+            {"title":"QC Supervisor Date","class":"center","data": "qc_sign_date","defaultContent": ""},
             {"title":"Self Inspection","class":"center","data":null,"render":function(data,type,row){
             	return "<i class=\"ace-icon fa fa-pencil bigger-130 editorder\" title='Edit' onclick = 'showEditPage(" + JSON.stringify(row)+ ",\"self\");' style='color:green;cursor: pointer;'></i>";
                },
@@ -462,9 +462,13 @@ function drawTplDetailTable(tableId,data,editable){
             {"title":"Inspection Item","class":"center","data": "inspection_item","defaultContent": ""},
             {"title":"Specification And Standard","class":"center","data": "specification_and_standard","defaultContent": ""},
             {"title":"Self Inspection","class":"center","data": "self_inspection","defaultContent": ""},
-            {"title":"Sign & Date","class":"center","data": "self_str","defaultContent": ""},
+            {"title":"Sign & Date","class":"center","data": "","defaultContent": "","render":function(data,type,row){
+            	return (row.self_sign!=undefined?row.self_sign:'') +" "+(row.self_sign_date!=undefined?row.self_sign_date.substring(0,10):'')
+            }},
             {"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
-            {"title":"Sign & Date","class":"center","data": "qc_str","defaultContent": ""},
+            {"title":"Sign & Date","class":"center","data": "qc_str","defaultContent": "","render":function(data,type,row){
+            	return (row.qc_sign!=undefined?row.qc_sign:'') +" "+(row.qc_sign_date!=undefined?row.qc_sign_date.substring(0,10):'')
+            }},
             {"title":"Remark","class":"center","data": "remark","defaultContent": ""},
         ]	
 	});
@@ -484,7 +488,7 @@ function editDetailTable(tableId,data,type){
  				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
              }},
              //{"title":"QC Inspection","class":"center","data": "qc_inspection","defaultContent": ""},
-             {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
+             {"title":"Remark","class":"center","data": "self_sign_remark","render": function(data,type,row){
              	return "<input style='width:120px;text-align:center' class='remark' " +
  				" value='"+(data!=undefined ? data : '')+"'/>";
              }},
@@ -500,7 +504,7 @@ function editDetailTable(tableId,data,type){
 	             	return "<input style='width:120px;text-align:center' class='qc_inspection' " +
 	 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' value='"+row.id+"' class='id'/>";
 	             }},
-	         {"title":"Remark","class":"center","data": "remark","render": function(data,type,row){
+	         {"title":"Remark","class":"center","data": "qc_sign_remark","render": function(data,type,row){
 	         	return "<input style='width:120px;text-align:center' class='remark' " +
 				" value='"+(data!=undefined ? data : '')+"'/>";
 	         }}

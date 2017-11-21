@@ -1,21 +1,17 @@
-var json_tpl_list=null;
 $(document).ready(function(){
 	initPage();
 	$("#btnQuery").on("click",function(){
 		ajaxQuery();
 	}); 
-
 	$('#nav-search-input').bind('keydown', function(event) {
 		if (event.keyCode == "13") {
 			window.open("../production/productionsearchbusinfo?bus_number=" + $("#nav-search-input").val());
 			return false;
 		}
 	});
-	
 	$(document).on("input","#search_project_no",function(){
 		$("#search_project_no").attr("order_id","");
 	});
-	
 	$("#btnAdd").click(function(){
 		if($.fn.dataTable.isDataTable("#tplDetailTable")){
 			$('#tplDetailTable').DataTable().destroy();
@@ -143,7 +139,6 @@ $(document).ready(function(){
 		});
 	});
 })
-
 function initPage(){
 	getBusNumberSelect('#nav-search-input');
 	getBusTypeSelect('','#search_bus_type','All','id');
@@ -162,7 +157,6 @@ function initPage(){
 		alert("Please Choose xls File!");
     });
 }
-
 function ajaxQuery(){
 	$("#tableResult").DataTable({
 		serverSide: true,
@@ -208,8 +202,8 @@ function ajaxQuery(){
             });
 		},
 		columns: [
+            {"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
           	{"title":"Bus Type","class":"center","data":"bus_type","defaultContent": ""},
-          	{"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
             {"title":"Version Number","class":"center","data":"version","defaultContent": ""},
             {"title":"Editor","class":"center","data":"editor","defaultContent": ""},
             {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
@@ -274,17 +268,24 @@ function save(project_id,version) {
 						class_name: 'gritter-info'
 					});
 	            }else{
-	            	$.gritter.add({
-						title: 'Message：',
-						text: "<h5>"+Warn['P_common_04']+"</h5>",
-						class_name: 'gritter-info'
-					});
+	            	if(response.message!=''){
+	            		$.gritter.add({
+							title: 'Message：',
+							text: "<h5>"+Warn[response.message]+"</h5>",
+							class_name: 'gritter-info'
+						});
+	            	}else{
+	            		$.gritter.add({
+							title: 'Message：',
+							text: "<h5>"+Warn['P_common_04']+"</h5>",
+							class_name: 'gritter-info'
+						});
+	            	}
 	            }
 			}
 		});
 	}
 }
-
 function drawTplDetailTable(tableId,data,project_no,version){
 	$("#add_project_no").val(project_no);
 	var tb=$(tableId).DataTable({
@@ -315,9 +316,7 @@ function drawTplDetailTable(tableId,data,project_no,version){
             {"title":"Specification And Standard","class":"center","width":"465px","data":"specification_and_standard","defaultContent": ""}	            	          
        ]	
 	});
-	
 }
-
 function showEditPage(row){
 	if($.fn.dataTable.isDataTable("#tplDetailTable")){
 		$('#tplDetailTable').DataTable().destroy();
@@ -376,7 +375,6 @@ function showEditPage(row){
 		]
 	});
 }
-
 function showInfoPage(row){
 	if($.fn.dataTable.isDataTable("#tplDetailTable")){
 		$('#tplDetailTable').DataTable().destroy();
@@ -402,7 +400,6 @@ function showInfoPage(row){
 		]
 	});
 }
-
 function getTplDetailByHeader(project_id,version){
 	var detail_list=null;
 	$.ajax({

@@ -104,7 +104,6 @@ public class QualityServiceImpl implements IQualityService {
 		if(keyParts.get("version")==null){
 			qualityDao.saveKeyPartsDetails(detail_list);
 		}else{
-			Map<String,Object> map=new HashMap<String,Object>();
 			qualityDao.deleteKeyPartsDetails(keyParts);
 			qualityDao.saveKeyPartsDetails(detail_list);
 		}
@@ -393,5 +392,15 @@ public class QualityServiceImpl implements IQualityService {
 	@Override
 	public int qcInitialsPunch(Map<String, Object> conditionMap) {
 		return qualityDao.qcInitialsPunch(conditionMap);
+	}
+	//根据project_id验证BMS_NA_BUS_TRACE是否已有记录
+	// count>0 不允许更新BMS_NA_BUS_TRACE_TEMPLATE模板
+	public int checkBusTraceByProjectId(Map<String, Object> condMap) {
+		return qualityDao.getBusTraceByProjectIdCount(condMap);
+	}
+	//根据project_id验证BMS_NA_INSPECTION_RECORD是否已有记录
+	// count>0 不允许更新BMS_NA_INSPECTION_RECORD_TEMPLATE模板
+	public int checkInspectionRecordByProjectId(Map<String, Object> condMap) {
+		return qualityDao.getInspectionRecordByProjectIdCount(condMap);
 	}
 }

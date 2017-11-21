@@ -327,7 +327,13 @@ public class ProductionServiceImpl implements IProductionService {
 		int totalCount=0;
 		datalist=productionDao.queryEcnItemList(condMap);
 		totalCount=productionDao.queryEcnItemCount(condMap);
-		
+		for(Map<String,Object> map : datalist){
+			String problem_details=map.get("problem_details")!=null ? map.get("problem_details").toString() :"";
+		    if(!problem_details.equals("")){
+		    	problem_details=problem_details.replace("/\r/ig", "").replace("/\n/ig", "").replace("/'/ig", "\'");
+		        map.put("problem_details", problem_details);
+		    }
+		}
 		model.put("draw", condMap.get("draw"));
 		model.put("recordsTotal", totalCount);
 		model.put("recordsFiltered", totalCount);

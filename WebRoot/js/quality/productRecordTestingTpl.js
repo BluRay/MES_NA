@@ -75,7 +75,10 @@ $(document).ready(function(){
 		});
 	});
 	$("#btn_upload").click (function () {
-		//$(".divLoading").addClass("fade in").show();
+		if($("#file").val()==''){
+			alert(Warn['P_common_07']);
+			return false;
+		}
 		$("#uploadForm").ajaxSubmit({
 			url:"uploadTestingTemplateFile",
 			type: "post",
@@ -186,12 +189,9 @@ function ajaxQuery(){
             });
 		},
 		columns: [
+            {"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
           	{"title":"Bus Type","class":"center","data":"bus_type","defaultContent": ""},
-          	{"title":"Project No.","class":"center","data":"order_desc","defaultContent": ""},
-            {"title":"Testing Type","class":"center","data":"test_type_value","render":function(data,type,row){
-            	return convert(data);
-	        	}
-	        },
+            {"title":"Testing Type","class":"center","data":"key_name","defaultContent": ""},
             {"title":"Remarks","class":"center","data":"remarks","defaultContent": ""},
             {"title":"Editor","class":"center","data":"editor","defaultContent": ""},
             {"title":"Edit Date","class":"center","data": "edit_date","defaultContent": ""},
@@ -250,13 +250,13 @@ function save(project_id,header_id) {
 	            	$( "#dialog-config" ).dialog("close");
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+alert(Warn['P_common_03'])+"</h5>",
+						text: "<h5>"+Warn['P_common_03']+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }else{
 	            	$.gritter.add({
 						title: 'Message：',
-						text: "<h5>"+alert(Warn['P_common_04'])+"</h5>",
+						text: "<h5>"+Warn['P_common_04']+"</h5>",
 						class_name: 'gritter-info'
 					});
 	            }
@@ -297,7 +297,7 @@ function showEditPage(row){
 	$("#add_project_no").val(row.project_no);
 	$("#initiated").val(row.initiated);
 	$("#approved").val(row.approved);
-	$("#testing_type_value").find("option[keyvalue='"+row.test_type_value+"']").attr("selected",true);
+	$("#testing_type_value").find("option[value='"+row.key_id+"']").prop("selected",true);
 	$("#remarks").val(row.remarks);
 	var dialog = $( "#dialog-config" ).removeClass('hide').dialog({
 		width:900,
@@ -356,7 +356,7 @@ function showInfoPage(row){
 	$("#add_project_no").val(row.project_no);
 	$("#initiated").val(row.initiated);
 	$("#approved").val(row.approved);
-	$("#testing_type_value").find("option[keyvalue='"+row.test_type_value+"']").attr("selected",true);
+	$("#testing_type_value").find("option[value='"+row.key_id+"']").prop("selected",true);
 	$("#remarks").val(row.remarks);
 	var detail_list=getTplDetailByHeader(row.header_id);
 	drawTplDetailTable("#tplDetailTable",detail_list);

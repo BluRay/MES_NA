@@ -139,15 +139,17 @@ function ajaxQuery(){
 		            {"title":"ECN No","class":"center","data":"ecn_no","defaultContent": ""},
 		            {"title":"Items","width":"200","class":"center","data":"items","defaultContent": "","render":function(data,row,type){
 		            	var html=""
-			            	if(data.length>50){
-			            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,45)+"...</i>"
-			            	}else{
-			            		html=data;
-			            	}
-			            	return html;
+		            	data=data.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+		            	if(data.length>50){
+		            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,45)+"...</i>"
+		            	}else{
+		            		html=data;
+		            	}
+		            	return html;
 			         }},
 		            {"title":"Problem Detail","width":"300","class":"center","data":"problem_details","defaultContent": "","render":function(data,row,type){
 		            	var html=""
+		            	data=data.replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
 		            	if(data.length>50){
 		            		html="<i title='"+data+"' style='font-style: normal'>"+data.substring(1,45)+"...</i>"
 		            	}else{
@@ -168,8 +170,8 @@ function ajaxQuery(){
 		            	obj.ecn_no=row.ecn_no;
 		            	obj.items=row.items;
 		            	obj.ecn_item_id=row.ecn_item_id;
-		            	
-		            	return "<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(obj)+ ");' style='color:green;cursor: pointer;'></i>"
+		            	var jsonStr=JSON.stringify(obj).replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+		            	return "<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + jsonStr+ ");' style='color:green;cursor: pointer;'></i>"
 		            	},
 		            	"defaultContent": ""
 		            },
@@ -178,7 +180,8 @@ function ajaxQuery(){
 		            	obj.ecn_no=row.ecn_no;
 		            	obj.items=row.items;
 		            	obj.ecn_item_id=row.ecn_item_id;
-		            	return "&nbsp;&nbsp;<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" + JSON.stringify(obj)+ ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
+		            	var jsonStr=JSON.stringify(obj).replace(/'/g,"&apos;").replace(/\r/ig, "&nbsp;").replace(/\n/ig, "&nbsp;");
+		            	return "&nbsp;&nbsp;<i title='Confirm' class=\"ace-icon glyphicon glyphicon-ok bigger-130\" onclick = 'showConfirm(" +jsonStr + ",\"QC\");' style='color:blue;cursor: pointer;'></i>"
 	            	},
 	            	"defaultContent": ""
 		            }

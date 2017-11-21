@@ -528,7 +528,7 @@
 			   and b.print_flag=#{print_flag}  
 			</if> 
 			<if test="print_flag ==0">
-			   and IFNULL(b.print_flag,0)=#{print_flag}  
+			   and (IFNULL(b.print_flag,0)=#{print_flag} or print_flag='')
 			</if> 
 		</if>
 		ORDER BY p.id desc,b.id asc
@@ -556,7 +556,7 @@
 			   and b.print_flag=#{print_flag}  
 			</if> 
 			<if test="print_flag ==0">
-			   and IFNULL(b.print_flag,0)=#{print_flag}  
+			   and (IFNULL(b.print_flag,0)=#{print_flag} or print_flag='')
 			</if> 
 		</if>
 	</select>

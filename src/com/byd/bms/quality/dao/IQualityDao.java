@@ -47,9 +47,11 @@ public interface IQualityDao {
 	public List<Map<String, String>> getBusNumberTemplateList(Map<String, Object> conditionMap);	
 	public int saveKeyParts(List<Map<String, String>> list);
 	public int updateKeyParts(List<Map<String, String>> list);
+	public int getBusTraceByProjectIdCount(Map<String, Object> condMap);
 	public int getInspectionRecordCount(Map<String, Object> condMap);
 	public List<Map<String, Object>> getInspectionRecordList(Map<String, Object> condMap);
 	public List<Map<String, Object>> getInspectionDetailList(Map<String, Object> condMap);
+	public int getInspectionRecordByProjectIdCount(Map<String, Object> condMap);
 	public int saveInspectionRecord(Map<String, Object> map);
 	public List<Map<String, Object>> getInspectionRecordDetail(Map<String, Object> map);
 	public List<Map<String, Object>> getInspectionByBusNo(Map<String, Object> map);

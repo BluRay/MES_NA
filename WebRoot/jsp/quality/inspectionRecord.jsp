@@ -91,7 +91,7 @@
 					</div>
 					<div class="row" style="margin-top:20px;">
 						<div class="col-xs-12" id="scroll_div" >
-							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:1050px;overflow:auto;text-align:center" >
+							<table id="tableDetail" class="table table-striped table-bordered table-hover " style="font-size: 12px;width:1055px;overflow:auto;text-align:center" >
 							</table>	
 						</div>
 					</div>
