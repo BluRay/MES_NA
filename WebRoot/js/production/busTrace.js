@@ -149,7 +149,7 @@ function showEditPage(){
 			{"title":"Batch/Serial Number","class":"center","data":"batch","render":function(data,type,row){
 				return "<input style='width:180px;text-align:center' class='batch' " +
 				" value='"+(data!=undefined ? data : '')+"'/><input type='hidden' class='trace_id' " +
-				" value='"+(row.id!=undefined ? row.id : '')+"'/>" +
+				" value='"+(row.trace_id!=undefined ? row.trace_id : '')+"'/>" +
 				"<input type='hidden' class='project_id' " +
 				" value='"+(project_id!=undefined ? project_id : '')+"'/>"+
 				"<input type='hidden' class='bus_number' " +

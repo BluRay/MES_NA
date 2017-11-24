@@ -337,10 +337,10 @@
 		function doSubmit(){
 				var loginForm=document.getElementById("login");	
 	 			if(IsPC()){
-	 				loginForm.action="login";
+	 				loginForm.action="login?token_flag=_mobile";
 					loginForm.submit();
 				}else{
-					loginForm.action="login_mobile";
+					loginForm.action="login?token_flag=_mobile";
 					loginForm.submit();
 				} 
 				
