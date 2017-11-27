@@ -186,6 +186,16 @@ public class ProductionController extends BaseController {
 	public ModelAndView execution(){
 		mv.setViewName("production/productionExecution");
 		return mv;
+	}	
+	
+	/**
+	 * 生产扫描页面(移动端)
+	 * @return
+	 */
+	@RequestMapping("/execution_mobile")
+	public ModelAndView execution_mobile(){
+		mv.setViewName("production/productionExecution_Mobile");
+		return mv;
 	}
 
 	/**

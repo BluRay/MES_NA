@@ -32,5 +32,7 @@ public interface IReportService {
 	public int getPlanPartsRealCount(Map<String,Object> conditionMap);
 	
 	public int getPlanZzjRealCount(Map<String,Object> conditionMap);
+	// 车间扫描车辆信息报表
+	public void getWorkshopBusInfoData(Map<String,Object> condMap,ModelMap model);
 	
 }

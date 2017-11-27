@@ -46,6 +46,7 @@ public class LoginController extends BaseController{
 		String password=StringUtils.isEmpty(user.getPassword())?"":user.getPassword();
 		user=loginService.getUser(user.getUsername());
 		String last_url=request.getParameter("last_url");
+		String token_flag=request.getParameter("token_flag");
 		
 		if(MD5Util.validPassword(password, user.getPassword())){
 			session.setAttribute("user_name", user.getUsername());
@@ -65,8 +66,10 @@ public class LoginController extends BaseController{
 			if(last_url!=""&&last_url!=null){
 				response.sendRedirect(last_url);
 				return null;
-			}else
-				mv.setViewName("home");
+			}else{
+				mv.setViewName("home"+token_flag);
+			}
+				
 		}else{
 			mv.setViewName("error");
 		}

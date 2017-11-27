@@ -253,4 +253,23 @@ public class ReportController extends BaseController {
 		mv.setViewName("report/ecnSearch");
 		return mv;
 	}
+	@RequestMapping("/workshopBusInfo")
+	public ModelAndView workshopBusInfo(){
+		mv.setViewName("report/workshopBusInfo");
+		return mv;
+	}
+	@RequestMapping("/getWorkshopBusInfoData")
+	@ResponseBody
+	public ModelMap getWorkshopBusInfoData(){
+		model.clear();
+		Map<String,Object> condMap=new HashMap<String,Object>();
+		String start_date=request.getParameter("current");
+	//	String end_date=request.getParameter("end_date");
+		condMap.put("plant", request.getParameter("plant"));
+		condMap.put("current", start_date);
+		//condMap.put("end_date", end_date);
+		reportService.getWorkshopBusInfoData(condMap, model);
+		
+		return model;
+	}
 }

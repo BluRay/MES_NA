@@ -421,4 +421,55 @@
 			</if>
 		</foreach>
 	</select>
+	<select id="queryWorkshopBusInfoData" parameterType="Map" resultType="Map">		
+			select plant,s.workshop,station_id,station,GROUP_CONCAT(prev_six) prev_six,GROUP_CONCAT(prev_five) prev_five,
+			GROUP_CONCAT(prev_four) prev_four,GROUP_CONCAT(prev_three) prev_three,
+			GROUP_CONCAT(prev_two) prev_two,GROUP_CONCAT(prev_one) prev_one,GROUP_CONCAT(current) current from 
+			BMS_NA_BASE_STATION s left join (
+			select plant,workshop,station_id,station,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -6 DAY) then CONCAT(bus_number,'(',line,')') end prev_six,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -5 DAY) then CONCAT(bus_number,'(',line,')') end prev_five,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -4 DAY) then CONCAT(bus_number,'(',line,')') end prev_four,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -3 DAY) then CONCAT(bus_number,'(',line,')') end prev_three,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -2 DAY) then CONCAT(bus_number,'(',line,')') end prev_two,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -1 DAY) then CONCAT(bus_number,'(',line,')') end prev_one,
+			 case left(scan_date,10) when #{current} then CONCAT(bus_number,'(',line,')') end current
+			 from BMS_NA_BUS_SCANNING_RECORD where on_offline='online'
+			) t on s.station_name=t.station and s.factory=t.plant and line='I' where 1=1
+			<if test="plant!=null and plant!='All'">
+			   and plant=#{plant}
+			</if>
+			 and station_id is not null GROUP BY plant,s.id
+	</select>
+	<select id="queryHZoneData" parameterType="Map" resultType="map">
+		<foreach collection="list" index="index" item="item" separator="UNION ALL">
+		select plant,workshop,station_name station,GROUP_CONCAT(prev_six) prev_six,GROUP_CONCAT(prev_five) prev_five,
+			GROUP_CONCAT(prev_four) prev_four,GROUP_CONCAT(prev_three) prev_three,
+			GROUP_CONCAT(prev_two) prev_two,GROUP_CONCAT(prev_one) prev_one,GROUP_CONCAT(current) current from (
+		   select  plant,'H-Zone' workshop,'${item.virtualstation}' station_name,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -6 DAY) then CONCAT(bus_number,'(',line,')') end prev_six,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -5 DAY) then CONCAT(bus_number,'(',line,')') end prev_five,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -4 DAY) then CONCAT(bus_number,'(',line,')') end prev_four,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -3 DAY) then CONCAT(bus_number,'(',line,')') end prev_three,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -2 DAY) then CONCAT(bus_number,'(',line,')') end prev_two,
+			 case left(scan_date,10) when DATE_ADD(str_to_date(#{current}, '%Y-%m-%d'),INTERVAL -1 DAY) then CONCAT(bus_number,'(',line,')') end prev_one,
+			 case left(scan_date,10) when #{current} then CONCAT(bus_number,'(',line,')') end current
+			 from BMS_NA_BUS_SCANNING_RECORD t where t.station=#{item.prev_station} and t.on_offline='offline' 
+			 <if test="plant!=null and plant!='All'">
+			   and plant=#{plant}
+			 </if>
+			 and not exists (
+			select 1 from BMS_NA_BUS_SCANNING_RECORD t1 where
+			t1.station=#{item.next_station} and t1.on_offline='online' and t1.bus_number=t.bus_number)
+			) t
+		</foreach>
+	</select>
+	<select id="getStationMaxNode"  parameterType="String" resultType="Map">		
+		select * from BMS_NA_BASE_STATION where id in(
+           select max(id) id from BMS_NA_BASE_STATION where factory=#{plant} GROUP BY workshop )
+	</select>
+	<select id="getStationMinNode"  parameterType="String" resultType="Map">		
+        select * from BMS_NA_BASE_STATION where id in(
+           select min(id) id from BMS_NA_BASE_STATION where factory=#{plant} GROUP BY workshop )	
+    </select>
 </mapper>

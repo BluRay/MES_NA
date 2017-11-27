@@ -26,5 +26,13 @@ public interface IReportDao {
 	public List<Map<String,String>> getPlanSearchRealCount(List queryMapList);		//查询订单完成实际完成数[订单查询页面]
 	public int getPlanPartsRealCount(Map<String,Object> conditionMap);
 	public int getPlanZzjRealCount(Map<String,Object> conditionMap);
+	
+	List<Map<String, Object>> queryWorkshopBusInfoData(Map<String, Object> condMap);
+	
+	List<Map<String, Object>> queryHZoneData(Map<String, Object> condMap);
+	
+	List<Map<String, Object>> getStationMaxNode(String plant);
+	
+	List<Map<String, Object>> getStationMinNode(String plant);
 
 }

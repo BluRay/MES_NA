@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <meta charset="utf-8" />
-<title>BMS</title>
+<title>MES</title>
 <meta name="description" content="Common Buttons &amp; Icons" />
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
@@ -58,7 +58,7 @@ label {
 			<!-- 路径和搜索框 -->
 				<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
 					<ul class="breadcrumb" style="font-size:14px;">
-					<li><a href="/BMS/index_mobile"><i class="ace-icon fa fa-home home-icon bigger-160"></i>BMS</a></li>
+					<li><a href="/MES/index_mobile"><i class="ace-icon fa fa-home home-icon bigger-160"></i>MES</a></li>
 						<li><a href="#">生产扫描</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
@@ -71,7 +71,7 @@ label {
 				<div class="page-content" style="position:fixed;top:38px;bottom:10px;width:100%;overflow-y:auto;padding-left: 0px;padding-right:12px;">
 					<form class="form-horizontal" id="scan_form">
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">车号:</label>
+							<label class="col-xs-3 control-label no-padding-right">Bus No.:</label>
 							<div class="col-xs-9">
 								<!-- <input id="vinText"  type="text" class="input-medium" style="width:100%;height:30px;"/> -->
 								<span class="input-icon input-icon-right" style="width: 100%;">
@@ -80,9 +80,33 @@ label {
 								</span>
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-xs-3 control-label no-padding-right"></label>
+							<div class="col-xs-4">								
+								<select name="exec_type" id="exec_type" class="input-medium" style="width:100%">
+										<option value="0">normal</option>
+										<option value="1">rework</option>										
+								</select>
+							</div>
+							<div class="col-xs-4">
+								<select id="on_offline" class="input-medium" style="width:100%">
+										<option value="online">online</option>
+										<option value="offline">offline</option>										
+								</select>
+							</div>
+						</div>
+					<!-- 	<div class="form-group">
+							<label class="col-xs-3 control-label no-padding-right"></label>
+							<div class="col-xs-9">
+								<select id="on_offline" class="input-medium" style="width:100%">
+										<option value="online">online</option>
+										<option value="offline">offline</option>										
+								</select>
+							</div>
+						</div> -->
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">工厂:</label>
+							<label class="col-xs-3 control-label no-padding-right">Plant:</label>
 							<div class="col-xs-9">
 								<select id="exec_factory" class="input-medium" style="width:100%" >
 									<!-- <option value=''>请选择</option> -->
@@ -91,7 +115,7 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">车间:</label>
+							<label class="col-xs-3 control-label no-padding-right">Workshop:</label>
 							<div class="col-xs-9">
 								<select id="exec_workshop" class="input-medium" style="width:100%">
 									<!-- <option value=''>请选择</option> -->
@@ -100,7 +124,7 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">线别:</label>
+							<label class="col-xs-3 control-label no-padding-right">Line:</label>
 							<div class="col-xs-9">
 								<select id="exec_line" class="input-medium" style="width:100%">
 									<!-- <option value=''>请选择</option> -->
@@ -109,17 +133,16 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right" style="text-align:right">工序:</label>
+							<label class="col-xs-3 control-label no-padding-right" style="text-align:right">Station:</label>
 							<div class="col-xs-9">
-								<select id="exec_process" class="input-medium" style="width:40%">
+								<select id="exec_station" class="input-medium" style="width:100%">
 									<!-- <option value=''>请选择</option> -->
-								</select>
-								<span id="exec_processname"></span>
+								</select>								
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">零部件:</label>
+							<label class="col-xs-3 control-label no-padding-right">Key Parts:</label>
 							<div class="col-xs-9">
 								<select id="key_parts" class="input-medium" style="width:100%">
 									<!-- <option value=''>请选择</option> -->
@@ -128,28 +151,28 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">编号:</label>
+							<label class="col-xs-3 control-label no-padding-right">Part No:</label>
 							<div class="col-xs-9">
 								<input id="parts_no" type="text" class="input-medium" style="width:100%;height:30px;" disabled/>
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">SAP料号:</label>
+							<label class="col-xs-3 control-label no-padding-right">SAP No:</label>
 							<div class="col-xs-9">
 								<input id="sap_mat" type="text" class="input-medium" style="width:100%;height:30px;" disabled/>
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">供应商:</label>
+							<label class="col-xs-3 control-label no-padding-right">Vendor:</label>
 							<div class="col-xs-9">
 								<input id="vendor" type="text" class="input-medium" style="width:100%;height:30px;" disabled/>
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">批次:</label>
+							<label class="col-xs-3 control-label no-padding-right">Batch:</label>
 							<div class="col-xs-9">
 								<input id="batch" type="text" class="input-medium" style="width:100%;height:30px;" />
 							</div>
@@ -163,9 +186,10 @@ label {
 		<script src="../assets/js/jquery.dataTables.min.js"></script>
 		<script src="../assets/js/jquery.dataTables.bootstrap.js"></script>
 		<script src="../assets/js/jquery.gritter.min.js"></script>
-	<script src="../assets/js/bootstrap3-typeahead.js"></script>
+		<script src="../assets/js/bootstrap3-typeahead.js"></script>
 		<script src="../js/jquery.form.js"></script>
 		<script src="../js/common.js"></script>
+		<script src="../js/alertMessage.js"></script>
 		<script src="../js/production/productionExecution_Mobile.js"></script>
 </div>
 </body>

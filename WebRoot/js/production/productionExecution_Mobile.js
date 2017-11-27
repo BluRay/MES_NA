@@ -23,7 +23,7 @@ $(document).ready(function () {
 	//输入回车，发ajax进行校验；成功则显示并更新车辆信息
     $('#vinText').bind('keydown', function(event) {
 
-        if($(this).attr("disabled") == "disabled")
+        if($(this).prop("disabled") == "disabled")
             return false;      
         if (event.keyCode == "13"){	
             if(jQuery.trim($('#vinText').val()) != ""){
@@ -41,6 +41,23 @@ $(document).ready(function () {
     $("#btn_save").click(function(){
     	ajaxEnter();
     });
+    
+    $("#exec_type").change(function(){
+    	if($("#exec_type").val()=='0'){//normal
+    		$("#exec_line").val(bus.line);
+    		//alert(bus.workshop);
+   		 	$("#exec_factory option:contains("+bus.factory+")").prop("selected",true)
+   		 	$("#exec_workshop option:contains("+bus.workshop+")").prop("selected",true)
+   		 	$("#exec_factory").prop("disabled","disabled");
+   		 	$("#exec_workshop").prop("disabled","disabled");
+   		 	$("#exec_line").prop("disabled","disabled");
+   		 	
+    	}else{//rework
+    		$("#exec_factory").removeAttr("disabled");
+  	     	$("#exec_workshop").removeAttr("disabled");
+  	     	$("#exec_line").removeAttr("disabled");
+    	}
+    })
     
 	$(document).on("change","#batch",function(e){
 		$(this).focus();		
@@ -65,10 +82,7 @@ $(document).ready(function () {
 	$("#exec_workshop").change(function(){
 		$("#exec_line").empty();
 		if($("#exec_workshop").val() !=''){
-			getAllLineSelect(bus.line);
-			$("#exec_processname").val('');
-			getAllProcessSelect(bus.order_type);
-			ajaxGetPartsList();
+			getAllLineSelect();
 		}
 	});
 	
@@ -77,145 +91,78 @@ $(document).ready(function () {
 		$("#exec_processname").val('');
 		if($("#exec_line").val() !=''){
 			if(bus.line !=$("#exec_line option:selected").text()&&bus.workshop==$("#exec_workshop option:selected").text()){
-    			fadeMessageAlert(null,'该车辆已在'+bus.line+'扫描，不能跨线扫描！','gritter-error');
+    			//fadeMessageAlert(null,'该车辆已在'+bus.line+'扫描，不能跨线扫描！','gritter-error');
     			//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描,带出相应工序
         		getSelects(line_selects_data, bus.line, "#exec_line",null,"name"); 
-        		getAllProcessSelect(bus.order_type);
+        		getAllstationSelect(bus.order_type);
     		}   
     		//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描  
-			getAllProcessSelect(bus.order_type);
+			getAllstationSelect(bus.order_type);
 			ajaxGetPartsList();
 		}
 	});
 	
-	$("#exec_process").change(function(){
-		$("#exec_processname").val('');
-		var process_code=$("#exec_process :selected").text();
-		var process_name=$(this).find("option:contains('"+process_code+"')").attr("process");
-		$("#exec_processname").html(process_name);
-		if($("#exec_line").val() !=''&&$("#vinText").data("order_id")!=0){		
+	$("#exec_station").change(function(){
+		
+		var station_code=$("#exec_station :selected").attr("station_code");
+		var station_name=$("#exec_station :selected").attr("station");
+		if($("#exec_line").val() !=''&&$("#vinText").data("project_id")!=0){		
 			ajaxGetPartsList();
 		}
 	});
 	
 	$("#key_parts").change(function(){
 		var parts_index=$(this).find("option:selected").attr("parts_index");
-		$("#parts_no").val(parts_list[parts_index].parts_no);
-		$("#sap_mat").val(parts_list[parts_index].sap_mat);
+		$("#parts_no").val(parts_list[parts_index].BYD_NO);
+		$("#sap_mat").val(parts_list[parts_index].SAP_material);
 		$("#vendor").val(parts_list[parts_index].vendor);
-		var batch="";
-		if(parts_list[parts_index]['3C_no'].trim().length>0){
+		var batch=parts_list[parts_index].batch;
+		/*if(parts_list[parts_index]['3C_no'].trim().length>0){
 			batch=parts_list[parts_index]['3C_no'];
-		}    
+		}    */
 		$("#batch").val(batch);
-		$("#batch").attr("parts_index",parts_index);
+		$("#batch").prop("parts_index",parts_index);
 	})
 
 })
 
-function initPage(){
+	function initPage(){
 		getFactorySelect();
+		getBusNumberSelect('#vinText');
 		$('#vinText').focus();
-		//alert(getQueryString("factory_name"));
-		//$(".page-content").css("height",document.body.clientHeight-10);
-		//$(".page-content").css("overflow","auto");
-/*		
-		Quagga.init({
-		    inputStream : {
-		      name : "Live",
-		      type : "LiveStream",
-		      target: document.querySelector('#vin_text')    // Or '#yourElement' (optional)
-		    },
-		    decoder : {
-		      readers : ["code_128_reader"]
-		    }
-		  }, function(err) {
-		      if (err) {
-		          console.log(err);
-		          return
-		      }
-		      console.log("Initialization finished. Ready to start");
-		      Quagga.start();
-		  });*/
-		
-		
+		resetPage();
+		workshop_name=$("#exec_workshop :selected").text();
+		if(workshop_name=='Outgoing'){
+			$("#exec_type").prop("disabled",true);
+			$("#on_offline").prop("disabled",true);
+		}else{
+			$("#exec_type").prop("disabled",false);
+			$("#on_offline").prop("disabled",false);
+		}
 	};
 	
 	function resetPage () {
-		$("#scan_form").resetForm();
         $("#vinText").removeAttr("disabled");
+        $("#exec_factory").removeAttr("disabled");
+        $("#exec_workshop").removeAttr("disabled");
+        $("#exec_line").removeAttr("disabled");
         $("#vinText").val("");
        	$('#vinText').data("vin","");
-    	$('#vinText').data("order_id","");
-    	$('#vinText').data("order_config_id","");
-    	$('#vinText').data("bus_type_id","");
+    	$('#vinText').data("project_id","");
+    	$('#vinText').data("bus_type","");
         $("#vinText").focus();
         toggleVinHint(true);
-        $("#exec_workshop").html("");
-        $("#exec_line").html("");
-        $("#exec_process").html("");
-        $("#exec_processname").html("");
-        $("#key_parts").html("");
-        $("#btn_save").hide();
-        $("#btn_clear").hide();
-        
+        $("#btnSubmit").prop("disabled","disabled");
+        $("#partsListTable tbody").html("");
+        $("#configListTable tbody").html("");
+        $("#exec_line").prop("disabled",false);
     }
 	
 	function ajaxEnter(){
 		var enterflag=true;
-		cur_key_name=$("#exec_processname").val();
-		var plan_node=$('#exec_process').find("option:selected").attr("plan_node");
-		var field_name=$('#exec_process').find("option:selected").attr("field_name");
 		
-		if($('#exec_workshop :selected').text()=='底盘'||$('#exec_workshop :selected').text()=='检测线'){
-
-			$.each(parts_list,function(i,parts){
-				if(parts.parts_id !=undefined&&parts.process==$("#exec_processname").val()&&(parts.parts_name=='VIN编码'||parts.parts_name=='左电机号'||parts.parts_name=='右电机号')){
-					if(parts.batch==undefined||parts.batch.trim().length==0){
-						enterflag=false;
-						alert(plan_node+"扫描前，请将VIN编码和左右点击号信息录入完整！");
-						return false;
-					}
-				}
-				if(parts.parts_name=='VIN编码'&&parts.batch!=vin&&parts.process==$("#exec_processname").val()){
-					alert("VIN编码校验失败，请核对该车的VIN编码！");
-					enterflag=false;
-					return false;
-				}
-				if(parts.parts_name=='左电机号'&&parts.batch!=left_motor_number&&parts.process==$("#exec_processname").val()){
-					alert("左电机号校验失败，请核对该车的左电机号！");
-					enterflag=false;
-					return false;
-				}
-				if(parts.parts_name=='右电机号'&&parts.batch!=right_motor_number&&parts.process==$("#exec_processname").val()){
-					alert("右电机号校验失败，请核对该车的右电机号！");
-					enterflag=false;
-					return false;
-				}
-			});
-			if(!enterflag){
-				//alert(cur_key_name+"扫描前，请将零部件信息录入完整！");
-				//$("#btn-save").hide();
-				 return false;
-			 }
-		}
-		
-		if(plan_node.indexOf("下线")>=0&&$('#exec_workshop :selected').text()=='检测线'){
-			//alert(cur_key_name);
-			$.each(parts_list,function(i,parts){
-				if(parts.parts_id !=undefined&&parts.parts_id!=0){
-					if(parts.batch==undefined||parts.batch.trim().length==0){
-						enterflag=false;
-						return false;
-					}
-				}
-			});
-			if(!enterflag){
-				alert(cur_key_name+"扫描前，请将零部件信息录入完整！");
-				//$("#btn-save").hide();
-				 return false;
-			 }
-		}
+		var plan_node=$('#exec_station').find("option:selected").attr("plan_node");
+		var field_name=$('#exec_station').find("option:selected").attr("field_name");
 		
 		if(enterflag){
 			 $.ajax({
@@ -225,32 +172,32 @@ function initPage(){
 		            data: {
 		            	"factory_id" : $('#exec_factory').val(),
 		                "bus_number":$('#vinText').val(),
-		                "order_id":$('#vinText').data("order_id"),
-		                "process_id":$('#exec_process').val(),
+		                "project_id":$('#vinText').data("project_id"),
+		                "station_id":$('#exec_station').val(),
 		                "factory_name":$('#exec_factory').find("option:selected").text(),
 		                "workshop_name":$('#exec_workshop').find("option:selected").text(),
 		                "line_name":$('#exec_line').find("option:selected").text(),
-		                "process_id":$('#exec_process').val(),
-		                "process_number":$('#exec_process :selected').text(),
-		                "process_name":$('#exec_processname').html(),
+		                "station_name":$('#exec_station :selected').attr("station"),
 		                "field_name":field_name,
 		                "order_type":orderType,
 		                "plan_node_name":plan_node,
+		                "rework":$("#exec_type").val(),
+		                "on_offline":$("#on_offline").val(),
 		                "parts_list":JSON.stringify(parts_list)
 		            },
 		            success: function(response){
 		                resetPage();
 		                if(response.success){ 
-		                	fadeMessageAlert(null,response.message,'gritter-success');
+		                	fadeMessageAlert(null,"Succeed !",'gritter-success');
 		                }
 		                else{
-		                	fadeMessageAlert(null,response.message,'gritter-error');
+		                	fadeMessageAlert(null,Warn[response.message],'gritter-error');
 		                }
 
-		                setTimeout(function() {
-		                    $("#vinHint").hide().html("未输入车号");
+		                //setTimeout(function() {
+		                    $("#vinHint").hide().html("");
 		                    toggleVinHint(true);
-		                },60000);
+		               // },6000);
 		            },
 		            error:function(){alertError(); resetPage();}
 		        });
@@ -259,6 +206,7 @@ function initPage(){
     }
 	
 	function ajaxValidate (){
+		var plan_node=$('#exec_station').find("option:selected").attr("plan_node");
 		$.ajax({
             type: "post",
             dataType: "json",
@@ -267,49 +215,78 @@ function initPage(){
             data: {
             	"bus_number": $('#vinText').val(),
                 "factory_id":$("#exec_factory").val(),
-                "exec_process_name":$("#exec_processname").val(),
-                "workshop_name":$('#exec_workshop').find("option:selected").text()
+                "station_name":$("#exec_station :selected").attr("station"),
+                "workshop":$('#exec_workshop').find("option:selected").text()
             },
-            success: function(response){               
+            success: function(response){
+                    $("#vinText").prop("disabled","disabled");
                     //show car infomation
-            	//alert(response.businfo.factory.indexOf(getAllFromOptions("#exec_factotry","name")));
                     if(response.businfo == ""||response.businfo==null){
-                    	fadeMessageAlert(null,'没有对应车号的车辆信息！','gritter-error');
-                    	$("#vinText").val("");
+                    	fadeMessageAlert(null,'Sorry,no information searched for the entered bus！','gritter-error');
+                    	$("#vinText").removeAttr("disabled").val("");
                     	return false;
-                    }else if(response.businfo.factory_name.indexOf(getAllFromOptions("#exec_factotry","name"))<0){
-                    	fadeMessageAlert(null,'抱歉，该车辆属于'+response.businfo.factory_name+'，您没有扫描权限！','gritter-error');
-                    	$("#vinText").val("");
+                    }else if(response.businfo.factory !=$("#exec_factory :selected").text()){
+                    	fadeMessageAlert(null,response.businfo.bus_number+'不属于'+$("#exec_factory :selected").text()+'！','gritter-error');
                     	return false;
-                    }else{        
-                    	var nextProcess=response.nextProcess;
-                        $("#vinText").attr("disabled","disabled");
+                    }else{                	
+                    	bus = response.businfo;
+                    	$('#vinText').data("vin",bus.VIN);
+                    	$('#vinText').data("project_id",bus.project_id);
+                    	$('#vinText').data("bus_type",bus.bus_type);
+                    	$("#vinText").prop("disabled","disabled");                   	
+                    	
                         $("#btn_save").show();
                         $("#btn_clear").show();
-                    	bus = response.businfo;
-                    	$('#vinText').data("vin",bus.vin);
-                    	$('#vinText').data("order_id",bus.order_id);
-                    	$('#vinText').data("order_config_id",bus.order_config_id);
-                    	$('#vinText').data("bus_type_id",bus.bus_type_id);
-                    	
-                    	var configList=response.configList;  	
+                    	var next_station=response.nextStation;
                     	
                     	bus_production_status=bus.production_status;
                     	orderType=bus.order_type;
-                    	vin=bus.vin;
-                		left_motor_number=bus.left_motor_number;
-                		right_motor_number=bus.right_motor_number;
-                		
+                    	vin=bus.VIN;
                 		toggleVinHint(false);
                 		
-                		//选中工厂、车间、线别、工序
-                		$("#exec_factory").val(bus.factory_id).attr("disabled",true);
-                		getAllWorkshopSelect(nextProcess==null?bus.workshop:nextProcess.workshop);
-                		getAllLineSelect(bus.line)
                 		
+                		/**
+                		 * 选中工厂、车间、线别
+                		 */            		
+                		$("#exec_factory option:contains("+bus.factory+")").prop("selected",true)
+                		$("#exec_workshop option:contains("+bus.workshop+")").prop("selected",true)
+ 
                 		var cur_line=$("#exec_line option:selected").text();
-                		getAllProcessSelect(bus.order_type,nextProcess==null?bus.process_name:nextProcess.process_name);
-
+                		if(bus.order_type!='Standard order'){
+                			getAllstationSelect(bus.order_type);
+                		}
+                		//alert(cur_line);
+                		if(bus.line !=$("#exec_line option:selected").text()&&bus.workshop==$("#exec_workshop option:selected").text()){
+                			//fadeMessageAlert(null,Warn['Scan_passline'],'gritter-error');
+                			//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描,带出相应工序
+                    		getSelects(line_selects_data, bus.line, "#exec_line",null,"name"); 
+                    		getAllstationSelect(bus.order_type);
+                		}   
+                		//added by xjw 20160513 根据车号查出当前线别锁定线别，不允许跨线扫描                    		
+                		if(bus.latest_station_id>0){
+                			$("#exec_line").prop("disabled",true);
+                		}
+                		
+                    		
+                		//$("#exec_station").val(next_station.station_id)
+                		$("#exec_station option:contains("+next_station.station_name+")").prop("selected",true);
+                		
+                		if($('#exec_workshop').find("option:selected").text()!='Outgoing'){
+                			$("#on_offline").val(next_station.on_offline)
+                		}else{
+                			$("#on_offline").val('online')
+                		}
+                		
+                		
+                		if($("#exec_type").val()=='0'){//normal
+                   		 	$("#exec_factory").prop("disabled","disabled");
+                   		 	$("#exec_workshop").prop("disabled","disabled");
+                   		 	$("#exec_line").prop("disabled","disabled");
+                		}else{//rework
+                			$("#exec_factory").removeAttr("disabled");
+                  	     	$("#exec_workshop").removeAttr("disabled");
+                  	     	$("#exec_line").removeAttr("disabled");
+                   		}
                     }
             },
             error:function(){alertError();}
@@ -322,14 +299,14 @@ function initPage(){
             type: "get",
             dataType: "json",
             url : "getKeyParts",
+            async:false,
             data: {
             	"factory_id":$("#exec_factory").val(),
                 "bus_number": $('#vinText').val(),
-                "process_name":$("#exec_processname").html(),
+                "station_name":$("#exec_station :selected").attr("station_code")||"",
                 "workshop":$('#exec_workshop').find("option:selected").text(),
-                "order_id":$('#vinText').data("order_id")||0,
-                "order_config_id":$('#vinText').data("order_config_id")||0,
-                "bus_type_id":$('#vinText').data("bus_type_id")||0
+                "project_id":$('#vinText').data("project_id")||0,
+                "bus_type":$('#vinText').data("bus_type")||""
             },
             success: function(response){
             	parts_list=response.partsList;
@@ -342,17 +319,13 @@ function initPage(){
             	$.each(parts_list, function(index, value) {
             		if(index==0){
             			strs += "<option value=" + value.id   + " selected='selected'"+" parts_index="+index + ">" + value.parts_name + "</option>";
-            			parts_no_default=value.parts_no;
-            			sap_mat_default=value.spa_mat;
+            			parts_no_default=value.BYD_NO;
+            			sap_mat_default=value.SAP_material;
             			vendor_default=value.vendor;
-            			$("#batch").attr("disabled",false);
-            			if(value['3C_no'].trim().length>0){
-            				batch_default=value['3C_no'];
-            				parts_list[index].batch=batch_default;
-            				$("#batch").attr("disabled",true);
-            			}          			
+            			$("#batch").prop("disabled",false);
+                 			
             		}else
-            		 strs += "<option value=" + value.id  + ">"+" parts_index="+index  + value.parts_name + "</option>";
+            		 strs += "<option value=" + value.id +" parts_index="+index+">"  + value.parts_name + "</option>";
             	})
             	$("#key_parts").append(strs);
             	$("#parts_no").val(parts_no_default);
@@ -366,7 +339,7 @@ function initPage(){
 	
 	function getFactorySelect() {
 		$.ajax({
-			url : "/BMS/common/getFactorySelectAuth",
+			url : "/MES/common/getFactorySelectAuth",
 			dataType : "json",
 			data : {},
 			async : false,
@@ -375,9 +348,9 @@ function initPage(){
 			},
 			success : function(response) {
 				getSelects_noall(response.data, "", "#exec_factory",null);
-				//getAllWorkshopSelect();
-				//getAllLineSelect();
-				//getAllProcessSelect();
+				getAllWorkshopSelect();
+				getAllLineSelect();
+				getAllstationSelect();
 			}
 		});
 	}
@@ -385,7 +358,7 @@ function initPage(){
 function getAllWorkshopSelect(workshop) {
 	$("#exec_workshop").empty();
 	$.ajax({
-		url : "/BMS/common/getWorkshopSelectAuth",
+		url : "/MES/common/getWorkshopSelectAuth",
 		dataType : "json",
 		data : {
 				factory:$("#exec_factory :selected").text()
@@ -401,9 +374,10 @@ function getAllWorkshopSelect(workshop) {
 }
 
 function getAllLineSelect(line) {
+	line=line||'I';
 	$("#exec_line").empty();
 	$.ajax({
-		url : "/BMS/common/getLineSelectAuth",
+		url : "/MES/common/getLineSelectAuth",
 		dataType : "json",
 		data : {
 				factory:$("#exec_factory :selected").text(),
@@ -420,11 +394,11 @@ function getAllLineSelect(line) {
 	});
 }
 
-function getAllProcessSelect(order_type,process_default) {
-	order_type=order_type||'标准订单';
-	$("#exec_process").empty();
+function getAllstationSelect(order_type) {
+	order_type=order_type||'Standard order';
+	$("#exec_station").empty();
 	$.ajax({
-		url : "getProcessMonitorSelect",
+		url : "getStationMonitorSelect",
 		dataType : "json",
 		data : {
 			factory:$("#exec_factory :selected").text(),
@@ -437,27 +411,35 @@ function getAllProcessSelect(order_type,process_default) {
 			alert(response.message)
 		},
 		success : function(response) {
-			//getSelects_noall(response.data, "", "#exec_process"); 
+			//getSelects_noall(response.data, "", "#exec_station"); 
 			var strs = "";
-		    $("#exec_process").html("");
-		    var process_id_default="";
-		    var process_name_default="";
+		    $("#exec_station").html("");
+		    var station_id_default="";
+		    var station_name_default="";
 		    if(response.data==null){
 		    	fadeMessageAlert(null,"未配置扫描逻辑！","agritter-error");
 		    	return false;
 		    }	 
 		    $.each(response.data, function(index, value) {
-		    	if (process_default == value.process_name) {
-		    		process_id_default=value.id;
-			    	process_name_default=value.process_name;
-		    	}		
-		    	strs += "<option value=" + value.id + " process='"+value.process_name+"' plan_node='"+(value.plan_node_name||"")
-		    	+"' field_name='" +(value.field_name||"")+ "'>" + value.process_code + "</option>";
+		    	if (index == 0) {
+		    		station_id_default=value.id;
+			    	station_name_default=value.station_name;
+		    	}
+		    	
+		    	if(getQueryString("station_id")==value.id){
+		    	 	station_id_default=value.id;
+			    	station_name_default=value.station_name;
+		    	}
+/*		    	if (index == 0) {
+		    		$("#exec_stationname").val(value.station_name);
+		    	}*/
+		    	strs += "<option value=" + value.id + " station_code='"+value.station_code+"' station='"+value.station_name+"' plan_node='"+(value.plan_node_name||"")
+		    	+"' field_name='" +(value.field_name||"")+ "'>" + (value.station_code+" "+value.station_name) + "</option>";
 		    });
-		  //  alert(process_id_default);
-		    $("#exec_process").append(strs);
-		    $("#exec_process").val(process_id_default+"");
-		    $("#exec_processname").html(process_name_default);
+		  //  alert(station_id_default);
+		    $("#exec_station").append(strs);
+		    $("#exec_station").val(station_id_default+"");
+		    $("#exec_stationname").val(station_name_default);
 		}
 	});
 }

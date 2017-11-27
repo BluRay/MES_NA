@@ -395,6 +395,61 @@ public class ReportServiceImpl implements IReportService {
 	public int getPlanZzjRealCount(Map<String, Object> conditionMap) {
 		return reportDao.getPlanZzjRealCount(conditionMap);
 	}
-	
-	
+
+	@Override
+	public void getWorkshopBusInfoData(Map<String, Object> condMap,ModelMap model) {
+		List<Map<String, Object>> resultlist=new ArrayList<Map<String, Object>>();
+		String[] workshopArray = {"Welding","Painting","Chassis", "Assembly", "Outgoing"};   
+		List<Map<String,Object>> workshopBusInfo_list=reportDao.queryWorkshopBusInfoData(condMap);
+		List<Map<String, Object>> conlist=new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> stationMaxList= reportDao.getStationMaxNode(condMap.get("plant").toString());
+		List<Map<String, Object>> stationMinList= reportDao.getStationMinNode(condMap.get("plant").toString());
+		int workshopArrayLength=workshopArray.length;
+		for(Map<String, Object> maxmap : stationMaxList){
+			for(int i=0;i<workshopArrayLength;i++){
+				if(maxmap.get("workshop")!=null && maxmap.get("workshop").equals(workshopArray[i])){
+					Map<String, Object> map=new HashMap<String, Object>();
+					map.put("prev_station", maxmap.get("station_name").toString());
+					if((i+1)<workshopArrayLength){
+						for(Map<String, Object> minmap : stationMinList){
+							if(minmap.get("workshop")!=null && 
+									minmap.get("workshop").equals(workshopArray[i+1]) && minmap.get("station_name")!=null){
+								map.put("next_station", minmap.get("station_name").toString());
+								map.put("virtualstation",maxmap.get("workshop").toString()+"-"+ minmap.get("workshop").toString());
+								conlist.add(map);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		condMap.put("list", conlist);
+		List<Map<String, Object>> hzone_list=reportDao.queryHZoneData(condMap);
+		boolean flag=true;
+		String oldworkshop="";
+		for(Map<String,Object> map : workshopBusInfo_list){
+			for(int i=1;i<workshopArrayLength;i++){
+				if(map.get("workshop").toString().equals(workshopArray[i])){
+					if(!map.get("workshop").toString().equals(oldworkshop)){
+						flag=true;
+					}
+					oldworkshop=map.get("workshop").toString();
+					if(flag==true){
+						for(Map<String, Object> zonemap : hzone_list){
+							if(zonemap.get("station").toString().equals(workshopArray[i-1]+"-"+workshopArray[i])){
+								if(map.get("plant").toString().equals(zonemap.get("plant").toString())){
+									resultlist.add(zonemap);
+									flag=false;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			resultlist.add(map);
+		}
+		model.put("data", resultlist);
+	}
 }

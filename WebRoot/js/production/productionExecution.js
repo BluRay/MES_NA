@@ -129,7 +129,6 @@ $(document).ready(function () {
 		                "workshop_name":$('#exec_workshop').find("option:selected").text(),
 		                "line_name":$('#exec_line').find("option:selected").text(),
 		                "station_name":$('#exec_station :selected').attr("station"),
-		                "station_id":$('#exec_station').val(),
 		                "scanner_id":$('#exec_user').val(),
 		                "field_name":field_name,
 		                "order_type":orderType,

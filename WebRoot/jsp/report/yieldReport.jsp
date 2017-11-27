@@ -50,7 +50,7 @@
 							<td>Plant：</td>
 							<td><select id="search_factory" class="input-small" style="height: 30px;width:100px"></select></td>
 							<td>&nbsp;Production Date ：</td>
-							<td><input id="start_date" style="height: 30px;width:125px" type="text" onClick="WdatePicker({el:'start_date',dateFmt:'yyyy-MM-dd'});"> - <input id="end_date" style="height: 30px;width:125px" type="text" onClick="WdatePicker({el:'end_date',dateFmt:'yyyy-MM-dd'});"></td>
+							<td><input id="start_date" style="height: 30px;width:125px" type="text" onClick="WdatePicker({lang:'en_us',el:'start_date',dateFmt:'yyyy-MM-dd'});"> - <input id="end_date" style="height: 30px;width:125px" type="text" onClick="WdatePicker({lang:'en_us',el:'end_date',dateFmt:'yyyy-MM-dd'});"></td>
 							<td>&nbsp;Scope：</td>
 							<td>
 								<select id="search_index" class="input-small" style="height: 30px;width:60px">
