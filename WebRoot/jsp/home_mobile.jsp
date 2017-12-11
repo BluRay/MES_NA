@@ -27,13 +27,13 @@
 			<!-- 路径和搜索框 -->
 			<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs" >
 					<ul class="breadcrumb" style="font-size:14px;">
-						<li><a href="<%=request.getContextPath()%>/index_mobile"><i class="ace-icon fa fa-home home-icon bigger-160"></i>BMS</a></li>
+						<li><a href="<%=request.getContextPath()%>/index_mobile"><i class="ace-icon fa fa-home home-icon bigger-160"></i>MES</a></li>
 					</ul><!-- /.breadcrumb -->
 
 					<!-- #section:basics/content.searchbox -->
 				 	<div class="nav-search" id="nav-search" style="top: 10px;font-size:14px;">
 						<a href="/MES/logout">
-								<i class="ace-icon fa fa-power-off bigger-160" ></i>登出
+								<i class="ace-icon fa fa-power-off bigger-160" ></i>Logout
 						</a>
 					</div>
 				</div>
@@ -43,51 +43,76 @@
 					<%-- <jsp:include page="settings.jsp" flush="true"/> --%>
 					<!-- /section:settings.box -->
 					<div class="page-content-area">
-							<div class="row" style="margin-top:20px;">
+							<div class="row" style="margin-top:10px;">
 								<div class="col-xs-12">
-									<div class="col-xs-6">
-										<img id="scan" class="img " src="images/scan.png" style="width:100%;height:100%;" onclick="javascript: return pageForward('execution');">							
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/scan.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('execution');">							
 									</div>
-									<div class="col-xs-6">
-										<img id="scan" class="img " src="images/prdRcd.png" style="width:100%;height:100%;" onclick="javascript: return pageForward('prdRcd');">
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/prdRcd.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('prdRcd');">
 									</div>
 								</div>
 							</div>			
-							<div class="row" style="margin-top:20px;">
+							<div class="row" style="margin-top:10px;">
 								<div class="col-xs-12">
 									<div class="col-xs-6" style="text-align:center">
 										<label>
-										生产扫描
+										Production
 										</label>
 									</div>
 									<div class="col-xs-6" style="text-align:center">
 										<label>
-										成品记录表
+										Inspection record
 										</label>
 									</div>
 								</div>
 							</div>		
 							
-							<div class="row" style="margin-top:20px;">
+							<div class="row" style="margin-top:10px;">
 								<div class="col-xs-12">
-									<div class="col-xs-6">
-										<img id="scan" class="img " src="images/keyparts.png" style="width:100%;height:100%;" onclick="javascript: return pageForward('tech_follow');">							
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/keyparts.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('busTrace');">							
 									</div>
-									<div class="col-xs-6">
-										<img id="scan" class="img " src="images/exception.png" style="width:100%;height:100%;" onclick="javascript: return pageForward('exception');">
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/exception.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('techfollow');">
 									</div>
 								</div>
 							</div>			
-							<div class="row" style="margin-top:20px;">
+							<div class="row" style="margin-top:10px;">
 								<div class="col-xs-12">
 									<div class="col-xs-6" style="text-align:center">
 										<label>
-										技改跟进
+										Bus trace
 										</label>
 									</div>
 									<div class="col-xs-6" style="text-align:center">
 										<label>
-										生产异常
+										Ecn
+										</label>
+									</div>
+								</div>
+							</div>	
+							
+							<div class="row" style="margin-top:10px;">
+								<div class="col-xs-12">
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/scan.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('execution');">							
+									</div>
+									<div class="col-xs-6" style="text-align:center">
+										<img id="scan" class="img " src="images/prdRcd.png" style="width:90%;height:90%;" onclick="javascript: return pageForward('prdRcd');">
+									</div>
+								</div>
+							</div>			
+							<div class="row" style="margin-top:10px;">
+								<div class="col-xs-12">
+									<div class="col-xs-6" style="text-align:center">
+										<label>
+										Production
+										</label>
+									</div>
+									<div class="col-xs-6" style="text-align:center">
+										<label>
+										Inspection record
 										</label>
 									</div>
 								</div>
@@ -107,14 +132,14 @@
 			if(flag=='execution'){
 				url="/MES/production/execution_mobile"
 			}
+			if(flag=='busTrace'){
+				url="/MES/production/busTrace_mobile"
+			}
 			if(flag=='exception'){
 				url="/MES/production/exception_mobile"
 			}
-			if(flag=='prdRcd'){
-				url="/MES/quality/prdRcdMobile"
-			}
-			if(flag=='tech_follow'){
-				url="/MES/tech/techFollowMobile"
+			if(flag=='techfollow'){
+				url="/MES/production/techFollowMobile"
 			}
 			window.location=url
 		}

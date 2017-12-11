@@ -88,5 +88,11 @@ var Warn={
     'P_yieldReport_01':'请选择生产开始日期！',
     'P_yieldReport_02':'请选择生产结束日期！',
     'P_yieldReport_03':'请输入正确的日期区间，最长不能超过31天！',
+    'P_userProfilePage_01':'原密码不能为空!', 
+    'P_userProfilePage_02':'新密码不能为空!',
+    'P_userProfilePage_03':'两次输入的新密码不一致!',
+    'P_userProfilePage_04':'原密码错误',
+    'P_techFollowMobile_01':'请选择需要跟进的技改任务！',
+    'P_techFollowMobile_02':'未查询到需要跟进的技改任务！'
     /********End  TangJin***********************/
 }

@@ -101,7 +101,7 @@
 		values
 		<foreach  collection="parts_list" item="detail" index="index" separator=",">
 		(#{detail.bus_number},#{detail.project_id},#{detail.production_plant_id},#{detail.id},#{detail.workshop},#{detail.SAP_material},#{detail.BYD_NO},
-		#{detail.parts_name},#{detail.vendor},#{detail.station_name},#{detail.batch},#{detail.editor_id},#{detail.edit_date}
+		#{detail.parts_name},#{detail.vendor},#{detail.station},#{detail.batch},#{detail.editor_id},#{detail.edit_date}
 		)
 		</foreach>
 	</insert>
@@ -118,6 +118,24 @@
 		</foreach>
 	
 	</update>
+	
+	<update id="saveUpdateParts" parameterType="List">
+		<foreach collection="parts_list" item="detail" index="index" separator=";">
+			<if test="detail.parts_id !=null and detail.parts_id !=''">
+				update BMS_NA_BUS_TRACE set batch= #{detail.batch} where id=#{detail.parts_id}
+			</if>
+			<if test="detail.parts_id ==null or detail.parts_id ==''">
+				insert into BMS_NA_BUS_TRACE
+				(bus_number,project_id,production_plant_id,trace_template_id,workshop,SAP_material,BYD_NO,parts_name,vendor,station,batch,editor_id,edit_date)
+				values
+				(#{detail.bus_number},#{detail.project_id},#{detail.production_plant_id},#{detail.id},#{detail.workshop},#{detail.SAP_material},#{detail.BYD_NO},
+				#{detail.parts_name},#{detail.vendor},#{detail.station},#{detail.batch},#{detail.editor_id},#{detail.edit_date}
+				)
+			</if>
+		</foreach>
+	
+	</update>
+	
 	
 	<insert id="saveScanRecord" parameterType="Map"  useGeneratedKeys="true" keyProperty="id">
 		<selectKey resultType="int" keyProperty="id" order="AFTER">
@@ -851,4 +869,18 @@
 		left join BMS_NA_BASE_USER u on s.scanner_id=u.id
 		where 1=1 and s.bus_number=#{bus_number}    
 	</select>
+	<select id="queryTechTaskFollowList" parameterType="String" resultType="Map">
+		select f.id bus_item_id,t.id item_id,t.items,t.problem_details
+		from BMS_NA_ECN_ITEM_BUS f
+		left join BMS_NA_ECN_ITEM t on t.id=f.ecn_item_id
+		where f.bus_number=#{bus_number}  and (f.confirmed_date&lt;=0 or f.confirmed_date is null)
+	</select>
+	<update id="updateItemBusTechTask" parameterType="Map">
+		update BMS_NA_ECN_ITEM_BUS set confirmed_date=#{confirmed_date}, production_people=#{user_name}
+		where find_in_set (id,#{item_bus_ids})>0
+	</update>
+	<update id="updateItemTechTask" parameterType="Map">
+		update BMS_NA_ECN_ITEM set status=#{status}
+		where find_in_set (id,#{item_ids})>0
+	</update>
 </mapper>

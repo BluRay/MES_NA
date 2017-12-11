@@ -59,7 +59,7 @@ label {
 				<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
 					<ul class="breadcrumb" style="font-size:14px;">
 					<li><a href="/MES/index_mobile"><i class="ace-icon fa fa-home home-icon bigger-160"></i>MES</a></li>
-						<li><a href="#">Production Execution</a></li>
+						<li><a href="#">Bus trace</a></li>
 					</ul>
 					<!-- /.breadcrumb -->
 					<div class="nav-search" id="nav-search" style="margin-top: 5px;margin-right:10px;">
@@ -75,35 +75,11 @@ label {
 							<div class="col-xs-9">
 								<!-- <input id="vinText"  type="text" class="input-medium" style="width:100%;height:30px;"/> -->
 								<span class="input-icon input-icon-right" style="width: 100%;">
-										<input id="vinText" type="text" class="input-medium" style="width:100%;height:30px;">
+										<input id="bus_number" type="text" class="input-medium" style="width:100%;height:30px;">
 										
 								</span>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right"></label>
-							<div class="col-xs-4">								
-								<select name="exec_type" id="exec_type" class="input-medium" style="width:100%">
-										<option value="0">normal</option>
-										<option value="1">rework</option>										
-								</select>
-							</div>
-							<div class="col-xs-4">
-								<select id="on_offline" class="input-medium" style="width:100%">
-										<option value="online">online</option>
-										<option value="offline">offline</option>										
-								</select>
-							</div>
-						</div>
-					<!-- 	<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right"></label>
-							<div class="col-xs-9">
-								<select id="on_offline" class="input-medium" style="width:100%">
-										<option value="online">online</option>
-										<option value="offline">offline</option>										
-								</select>
-							</div>
-						</div> -->
 						
 						<div class="form-group">
 							<label class="col-xs-3 control-label no-padding-right">Plant:</label>
@@ -124,15 +100,6 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">Line:</label>
-							<div class="col-xs-9">
-								<select id="exec_line" class="input-medium" style="width:100%">
-									<!-- <option value=''>请选择</option> -->
-								</select>
-							</div>
-						</div>
-						
-						<div class="form-group">
 							<label class="col-xs-3 control-label no-padding-right" style="text-align:right">Station:</label>
 							<div class="col-xs-9">
 								<select id="exec_station" class="input-medium" style="width:100%">
@@ -142,7 +109,7 @@ label {
 						</div>
 						
 						<div class="form-group">
-							<label class="col-xs-3 control-label no-padding-right">Key Parts:</label>
+							<label class="col-xs-3 control-label no-padding-right">Parts:</label>
 							<div class="col-xs-9">
 								<select id="key_parts" class="input-medium" style="width:100%">
 									<!-- <option value=''>请选择</option> -->
@@ -190,7 +157,7 @@ label {
 		<script src="../js/jquery.form.js"></script>
 		<script src="../js/common.js"></script>
 		<script src="../js/alertMessage.js"></script>
-		<script src="../js/production/productionExecution_Mobile.js"></script>
+		<script src="../js/production/busTrace_Mobile.js"></script>
 </div>
 </body>
 </html>

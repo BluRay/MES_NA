@@ -607,6 +607,21 @@ public class ProductionServiceImpl implements IProductionService {
 		model.put("data", bus_lsit);
 	}
 
+	
+	@Override
+	public void saveUpdateParts(List<Map<String, Object>> parts_list,
+			ModelMap model) {
+		try{
+			productionDao.saveUpdateParts(parts_list);
+			model.put("success", true);
+			model.put("message", "Succeed!");
+		}catch(Exception e){
+			model.put("success", false);
+			model.put("message", "Failed!");
+		}
+		
+	}
+
 	/*****************************xiong jianwu end  *****************************/
 	@Override
 	public Map<String, Object> getBusNumberList(Map<String, Object> conditionMap) {
@@ -820,5 +835,39 @@ public class ProductionServiceImpl implements IProductionService {
 		result.put("data", datalist);
 		return result;
 	}
+	@Override
+	public void getTechtaskListByBus(String bus_number, ModelMap model) {
+		List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+		dataList=productionDao.queryTechTaskFollowList(bus_number);
+		model.put("data", dataList);
+	}
 
+	@Override
+	@Transactional
+	public int followTechTaskByBus(Map<String, Object> conditionMap) {
+//		int a=productionDao.updateItemBusTechTask(conditionMap);
+//		int b=productionDao.updateItemTechTask(conditionMap);
+		String item_ids=conditionMap.get("item_ids")!=null ?conditionMap.get("item_ids").toString():"";
+		String [] item_arr=item_ids.split(",");
+		for(int i=0;i<item_arr.length;i++){
+			String item_id=item_arr[i];
+			String min_confirm_date=productionDao.queryMinEcnConfirmDate(item_id);
+			if(min_confirm_date.equals("")){
+				min_confirm_date=conditionMap.get("confirmed_date").toString();
+			}
+			/**
+			 * 更新BMS_NA_ECN_ITEM status为2（processing），以及字段signed_time_first
+			 */
+			Map<String,Object> condMap=new HashMap<String,Object>();
+			condMap.put("ecn_item_id", item_id);
+			condMap.put("status", "2");
+			condMap.put("signed_time_first",min_confirm_date);
+			productionDao.updateEcnItem(condMap);
+		}
+		/**
+		 * 更新BMS_NA_ECN_ITEM_BUS表信息
+		 */
+		int result=productionDao.updateItemBusTechTask(conditionMap);
+		return result;
+	}
 }

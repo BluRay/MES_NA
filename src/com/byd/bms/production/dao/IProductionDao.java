@@ -35,6 +35,8 @@ public interface IProductionDao {
 	
 	int updateParts(@Param(value = "parts_list")List parts_list);
 	
+	void saveUpdateParts(@Param(value = "parts_list")List parts_list);
+	
 	int queryWeldingOnlineCount(Map<String, Object> condMap);
 	
 	void updateProject(Map<String, Object> m);
@@ -104,6 +106,10 @@ public interface IProductionDao {
 	public int getProjectBusNumberCount(Map<String, Object> condMap);
 	
 	public List<Map<String, Object>> getBusNumberScanList(String bus_number);
+	
+	public int updateItemBusTechTask(Map<String,Object> conditionMap);
+	
+	public int updateItemTechTask(Map<String,Object> conditionMap);
 	/**************************** tang jin end*********************************/
 	
 	public int insertAbnormity(Map<String,Object> conditionMap);
@@ -136,4 +142,5 @@ public interface IProductionDao {
 
 	public List<Map<String,Object>> queryEcnBusListByBusNo(@Param(value = "bus_number")String bus_number);
 
+	public List<Map<String, String>> queryTechTaskFollowList(@Param(value="bus_number")String bus_number);
 }

@@ -823,5 +823,23 @@
 			delete from BMS_NA_BASE_STANDARD_WORKGROUP where id= #{id}
 		]]>
 	</update>
-	
+	<select id="getUserInfoByStaffnumber" parameterType="String" resultType="Map">
+		SELECT u.id,f.factory_name,u.staff_number,u.card_8H10D,u.username,u.email,u.telephone,u.cellphone,u.display_name,
+		u.admin,u.last_login_time,u.login_count
+		FROM BMS_NA_BASE_USER u  LEFT OUTER JOIN BMS_NA_BASE_FACTORY f ON u.factory_id = f.id
+		WHERE u.staff_number = #{staff_number}
+	</select>
+	<select id="checkUserPassword" parameterType="Map" resultType="int">
+		SELECT COUNT(id) FROM BMS_NA_BASE_USER WHERE staff_number = #{staff_number} AND password = #{password}
+	</select>
+	<update id="updateUserPassword" parameterType="Map">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET password = #{password} WHERE staff_number = #{staff_number}
+		]]>
+	</update>
+	<update id="updateUserInfo" parameterType="Map">
+		<![CDATA[
+		UPDATE BMS_NA_BASE_USER SET email = #{email},telephone = #{telephone},cellphone = #{cellphone} WHERE staff_number = #{staff_number}
+		]]>
+	</update>
 </mapper>

@@ -302,7 +302,7 @@ String display_name = (String)session.getAttribute("display_name");
 								</li>
 
 								<li>
-									<a href="profile.html">
+									<a href="<%=basePath%>/setting/userProfilePage">
 										<i class="ace-icon fa fa-user"></i>
 										Profile
 									</a>

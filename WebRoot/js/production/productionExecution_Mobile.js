@@ -121,7 +121,7 @@ $(document).ready(function () {
 			batch=parts_list[parts_index]['3C_no'];
 		}    */
 		$("#batch").val(batch);
-		$("#batch").prop("parts_index",parts_index);
+		$("#batch").data("parts_index",parts_index);
 	})
 
 })
@@ -177,7 +177,7 @@ $(document).ready(function () {
 		                "factory_name":$('#exec_factory').find("option:selected").text(),
 		                "workshop_name":$('#exec_workshop').find("option:selected").text(),
 		                "line_name":$('#exec_line').find("option:selected").text(),
-		                "station_name":$('#exec_station :selected').attr("station"),
+		                "station_name":$("#exec_station :selected").attr("station"),
 		                "field_name":field_name,
 		                "order_type":orderType,
 		                "plan_node_name":plan_node,

@@ -666,10 +666,8 @@ function getBusNumberSelect(elementId, submitId, fn_backcall) {
 		updater : function(item) {
 			$.each(busNumberlist, function(index, value) {
 				if (value.bus_number == item) {
-					orderId = value.order_id;
-					orderConfigId=value.order_config_id;
-					$(elementId).attr("order_id", orderId);
-					$(elementId).attr("order_config_id", orderConfigId);
+					project_id = value.project_id;			
+					$(elementId).attr("project_id", project_id);
 					if (typeof (fn_backcall) == "function") {
 						fn_backcall(value);
 					}

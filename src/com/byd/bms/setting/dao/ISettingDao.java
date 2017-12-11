@@ -44,6 +44,10 @@ public interface ISettingDao {
 	public int addUserRole(BmsUserRole userRole);
 	public int addOneUserRole(BmsUserRole userRole);
 	public int updateUserRole(BmsUserRole userRole);
+	public Map<String, Object> getUserInfoByStaffnumber(String staff_number);
+	public int checkUserPassword(Map<String,Object> queryMap);
+	public int updateUserPassword(Map<String,Object> queryMap);
+	public int updateUserInfo(Map<String,Object> queryMap);
 	public int delUserRole(@Param("staff_number")String staff_number,@Param("roles")String roles);
 	public int delOneUserRole(@Param("staff_number")String staff_number,@Param("role")String role);
 	public List<Map<String,Object>> getPermissionByMap(Map<String,Object> queryMap);

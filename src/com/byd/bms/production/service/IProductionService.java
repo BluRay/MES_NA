@@ -47,6 +47,8 @@ public interface IProductionService {
 	public void getWorkshopStock(Map<String, Object> condMap, ModelMap model);
 	
 	public void getMonitorBusList(Map<String, Object> condMap, ModelMap model);
+
+	public void saveUpdateParts(List<Map<String, Object>> parts_list,ModelMap model);
 	
 	/*****************************xiong jianwu end  *****************************/
 	/*****************************tang jin start  *****************************/
@@ -65,6 +67,10 @@ public interface IProductionService {
 	public void getEcnBusListByBusNo(String bus_number, ModelMap model);
 	
 	public void getBusNumberScanList(String bus_number, ModelMap model);
+	
+	public void getTechtaskListByBus(String bus_number, ModelMap model);
+	
+	public int followTechTaskByBus(Map<String,Object> conditionMap);
 	/*****************************tang jin end  *****************************/
 	
 	public List<Map<String,Object>> getProcessMonitorSelect(Map<String, Object> condMap);
@@ -84,5 +90,6 @@ public interface IProductionService {
 	public List<Map<String, Object>> getLineInventoryList(Map<String,Object> conditionMap);
 	public int removeDistribution(Map<String,Object> conditionMap);
 	public Map<String,Object> getLineInventoryMatList(Map<String,Object> conditionMap);
+
 	
 }

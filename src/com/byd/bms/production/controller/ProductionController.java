@@ -832,6 +832,49 @@ public class ProductionController extends BaseController {
 		mv.setViewName("production/busTrace");
 		return mv;
 	}
+	/**
+	 * 关键零部件扫描-PDA
+	 * @return
+	 */
+	@RequestMapping("/busTrace_mobile")
+	public ModelAndView busTrace_mobile(){
+		mv.setViewName("production/busTrace_Mobile");
+		return mv;
+	}
+	
+	@RequestMapping("/saveBusTraceDetail")
+	@ResponseBody
+	public ModelMap saveBusTraceDetail(){
+		model.clear();
+		int factory_id=Integer.parseInt(request.getParameter("factory_id"));
+		String station_name=request.getParameter("station_name");
+		String bus_number=request.getParameter("bus_number");
+		String parts_list_str=request.getParameter("parts_list");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String userid=String.valueOf(session.getAttribute("user_id"));
+		String project_id=request.getParameter("project_id");
+		/**
+		 * 关键零部件列表
+		 */
+		List<Map<String,Object>> parts_list=new ArrayList<Map<String,Object>>();
+		if(parts_list_str.contains("{")){
+			JSONArray jsa=JSONArray.fromObject(parts_list_str);
+			parts_list=JSONArray.toList(jsa, Map.class);
+		}	
+		for(Map m:parts_list){
+			m.put("production_plant_id", factory_id);
+			m.put("bus_number", bus_number);
+			m.put("station_name", station_name);
+			m.put("editor_id", userid);
+			m.put("edit_date", curTime);
+			m.put("project_id", project_id);
+		}
+		
+		productionService.saveUpdateParts(parts_list,model);
+		return model;
+	}
+	
 	@RequestMapping("/productionsearchbusinfo")
 	public ModelAndView productionsearchbusinfo(){
 		mv.setViewName("production/productionsearchbusinfo");
@@ -1210,4 +1253,58 @@ public class ProductionController extends BaseController {
 	}
 	
 	/*****************Start LineInventory ***********************************************************************/
+	/**
+	 * @author xiong.jianwu
+	 * 技改跟进（移动端）
+	 */
+	@RequestMapping("/techFollowMobile")
+	public ModelAndView techFollowMobile(){
+		mv.setViewName("production/techFollow_Mobile");
+        return mv; 
+	}
+	
+	/**
+	 * @author xiong.jianwu
+	 * 跟进车号查询需要跟进的技改任务
+	 * @return
+	 */
+	@RequestMapping("/getTechtaskListByBus")
+	@ResponseBody
+	public ModelMap getTechtaskListByBus(){
+		model.clear();
+		String bus_number=request.getParameter("bus_number");
+		productionService.getTechtaskListByBus(bus_number,model);
+		return model;
+	}
+	/**
+	 * @author xiong.jianwu
+	 * 跟进车号查询需要跟进的技改任务
+	 * @return
+	 */
+	@RequestMapping("/followTechTaskByBus")
+	@ResponseBody
+	public ModelMap followTechTaskByBus(){
+		model.clear();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String curTime = df.format(new Date());
+		String user_name=session.getAttribute("user_name").toString();
+		String bus_number=request.getParameter("bus_number");
+		String item_ids=request.getParameter("item_ids");
+		String item_bus_ids=request.getParameter("item_bus_ids");
+		String status=request.getParameter("status");
+        Map<String,Object> conMap=new HashMap<String,Object>();
+        conMap.put("item_ids", item_ids);
+        conMap.put("item_bus_ids", item_bus_ids);
+        conMap.put("status", status);
+        conMap.put("confirmed_date", curTime);
+        conMap.put("user_name", user_name);
+		int result=productionService.followTechTaskByBus(conMap);
+		if(result>0){
+			initModel(true,"success",null);
+		}else{
+			initModel(false,"fail",null);
+		}
+		model = mv.getModelMap();
+		return model;
+	}
 }
