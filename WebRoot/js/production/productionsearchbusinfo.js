@@ -102,7 +102,7 @@ function ajaxQuery(){
 		    			production_status = "Not Started";
 		    		}else{
 		    			production_status="In Process";
-		    			$("#tab01_current_station").html(value.current_station);
+		    			$("#tab01_current_station").html(value.station_name);
 		    		}
 		    		$("#tab01_production_status").html(production_status);
 		    		$("#tab01_welding_online_date").html(value.welding_online);

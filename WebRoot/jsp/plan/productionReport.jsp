@@ -44,7 +44,7 @@
 								<td><select id="search_factory" class="input-small" style="height: 30px;width:100px"></select></td>
 								<td>&nbsp;Workshop : &nbsp;</td>
 								<td><select id="search_workshop" class="input-small" style="height: 30px;width:80px"></select></td>
-								<td>&nbsp;Project Name : &nbsp;</td>
+								<td>&nbsp;Project No.: &nbsp;</td>
 								<td><input id="search_order_no" placeholder="Project Name..." style="height: 30px;width:110px" type="text"></td>
 								<td>&nbsp;Production Date : &nbsp;</td>
 								<td><input id="start_date" placeholder="Start..." style="height: 30px;width:125px" type="text" onClick="WdatePicker({el:'start_date',dateFmt:'yyyy-MM-dd'});"> - <input id="end_date" placeholder="End..." style="height: 30px;width:125px" type="text" onClick="WdatePicker({el:'end_date',dateFmt:'yyyy-MM-dd'});"></td>

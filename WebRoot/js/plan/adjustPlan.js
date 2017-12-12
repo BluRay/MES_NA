@@ -79,7 +79,7 @@ $(document).ready(function () {
 		    	"plan_month": $("#search_year").val() + "-" + $("#search_month").val(),
 		    },
 		    success:function(response){		
-		    	alert("计划调整成功");
+		    	alert("Plan Adjust Success!");
 		    	ajaxQuery();
 		    	$("#btnSave").removeAttr("disabled");
 				return false;

@@ -378,12 +378,15 @@ function ajaxQuery(){
 		            {"title":"","width":"50","class":"center","data": null,"id":"staff_number",
 		            	"render": function ( data, type, row ) {
 		            		if(undefined==row['responsible_department_id'] || row['responsible_department_id']==''){
-		                    return "<i class=\"ace-icon glyphicon glyphicon-ok bigger-130\" title=\"处理\" onclick='editPause(" +
+		                    return "<i class=\"ace-icon glyphicon glyphicon-ok bigger-130\" title=\"Measure\" onclick='editPause(" +
 		                    row['id'] + ",\"" + row['plant'] + "\",\"" + row['workshop'] + "\",\"" + row['line'] + "\",\"" + row['abnormal_station'] + "\",\"" + 
 		                    row['bus_number'] + "\",\"" + row['abnormal_cause'] + "\",\"" + row['detailed_reason'].replace(/\r/ig, "").replace(/\n/ig, "") + "\",\"" + 
 		                    row['open_date'] + "\")' style='color:blue;cursor: pointer;'></i>";
 		            		}else{
-		            			return "";
+		            			return "<i class=\"ace-icon glyphicon glyphicon-edit bigger-130\" title=\"edit\" onclick='edit(" +
+		                    row['id'] + ",\"" + row['plant'] + "\",\"" + row['workshop'] + "\",\"" + row['line'] + "\",\"" + row['abnormal_station'] + "\",\"" + 
+		                    row['bus_number'] + "\",\"" + row['abnormal_cause'] + "\",\"" + row['detailed_reason'].replace(/\r/ig, "").replace(/\n/ig, "") + "\",\"" + 
+		                    row['open_date'] + "\",\"" + row['responsible_department_id'] + "\",\"" + row['measures'] + "\",\"" + row['measure_date'] + "\")' style='color:blue;cursor: pointer;'></i>";
 		            		}
 		                },
 		            }
@@ -392,6 +395,45 @@ function ajaxQuery(){
 	$("#tableData_info").addClass('col-xs-6');
 	$("#tableData_paginate").addClass('col-xs-6');
 	$(".dt-buttons").css("margin-top","-50px").find("a").css("border","0px");
+}
+
+function edit(id,plant,workshop,line,abnormal_station,bus_number,abnormal_cause,detailed_reason,open_date,responsible_department,measure,measure_date){
+	getKeysSelect("RESPONSIBLE_UNITS", "", "#edit_responsibleDepartment");
+	$("#edit_plant").val(plant);
+	$("#edit_workshop").val(workshop);
+	$("#edit_id").val(id);
+	$("#edit_line").val(line);
+	$("#edit_abnormalStation").val(abnormal_station);
+	$("#edit_busnumber").val(bus_number);
+	$("#edit_abnormalCause").val(abnormal_cause);
+	$("#edit_opendate").val(open_date);
+	$("#edit_detailed_reason").val(detailed_reason);
+	$("#edit_responsibleDepartment").val(responsible_department);
+	$("#edit_measures").val(measure);
+	$("#edit_measuresTime").val(measure_date);
+	
+	$("#dialog-edit").removeClass('hide').dialog({
+		resizable: false,
+		title: '<div class="widget-header"><h4 class="smaller"><i class="ace-icon fa fa-users green"></i> Add Abnormity</h4></div>',
+		title_html: true,
+		width:'800px',
+		modal: true,
+		buttons: [{
+					text: "Close",
+					"class" : "btn btn-minier",
+					click: function() {$( this ).dialog( "close" );} 
+				},
+				{
+					text: "Save",
+					id:"btn_ok",
+					"class" : "btn btn-success btn-minier",
+					click: function() {
+						btnEditConfirm(id);
+					} 
+				}
+			]
+	});
+	
 }
 
 function editPause(id,plant,workshop,line,abnormal_station,bus_number,abnormal_cause,detailed_reason,open_date){

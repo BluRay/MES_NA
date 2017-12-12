@@ -849,10 +849,11 @@
 		SELECT b.id,p.project_no,p.project_name,p.bus_type,p.quantity,f.factory_name,
 		b.bus_number,b.vin,p.customer,b.welding_online,b.welding_offline,b.painting_online,
 		b.painting_offline,b.chassis_online,b.chassis_offline,b.assembly_online,
-		b.assembly_offline,b.testing,b.outgoing,b.delivery
+		b.assembly_offline,b.testing,b.outgoing,b.delivery,s.station_name
 		FROM BMS_NA_PROJECT_BUS b
 		LEFT JOIN BMS_NA_PROJECT p ON b.project_id = p.id
 		LEFT JOIN BMS_NA_BASE_FACTORY f ON b.production_plant_id = f.id
+		LEFT JOIN BMS_NA_BASE_STATION s ON b.latest_station_id = s.id
 		WHERE b.bus_number = #{bus_number} OR b.VIN = #{bus_number}
 	</select>
 	

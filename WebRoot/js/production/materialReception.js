@@ -35,6 +35,7 @@ $(document).ready(function () {
 			$.ajax({
 				url : "materialReceptionConfirm",
 				dataType : "json",
+				type: "post",
 				data : {
 					conditions:JSON.stringify(query_data)
 				},

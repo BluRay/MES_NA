@@ -70,6 +70,11 @@ public class QualityController extends BaseController {
 		mv.setViewName("quality/punchList");
         return mv;  
     }
+	@RequestMapping("/punchList_mobile")
+	public ModelAndView punchList_mobile(){
+		mv.setViewName("quality/punchList_Mobile");
+        return mv;  
+    }
 	@RequestMapping("/punchInitials")
 	public ModelAndView punchInitials(){
 		mv.setViewName("quality/punchInitials");
